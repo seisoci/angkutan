@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\MenusController as BackendMenusController;
 use App\Http\Controllers\Backend\CostumerController as BackendCostumerController;
 use App\Http\Controllers\Backend\DriverController as BackendDriverController;
 use App\Http\Controllers\Backend\TransportController as BackendTransportController;
+use App\Http\Controllers\Backend\RoadMoneyController as BackendRoadMoneyController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -40,6 +41,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('menus', BackendMenusController::class)->except(['create', 'show']);
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
     Route::resource('drivers', BackendDriverController::class);
-    Route::resource('transports', BackendTransportController::class);
+    Route::resource('transports', BackendTransportController::class)->except('show');
+    Route::get('roadmonies/select2', [BackendRoadMoneyController::class, 'select2'])->name('backend.roadmonies.select2');
+    Route::resource('roadmonies', BackendRoadMoneyController::class)->except('show');
   });
 });

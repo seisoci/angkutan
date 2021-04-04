@@ -16,15 +16,15 @@ class CreateTransportsTable extends Migration
         Schema::create('transports', function (Blueprint $table) {
             $table->id();
             $table->string('num_pol');
-            $table->string('merk');
-            $table->string('type');
-            $table->string('type_car');
-            $table->enum('dump', ['ya', 'tidak']);
-            $table->year('year');
-            $table->integer('max_weight');
-            $table->date('expired_stnk');
-            $table->text('description');
-            $table->string('photo');
+            $table->string('merk')->nullable();
+            $table->string('type')->nullable();
+            $table->string('type_car')->nullable();
+            $table->enum('dump', ['ya', 'tidak'])->default('tidak');
+            $table->year('year')->nullable();
+            $table->integer('max_weight')->nullable();
+            $table->date('expired_stnk')->nullable();
+            $table->text('description')->nullable();
+            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }

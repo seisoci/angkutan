@@ -13,7 +13,7 @@
     </div>
     <div class="card-toolbar">
       <!--begin::Button-->
-      <a href="{{ route('backend.transports.create') }}" class="btn btn-primary font-weight-bolder">
+      <a href="{{ route('backend.roadmonies.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
           <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
@@ -37,7 +37,7 @@
     <table class="table table-bordered table-hover table-checkable" id="Datatable">
       <thead>
         <tr>
-          <th>Image</th>
+          <th>Rute Awal</th>
           <th>No. Pol</th>
           <th>Merk</th>
           <th>Tipe</th>
