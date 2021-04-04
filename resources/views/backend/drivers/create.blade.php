@@ -27,12 +27,11 @@
               <div class="image-input-wrapper" style="background-image: url({{ asset('/media/users/blank.png') }})">
               </div>
               <label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow"
-                data-action="change" data-toggle="tooltip" title="" data-original-title="Change avatar">
+                data-action="change" data-toggle="tooltip" data-original-title="Change avatar">
                 <i class="fa fa-pen icon-sm text-muted"></i>
                 <input type="file" name="profile_avatar" accept=".png, .jpg, .jpeg" />
                 <input type="hidden" name="profile_avatar_remove" />
               </label>
-
               <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow"
                 data-action="cancel" data-toggle="tooltip" title="Cancel avatar">
                 <i class="ki ki-bold-close icon-xs text-muted"></i>
@@ -67,10 +66,20 @@
         <div class="col-md-6">
           <div class="form-group">
             <label class="mx-0 text-bold">Image KTP</label>
-            <img id="avatar" src="{{ asset('images/backgrounds/no-content.svg') }}"
+            <img id="avatar" src="{{ asset('media/bg/no-content.svg') }}"
               style="object-fit: cover; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="250px"
-              width="100%%">
-            <input type="file" name="image" accept=".jpg, .jpeg, .png">
+              width="100%">
+            <input type="file" class="image" name="photo_ktp" accept=".jpg, .jpeg, .png">
+            <p class="text-muted ml-75 mt-50"><small>Allowed JPG, JPEG or PNG. Max
+                size of
+                2000kB</small></p>
+          </div>
+          <div class="form-group">
+            <label class="mx-0 text-bold">Image SIM</label>
+            <img id="avatar" src="{{ asset('media/bg/no-content.svg') }}"
+              style="object-fit: cover; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="250px"
+              width="100%">
+            <input type="file" class="image" name="photo_sim" accept=".jpg, .jpeg, .png">
             <p class="text-muted ml-75 mt-50"><small>Allowed JPG, JPEG or PNG. Max
                 size of
                 2000kB</small></p>
@@ -126,7 +135,11 @@
           if (response.status == "success") {
             toastr.success(response.message, 'Success !');
             setTimeout(function() {
-              window.location.href = "{{route('backend.drivers.index')}}"
+              if(response.redirect == "" || response.redirect == "reload"){
+								location.reload();
+							} else {
+								location.href = response.redirect;
+							}
             }, 1000);
           } else {
             $("[role='alert']").parent().removeAttr("style");
@@ -144,19 +157,20 @@
       });
     });
 
-    function readURL(input) {
-      if (input.files && input.files[0]) {
+    $(".phone").inputmask("mask", {
+      mask: "(9999) 9999-99999",
+      placeholder: ""
+    });
+
+    $(".image").change(function() {
+      let thumb = $(this).parent().find('img');
+      if (this.files && this.files[0]) {
         var reader = new FileReader();
         reader.onload = function(e) {
-          $('#avatar').attr('src', e.target.result);
+          thumb.attr('src', e.target.result);
         }
-
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(this.files[0]);
       }
-    }
-
-    $(":file").change(function() {
-      readURL(this);
     });
   });
 </script>

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Facades\Fileupload;
 use App\Http\Controllers\Controller;
 use App\Models\Driver;
 use Illuminate\Http\Request;
 use DataTables;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 
 class DriverController extends Controller
 {
@@ -24,15 +27,16 @@ class DriverController extends Controller
 
       if ($request->ajax()) {
         $data = Driver::query();
-        return Datatables::eloquent($data)
+        return Datatables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){
-              $actionBtn = '<a href="users/'.$row->id.'/edit" class="edit btn btn-success btn-sm">Edit</a>
-              <a href="#" data-toggle="modal" data-target="#modalReset" data-id="'. $row->id.'" class="btn btn-info btn-sm">Reset Password</a>
+              $actionBtn = '
+              <a href="drivers/'.$row->id.'" class="btn btn-info btn-sm">Show Detail</a>
+              <a href="drivers/'.$row->id.'/edit" class="edit btn btn-warning btn-sm">Edit</a>
               <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
               return $actionBtn;
-          })->editColumn('image', function(Driver $user){
-              return !empty($user->image) ? asset("storage/images/thumbnail/$user->image") : asset('media/users/blank.png');
+          })->editColumn('image', function(Driver $data){
+              return !empty($data->photo) ? asset("/images/thumbnail/$data->photo") : asset('media/users/blank.png');
           })->make(true);
       }
       return view('backend.drivers.index', compact('config', 'page_breadcrumbs'));
@@ -61,7 +65,48 @@ class DriverController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $validator = Validator::make($request->all(), [
+        'name'          => 'required',
+        'address'       => 'string|nullable',
+        'phone'         => 'string|nullable',
+        'ktp'           => 'string|nullable',
+        'status'        => 'required|in:active,inactive',
+        'description'   => 'string|nullable',
+        'profile_avatar'=> 'image|mimes:jpg,png,jpeg|max:2048',
+        'photo_ktp'     => 'image|mimes:jpg,png,jpeg|max:2048',
+        'photo_sim'     => 'image|mimes:jpg,png,jpeg|max:2048',
+        'profile_avatar_remove'  => 'between:0,1,NULL'
+      ]);
+
+      if($validator->passes()){
+        $dimensions = [array('1280', '720', 'thumbnail')];
+        $dimensions_profile = [array('300', '300', 'thumbnail')];
+        $image = isset($request->profile_avatar) && !empty($request->profile_avatar) ? Fileupload::uploadImagePublic('profile_avatar', $dimensions_profile, 'public') : NULL;
+        $photo_ktp = isset($request->photo_ktp) && !empty($request->photo_ktp) ? Fileupload::uploadImagePublic('photo_ktp', $dimensions, 'public') : NULL;
+        $photo_sim = isset($request->photo_sim) && !empty($request->photo_sim) ? Fileupload::uploadImagePublic('photo_sim', $dimensions, 'public') : NULL;
+        Driver::create([
+          'name'        => $request->input('name'),
+          'address'     => $request->input('address'),
+          'phone'       => $request->input('phone'),
+          'ktp'         => $request->input('ktp'),
+          'sim'         => $request->input('sim'),
+          'status'      => $request->input('status'),
+          'description' => $request->input('description'),
+          'photo'       => $image,
+          'photo_ktp'   => $photo_ktp,
+          'photo_sim'   => $photo_sim,
+        ]);
+
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been saved',
+          'redirect' => '/backend/drivers'
+        ]);
+
+      }else{
+        $response = response()->json(['error'=>$validator->errors()->all()]);
+      }
+      return $response;
     }
 
     /**
@@ -72,7 +117,14 @@ class DriverController extends Controller
      */
     public function show(Driver $driver)
     {
-        //
+      $config['page_title'] = "Detail Supir";
+      $page_breadcrumbs = [
+        ['page' => '/backend/drivers','title' => "List Supir"],
+        ['page' => '#','title' => "Detail Supir"],
+      ];
+
+      $data = $driver;
+      return view('backend.drivers.show',compact('config', 'page_breadcrumbs', 'data'));
     }
 
     /**
@@ -83,7 +135,15 @@ class DriverController extends Controller
      */
     public function edit(Driver $driver)
     {
-        //
+      $config['page_title'] = "Edit Supir";
+      $page_breadcrumbs = [
+        ['page' => '/backend/drivers','title' => "List Supir"],
+        ['page' => '#','title' => "Edit Supir"],
+      ];
+
+      $data = $driver;
+
+      return view('backend.drivers.edit',compact('config', 'page_breadcrumbs', 'data'));
     }
 
     /**
@@ -95,7 +155,47 @@ class DriverController extends Controller
      */
     public function update(Request $request, Driver $driver)
     {
-        //
+      $validator = Validator::make($request->all(), [
+        'name'          => 'required',
+        'address'       => 'string|nullable',
+        'phone'         => 'string|nullable',
+        'ktp'           => 'string|nullable',
+        'status'        => 'required|in:active,inactive',
+        'description'   => 'string|nullable',
+        'profile_avatar'=> 'image|mimes:jpg,png,jpeg|max:2048',
+        'photo_ktp'     => 'image|mimes:jpg,png,jpeg|max:2048',
+        'photo_sim'     => 'image|mimes:jpg,png,jpeg|max:2048',
+        'profile_avatar_remove'  => 'between:0,1,NULL'
+      ]);
+
+      if($validator->passes()){
+        $dimensions = [array('1280', '720', 'thumbnail')];
+        $dimensions_profile = [array('300', '300', 'thumbnail')];
+        $image = isset($request->profile_avatar) && !empty($request->profile_avatar) ? Fileupload::uploadImagePublic('profile_avatar', $dimensions_profile, 'public', $driver->photo) : $driver->photo;
+        $photo_ktp = isset($request->photo_ktp) && !empty($request->photo_ktp) ? Fileupload::uploadImagePublic('photo_ktp', $dimensions, 'public', $driver->photo_ktp) : $driver->photo_ktp;
+        $photo_sim = isset($request->photo_sim) && !empty($request->photo_sim) ? Fileupload::uploadImagePublic('photo_sim', $dimensions, 'public', $driver->photo_sim) : $driver->photo_sim;
+        $driver->update([
+          'name'        => $request->input('name'),
+          'address'     => $request->input('address'),
+          'phone'       => $request->input('phone'),
+          'ktp'         => $request->input('ktp'),
+          'sim'         => $request->input('sim'),
+          'status'      => $request->input('status'),
+          'description' => $request->input('description'),
+          'photo'       => $image,
+          'photo_ktp'   => $photo_ktp,
+          'photo_sim'   => $photo_sim,
+        ]);
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been updated',
+          'redirect' => '/backend/drivers'
+        ]);
+      }else{
+        $response = response()->json(['error'=>$validator->errors()->all()]);
+      }
+
+      return $response;
     }
 
     /**
@@ -106,6 +206,19 @@ class DriverController extends Controller
      */
     public function destroy(Driver $driver)
     {
-        //
+      $response = response()->json([
+          'status' => 'error',
+          'message' => 'Data cannot be deleted',
+      ]);
+      File::delete(["images/original/$driver->photo", "images/thumbnail/$driver->photo",
+      "images/original/$driver->photo_ktp", "images/thumbnail/$driver->photo_ktp",
+      "images/original/$driver->photo_sim", "images/thumbnail/$driver->photo_sim"]);
+      if($driver->delete()){
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been deleted',
+        ]);
+      }
+      return $response;
     }
 }

@@ -105,7 +105,11 @@
           if (response.status == "success") {
             toastr.success(response.message, 'Success !');
             setTimeout(function() {
-              window.location.href = response.redirect;
+              if(response.redirect == "" || response.redirect == "reload"){
+								location.reload();
+							} else {
+								location.href = response.redirect;
+							}
             }, 1000);
           } else {
             $("[role='alert']").parent().removeAttr("style");
@@ -145,7 +149,11 @@
           if (response.status == "success") {
             toastr.success(response.message, 'Success !');
             setTimeout(function() {
-              window.location.href = response.redirect;
+              if(response.redirect == "" || response.redirect == "reload"){
+								location.reload();
+							} else {
+								location.href = response.redirect;
+							}
             }, 1000);
           } else {
             $("[role='alert']").parent().removeAttr("style");
@@ -218,7 +226,11 @@
           if (response.status == "success") {
             toastr.success(response.message, 'Success !');
             setTimeout(function() {
-              window.location.href = response.redirect;
+              if(response.redirect == "" || response.redirect == "reload"){
+								location.reload();
+							} else {
+								location.href = response.redirect;
+							}
             }, 1000);
           } else {
             $("[role='alert']").parent().removeAttr("style");

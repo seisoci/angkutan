@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\RolesController as BackendRolesController;
 use App\Http\Controllers\Backend\MenusController as BackendMenusController;
 use App\Http\Controllers\Backend\CostumerController as BackendCostumerController;
 use App\Http\Controllers\Backend\DriverController as BackendDriverController;
+use App\Http\Controllers\Backend\TransportController as BackendTransportController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -37,7 +38,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
       Route::post('autocomplete ', [BackendMenusController::class,'autocomplete '])->name('autocomplete');
     });
     Route::resource('menus', BackendMenusController::class)->except(['create', 'show']);
-    Route::resource('costumers', BackendCostumerController::class)->except(['create', 'show']);
-    Route::resource('drivers', BackendDriverController::class)->except(['show']);
+    Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
+    Route::resource('drivers', BackendDriverController::class);
+    Route::resource('transports', BackendTransportController::class);
   });
 });

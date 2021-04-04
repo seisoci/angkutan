@@ -109,7 +109,6 @@ class UsersController extends Controller
       $response = response()->json(['error'=>$validator->errors()->all()]);
     }
     return $response;
-
   }
 
   public function edit($id)

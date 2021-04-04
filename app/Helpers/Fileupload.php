@@ -12,7 +12,7 @@ class Fileupload
     public $document_path;
 
     // [array('800', '450', 'thumbnail'), array('1280', '720', 'compress')]
-    public static function uploadImagePublic($file, $dimensions, $location = 'storage', $fileName = NULL)
+    public static function uploadImagePublic($file, $dimensions, $location = 'storage', $old_file = NULL, $fileName = NULL)
     {
       if (request()->hasFile($file)) {
         if($location == 'storage'){
@@ -25,6 +25,7 @@ class Fileupload
             File::makeDirectory("$image_path/original", 0777, true);
           }
           Image::make($file)->save($image_path . '/original/' . $fileName);
+          File::delete("images/original/$old_file");
 
           foreach ($dimensions as $row) {
             $canvas = Image::canvas($row[0], $row[1]);
@@ -36,6 +37,7 @@ class Fileupload
             }
             $canvas->insert($resizeImage, 'center');
             $canvas->save($image_path . '/' . $row[2] . '/' . $fileName);
+            File::delete("images/$row[2]/$old_file");
           }
         }else{
           $image_path = public_path('images');
@@ -47,6 +49,7 @@ class Fileupload
             File::makeDirectory("$image_path/original", 0777, true);
           }
           Image::make($file)->save($image_path . '/original/' . $fileName);
+          File::delete("images/original/$old_file");
 
           foreach ($dimensions as $row) {
             $canvas = Image::canvas($row[0], $row[1]);
@@ -58,6 +61,7 @@ class Fileupload
             }
             $canvas->insert($resizeImage, 'center');
             $canvas->save($image_path . '/' . $row[2] . '/' . $fileName);
+            File::delete("images/$row[2]/$old_file");
           }
         }
         return $fileName;

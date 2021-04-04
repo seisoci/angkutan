@@ -12,80 +12,8 @@
         <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
     </div>
     <div class="card-toolbar">
-      <!--begin::Dropdown-->
-      <div class="dropdown dropdown-inline mr-2">
-        <button type="button" class="btn btn-light-primary font-weight-bolder dropdown-toggle" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          <span class="svg-icon svg-icon-md">
-            <!--begin::Svg Icon | path:assets/media/svg/icons/Design/PenAndRuller.svg-->
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-              height="24px" viewBox="0 0 24 24" version="1.1">
-              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                <rect x="0" y="0" width="24" height="24"></rect>
-                <path
-                  d="M3,16 L5,16 C5.55228475,16 6,15.5522847 6,15 C6,14.4477153 5.55228475,14 5,14 L3,14 L3,12 L5,12 C5.55228475,12 6,11.5522847 6,11 C6,10.4477153 5.55228475,10 5,10 L3,10 L3,8 L5,8 C5.55228475,8 6,7.55228475 6,7 C6,6.44771525 5.55228475,6 5,6 L3,6 L3,4 C3,3.44771525 3.44771525,3 4,3 L10,3 C10.5522847,3 11,3.44771525 11,4 L11,19 C11,19.5522847 10.5522847,20 10,20 L4,20 C3.44771525,20 3,19.5522847 3,19 L3,16 Z"
-                  fill="#000000" opacity="0.3"></path>
-                <path
-                  d="M16,3 L19,3 C20.1045695,3 21,3.8954305 21,5 L21,15.2485298 C21,15.7329761 20.8241635,16.200956 20.5051534,16.565539 L17.8762883,19.5699562 C17.6944473,19.7777745 17.378566,19.7988332 17.1707477,19.6169922 C17.1540423,19.602375 17.1383289,19.5866616 17.1237117,19.5699562 L14.4948466,16.565539 C14.1758365,16.200956 14,15.7329761 14,15.2485298 L14,5 C14,3.8954305 14.8954305,3 16,3 Z"
-                  fill="#000000"></path>
-              </g>
-            </svg>
-            <!--end::Svg Icon-->
-          </span>Export</button>
-        <!--begin::Dropdown Menu-->
-        <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-          <!--begin::Navigation-->
-          <ul class="navi flex-column navi-hover py-2">
-            <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">Choose an option:
-            </li>
-            <li class="navi-item">
-              <a href="#" class="navi-link" id="export_print">
-                <span class="navi-icon">
-                  <i class="la la-print"></i>
-                </span>
-                <span class="navi-text">Print</span>
-              </a>
-            </li>
-            <li class="navi-item">
-              <a href="#" class="navi-link" id="export_copy">
-                <span class="navi-icon">
-                  <i class="la la-copy"></i>
-                </span>
-                <span class="navi-text">Copy</span>
-              </a>
-            </li>
-            <li class="navi-item">
-              <a href="#" class="navi-link" id="export_excel">
-                <span class="navi-icon">
-                  <i class="la la-file-excel-o"></i>
-                </span>
-                <span class="navi-text">Excel</span>
-              </a>
-            </li>
-            <li class="navi-item">
-              <a href="#" class="navi-link" id="export_csv">
-                <span class="navi-icon">
-                  <i class="la la-file-text-o"></i>
-                </span>
-                <span class="navi-text">CSV</span>
-              </a>
-            </li>
-            <li class="navi-item">
-              <a href="#" class="navi-link" id="export_pdf">
-                <span class="navi-icon">
-                  <i class="la la-file-pdf-o"></i>
-                </span>
-                <span class="navi-text">PDF</span>
-              </a>
-            </li>
-          </ul>
-          <!--end::Navigation-->
-        </div>
-        <!--end::Dropdown Menu-->
-      </div>
-      <!--end::Dropdown-->
       <!--begin::Button-->
-      <a href="{{ route('backend.users.create') }}" class="btn btn-primary font-weight-bolder">
+      <a href="{{ route('backend.transports.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
           <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
@@ -110,37 +38,17 @@
       <thead>
         <tr>
           <th>Image</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Active</th>
+          <th>No. Pol</th>
+          <th>Merk</th>
+          <th>Tipe</th>
+          <th>Tahun</th>
+          <th>Tanggal Berlaku STNK</th>
+          <th>Dump</th>
+          <th>Created At</th>
           <th>Actions</th>
         </tr>
       </thead>
     </table>
-  </div>
-</div>
-<div class="modal fade" id="modalReset" tabindex="-1" role="dialog" aria-labelledby="modalResetLabel"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalResetLabel">Reset Password</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <i aria-hidden="true" class="ki ki-close"></i>
-        </button>
-      </div>
-      <form id="formReset" method="POST" action="{{ route('backend.users.resetpassword') }}">
-        <div class="modal-body">
-          @csrf
-          <input type="hidden" name="id"></a>
-          Are you sure you want to reset password default? <br> (password same with email)
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary font-weight-bold">Submit</button>
-        </div>
-      </form>
-    </div>
   </div>
 </div>
 <div class="modal fade text-left" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLabel"
@@ -166,13 +74,95 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="modalShow" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detail Kendaraan</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <i aria-hidden="true" class="ki ki-close"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" style="display:none;">
+          <div class="alert alert-custom alert-light-danger" role="alert">
+            <div class="alert-icon"><i class="flaticon-danger text-danger"></i></div>
+            <div class="alert-text">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <img name="photo" width="100%" height="20%">
+        </div>
+        <div class="form-group row">
+          <label class="col-md-3">No Polisi</label>
+          <input type="text" name="num_pol" class="form-control form-control-solid col-md-9" disabled />
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Merk</label>
+              <input type="text" name="merk" class="form-control form-control-solid" disabled />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tipe</label>
+              <input type="text" name="type" class="form-control form-control-solid " disabled />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Jenis Mobil</label>
+              <input type="text" name="type_car" class="form-control form-control-solid" disabled />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Dump</label>
+              <input type="text" name="dump" class="form-control form-control-solid " disabled />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Max Muatan</label>
+              <input type="text" name="max_weight" class="form-control form-control-solid " disabled />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Tahun</label>
+              <input type="text" name="year" class="form-control form-control-solid " disabled />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Tgl Berlaku STNK</label>
+              <input type="text" name="expired_stnk" class="form-control form-control-solid " disabled />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Keterangan</label>
+          <textarea name="description" rows="5" class="form-control form-control-solid" disabled></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 {{-- Styles Section --}}
 @section('styles')
 <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
 @endsection
-
 
 {{-- Scripts Section --}}
 @section('scripts')
@@ -188,16 +178,19 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[1, 'desc']],
+        order: [[6, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.users.index') }}",
-        buttons: ["print", "copyHtml5", "excelHtml5", "csvHtml5", "pdfHtml5"],
+        ajax: "{{ route('backend.transports.index') }}",
         columns: [
-            {data: 'image', name: 'image'},
-            {data: 'name', name: 'name'},
-            {data: 'email', name: 'email'},
-            {data: 'active', name: 'active'},
+            {data: 'image', name: 'image', searchable: false},
+            {data: 'num_pol', name: 'num_pol'},
+            {data: 'merk', name: 'merk'},
+            {data: 'type', name: 'type'},
+            {data: 'year', name: 'year'},
+            {data: 'expired_stnk', name: 'expired_stnk'},
+            {data: 'dump', name: 'dump'},
+            {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
         columnDefs: [
@@ -207,63 +200,71 @@
           targets: 0,
           render: function(data, type, full, meta) {
             let output = `
-              <div class="symbol symbol-80">
-                <img src="` + data + `" alt="photo">
-              </div>`
+              <img width="120px" height="75px" src="` + data + `" alt="photo">
+              `
             return output;
           }
         },
         {
           className: 'dt-center',
-          targets: 3,
+          targets: 6,
           width: '75px',
           render: function(data, type, full, meta) {
             var status = {
-              0: {'title': 'Inactive', 'class': ' label-light-danger'},
-              1: {'title': 'Active', 'class': ' label-light-success'},
+              'ya': {'title': 'Ya', 'class': ' label-light-success'},
+              'tidak': {'title': 'Tidak', 'class': ' label-light-danger'},
             };
             if (typeof status[data] === 'undefined') {
               return data;
             }
             return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
               '</span>';
-            },
           },
+        },
         ],
-    });
-
-    $("#export_print").on("click", (function(e) {
-      e.preventDefault(), t.button(0).trigger()
-    })),
-    $("#export_copy").on("click", (function(e) {
-      e.preventDefault(), t.button(1).trigger()
-    })),
-    $("#export_excel").on("click", (function(e) {
-      e.preventDefault(), t.button(2).trigger()
-    })),
-    $("#export_csv").on("click", (function(e) {
-      e.preventDefault(), t.button(3).trigger()
-    })),
-    $("#export_pdf").on("click", (function(e) {
-      e.preventDefault(), t.button(4).trigger()
-    }));
-
-    $('#modalReset').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('input[name="id"]').val(id);
-    });
-
-    $('#modalReset').on('hidden.bs.modal', function (event) {
-      $(this).find('.modal-body').find('input[name="id"]').val('');
     });
 
     $('#modalDelete').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.users.index") }}/'+ id);
+      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.transports.index") }}/'+ id);
     });
-
     $('#modalDelete').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
+    });
+    $('#modalShow').on('show.bs.modal', function (event) {
+      var num_pol = $(event.relatedTarget).data('num_pol');
+      var merk = $(event.relatedTarget).data('merk');
+      var type = $(event.relatedTarget).data('type');
+      var type_car = $(event.relatedTarget).data('type_car');
+      var dump = $(event.relatedTarget).data('dump');
+      var year = $(event.relatedTarget).data('year');
+      var max_weight = $(event.relatedTarget).data('max_weight');
+      var expired_stnk = $(event.relatedTarget).data('expired_stnk');
+      var description = $(event.relatedTarget).data('description');
+      var photo = $(event.relatedTarget).data('photo');
+      $(this).find('.modal-body').find('input[name="num_pol"]').val(num_pol);
+      $(this).find('.modal-body').find('input[name="merk"]').val(merk);
+      $(this).find('.modal-body').find('input[name="type"]').val(type);
+      $(this).find('.modal-body').find('input[name="type_car"]').val(type_car);
+      $(this).find('.modal-body').find('input[name="dump"]').val(capitalizeFirstLetter(dump));
+      $(this).find('.modal-body').find('input[name="year"]').val(year);
+      $(this).find('.modal-body').find('input[name="max_weight"]').val(max_weight + ' Ton');
+      $(this).find('.modal-body').find('input[name="expired_stnk"]').val(expired_stnk);
+      $(this).find('.modal-body').find('textarea[name="description"]').val(description);
+      let photos = photo ? '/images/thumbnail/' + photo : '/media/bg/no-content.svg';
+      $(this).find('.modal-body').find('img[name="photo"]').attr('src', '' + photos);
+    });
+    $('#modalShow').on('hidden.bs.modal', function (event) {
+      $(this).find('.modal-body').find('input[name="num_pol"]').val('');
+      $(this).find('.modal-body').find('input[name="merk"]').val('');
+      $(this).find('.modal-body').find('input[name="type"]').val('');
+      $(this).find('.modal-body').find('input[name="type_car"]').val('');
+      $(this).find('.modal-body').find('input[name="dump"]').val('');
+      $(this).find('.modal-body').find('input[name="year"]').val('');
+      $(this).find('.modal-body').find('input[name="max_weight"]').val('');
+      $(this).find('.modal-body').find('input[name="expired_stnk"]').val('');
+      $(this).find('.modal-body').find('textarea[name="description"]').val('');
+      $(this).find('.modal-body').find('img[name="photo"]').attr('src', '');
     });
 
     $("#formReset").submit(function(e){
@@ -338,6 +339,10 @@
           }
       });
     });
+
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
   });
 </script>
 @endsection
