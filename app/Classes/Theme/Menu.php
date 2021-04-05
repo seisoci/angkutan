@@ -69,10 +69,6 @@ class Menu
                 $item_class .= ' menu-item-active';
             }
 
-            // if(request()->segment(2) == str_replace("/backend/", '', $item['page'])){
-            //     $item_class .= ' menu-item-active';
-            // }
-
             echo '<li class="menu-item ' . $item_class . '" aria-haspopup="true" ' . $item_attr . '>';
             if (isset($item['parent'])) {
                 echo '<span class="menu-link">';

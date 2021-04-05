@@ -31,27 +31,27 @@ return [
           'submenu' => [
               [
                   'title' => 'Master Costumer',
-                  'page' => '/backend/costumers'
+                  'page' => 'backend/costumers'
               ],
               [
                   'title' => 'Master Supir',
-                  'page' => '/backend/drivers'
+                  'page' => 'backend/drivers'
               ],
               [
                   'title' => 'Master Kendaraan',
-                  'page' => '/backend/transports'
+                  'page' => 'backend/transports'
               ],
               [
                   'title' => 'Master Uang Jalan',
-                  'page' => '/backend/roadmonies'
+                  'page' => 'backend/roadmonies'
               ],
               [
                   'title' => 'Master Biaya',
-                  'page' => '/backend/expenses'
+                  'page' => 'backend/expenses'
               ],
               [
                   'title' => 'Master LDO',
-                  'page' => '/backend/anotherexpedition'
+                  'page' => 'backend/anotherexpedition'
               ],
           ]
         ],
