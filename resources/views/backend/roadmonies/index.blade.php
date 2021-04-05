@@ -34,7 +34,7 @@
 
   <div class="card-body">
     <!--begin: Datatable-->
-    <table class="table table-bordered table-hover table-checkable" id="Datatable">
+    <table class="table table-bordered table-hover" id="Datatable" width="100%">
       <thead>
         <tr>
           <th>Nama Costumer</th>
@@ -109,15 +109,28 @@
             {data: 'route_from', name: 'route_from'},
             {data: 'route_to', name: 'route_to'},
             {data: 'cargo', name: 'cargo'},
-            {data: 'road_engkel', name: 'road_engkel', render: $.fn.dataTable.render.number( ',', '.', 2 )},
-            {data: 'road_tronton', name: 'road_tronton', render: $.fn.dataTable.render.number( ',', '.', 2 )},
-            {data: 'invoice', name: 'invoice', render: $.fn.dataTable.render.number( ',', '.', 2 )},
-            {data: 'salary_engkel', name: 'salary_engkel', render: $.fn.dataTable.render.number( ',', '.', 2 )},
-            {data: 'salary_tronton', name: 'salary_tronton', render: $.fn.dataTable.render.number( ',', '.', 2 )},
-            {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( ',', '.', 2 )},
-            {data: 'created_at', name: 'created_at', width: 200},
+            {data: 'road_engkel', name: 'road_engkel', render: $.fn.dataTable.render.number( ',', '.', 0 )},
+            {data: 'road_tronton', name: 'road_tronton', render: $.fn.dataTable.render.number( ',', '.', 0 )},
+            {data: 'invoice', name: 'invoice', render: $.fn.dataTable.render.number( ',', '.', 0 )},
+            {data: 'salary_engkel', name: 'salary_engkel', render: $.fn.dataTable.render.number( ',', '.', 0 )},
+            {data: 'salary_tronton', name: 'salary_tronton', render: $.fn.dataTable.render.number( ',', '.', 0 )},
+            {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( ',', '.', 0 )},
+            {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
+        columnDefs: [
+          {
+          className: 'dt-right',
+          targets: [4,5,6,7,8,9],
+          render: function(data, type, full, meta) {
+          let output = `
+          <div class="symbol symbol-80">
+            <img src="` + data + `" alt="photo">
+          </div>`
+          return output;
+          }
+          },
+        ]
     });
 
     $('#modalDelete').on('show.bs.modal', function (event) {

@@ -106,7 +106,7 @@
 
   <div class="card-body">
     <!--begin: Datatable-->
-    <table class="table table-bordered table-hover table-checkable" id="Datatable">
+    <table class="table table-bordered table-hover" id="Datatable">
       <thead>
         <tr>
           <th>Image</th>
