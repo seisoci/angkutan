@@ -5,18 +5,18 @@ return [
     'items' => [
         // Dashboard
         [
-            'title' => 'Users',
-            'root' => true,
-            'icon' => 'media/svg/icons/General/User.svg', // or can be 'flaticon-home' or any flaticon-*
-            'page' => '/backend/users',
-            'new-tab' => false,
+          'title' => 'Users',
+          'root' => true,
+          'icon' => 'media/svg/icons/General/User.svg', // or can be 'flaticon-home' or any flaticon-*
+          'page' => 'backend/users',
+          'new-tab' => false,
         ],
         [
-            'title' => 'Roles',
-            'root' => true,
-            'icon' => 'media/svg/icons/General/Clipboard.svg', // or can be 'flaticon-home' or any flaticon-*
-            'page' => '/backend/roles',
-            'new-tab' => false,
+          'title' => 'Roles',
+          'root' => true,
+          'icon' => 'media/svg/icons/General/Clipboard.svg', // or can be 'flaticon-home' or any flaticon-*
+          'page' => 'backend/roles',
+          'new-tab' => false,
         ],
         [
           'section' => 'Master Data',
@@ -29,30 +29,30 @@ return [
           'root' => true,
           'arrow' => true,
           'submenu' => [
-              [
-                  'title' => 'Master Costumer',
-                  'page' => 'backend/costumers'
-              ],
-              [
-                  'title' => 'Master Supir',
-                  'page' => 'backend/drivers'
-              ],
-              [
-                  'title' => 'Master Kendaraan',
-                  'page' => 'backend/transports'
-              ],
-              [
-                  'title' => 'Master Uang Jalan',
-                  'page' => 'backend/roadmonies'
-              ],
-              [
-                  'title' => 'Master Biaya',
-                  'page' => 'backend/expenses'
-              ],
-              [
-                  'title' => 'Master LDO',
-                  'page' => 'backend/anotherexpedition'
-              ],
+            [
+                'title' => 'Master Costumer',
+                'page' => 'backend/costumers'
+            ],
+            [
+                'title' => 'Master Supir',
+                'page' => 'backend/drivers'
+            ],
+            [
+                'title' => 'Master Kendaraan',
+                'page' => 'backend/transports'
+            ],
+            [
+                'title' => 'Master Uang Jalan',
+                'page' => 'backend/roadmonies'
+            ],
+            [
+                'title' => 'Master Biaya',
+                'page' => 'backend/expenses'
+            ],
+            [
+                'title' => 'Master LDO',
+                'page' => 'backend/anotherexpedition'
+            ],
           ]
         ],
         [

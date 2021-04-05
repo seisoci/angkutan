@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
 use Spatie\Permission\Models\Role;
+use App\Rules\MatchOldPassword;
 use Validator;
+use Auth;
 
 class UsersController extends Controller
 {
@@ -41,7 +43,7 @@ class UsersController extends Controller
             <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
             return $actionBtn;
         })->editColumn('image', function(User $user){
-            return !empty($user->image) ? asset("storage/images/thumbnail/$user->image") : asset('media/users/blank.png');
+            return !empty($user->image) ? asset("/images/thumbnail/$user->image") : asset('media/users/blank.png');
         })->make(true);
     }
     return view('backend.users.index', compact('config', 'page_breadcrumbs'));
@@ -220,12 +222,12 @@ class UsersController extends Controller
     return $response;
   }
 
-  public function changepassword(Request $request, $id){
+  public function changepassword(Request $request){
+    $id = Auth::id();
     $validator = Validator::make($request->all(), [
       'old_password' => ['required', new MatchOldPassword($id)],
       'password'     => 'required|between:6,255|confirmed',
     ]);
-
 
     if($validator->passes()){
       $data = User::find($id);

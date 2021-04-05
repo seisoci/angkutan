@@ -131,7 +131,7 @@
       <span class="text-muted font-weight-bold font-size-base d-md-inline mr-1">Hi,</span>
       <span class="text-dark-50 font-weight-bolder font-size-base d-md-inline mr-3">{{ auth()->user()->name }}</span>
       <span class="symbol symbol-35 symbol-light-success">
-        <span class="symbol-label font-size-h5 font-weight-bold">S</span>
+        <img src="{{ auth()->user()->image ? asset("/images/thumbnail/". auth()->user()->image) : asset('media/users/blank.png') }}">
       </span>
     </div>
   </div>
@@ -143,7 +143,7 @@
         <span class="text-muted font-weight-bold font-size-base d-md-inline mr-1">Hi,</span>
         <span class="text-dark-50 font-weight-bolder font-size-base d-md-inline mr-3">{{ auth()->user()->name }}</span>
         <span class="symbol symbol-35 symbol-light-success">
-          <span class="symbol-label font-size-h5 font-weight-bold">S</span>
+          <img src="{{ auth()->user()->image ? asset("/images/thumbnail/". auth()->user()->image) : asset('media/users/blank.png') }}">
         </span>
       </div>
     </div>

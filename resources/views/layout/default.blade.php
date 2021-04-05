@@ -58,7 +58,6 @@
 
   {{-- Includable JS --}}
   @yield('scripts')
-
+  @include('layout.base._changepassword')
 </body>
-
 </html>

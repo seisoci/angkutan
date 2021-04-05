@@ -30,10 +30,8 @@ Route::get('/quick-search', [PagesController::class, 'quicksearch'])->name('quic
 
 Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(function () {
   Route::group(['middleware' => ['role:super-admin|admin']], function () {
-    Route::prefix('users')->name('users.')->group(function() {
-      Route::post('resetpassword', [BackendUsersController::class,'resetpassword'])->name('resetpassword');
-      Route::post('changepassword ', [BackendUsersController::class,'changepassword '])->name('changepassword');
-    });
+    Route::post('resetpassword', [BackendUsersController::class,'resetpassword'])->name('users.resetpassword');
+    Route::post('changepassword', [BackendUsersController::class, 'changepassword'])->name('users.changepassword');
     Route::resource('users', BackendUsersController::class)->except('show');
     Route::resource('roles', BackendRolesController::class)->except(['create', 'show', 'destroy']);
     Route::prefix('menus')->name('menus.')->group(function() {

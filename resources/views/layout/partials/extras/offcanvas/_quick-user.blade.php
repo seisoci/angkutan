@@ -18,7 +18,7 @@ $direction = config('layout.extras.user.offcanvas.direction', 'right');
     {{-- Header --}}
     <div class="d-flex align-items-center mt-5">
       <div class="symbol symbol-100 mr-5">
-        <div class="symbol-label" style="background-image:url('{{ asset('media/users/300_21.jpg') }}')"></div>
+        <div class="symbol-label" style="background-image:url('{{ auth()->user()->image ? asset("/images/thumbnail/". auth()->user()->image) : asset('media/users/blank.png') }}')"></div>
         <i class="symbol-badge bg-success"></i>
       </div>
       <div class="d-flex flex-column">
@@ -43,7 +43,7 @@ $direction = config('layout.extras.user.offcanvas.direction', 'right');
 
     {{-- Button --}}
     <div class="navi-footer px-8 py-5 d-flex justify-content-between">
-      <a href="#" class="btn btn-light-info font-weight-bold">Change Password</a>
+      <a href="#" data-toggle="modal" data-target="#modalChangePassword" class="btn btn-light-info font-weight-bold">Change Password</a>
       <a href="/logout" class="btn btn-light-primary font-weight-bold">Sign Out</a>
     </div>
   </div>

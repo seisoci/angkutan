@@ -26,7 +26,7 @@
           <div class="form-group">
             <div class="image-input" id="kt_image_2" style="asset('/media/users/blank.png')">
               <div class="image-input-wrapper"
-                style="background-image: url({{ $data['user']->image != NULL ? asset("storage/images/original/".$data['user']->image) : asset('media/users/blank.png') }})">
+                style="background-image: url({{ $data['user']->image != NULL ? asset("images/original/".$data['user']->image) : asset('media/users/blank.png') }})">
               </div>
               <label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow"
                 data-action="change" data-toggle="tooltip" title="" data-original-title="Change avatar">
