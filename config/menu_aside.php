@@ -26,10 +26,10 @@ return [
             'new-tab' => false,
         ],
         [
-          'section' => 'Operational',
+          'section' => 'Master Data',
         ],
         [
-          'title' => 'Themes',
+          'title' => 'Operational',
           'desc' => '',
           'icon' => 'media/svg/icons/Design/Bucket.svg',
           'bullet' => 'dot',
@@ -37,12 +37,20 @@ return [
           'arrow' => true,
           'submenu' => [
               [
-                  'title' => 'Light Aside',
-                  'page' => '/backend/menu'
+                  'title' => 'Master Costumer',
+                  'page' => '/backend/costumers'
               ],
               [
-                  'title' => 'Dark Header',
-                  'page' => '/backend/menu'
+                  'title' => 'Master Supir',
+                  'page' => '/backend/drivers'
+              ],
+              [
+                  'title' => 'Master Kendaraan',
+                  'page' => '/backend/transports'
+              ],
+              [
+                  'title' => 'Master Uang Jalan',
+                  'page' => '/backend/roadmonies'
               ]
           ]
         ],

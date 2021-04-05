@@ -37,14 +37,17 @@
     <table class="table table-bordered table-hover table-checkable" id="Datatable">
       <thead>
         <tr>
-          <th>Rute Awal</th>
-          <th>No. Pol</th>
-          <th>Merk</th>
-          <th>Tipe</th>
-          <th>Tahun</th>
-          <th>Tanggal Berlaku STNK</th>
-          <th>Dump</th>
-          <th>Created At</th>
+          <th>Nama Costumer</th>
+          <th>Rute Dari</th>
+          <th>Rute Ke</th>
+          <th>Muatan</th>
+          <th>UJ Engkel</th>
+          <th>UJ Tronton</th>
+          <th>Invoice/Tagihan</th>
+          <th>Gaji Engkel</th>
+          <th>Gaji Tronton</th>
+          <th>Gaji Rumusan</th>
+          <th>Created at</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -74,94 +77,12 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="modalShow" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Detail Kendaraan</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <i aria-hidden="true" class="ki ki-close"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group" style="display:none;">
-          <div class="alert alert-custom alert-light-danger" role="alert">
-            <div class="alert-icon"><i class="flaticon-danger text-danger"></i></div>
-            <div class="alert-text">
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <img name="photo" width="100%" height="20%">
-        </div>
-        <div class="form-group row">
-          <label class="col-md-3">No Polisi</label>
-          <input type="text" name="num_pol" class="form-control form-control-solid col-md-9" disabled />
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Merk</label>
-              <input type="text" name="merk" class="form-control form-control-solid" disabled />
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Tipe</label>
-              <input type="text" name="type" class="form-control form-control-solid " disabled />
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Jenis Mobil</label>
-              <input type="text" name="type_car" class="form-control form-control-solid" disabled />
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Dump</label>
-              <input type="text" name="dump" class="form-control form-control-solid " disabled />
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Max Muatan</label>
-              <input type="text" name="max_weight" class="form-control form-control-solid " disabled />
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Tahun</label>
-              <input type="text" name="year" class="form-control form-control-solid " disabled />
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Tgl Berlaku STNK</label>
-              <input type="text" name="expired_stnk" class="form-control form-control-solid " disabled />
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Keterangan</label>
-          <textarea name="description" rows="5" class="form-control form-control-solid" disabled></textarea>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 @endsection
 
 {{-- Styles Section --}}
 @section('styles')
 <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
+
 @endsection
 
 {{-- Scripts Section --}}
@@ -176,139 +97,35 @@
     var dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
+        autoWidth: false,
         processing: true,
         serverSide: true,
-        order: [[6, 'desc']],
+        order: [[10, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.roadmonies.index') }}",
         columns: [
-            {data: 'image', name: 'image', searchable: false},
-            {data: 'num_pol', name: 'num_pol'},
-            {data: 'merk', name: 'merk'},
-            {data: 'type', name: 'type'},
-            {data: 'year', name: 'year'},
-            {data: 'expired_stnk', name: 'expired_stnk'},
-            {data: 'dump', name: 'dump'},
-            {data: 'created_at', name: 'created_at'},
+            {data: 'costumers.name', name: 'costumers.name'},
+            {data: 'route_from', name: 'route_from'},
+            {data: 'route_to', name: 'route_to'},
+            {data: 'cargo', name: 'cargo'},
+            {data: 'road_engkel', name: 'road_engkel', render: $.fn.dataTable.render.number( ',', '.', 2 )},
+            {data: 'road_tronton', name: 'road_tronton', render: $.fn.dataTable.render.number( ',', '.', 2 )},
+            {data: 'invoice', name: 'invoice', render: $.fn.dataTable.render.number( ',', '.', 2 )},
+            {data: 'salary_engkel', name: 'salary_engkel', render: $.fn.dataTable.render.number( ',', '.', 2 )},
+            {data: 'salary_tronton', name: 'salary_tronton', render: $.fn.dataTable.render.number( ',', '.', 2 )},
+            {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( ',', '.', 2 )},
+            {data: 'created_at', name: 'created_at', width: 200},
             {data: 'action', name: 'action', orderable: false, searchable: false},
-        ],
-        columnDefs: [
-        {
-          className: 'dt-center',
-          orderable: false,
-          targets: 0,
-          render: function(data, type, full, meta) {
-            let output = `
-              <img width="120px" height="75px" src="` + data + `" alt="photo">
-              `
-            return output;
-          }
-        },
-        {
-          className: 'dt-center',
-          targets: 6,
-          width: '75px',
-          render: function(data, type, full, meta) {
-            var status = {
-              'ya': {'title': 'Ya', 'class': ' label-light-success'},
-              'tidak': {'title': 'Tidak', 'class': ' label-light-danger'},
-            };
-            if (typeof status[data] === 'undefined') {
-              return data;
-            }
-            return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
-              '</span>';
-          },
-        },
         ],
     });
 
     $('#modalDelete').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.transports.index") }}/'+ id);
+      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.roadmonies.index") }}/'+ id);
     });
     $('#modalDelete').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
-    });
-    $('#modalShow').on('show.bs.modal', function (event) {
-      var num_pol = $(event.relatedTarget).data('num_pol');
-      var merk = $(event.relatedTarget).data('merk');
-      var type = $(event.relatedTarget).data('type');
-      var type_car = $(event.relatedTarget).data('type_car');
-      var dump = $(event.relatedTarget).data('dump');
-      var year = $(event.relatedTarget).data('year');
-      var max_weight = $(event.relatedTarget).data('max_weight');
-      var expired_stnk = $(event.relatedTarget).data('expired_stnk');
-      var description = $(event.relatedTarget).data('description');
-      var photo = $(event.relatedTarget).data('photo');
-      $(this).find('.modal-body').find('input[name="num_pol"]').val(num_pol);
-      $(this).find('.modal-body').find('input[name="merk"]').val(merk);
-      $(this).find('.modal-body').find('input[name="type"]').val(type);
-      $(this).find('.modal-body').find('input[name="type_car"]').val(type_car);
-      $(this).find('.modal-body').find('input[name="dump"]').val(capitalizeFirstLetter(dump));
-      $(this).find('.modal-body').find('input[name="year"]').val(year);
-      $(this).find('.modal-body').find('input[name="max_weight"]').val(max_weight + ' Ton');
-      $(this).find('.modal-body').find('input[name="expired_stnk"]').val(expired_stnk);
-      $(this).find('.modal-body').find('textarea[name="description"]').val(description);
-      let photos = photo ? '/images/thumbnail/' + photo : '/media/bg/no-content.svg';
-      $(this).find('.modal-body').find('img[name="photo"]').attr('src', '' + photos);
-    });
-    $('#modalShow').on('hidden.bs.modal', function (event) {
-      $(this).find('.modal-body').find('input[name="num_pol"]').val('');
-      $(this).find('.modal-body').find('input[name="merk"]').val('');
-      $(this).find('.modal-body').find('input[name="type"]').val('');
-      $(this).find('.modal-body').find('input[name="type_car"]').val('');
-      $(this).find('.modal-body').find('input[name="dump"]').val('');
-      $(this).find('.modal-body').find('input[name="year"]').val('');
-      $(this).find('.modal-body').find('input[name="max_weight"]').val('');
-      $(this).find('.modal-body').find('input[name="expired_stnk"]').val('');
-      $(this).find('.modal-body').find('textarea[name="description"]').val('');
-      $(this).find('.modal-body').find('img[name="photo"]').attr('src', '');
-    });
-
-    $("#formReset").submit(function(e){
-      e.preventDefault();
-      var form = $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
-      $.ajax({
-        beforeSend:function() {
-          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
-        },
-        cache: false,
-        processData: false,
-        contentType: false,
-        type: "POST",
-        url : url,
-        data : data,
-        success: function(response) {
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          if (response.status == "success") {
-            toastr.success(response.message, 'Success !');
-            setTimeout(function() {
-              if(response.redirect == "" || response.redirect == "reload"){
-								location.reload();
-							} else {
-								location.href = response.redirect;
-							}
-            }, 1000);
-          } else {
-            $("[role='alert']").parent().removeAttr("style");
-            $(".alert-text").html('');
-            $.each(response.error, function(key, value) {
-              $(".alert-text").append('<span style="display: block">'+value+'</span>');
-            });
-            toastr.error("Please complete your form", 'Failed !');
-          }
-        },
-        error: function(response) {
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          toastr.error(response.responseJSON.message, 'Failed !');
-        }
-      });
     });
 
     $("#formDelete").click(function(e){
@@ -326,10 +143,15 @@
           dataType: 'json',
           headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
           success: function (response) {
-            toastr.success(response.message,'Success !');
-            form.text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
-            $('#modalDelete').modal('hide');
-            dataTable.draw();
+            if(response.status == "success"){
+              toastr.success(response.message,'Success !');
+              form.text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
+              $('#modalDelete').modal('hide');
+              dataTable.draw();
+            }else{
+              toastr.error(response.message ,'Failed !');
+              form.text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
+            }
           },
           error: function (response) {
             toastr.error(response.responseJSON.message ,'Failed !');

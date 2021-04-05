@@ -42,7 +42,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
     Route::resource('drivers', BackendDriverController::class);
     Route::resource('transports', BackendTransportController::class)->except('show');
-    Route::get('roadmonies/select2', [BackendRoadMoneyController::class, 'select2'])->name('backend.roadmonies.select2');
+    Route::get('roadmonies/select2', [BackendRoadMoneyController::class, 'select2'])->name('roadmonies.select2');
     Route::resource('roadmonies', BackendRoadMoneyController::class)->except('show');
   });
 });

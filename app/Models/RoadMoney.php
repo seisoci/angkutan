@@ -27,4 +27,8 @@ class RoadMoney extends Model
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('Y-m-d H:i:s');
   }
+
+  public function costumers(){
+    return $this->belongsTo(Costumer::class, 'costumer_id');
+  }
 }

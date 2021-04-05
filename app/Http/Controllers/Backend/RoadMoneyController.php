@@ -25,7 +25,7 @@ class RoadMoneyController extends Controller
       ];
 
       if ($request->ajax()) {
-        $data = RoadMoney::query();
+        $data = RoadMoney::with('costumers')->select('road_money.*');
         return Datatables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){
@@ -106,7 +106,7 @@ class RoadMoneyController extends Controller
      * @param  \App\Models\RoadMoney  $roadMoney
      * @return \Illuminate\Http\Response
      */
-    public function edit(RoadMoney $roadMoney)
+    public function edit($id)
     {
       $config['page_title'] = "Edit Uang Jalan";
       $page_breadcrumbs = [
@@ -114,8 +114,9 @@ class RoadMoneyController extends Controller
         ['page' => '#','title' => "Edit Uang Jalan"],
       ];
 
-      $data = $roadMoney;
-
+      // $data = RoadMoney::find($id)->get();
+      $data = RoadMoney::with('costumers')->findOrFail($id);
+      // dd($data);
       return view('backend.roadmonies.edit',compact('config', 'page_breadcrumbs', 'data'));
     }
 
@@ -126,7 +127,7 @@ class RoadMoneyController extends Controller
      * @param  \App\Models\RoadMoney  $roadMoney
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, RoadMoney $roadMoney)
+    public function update(Request $request, $id)
     {
       $validator = Validator::make($request->all(), [
         'costumer_id'   => 'required|integer',
@@ -142,7 +143,8 @@ class RoadMoneyController extends Controller
       ]);
 
       if($validator->passes()){
-        $roadMoney->update([
+        $data = RoadMoney::find($id);
+        $data->update([
           'costumer_id'   => $request->input('costumer_id'),
           'route_from'    => $request->input('route_from'),
           'route_to'      => $request->input('route_to'),
@@ -173,13 +175,15 @@ class RoadMoneyController extends Controller
      * @param  \App\Models\RoadMoney  $roadMoney
      * @return \Illuminate\Http\Response
      */
-    public function destroy(RoadMoney $roadMoney)
+    public function destroy($id)
     {
       $response = response()->json([
           'status' => 'error',
           'message' => 'Data cannot be deleted',
       ]);
-      if($roadMoney->delete()){
+      $data = RoadMoney::find($id);
+
+      if($data->delete()){
         $response = response()->json([
           'status' => 'success',
           'message' => 'Data has been deleted',

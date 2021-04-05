@@ -149,50 +149,6 @@
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
     });
 
-    $("#formReset").submit(function(e){
-      e.preventDefault();
-      var form = $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
-      $.ajax({
-        beforeSend:function() {
-          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
-        },
-        cache: false,
-        processData: false,
-        contentType: false,
-        type: "POST",
-        url : url,
-        data : data,
-        success: function(response) {
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          if (response.status == "success") {
-            toastr.success(response.message, 'Success !');
-            setTimeout(function() {
-              if(response.redirect == "" || response.redirect == "reload"){
-								location.reload();
-							} else {
-								location.href = response.redirect;
-							}
-            }, 1000);
-          } else {
-            $("[role='alert']").parent().removeAttr("style");
-            $(".alert-text").html('');
-            $.each(response.error, function(key, value) {
-              $(".alert-text").append('<span style="display: block">'+value+'</span>');
-            });
-            toastr.error("Please complete your form", 'Failed !');
-          }
-        },
-        error: function(response) {
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          toastr.error(response.responseJSON.message, 'Failed !');
-        }
-      });
-    });
-
     $("#formDelete").click(function(e){
       e.preventDefault();
       var form 	    = $(this);
@@ -208,10 +164,17 @@
           dataType: 'json',
           headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
           success: function (response) {
-            toastr.success(response.message,'Success !');
-            form.text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
-            $('#modalDelete').modal('hide');
-            dataTable.draw();
+            if(response.status == "success"){
+              toastr.success(response.message,'Success !');
+              form.text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
+              $('#modalDelete').modal('hide');
+              dataTable.draw();
+            }else{
+              toastr.error(response.message,'Failed !');
+              form.text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
+              $('#modalDelete').modal('hide');
+            }
+
           },
           error: function (response) {
             toastr.error(response.responseJSON.message ,'Failed !');

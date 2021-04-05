@@ -47,7 +47,7 @@
         <div class="form-group">
           <label class="form-text" for="activeSelect">Status</label>
           <span
-            class="label label-lg font-weight-bold {{ $data->status == 'active' ? 'label-light-succes' : 'label-light-danger' }} label-inline">{{ $data->status }}
+            class="label label-lg font-weight-bold {{ $data->status == 'active' ? 'label-light-success' : 'label-light-danger' }} label-inline">{{ $data->status }}
           </span>
         </div>
       </div>

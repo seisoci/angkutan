@@ -456,10 +456,16 @@
         dataType: 'json',
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         success: function (response) {
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          toastr.success(response.message,'Success !');
-          $('#modalDelete').modal('hide');
-          dataTable.draw();
+          if(response.status == "success"){
+            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+            toastr.success(response.message,'Success !');
+            $('#modalDelete').modal('hide');
+            dataTable.draw();
+          }else{
+            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+            toastr.error(response.message,'Failed !');
+            $('#modalDelete').modal('hide');
+          }
         },
         error: function (response) {
           btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
