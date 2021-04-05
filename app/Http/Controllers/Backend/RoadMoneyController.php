@@ -25,7 +25,12 @@ class RoadMoneyController extends Controller
       ];
 
       if ($request->ajax()) {
-        $data = RoadMoney::with('costumers')->select('road_money.*');
+        $costumer_id = $request->costumer_id;
+        $data = RoadMoney::with('costumers')
+        ->when($costumer_id, function ($query, $id) {
+          return $query->where('costumer_id', $id);
+        })
+        ->select('road_money.*');
         return Datatables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){
@@ -35,7 +40,7 @@ class RoadMoneyController extends Controller
               return $actionBtn;
           })->make(true);
       }
-      return view('backend.roadmonies.index', compact('config', 'page_breadcrumbs'));
+      return view('backend.masteroperational.roadmonies.index', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -117,7 +122,7 @@ class RoadMoneyController extends Controller
       // $data = RoadMoney::find($id)->get();
       $data = RoadMoney::with('costumers')->findOrFail($id);
       // dd($data);
-      return view('backend.roadmonies.edit',compact('config', 'page_breadcrumbs', 'data'));
+      return view('backend.masteroperational.roadmonies.edit',compact('config', 'page_breadcrumbs', 'data'));
     }
 
     /**

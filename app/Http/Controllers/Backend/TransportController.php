@@ -39,7 +39,7 @@ class TransportController extends Controller
               return !empty($data->photo) ? asset("/images/thumbnail/$data->photo") : asset('media/bg/no-content.svg');
           })->make(true);
       }
-      return view('backend.transports.index', compact('config', 'page_breadcrumbs'));
+      return view('backend.masteroperational.transports.index', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -54,7 +54,7 @@ class TransportController extends Controller
         ['page' => '/backend/transports','title' => "List Kendaraan"],
         ['page' => '#','title' => "Create Kendaraan"],
       ];
-      return view('backend.transports.create', compact('config', 'page_breadcrumbs'));
+      return view('backend.masteroperational.transports.create', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -122,7 +122,7 @@ class TransportController extends Controller
 
       $data = $transport;
 
-      return view('backend.transports.edit',compact('config', 'page_breadcrumbs', 'data'));
+      return view('backend.masteroperational.transports.edit',compact('config', 'page_breadcrumbs', 'data'));
     }
 
     /**

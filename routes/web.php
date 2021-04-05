@@ -8,6 +8,8 @@ use App\Http\Controllers\Backend\CostumerController as BackendCostumerController
 use App\Http\Controllers\Backend\DriverController as BackendDriverController;
 use App\Http\Controllers\Backend\TransportController as BackendTransportController;
 use App\Http\Controllers\Backend\RoadMoneyController as BackendRoadMoneyController;
+use App\Http\Controllers\Backend\ExpenseController as BackendExpenseController;
+use App\Http\Controllers\Backend\AnotherExpeditionController as BackendAnotherExpeditionController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -44,5 +46,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('transports', BackendTransportController::class)->except('show');
     Route::get('roadmonies/select2', [BackendRoadMoneyController::class, 'select2'])->name('roadmonies.select2');
     Route::resource('roadmonies', BackendRoadMoneyController::class)->except('show');
+    Route::resource('expenses', BackendExpenseController::class)->except(['create', 'edit', 'show']);
+    Route::resource('anotherexpedition', BackendAnotherExpeditionController::class)->except(['create', 'edit', 'show']);
   });
 });

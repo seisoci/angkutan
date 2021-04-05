@@ -139,7 +139,6 @@
 
     $("#formStore").submit(function(e) {
       e.preventDefault();
-      // $(".currency").inputmask('currency');
       var form = $(this);
       var btnSubmit = form.find("[type='submit']");
       var btnSubmitHtml = btnSubmit.html();

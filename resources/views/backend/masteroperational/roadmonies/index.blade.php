@@ -33,6 +33,21 @@
   </div>
 
   <div class="card-body">
+    <div class="mb-10">
+      <div class="row align-items-center">
+        <div class="col-lg-9 col-xl-8">
+          <div class="row align-items-center">
+            <div class="col-md-4 my-2 my-md-0">
+              <div class="form-group">
+                <label>Costumer:</label>
+                <select class="form-control" id="select2">
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!--begin: Datatable-->
     <table class="table table-bordered table-hover" id="Datatable" width="100%">
       <thead>
@@ -103,18 +118,23 @@
         order: [[10, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.roadmonies.index') }}",
+        ajax: {
+          url: "{{ route('backend.roadmonies.index') }}",
+          data: function(d){
+            d.costumer_id = $('#select2').find(':selected').val();
+          }
+        },
         columns: [
             {data: 'costumers.name', name: 'costumers.name'},
             {data: 'route_from', name: 'route_from'},
             {data: 'route_to', name: 'route_to'},
             {data: 'cargo', name: 'cargo'},
-            {data: 'road_engkel', name: 'road_engkel', render: $.fn.dataTable.render.number( ',', '.', 0 )},
-            {data: 'road_tronton', name: 'road_tronton', render: $.fn.dataTable.render.number( ',', '.', 0 )},
-            {data: 'invoice', name: 'invoice', render: $.fn.dataTable.render.number( ',', '.', 0 )},
-            {data: 'salary_engkel', name: 'salary_engkel', render: $.fn.dataTable.render.number( ',', '.', 0 )},
-            {data: 'salary_tronton', name: 'salary_tronton', render: $.fn.dataTable.render.number( ',', '.', 0 )},
-            {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( ',', '.', 0 )},
+            {data: 'road_engkel', name: 'road_engkel', render: $.fn.dataTable.render.number( '.', '.', 0)},
+            {data: 'road_tronton', name: 'road_tronton', render: $.fn.dataTable.render.number( '.', '.', 0)},
+            {data: 'invoice', name: 'invoice', render: $.fn.dataTable.render.number( '.', '.', 0)},
+            {data: 'salary_engkel', name: 'salary_engkel', render: $.fn.dataTable.render.number( '.', '.', 0)},
+            {data: 'salary_tronton', name: 'salary_tronton', render: $.fn.dataTable.render.number( '.', '.', 0)},
+            {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( '.', '.', 0)},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
@@ -131,6 +151,25 @@
           }
           },
         ]
+    });
+
+    $("#select2").select2({
+      placeholder: "Search Costumer",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.roadmonies.select2') }}",
+          dataType: "json",
+          delay: 250,
+          data: function(e) {
+              return {
+                  q: e.term || '',
+                  page: e.page || 1
+              }
+          },
+          cache: true
+      },
+    }).on('change', function (e){
+      dataTable.draw();
     });
 
     $('#modalDelete').on('show.bs.modal', function (event) {

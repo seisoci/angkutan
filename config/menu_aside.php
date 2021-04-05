@@ -19,13 +19,6 @@ return [
             'new-tab' => false,
         ],
         [
-            'title' => 'Menus',
-            'root' => true,
-            'icon' => 'media/svg/icons/Text/Menu.svg', // or can be 'flaticon-home' or any flaticon-*
-            'page' => '/backend/menus',
-            'new-tab' => false,
-        ],
-        [
           'section' => 'Master Data',
         ],
         [
@@ -51,22 +44,16 @@ return [
               [
                   'title' => 'Master Uang Jalan',
                   'page' => '/backend/roadmonies'
-              ]
+              ],
+              [
+                  'title' => 'Master Biaya',
+                  'page' => '/backend/expenses'
+              ],
+              [
+                  'title' => 'Master LDO',
+                  'page' => '/backend/anotherexpedition'
+              ],
           ]
-        ],
-        [
-            'title' => 'Categories',
-            'root' => true,
-            'icon' => 'media/svg/icons/Files/File.svg', // or can be 'flaticon-home' or any flaticon-*
-            'page' => '/backend/categories',
-            'new-tab' => false,
-        ],
-        [
-            'title' => 'Posts',
-            'root' => true,
-            'icon' => 'media/svg/icons/Files/File.svg', // or can be 'flaticon-home' or any flaticon-*
-            'page' => '/backend/posts',
-            'new-tab' => false,
         ],
         [
             'section' => 'Settings',

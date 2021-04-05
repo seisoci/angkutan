@@ -39,7 +39,7 @@ class DriverController extends Controller
               return !empty($data->photo) ? asset("/images/thumbnail/$data->photo") : asset('media/users/blank.png');
           })->make(true);
       }
-      return view('backend.drivers.index', compact('config', 'page_breadcrumbs'));
+      return view('backend.masteroperational.drivers.index', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -54,7 +54,7 @@ class DriverController extends Controller
         ['page' => '/backend/driver','title' => "List Supir"],
         ['page' => '#','title' => "Create Supir"],
       ];
-      return view('backend.drivers.create', compact('config', 'page_breadcrumbs'));
+      return view('backend.masteroperational.drivers.create', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -124,7 +124,7 @@ class DriverController extends Controller
       ];
 
       $data = $driver;
-      return view('backend.drivers.show',compact('config', 'page_breadcrumbs', 'data'));
+      return view('backend.masteroperational.drivers.show',compact('config', 'page_breadcrumbs', 'data'));
     }
 
     /**
@@ -143,7 +143,7 @@ class DriverController extends Controller
 
       $data = $driver;
 
-      return view('backend.drivers.edit',compact('config', 'page_breadcrumbs', 'data'));
+      return view('backend.masteroperational.drivers.edit',compact('config', 'page_breadcrumbs', 'data'));
     }
 
     /**

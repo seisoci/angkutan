@@ -35,7 +35,7 @@ class CostumerController extends Controller
         })->make(true);
 
       }
-      return view('backend.costumers.index', compact('config', 'page_breadcrumbs'));
+      return view('backend.masteroperational.costumers.index', compact('config', 'page_breadcrumbs'));
     }
 
     /**

@@ -143,26 +143,25 @@ return [
     // Aside
     'aside' => [
         'self' => [
-            'theme' => 'dark', // light, dark
-            'display' => true,
-            'fixed' => true,
-            'minimize' => [
-                'toggle' => true, // allow toggle
-                'default' => true, // default state
-                'hoverable' => true //allow hover
-            ]
+          'theme' => 'dark', // light, dark
+          'display' => true,
+          'fixed' => true,
+          'minimize' => [
+              'toggle' => true, // allow toggle
+              'default' => true, // default state
+              'hoverable' => true //allow hover
+          ]
         ],
-
         'menu' => [
-            'dropdown' => false, // ok
-            'scroll' => true, // ok
-            'submenu' => [
-                'accordion' => true, // true, false
-                'dropdown' => [
-                    'arrow' => true,
-                    'hover-timeout' => 500 // in milliseconds
-                ]
-            ]
+          'dropdown' => false, // ok
+          'scroll' => true, // ok
+          'submenu' => [
+              'accordion' => true, // true, false
+              'dropdown' => [
+                  'arrow' => true,
+                  'hover-timeout' => 500 // in milliseconds
+              ]
+          ]
         ]
     ],
 
