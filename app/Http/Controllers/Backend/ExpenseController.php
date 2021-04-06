@@ -28,7 +28,7 @@ class ExpenseController extends Controller
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '
-            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-name="'.$row->name.'" data-amount="'.$row->amount.'" class="edit btn btn-warning btn-sm">Edit</a>
+            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-name="'.$row->name.'" data-cost="'.$row->cost.'" class="edit btn btn-warning btn-sm">Edit</a>
             <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
             return $actionBtn;
         })->make(true);
@@ -52,7 +52,7 @@ class ExpenseController extends Controller
       if($validator->passes()){
         Expense::create([
           'name'      => $request->input('name'),
-          'amount'    => $request->input('amount'),
+          'cost'    => $request->input('cost'),
         ]);
         $response = response()->json([
           'status' => 'success',
@@ -81,7 +81,7 @@ class ExpenseController extends Controller
         $data = Expense::find($id);
         $data->update([
           'name'      => $request->input('name'),
-          'amount'    => $request->input('amount'),
+          'cost'    => $request->input('cost'),
         ]);
         $response = response()->json([
           'status'  => 'success',

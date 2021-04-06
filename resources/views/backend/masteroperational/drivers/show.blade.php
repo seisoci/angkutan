@@ -4,10 +4,29 @@
 {{-- Content --}}
 @section('content')
 <div class="card card-custom">
-  <div class="card-header">
-    <h3 class="card-title">
-      {{ $config['page_title'] }}
-    </h3>
+  <div class="card-header flex-wrap py-3">
+    <div class="card-title">
+      <h3 class="card-label">{{ $config['page_title'] }}
+    </div>
+    <div class="card-toolbar">
+      <!--begin::Button-->
+      <button onclick="window.print();" class="d-print-none btn btn-primary font-weight-bolder">
+        <span class="svg-icon svg-icon-md">
+          <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
+            viewBox="0 0 24 24" version="1.1">
+            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+              <rect x="0" y="0" width="24" height="24" />
+              <path
+                d="M16,17 L16,21 C16,21.5522847 15.5522847,22 15,22 L9,22 C8.44771525,22 8,21.5522847 8,21 L8,17 L5,17 C3.8954305,17 3,16.1045695 3,15 L3,8 C3,6.8954305 3.8954305,6 5,6 L19,6 C20.1045695,6 21,6.8954305 21,8 L21,15 C21,16.1045695 20.1045695,17 19,17 L16,17 Z M17.5,11 C18.3284271,11 19,10.3284271 19,9.5 C19,8.67157288 18.3284271,8 17.5,8 C16.6715729,8 16,8.67157288 16,9.5 C16,10.3284271 16.6715729,11 17.5,11 Z M10,14 L10,20 L14,20 L14,14 L10,14 Z"
+                fill="#000000" />
+              <rect fill="#000000" opacity="0.3" x="8" y="2" width="8" height="2" rx="1" />
+            </g>
+          </svg>
+          <!--end::Svg Icon-->
+        </span>Print</button>
+      <!--end::Button-->
+    </div>
   </div>
   <!--begin::Form-->
   <div class="card-body">
@@ -22,11 +41,10 @@
       <div class="col-md-6">
         <div class="form-group">
           <div class="image-input" id="kt_image_2">
-            <div class="image-input-wrapper"
-              style="background-image: url({{ $data->photo != NULL ? asset("/images/original/".$data->photo) : asset('media/users/blank.png') }})">
-            </div>
+            <img class="image-input-wrapper"
+              src="{{ $data->photo != NULL ? asset("/images/original/".$data->photo) : asset('media/users/blank.png') }}"
+              alt="">
           </div>
-          <span class="form-text text-muted">Maximum file 2 MB and format png, jpg, jpeg</span>
         </div>
         <div class="form-group">
           <label>Nama <span class="text-danger">*</span></label>
@@ -74,7 +92,7 @@
       <label>Keterangan</label>
       <h5>{{ $data->description }}</h5>
     </div>
-    <div class="card-footer d-flex justify-content-end">
+    <div class="card-footer d-flex justify-content-end d-print-none">
       <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
     </div>
     <!--end::Form-->
@@ -88,6 +106,10 @@
   {{-- Scripts Section --}}
   @section('scripts')
   {{-- vendors --}}
-
+  <script>
+    $(document).ready(function(){
+    $('body').addClass('print-content-only');
+  });
+  </script>
   {{-- page scripts --}}
   @endsection

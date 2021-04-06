@@ -24,7 +24,7 @@ return [
         [
           'title' => 'Operational',
           'desc' => '',
-          'icon' => 'media/svg/icons/Design/Bucket.svg',
+          'icon' => 'media/svg/icons/Communication/Group.svg',
           'bullet' => 'dot',
           'root' => true,
           'arrow' => true,
@@ -52,6 +52,28 @@ return [
             [
                 'title' => 'Master LDO',
                 'page' => 'backend/anotherexpedition'
+            ],
+          ]
+        ],
+        [
+          'title' => 'Spare Parts',
+          'desc' => '',
+          'icon' => 'media/svg/icons/Tools/Tools.svg',
+          'bullet' => 'dot',
+          'root' => true,
+          'arrow' => true,
+          'submenu' => [
+            [
+                'title' => 'Master Supplier Spare Part',
+                'page' => 'backend/costumers'
+            ],
+            [
+                'title' => 'Master Spare Part',
+                'page' => 'backend/drivers'
+            ],
+            [
+                'title' => 'Master Service',
+                'page' => 'backend/transports'
             ],
           ]
         ],
