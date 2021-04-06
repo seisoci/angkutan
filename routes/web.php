@@ -45,6 +45,13 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('roadmonies/select2', [BackendRoadMoneyController::class, 'select2'])->name('roadmonies.select2');
     Route::resource('roadmonies', BackendRoadMoneyController::class)->except('show');
     Route::resource('expenses', BackendExpenseController::class)->except(['create', 'edit', 'show']);
-    Route::resource('anotherexpedition', BackendAnotherExpeditionController::class)->except(['create', 'edit', 'show']);
+
+    Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
+      Route::get('{id}/create_driver/', [BackendAnotherExpeditionController::class, 'create_driver'])->name('create_driver');
+      Route::get('{id}/create_transport/', [BackendAnotherExpeditionController::class, 'create_transport'])->name('create_transport');
+      Route::get('{id}/datatable_transport/', [BackendAnotherExpeditionController::class, 'datatable_transport'])->name('datatable_transport');
+      Route::get('{id}/datatable_driver/', [BackendAnotherExpeditionController::class, 'datatable_driver'])->name('datatable_driver');
+    });
+    Route::resource('anotherexpedition', BackendAnotherExpeditionController::class)->except(['create', 'edit']);
   });
 });

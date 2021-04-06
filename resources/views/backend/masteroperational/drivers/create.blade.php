@@ -22,6 +22,9 @@
       </div>
       <div class="row">
         <div class="col-md-6">
+          @if(isset($another_expedition_id))
+          <input type="hidden" name="another_expedition_id" value="{{ $another_expedition_id ?? '' }}" />
+          @endif
           <div class="form-group">
             <div class="image-input" id="kt_image_2">
               <div class="image-input-wrapper" style="background-image: url({{ asset('/media/users/blank.png') }})">

@@ -21,6 +21,7 @@
           </div>
         </div>
       </div>
+      <input type="hidden" name="another_expedition_id" value="{{ $data->another_expedition_id ?? NULL }}" />
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">

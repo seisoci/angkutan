@@ -15,6 +15,7 @@ class CreateDriversTable extends Migration
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('another_expedition_id')->nullable();
             $table->string('name');
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
@@ -26,6 +27,7 @@ class CreateDriversTable extends Migration
             $table->string('photo_ktp')->nullable();
             $table->string('photo_sim')->nullable();
             $table->timestamps();
+            $table->foreign('another_expedition_id')->references('id')->on('another_expeditions');
         });
     }
 

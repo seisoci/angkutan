@@ -23,6 +23,7 @@
               </div>
             </div>
           </div>
+          <input type="hidden" name="another_expedition_id" value="{{ $data->another_expedition_id ?? NULL }}" />
           <div class="form-group">
             <label class="mx-0 text-bold">Image Kendaraan</label>
             <img id="avatar"

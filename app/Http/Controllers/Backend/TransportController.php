@@ -26,7 +26,7 @@ class TransportController extends Controller
       ];
 
       if ($request->ajax()) {
-        $data = Transport::query();
+        $data = Transport::where('another_expedition_id', NULL);
         return Datatables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){
@@ -66,6 +66,7 @@ class TransportController extends Controller
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
+        'another_expedition_id' => 'integer',
         'num_pol'       => 'required|string',
         'merk'          => 'string|nullable',
         'type'          => 'string|nullable',
@@ -82,6 +83,7 @@ class TransportController extends Controller
         $dimensions = [array('1280', '720', 'thumbnail')];
         $image = isset($request->photo) && !empty($request->photo) ? Fileupload::uploadImagePublic('photo', $dimensions, 'public') : NULL;
         Transport::create([
+          'another_expedition_id' => $request->input('another_expedition_id') ?? NULL,
           'num_pol'       => $request->input('num_pol'),
           'merk'          => $request->input('merk'),
           'type'          => $request->input('type'),
@@ -97,7 +99,7 @@ class TransportController extends Controller
         $response = response()->json([
           'status' => 'success',
           'message' => 'Data has been saved',
-          'redirect' => '/backend/transports'
+          'redirect' => !empty($request->input('another_expedition_id')) ? '/backend/anotherexpedition/'. $request->input('another_expedition_id') : '/backend/transports'
         ]);
 
       }else{
@@ -135,6 +137,7 @@ class TransportController extends Controller
     public function update(Request $request, Transport $transport)
     {
       $validator = Validator::make($request->all(), [
+        'another_expedition_id' => 'integer',
         'num_pol'       => 'required|string',
         'merk'          => 'string|nullable',
         'type'          => 'string|nullable',
@@ -151,6 +154,7 @@ class TransportController extends Controller
         $dimensions = [array('1280', '720', 'thumbnail')];
         $image = isset($request->photo) && !empty($request->photo) ? Fileupload::uploadImagePublic('photo', $dimensions, 'public', $transport->photo) : $transport->photo;
         $transport->update([
+          'another_expedition_id' => $request->input('another_expedition_id') ?? NULL,
           'num_pol'       => $request->input('num_pol'),
           'merk'          => $request->input('merk'),
           'type'          => $request->input('type'),
@@ -165,7 +169,7 @@ class TransportController extends Controller
         $response = response()->json([
           'status' => 'success',
           'message' => 'Data has been updated',
-          'redirect' => '/backend/transports'
+          'redirect' => !empty($request->input('another_expedition_id')) ? '/backend/anotherexpedition/'. $request->input('another_expedition_id') : '/backend/transports'
         ]);
       }else{
         $response = response()->json(['error'=>$validator->errors()->all()]);

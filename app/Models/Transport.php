@@ -11,6 +11,7 @@ class Transport extends Model
   use HasFactory;
 
   protected $fillable = [
+    'another_expedition_id',
     'num_pol',
     'merk',
     'type',

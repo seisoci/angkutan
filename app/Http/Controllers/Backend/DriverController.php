@@ -26,7 +26,7 @@ class DriverController extends Controller
       ];
 
       if ($request->ajax()) {
-        $data = Driver::query();
+        $data = Driver::where('another_expedition_id', NULL);
         return Datatables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){
@@ -66,6 +66,7 @@ class DriverController extends Controller
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
+        'another_expedition_id' => 'integer',
         'name'          => 'required',
         'address'       => 'string|nullable',
         'phone'         => 'string|nullable',
@@ -78,6 +79,8 @@ class DriverController extends Controller
         'profile_avatar_remove'  => 'between:0,1,NULL'
       ]);
 
+      // var_dump($request->input('another_expedition_id'));
+
       if($validator->passes()){
         $dimensions = [array('1280', '720', 'thumbnail')];
         $dimensions_profile = [array('300', '300', 'thumbnail')];
@@ -85,6 +88,7 @@ class DriverController extends Controller
         $photo_ktp = isset($request->photo_ktp) && !empty($request->photo_ktp) ? Fileupload::uploadImagePublic('photo_ktp', $dimensions, 'public') : NULL;
         $photo_sim = isset($request->photo_sim) && !empty($request->photo_sim) ? Fileupload::uploadImagePublic('photo_sim', $dimensions, 'public') : NULL;
         Driver::create([
+          'another_expedition_id' => $request->input('another_expedition_id') ?? NULL,
           'name'        => $request->input('name'),
           'address'     => $request->input('address'),
           'phone'       => $request->input('phone'),
@@ -100,7 +104,7 @@ class DriverController extends Controller
         $response = response()->json([
           'status' => 'success',
           'message' => 'Data has been saved',
-          'redirect' => '/backend/drivers'
+          'redirect' => !empty($request->input('another_expedition_id')) ? '/backend/anotherexpedition/'. $request->input('another_expedition_id') : '/backend/drivers'
         ]);
 
       }else{
@@ -156,6 +160,7 @@ class DriverController extends Controller
     public function update(Request $request, Driver $driver)
     {
       $validator = Validator::make($request->all(), [
+        'another_expedition_id' => 'integer',
         'name'          => 'required',
         'address'       => 'string|nullable',
         'phone'         => 'string|nullable',
@@ -175,6 +180,7 @@ class DriverController extends Controller
         $photo_ktp = isset($request->photo_ktp) && !empty($request->photo_ktp) ? Fileupload::uploadImagePublic('photo_ktp', $dimensions, 'public', $driver->photo_ktp) : $driver->photo_ktp;
         $photo_sim = isset($request->photo_sim) && !empty($request->photo_sim) ? Fileupload::uploadImagePublic('photo_sim', $dimensions, 'public', $driver->photo_sim) : $driver->photo_sim;
         $driver->update([
+          'another_expedition_id' => $request->input('another_expedition_id') ?? NULL,
           'name'        => $request->input('name'),
           'address'     => $request->input('address'),
           'phone'       => $request->input('phone'),
@@ -189,7 +195,7 @@ class DriverController extends Controller
         $response = response()->json([
           'status' => 'success',
           'message' => 'Data has been updated',
-          'redirect' => '/backend/drivers'
+          'redirect' => !empty($request->input('another_expedition_id')) ? '/backend/anotherexpedition/'. $request->input('another_expedition_id') : '/backend/drivers'
         ]);
       }else{
         $response = response()->json(['error'=>$validator->errors()->all()]);

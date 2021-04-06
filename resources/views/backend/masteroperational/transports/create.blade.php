@@ -22,6 +22,9 @@
               </div>
             </div>
           </div>
+          @if(isset($another_expedition_id))
+          <input type="hidden" name="another_expedition_id" value="{{ $another_expedition_id ?? '' }}" />
+          @endif
           <div class="form-group">
             <label class="mx-0 text-bold">Image Kendaraan</label>
             <img id="avatar" src="{{ asset('media/bg/no-content.svg') }}"

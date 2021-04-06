@@ -13,20 +13,22 @@ class CreateTransportsTable extends Migration
      */
     public function up()
     {
-        Schema::create('transports', function (Blueprint $table) {
-            $table->id();
-            $table->string('num_pol');
-            $table->string('merk')->nullable();
-            $table->string('type')->nullable();
-            $table->string('type_car')->nullable();
-            $table->enum('dump', ['ya', 'tidak'])->default('tidak');
-            $table->year('year')->nullable();
-            $table->integer('max_weight')->nullable();
-            $table->date('expired_stnk')->nullable();
-            $table->text('description')->nullable();
-            $table->string('photo')->nullable();
-            $table->timestamps();
-        });
+      Schema::create('transports', function (Blueprint $table) {
+        $table->id();
+        $table->unsignedBigInteger('another_expedition_id')->nullable();
+        $table->string('num_pol');
+        $table->string('merk')->nullable();
+        $table->string('type')->nullable();
+        $table->string('type_car')->nullable();
+        $table->enum('dump', ['ya', 'tidak'])->default('tidak');
+        $table->year('year')->nullable();
+        $table->integer('max_weight')->nullable();
+        $table->date('expired_stnk')->nullable();
+        $table->text('description')->nullable();
+        $table->string('photo')->nullable();
+        $table->timestamps();
+        $table->foreign('another_expedition_id')->references('id')->on('another_expeditions');
+      });
     }
 
     /**
