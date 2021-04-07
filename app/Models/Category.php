@@ -6,9 +6,10 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Service extends Model
+class Category extends Model
 {
-    use HasFactory;
+  use HasFactory;
+
   protected $fillable = [
     'name',
   ];
@@ -18,4 +19,7 @@ class Service extends Model
     return $date->format('Y-m-d H:i:s');
   }
 
+  public function spareparts(){
+    return $this->belongsToMany(Sparepart::class);
+  }
 }

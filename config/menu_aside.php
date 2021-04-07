@@ -65,15 +65,23 @@ return [
           'submenu' => [
             [
                 'title' => 'Master Supplier Spare Part',
-                'page' => 'backend/costumers'
+                'page' => 'backend/supplierspareparts'
+            ],
+            [
+              'title' => 'Master Brand',
+              'page' => 'backend/brands'
+            ],
+            [
+              'title' => 'Master Kategori',
+              'page' => 'backend/categories'
+            ],
+            [
+              'title' => 'Master Servis',
+              'page' => 'backend/services'
             ],
             [
                 'title' => 'Master Spare Part',
-                'page' => 'backend/drivers'
-            ],
-            [
-                'title' => 'Master Service',
-                'page' => 'backend/transports'
+                'page' => 'backend/spareparts'
             ],
           ]
         ],

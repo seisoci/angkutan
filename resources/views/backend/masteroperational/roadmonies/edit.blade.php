@@ -26,7 +26,7 @@
           <div class="form-group">
             <label>Costumer <span class="text-danger">*</span></label>
             <select class="form-control" id="select2" name="costumer_id">
-              <option value="{{ $data->costumer_id }}">{{ $data->costumers->name }}</option>
+              <option value="{{ $data->costumer_id }}" selected>{{ $data->costumers->name }}</option>
             </select>
           </div>
           <div class="row">

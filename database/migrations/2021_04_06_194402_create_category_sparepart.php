@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSupplierSparepartsTable extends Migration
+class CreateCategorySparepart extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateSupplierSparepartsTable extends Migration
      */
     public function up()
     {
-        Schema::create('supplier_spareparts', function (Blueprint $table) {
+        Schema::create('category_sparepart', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('address')->nullable();
-            $table->string('phone')->nullable();
+            $table->foreignId('category_id')->constrained('categories');
+            $table->foreignId('sparepart_id')->constrained('spareparts')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateSupplierSparepartsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('supplier_spareparts');
+        Schema::dropIfExists('category_sparepart');
     }
 }

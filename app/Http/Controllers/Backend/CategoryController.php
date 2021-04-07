@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Service;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use DataTables;
-use Illuminate\Support\Facades\Validator;
+use Validator;
 
-class ServiceController extends Controller
+class CategoryController extends Controller
 {
   /**
    * Display a listing of the resource.
@@ -17,13 +17,13 @@ class ServiceController extends Controller
    */
   public function index(Request $request)
   {
-    $config['page_title']       = "List Servis";
-    $config['page_description'] = "Daftar List Servis";
+    $config['page_title']       = "List Kategori";
+    $config['page_description'] = "Daftar List Kategori";
     $page_breadcrumbs = [
-      ['page' => '#','title' => "List Servis"],
+      ['page' => '#','title' => "List Kategori"],
     ];
     if ($request->ajax()) {
-      $data = Service::query();
+      $data = Category::query();
       return Datatables::of($data)
       ->addIndexColumn()
       ->addColumn('action', function($row){
@@ -32,8 +32,9 @@ class ServiceController extends Controller
           <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
           return $actionBtn;
       })->make(true);
+
     }
-    return view('backend.mastersparepart.services.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.mastersparepart.categories.index', compact('config', 'page_breadcrumbs'));
   }
 
   /**
@@ -49,7 +50,7 @@ class ServiceController extends Controller
     ]);
 
     if($validator->passes()){
-      Service::create([
+      Category::create([
         'name'      => $request->input('name'),
       ]);
       $response = response()->json([
@@ -76,7 +77,7 @@ class ServiceController extends Controller
     ]);
 
     if($validator->passes()){
-      $data = Service::find($id);
+      $data = Category::find($id);
       $data->update([
         'name'      => $request->input('name'),
       ]);
@@ -103,7 +104,7 @@ class ServiceController extends Controller
         'message' => 'Data cannot be deleted',
     ]);
 
-    $data = Service::find($id);
+    $data = Category::find($id);
     if($data->delete()){
       $response = response()->json([
         'status'  => 'success',

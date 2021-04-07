@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSupplierSparepartsTable extends Migration
+class CreateBrandsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreateSupplierSparepartsTable extends Migration
      */
     public function up()
     {
-        Schema::create('supplier_spareparts', function (Blueprint $table) {
+        Schema::create('brands', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('address')->nullable();
-            $table->string('phone')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ class CreateSupplierSparepartsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('supplier_spareparts');
+        Schema::dropIfExists('brands');
     }
 }
