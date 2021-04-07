@@ -21,7 +21,6 @@ class CreateRoadMoneyTable extends Migration
             $table->string('cargo')->nullable();
             $table->decimal('road_engkel', 15, 0)->nullable();
             $table->decimal('road_tronton', 15, 0)->nullable();
-            $table->decimal('invoice', 15, 0)->nullable();
             $table->decimal('salary_engkel', 15, 0)->nullable();
             $table->decimal('salary_tronton', 15 , 0)->nullable();
             $table->decimal('amount', 15, 0)->nullable();

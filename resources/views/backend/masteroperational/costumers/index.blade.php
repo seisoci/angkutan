@@ -70,9 +70,9 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label>Nama Costumer</label>
+                <label>Nama Pelanggan</label>
                 <input type="text" name="name" class="form-control form-control-solid"
-                  placeholder="Input Nama Costumer" />
+                  placeholder="Input Nama Pelanggan" />
               </div>
               <div class="form-group">
                 <label>Nama Emergency</label>
@@ -82,9 +82,9 @@
             </div>
             <div class="col-md-6">
               <div class="form-group">
-                <label>No. Telp/HP Costumer</label>
+                <label>No. Telp/HP Pelanggan</label>
                 <input type="text" name="phone" class="phone form-control form-control-solid"
-                  placeholder="Input No. Telp/HP Costumer" />
+                  placeholder="Input No. Telp/HP Pelanggan" />
               </div>
               <div class="form-group">
                 <label>No. Telp/HP Emergency</label>
@@ -94,7 +94,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Alamat Costumer</label>
+            <label>Alamat Pelanggan</label>
             <textarea name="address" rows="3" class="form-control form-control-solid"
               placeholder="Input Alamat"></textarea>
           </div>
@@ -135,9 +135,9 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label>Nama Costumer</label>
+                <label>Nama Pelanggan</label>
                 <input type="text" name="name" class="form-control form-control-solid"
-                  placeholder="Input Nama Costumer" />
+                  placeholder="Input Nama Pelanggan" />
               </div>
               <div class="form-group">
                 <label>Nama Emergency</label>
@@ -147,9 +147,9 @@
             </div>
             <div class="col-md-6">
               <div class="form-group">
-                <label>No. Telp/HP Costumer</label>
+                <label>No. Telp/HP Pelanggan</label>
                 <input type="text" name="phone" class="phone form-control form-control-solid"
-                  placeholder="Input No. Telp/HP Costumer" />
+                  placeholder="Input No. Telp/HP Pelanggan" />
               </div>
               <div class="form-group">
                 <label>No. Telp/HP Emergency</label>
@@ -159,7 +159,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Alamat Costumer</label>
+            <label>Alamat Pelanggan</label>
             <textarea name="address" rows="3" class="form-control form-control-solid"
               placeholder="Input Alamat"></textarea>
           </div>
@@ -202,7 +202,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Detail Costumer</h5>
+        <h5 class="modal-title">Detail Pelanggan</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <i aria-hidden="true" class="ki ki-close"></i>
         </button>
@@ -216,9 +216,9 @@
           </div>
         </div>
         <div class="form-group row">
-          <label class="col-md-3">Nama Costumer</label>
+          <label class="col-md-3">Nama Pelanggan</label>
           <input type="text" name="name" class="form-control form-control-solid col-md-9"
-            placeholder="Input Nama Costumer" disabled />
+            placeholder="Input Nama Pelanggan" disabled />
         </div>
         <div class="form-group row">
           <label class="col-md-3">Nama Emergency</label>
@@ -226,9 +226,9 @@
             placeholder="Input Nama Emergency" disabled />
         </div>
         <div class="form-group row">
-          <label class="col-md-3">No. Telp/HP Costumer</label>
+          <label class="col-md-3">No. Telp/HP Pelanggan</label>
           <input type="text" name="phone" class="phone form-control form-control-solid col-md-9"
-            placeholder="Input No. Telp/HP Costumer" disabled />
+            placeholder="Input No. Telp/HP Pelanggan" disabled />
         </div>
         <div class="form-group row">
           <label class="col-md-3">No. Telp/HP Emergency</label>
@@ -236,7 +236,7 @@
             placeholder="Input No. Telp/HP Emergency" disabled />
         </div>
         <div class="form-group">
-          <label>Alamat Costumer</label>
+          <label>Alamat Pelanggan</label>
           <textarea name="address" rows="3" class="form-control form-control-solid" placeholder="Input Alamat"
             disabled></textarea>
         </div>

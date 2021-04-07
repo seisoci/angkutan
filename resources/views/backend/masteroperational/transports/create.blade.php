@@ -48,8 +48,15 @@
             <input type="text" name="type" class="form-control" placeholder="Input Tipe" />
           </div>
           <div class="form-group">
-            <label>Jenis Mobil</label>
-            <input type="text" name="type_car" class="form-control" placeholder="Input Jenis Mobil" />
+            <label class="d-block">Jenis Mobil</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-sm btn-info active">
+                <input type="radio" name="type_car" value="engkel" checked> Engkel (Kecil)
+              </label>
+              <label class="btn btn-sm btn-info">
+                <input type="radio" name="type_car" value="tronton"> Tronton (Besar)
+              </label>
+            </div>
           </div>
           <div class="row">
             <div class="col-md-6">

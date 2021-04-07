@@ -51,14 +51,24 @@
               value="{{ $data->type ?? '' }}" />
           </div>
           <div class="form-group">
-            <label>Jenis Mobil</label>
-            <input type="text" name="type_car" class="form-control" placeholder="Input Jenis Mobil"
-              value="{{ $data->type_car ?? '' }}" />
+            <label class="d-block">Jenis Mobil</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-sm btn-info active">
+                <input type="radio" name="type_car" value="ya" {{ $data->type_car == 'engkel' ? 'checked' : NULL }}>
+                Engkel
+                (Kecil)
+              </label>
+              <label class="btn btn-sm btn-info">
+                <input type="radio" name="type_car" value="tidak" {{ $data->type_car == 'tronton' ? 'checked' : NULL }}>
+                Tronton
+                (Besar)
+              </label>
+            </div>
           </div>
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label style="display: block;">Dump</label>
+                <label class="d-block">Dump</label>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                   <label class="btn btn-sm btn-info active">
                     <input type="radio" name="dump" value="ya" {{ $data->dump == 'ya' ? 'checked' : NULL }}> Ya

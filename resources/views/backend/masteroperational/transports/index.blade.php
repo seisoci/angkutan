@@ -41,6 +41,7 @@
           <th>No. Pol</th>
           <th>Merk</th>
           <th>Tipe</th>
+          <th>Jenis Mobil</th>
           <th>Tahun</th>
           <th>Tanggal Berlaku STNK</th>
           <th>Dump</th>
@@ -187,6 +188,7 @@
             {data: 'num_pol', name: 'num_pol'},
             {data: 'merk', name: 'merk'},
             {data: 'type', name: 'type'},
+            {data: 'type_car', name: 'type_car'},
             {data: 'year', name: 'year'},
             {data: 'expired_stnk', name: 'expired_stnk'},
             {data: 'dump', name: 'dump'},
@@ -207,7 +209,23 @@
         },
         {
           className: 'dt-center',
-          targets: 6,
+          targets: 4,
+          width: '150px',
+          render: function(data, type, full, meta) {
+            var status = {
+              'engkel': {'title': 'Engkel (Kecil)', 'class': ' label-light-info'},
+              'tronton': {'title': 'Tronton (Besar)', 'class': ' label-light-primary'},
+            };
+            if (typeof status[data] === 'undefined') {
+              return data;
+            }
+            return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
+              '</span>';
+          },
+        },
+        {
+          className: 'dt-center',
+          targets: 7,
           width: '75px',
           render: function(data, type, full, meta) {
             var status = {

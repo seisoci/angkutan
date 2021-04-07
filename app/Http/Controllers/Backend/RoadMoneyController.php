@@ -75,7 +75,6 @@ class RoadMoneyController extends Controller
       'cargo'         => 'string|nullable',
       'road_engkel'   => 'integer|nullable',
       'road_tronton'  => 'integer|nullable',
-      'invoice'       => 'integer|nullable',
       'salary_engkel' => 'integer|nullable',
       'salary_tronton'=> 'integer|nullable',
       'amount'        => 'integer|nullable',
@@ -89,7 +88,6 @@ class RoadMoneyController extends Controller
         'cargo'         => $request->input('cargo'),
         'road_engkel'   => $request->input('road_engkel'),
         'road_tronton'  => $request->input('road_tronton'),
-        'invoice'       => $request->input('invoice'),
         'salary_engkel' => $request->input('salary_engkel'),
         'salary_tronton'=> $request->input('salary_tronton'),
         'amount'        => $request->input('amount')
@@ -141,7 +139,6 @@ class RoadMoneyController extends Controller
       'cargo'         => 'string|nullable',
       'road_engkel'   => 'integer|nullable',
       'road_tronton'  => 'integer|nullable',
-      'invoice'       => 'integer|nullable',
       'salary_engkel' => 'integer|nullable',
       'salary_tronton'=> 'integer|nullable',
       'amount'        => 'integer|nullable',
@@ -156,7 +153,6 @@ class RoadMoneyController extends Controller
         'cargo'         => $request->input('cargo'),
         'road_engkel'   => $request->input('road_engkel'),
         'road_tronton'  => $request->input('road_tronton'),
-        'invoice'       => $request->input('invoice'),
         'salary_engkel' => $request->input('salary_engkel'),
         'salary_tronton'=> $request->input('salary_tronton'),
         'amount'        => $request->input('amount')
@@ -164,7 +160,7 @@ class RoadMoneyController extends Controller
 
       $response = response()->json([
         'status' => 'success',
-        'message' => 'Data has been saved',
+        'message' => 'Data has been updated',
         'redirect' => '/backend/roadmonies'
       ]);
 

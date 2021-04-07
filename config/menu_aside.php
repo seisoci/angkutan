@@ -30,7 +30,7 @@ return [
           'arrow' => true,
           'submenu' => [
             [
-                'title' => 'Master Costumer',
+                'title' => 'Master Pelanggan',
                 'page' => 'backend/costumers'
             ],
             [
@@ -64,25 +64,51 @@ return [
           'arrow' => true,
           'submenu' => [
             [
-                'title' => 'Master Supplier Spare Part',
-                'page' => 'backend/supplierspareparts'
+              'title' => 'Master Supplier Spare Part',
+              'page'  => 'backend/supplierspareparts'
             ],
             [
               'title' => 'Master Brand',
-              'page' => 'backend/brands'
+              'page'  => 'backend/brands'
             ],
             [
               'title' => 'Master Kategori',
-              'page' => 'backend/categories'
+              'page'  => 'backend/categories'
             ],
             [
               'title' => 'Master Servis',
-              'page' => 'backend/services'
+              'page'  => 'backend/services'
             ],
             [
-                'title' => 'Master Spare Part',
-                'page' => 'backend/spareparts'
+              'title' => 'Master Spare Part',
+              'page'  => 'backend/spareparts'
             ],
+          ]
+        ],
+        [
+          'title' => 'Accounting',
+          'desc' => '',
+          'icon' => 'media/svg/icons/Home/Book-open.svg',
+          'bullet' => 'dot',
+          'root' => true,
+          'arrow' => true,
+          'submenu' => [
+            [
+                'title' => 'Master Tarif Pelanggan',
+                'page' => 'backend/costumerrates'
+            ],
+            [
+              'title' => 'Master Akun Kas',
+              'page'  => 'backend/cash'
+            ],
+            [
+              'title' => 'Master Bank',
+              'page'  => 'backend/banks'
+            ],
+            [
+              'title' => 'Master Perusahaan',
+              'page'  => 'backend/companies'
+            ]
           ]
         ],
         [

@@ -85,13 +85,6 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label>Invoice / Tagihan</label>
-                <input type="text" name="invoice" class="currency form-control" placeholder="Input Invoice / Tagihan"
-                  value="{{ $data->invoice ?? '' }}" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
                 <label>Gaji Rumusan</label>
                 <input type="text" name="amount" class="currency form-control" placeholder="Input Gaji Rumusan"
                   value="{{ $data->amount ?? '' }}" />

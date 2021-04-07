@@ -17,7 +17,6 @@ class RoadMoney extends Model
     'cargo',
     'road_engkel',
     'road_tronton',
-    'invoice',
     'salary_engkel',
     'salary_tronton',
     'amount',

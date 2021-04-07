@@ -17,10 +17,10 @@ class CostumerController extends Controller
      */
     public function index(Request $request)
     {
-      $config['page_title']       = "List Costumers";
-      $config['page_description'] = "Manage list Costumers";
+      $config['page_title']       = "List Pelanggan";
+      $config['page_description'] = "Manage list Pelanggan";
       $page_breadcrumbs = [
-        ['page' => '#','title' => "List Costumers"],
+        ['page' => '#','title' => "List Pelanggan"],
       ];
       if ($request->ajax()) {
         $data = Costumer::query();
