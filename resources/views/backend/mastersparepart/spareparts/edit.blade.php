@@ -56,7 +56,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label>Jumlah</label>
-                <input type="text" name="qty" class="form-control" placeholder="Input Jumlah"
+                <input type="number" name="qty" class="form-control" placeholder="Input Jumlah"
                   value="{{ $data->qty ?? '' }}" />
               </div>
             </div>

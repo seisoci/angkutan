@@ -19,6 +19,7 @@ class RoadMoneyController extends Controller
    */
   public function index(Request $request)
   {
+    //TODO: HAPUS FIELD INVOICE (TIDAK TERPAKAI)
     $config['page_title']       = "Uang Jalan";
     $config['page_description'] = "Daftar List Uang Jalan";
     $page_breadcrumbs = [

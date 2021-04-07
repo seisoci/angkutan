@@ -20,7 +20,7 @@ class CreateAdminUserSeeder extends Seeder
       $user = User::create([
           'name' => 'Super Admin',
           'email' => 'admin@gmail.com',
-          'password' => bcrypt('sealonline'),
+          'password' => bcrypt('admin'),
           'email_verified_at' => now(),
           'image' => NULL,
           'active' => 1,
@@ -31,7 +31,6 @@ class CreateAdminUserSeeder extends Seeder
           'admin',
           'employee',
       ];
-
 
       $role = Role::create(['name' => 'super-admin']);
       $permissions = Permission::pluck('id','id')->all();
