@@ -29,7 +29,9 @@ class CreateAdminUserSeeder extends Seeder
 
       $roles = [
           'admin',
-          'employee',
+          'operasional',
+          'akunting',
+          'sparepart',
       ];
 
       $role = Role::create(['name' => 'super-admin']);

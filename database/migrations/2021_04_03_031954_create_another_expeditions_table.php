@@ -16,6 +16,7 @@ class CreateAnotherExpeditionsTable extends Migration
         Schema::create('another_expeditions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->decimal('tax', 15, 0)->nullable();
             $table->timestamps();
         });
     }

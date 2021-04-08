@@ -63,9 +63,9 @@ class Menu
                 $item_class .= ' ' . $item['custom-class'];
             }
 
-            if (isset($item['submenu']) && self::isActiveVerMenuItem($item, request()->path())) {
+            if (isset($item['submenu']) && self::isActiveVerMenuItem($item, request()->segment(1).'/'.request()->segment(2))) {
                 $item_class .= ' menu-item-open menu-item-here'; // m-menu__item--active
-            } elseif (self::isActiveVerMenuItem($item, request()->path())) {
+            } elseif (self::isActiveVerMenuItem($item, request()->segment(1).'/'.request()->segment(2))) {
                 $item_class .= ' menu-item-active';
             }
 
@@ -207,13 +207,13 @@ class Menu
             $item_class = '';
             $item_attr = '';
 
-            if (isset($item['submenu']) && self::isActiveHorMenuItem($item, request()->path())) {
+            if (isset($item['submenu']) && self::isActiveHorMenuItem($item, request()->segment(1).'/'.request()->segment(2))) {
                 $item_class .= ' menu-item-open menu-item-here'; // m-menu__item--active
 
                 if (@$item['submenu']['type'] == 'tabs') {
                     $item_class .= ' menu-item-active-tab ';
                 }
-            } elseif (self::isActiveHorMenuItem($item, request()->path())) {
+            } elseif (self::isActiveHorMenuItem($item, request()->segment(1).'/'.request()->segment(2))) {
                 $item_class .= ' menu-item-active ';
 
                 if (@$item['submenu']['type'] == 'tabs') {
@@ -256,7 +256,7 @@ class Menu
                 }
             }
 
-            if (isset($item['submenu']['items']) && self::isActiveHorMenuItem($item['submenu'], request()->path())) {
+            if (isset($item['submenu']['items']) && self::isActiveHorMenuItem($item['submenu'], request()->segment(1).'/'.request()->segment(2))) {
                 $item_class .= ' menu-item-open menu-item-here'; // m-menu__item--active
             }
 
@@ -397,7 +397,7 @@ class Menu
                         foreach ($item['submenu']['columns'] as $column) {
                             $item_class = '';
                             // mega menu column header active
-                            if (isset($column['items']) && self::isActiveVerMenuItem($column, request()->path())) {
+                            if (isset($column['items']) && self::isActiveVerMenuItem($column, request()->segment(1).'/'.request()->segment(2))) {
                                 $item_class .= ' menu-item-open menu-item-here'; // m-menu__item--active
                             }
 

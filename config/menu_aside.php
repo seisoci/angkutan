@@ -116,7 +116,7 @@ return [
           ]
         ],
         [
-            'section' => 'Settings',
+            'section' => 'Laporan',
         ],
         [
             'title' => 'Logout',

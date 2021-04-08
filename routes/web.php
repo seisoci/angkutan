@@ -39,7 +39,7 @@ Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/quick-search', [PagesController::class, 'quicksearch'])->name('quick-search');
 
 Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(function () {
-  Route::group(['middleware' => ['role:super-admin|admin']], function () {
+  Route::group(['middleware' => ['role:super-admin|admin|employee']], function () {
     Route::post('resetpassword', [BackendUsersController::class,'resetpassword'])->name('users.resetpassword');
     Route::post('changepassword', [BackendUsersController::class, 'changepassword'])->name('users.changepassword');
     Route::resource('users', BackendUsersController::class)->except('show');
