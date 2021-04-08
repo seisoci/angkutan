@@ -32,23 +32,26 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label>Rute Dari</label>
-                <input type="text" name="route_from" class="form-control" placeholder="Input Rute Dari"
-                  value="{{ $data->route_from ?? '' }}" />
+                <label>Rute Dari<span class="text-danger">*</span></label>
+                <select class="form-control select2Routes" name="route_from">
+                  <option value="{{ $data->route_from }}">{{ $data->routefrom->name }}</option>
+                </select>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
-                <label>Rute Ke</label>
-                <input type="text" name="route_to" class="form-control" placeholder="Input Rute Ke"
-                  value="{{ $data->route_to ?? '' }}" />
+                <label>Rute Ke<span class="text-danger">*</span></label>
+                <select class="form-control select2Routes" name="route_to">
+                  <option value="{{ $data->route_to }}">{{ $data->routeto->name }}</option>
+                </select>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <label>Muatan</label>
-            <input type="text" name="cargo" class="form-control" placeholder="Input Muatan"
-              value="{{ $data->cargo ?? '' }}" />
+            <label>Nama Muatan<span class="text-danger">*</span></label>
+            <select class="form-control" id="select2Cargos" name="cargo_id">
+              <option value="{{ $data->cargo_id }}">{{ $data->cargo->name }}</option>
+            </select>
           </div>
           <div class="row">
             <div class="col-md-6">
@@ -126,6 +129,40 @@
       allowClear: true,
       ajax: {
           url: "{{ route('backend.costumers.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    });
+
+    $(".select2Routes").select2({
+      placeholder: "Search Rute",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.routes.select2') }}",
+          dataType: "json",
+          delay: 250,
+          data: function(e) {
+            return {
+                q: e.term || '',
+                page: e.page || 1
+            }
+          },
+          cache: true
+      },
+    });
+
+    $("#select2Cargos").select2({
+      placeholder: "Search Muatan",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.cargos.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,

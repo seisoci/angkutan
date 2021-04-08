@@ -54,12 +54,13 @@
             <label class="d-block">Jenis Mobil</label>
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
               <label class="btn btn-sm btn-info active">
-                <input type="radio" name="type_car" value="ya" {{ $data->type_car == 'engkel' ? 'checked' : NULL }}>
+                <input type="radio" name="type_car" value="engkel" {{ $data->type_car == 'engkel' ? 'checked' : NULL }}>
                 Engkel
                 (Kecil)
               </label>
               <label class="btn btn-sm btn-info">
-                <input type="radio" name="type_car" value="tidak" {{ $data->type_car == 'tronton' ? 'checked' : NULL }}>
+                <input type="radio" name="type_car" value="tronton"
+                  {{ $data->type_car == 'tronton' ? 'checked' : NULL }}>
                 Tronton
                 (Besar)
               </label>

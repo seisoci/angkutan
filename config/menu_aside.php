@@ -42,12 +42,20 @@ return [
                 'page' => 'backend/transports'
             ],
             [
-                'title' => 'Master Uang Jalan',
-                'page' => 'backend/roadmonies'
+              'title' => 'Master Biaya',
+              'page' => 'backend/expenses'
             ],
             [
-                'title' => 'Master Biaya',
-                'page' => 'backend/expenses'
+              'title' => 'Master Rute',
+              'page' => 'backend/routes'
+            ],
+            [
+              'title' => 'Master Muatan',
+              'page' => 'backend/cargos'
+            ],
+            [
+                'title' => 'Master Uang Jalan',
+                'page' => 'backend/roadmonies'
             ],
             [
                 'title' => 'Master LDO',
@@ -94,12 +102,8 @@ return [
           'arrow' => true,
           'submenu' => [
             [
-                'title' => 'Master Tarif Pelanggan',
-                'page' => 'backend/costumerrates'
-            ],
-            [
               'title' => 'Master Akun Kas',
-              'page'  => 'backend/cash'
+              'page'  => 'backend/cashes'
             ],
             [
               'title' => 'Master Bank',

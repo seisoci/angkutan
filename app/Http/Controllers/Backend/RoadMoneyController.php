@@ -117,7 +117,7 @@ class RoadMoneyController extends Controller
       ['page' => '#','title' => "Edit Uang Jalan"],
     ];
 
-    $data = RoadMoney::with('costumers')->findOrFail($id);
+    $data = RoadMoney::with(['costumers', 'routefrom', 'routeto', 'cargo'])->findOrFail($id);
     return view('backend.masteroperational.roadmonies.edit',compact('config', 'page_breadcrumbs', 'data'));
   }
 

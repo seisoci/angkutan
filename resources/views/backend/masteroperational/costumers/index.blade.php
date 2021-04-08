@@ -445,11 +445,11 @@
       e.preventDefault();
       var form 	    = $(this);
       var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
+      var btnHtml   = form.html();
+      var spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
       $.ajax({
         beforeSend:function() {
-          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
+          form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");
         },
         type: 'DELETE',
         url: url,
@@ -457,18 +457,18 @@
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         success: function (response) {
           if(response.status == "success"){
-            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+            form.prop('disabled', false).html(btnHtml);
             toastr.success(response.message,'Success !');
             $('#modalDelete').modal('hide');
             dataTable.draw();
           }else{
-            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+            form.prop('disabled', false).html(btnHtml);
             toastr.error(response.message,'Failed !');
             $('#modalDelete').modal('hide');
           }
         },
         error: function (response) {
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+          form.prop('disabled', false).text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
           toastr.error(response.responseJSON.message ,'Failed !');
           $('#modalDelete').modal('hide');
           $('#modalDelete').find('a[name="id"]').attr('href', '');

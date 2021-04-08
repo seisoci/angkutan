@@ -15,8 +15,8 @@ class CreateCashesTable extends Migration
     {
         Schema::create('cashes', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
             $table->string('name');
+            $table->enum('type', ['kas_kecil', 'kas_besar'])->default('kas_kecil');
             $table->timestamps();
         });
     }

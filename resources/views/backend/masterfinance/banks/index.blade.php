@@ -37,7 +37,8 @@
     <table class="table table-bordered table-hover" id="Datatable">
       <thead>
         <tr>
-          <th>Nama</th>
+          <th>Nama Bank</th>
+          <th>Kode Bank</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -55,7 +56,7 @@
           <i aria-hidden="true" class="ki ki-close"></i>
         </button>
       </div>
-      <form id="formStore" action="{{ route('backend.cargos.store') }}">
+      <form id="formStore" action="{{ route('backend.banks.store') }}">
         @csrf
         <div class="modal-body">
           <div class="form-group" style="display:none;">
@@ -66,8 +67,12 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Nama Muatan</label>
-            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Muatan" />
+            <label>Nama Bank</label>
+            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Bank" />
+          </div>
+          <div class="form-group">
+            <label>Kode Bank</label>
+            <input type="text" name="bank_code" class="form-control form-control-solid" placeholder="Input Kode Bank" />
           </div>
         </div>
         <div class="modal-footer">
@@ -99,8 +104,12 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Nama Muatan</label>
-            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Muatan" />
+            <label>Nama Bank</label>
+            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Bank" />
+          </div>
+          <div class="form-group">
+            <label>Kode Bank</label>
+            <input type="text" name="bank_code" class="form-control form-control-solid" placeholder="Input Kode Bank" />
           </div>
         </div>
         <div class="modal-footer">
@@ -147,23 +156,18 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
-    $(".currency").inputmask('decimal', {
-      groupSeparator: '.',
-      digits:0,
-      rightAlign: true,
-      removeMaskOnSubmit: true
-    });
     var dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[1, 'desc']],
+        order: [[2, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.cargos.index') }}",
+        ajax: "{{ route('backend.banks.index') }}",
         columns: [
             {data: 'name', name: 'name'},
+            {data: 'bank_code', name: 'bank_code'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
@@ -171,7 +175,7 @@
 
     $('#modalDelete').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.cargos.index") }}/'+ id);
+      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.banks.index") }}/'+ id);
     });
     $('#modalDelete').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
@@ -180,15 +184,19 @@
     });
     $('#modalCreate').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');
+      $(this).find('.modal-body').find('input[name="bank_code"]').val('');
     });
     $('#modalEdit').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
       var name = $(event.relatedTarget).data('name');
-      $(this).find('#formUpdate').attr('action', '{{ route("backend.cargos.index") }}/'+id)
+      var bank_code = $(event.relatedTarget).data('bank_code');
+      $(this).find('#formUpdate').attr('action', '{{ route("backend.banks.index") }}/'+id)
       $(this).find('.modal-body').find('input[name="name"]').val(name);
+      $(this).find('.modal-body').find('input[name="bank_code"]').val(bank_code);
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');
+      $(this).find('.modal-body').find('input[name="bank_code"]').val('');
     });
 
     $("#formStore").submit(function(e) {

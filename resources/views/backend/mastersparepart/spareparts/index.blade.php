@@ -195,31 +195,31 @@
       var btnHtml   = form.html();
       var spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
       $.ajax({
-          beforeSend:function() {
-            form.text(' Loading. . .').prepend(spinner);
-          },
-          type: 'DELETE',
-          url: url,
-          dataType: 'json',
-          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-          success: function (response) {
-            if(response.status == "success"){
-              toastr.success(response.message,'Success !');
-              form.text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
-              $('#modalDelete').modal('hide');
-              dataTable.draw();
-            }else{
-              toastr.error(response.message,'Failed !');
-              form.text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
-              $('#modalDelete').modal('hide');
-            }
-          },
-          error: function (response) {
-            toastr.error(response.responseJSON.message ,'Failed !');
-            form.text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
+        beforeSend:function() {
+          form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");
+        },
+        type: 'DELETE',
+        url: url,
+        dataType: 'json',
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+        success: function (response) {
+          if(response.status == "success"){
+            form.prop('disabled', false).html(btnHtml);
+            toastr.success(response.message,'Success !');
             $('#modalDelete').modal('hide');
-            $('#modalDelete').find('a[name="id"]').attr('href', '');
+            dataTable.draw();
+          }else{
+            form.prop('disabled', false).html(btnHtml);
+            toastr.error(response.message,'Failed !');
+            $('#modalDelete').modal('hide');
           }
+        },
+        error: function (response) {
+          form.prop('disabled', false).text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
+          toastr.error(response.responseJSON.message ,'Failed !');
+          $('#modalDelete').modal('hide');
+          $('#modalDelete').find('a[name="id"]').attr('href', '');
+        }
       });
     });
 

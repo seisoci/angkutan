@@ -38,6 +38,7 @@
       <thead>
         <tr>
           <th>Nama</th>
+          <th>Jenis Akun</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -55,7 +56,7 @@
           <i aria-hidden="true" class="ki ki-close"></i>
         </button>
       </div>
-      <form id="formStore" action="{{ route('backend.cargos.store') }}">
+      <form id="formStore" action="{{ route('backend.cashes.store') }}">
         @csrf
         <div class="modal-body">
           <div class="form-group" style="display:none;">
@@ -66,8 +67,16 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Nama Muatan</label>
-            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Muatan" />
+            <label>Nama Akun (Kas)</label>
+            <input type="text" name="name" class="form-control form-control-solid"
+              placeholder="Input Nama Akun (Kas)" />
+          </div>
+          <div class="form-group">
+            <label>Jenis Akun</label>
+            <select class="form-control form-control-solid" name="type">
+              <option value="kas_kecil">Kas Kecil</option>
+              <option value="kas_besar">Kas Besar</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">
@@ -99,8 +108,16 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Nama Muatan</label>
-            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Muatan" />
+            <label>Nama Akun (Kas)</label>
+            <input type="text" name="name" class="form-control form-control-solid"
+              placeholder="Input Nama Akun (Kas)" />
+          </div>
+          <div class="form-group">
+            <label>Jenis Akun</label>
+            <select class="form-control form-control-solid" name="type">
+              <option value="kas_kecil">Kas Kecil</option>
+              <option value="kas_besar">Kas Besar</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">
@@ -147,31 +164,43 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
-    $(".currency").inputmask('decimal', {
-      groupSeparator: '.',
-      digits:0,
-      rightAlign: true,
-      removeMaskOnSubmit: true
-    });
     var dataTable = $('#Datatable').DataTable({
-        responsive: false,
-        scrollX: true,
-        processing: true,
-        serverSide: true,
-        order: [[1, 'desc']],
-        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        pageLength: 10,
-        ajax: "{{ route('backend.cargos.index') }}",
-        columns: [
-            {data: 'name', name: 'name'},
-            {data: 'created_at', name: 'created_at'},
-            {data: 'action', name: 'action', orderable: false, searchable: false},
-        ],
+      responsive: false,
+      scrollX: true,
+      processing: true,
+      serverSide: true,
+      order: [[2, 'desc']],
+      lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+      pageLength: 10,
+      ajax: "{{ route('backend.cashes.index') }}",
+      columns: [
+          {data: 'name', name: 'name'},
+          {data: 'type', name: 'type'},
+          {data: 'created_at', name: 'created_at'},
+          {data: 'action', name: 'action', orderable: false, searchable: false},
+      ],
+      columnDefs: [
+      {
+        className: 'dt-center',
+        targets: 1,
+        width: '75px',
+        render: function(data, type, full, meta) {
+          var status = {
+            'kas_kecil': {'title': 'Kas Kecil'},
+            'kas_besar': {'title': 'Kas Besar'},
+          };
+          if (typeof status[data] === 'undefined') {
+            return data;
+          }
+          return status[data].title;
+        },
+      },
+      ],
     });
 
     $('#modalDelete').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.cargos.index") }}/'+ id);
+      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.cashes.index") }}/'+ id);
     });
     $('#modalDelete').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
@@ -184,11 +213,15 @@
     $('#modalEdit').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
       var name = $(event.relatedTarget).data('name');
-      $(this).find('#formUpdate').attr('action', '{{ route("backend.cargos.index") }}/'+id)
+      var type = $(event.relatedTarget).data('type');
+      $(this).find('#formUpdate').attr('action', '{{ route("backend.cashes.index") }}/'+id)
       $(this).find('.modal-body').find('input[name="name"]').val(name);
+      $(this).find('.modal-body').find('select[name="type"]').val(type);
+      console.log(type);
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');
+      $(this).find('.modal-body').find('select[name="type"]').val('');
     });
 
     $("#formStore").submit(function(e) {

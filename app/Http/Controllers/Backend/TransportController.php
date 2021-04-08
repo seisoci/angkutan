@@ -66,7 +66,7 @@ class TransportController extends Controller
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'another_expedition_id' => 'integer',
+      'another_expedition_id' => 'integer|nullable',
       'num_pol'       => 'required|string',
       'merk'          => 'string|nullable',
       'type'          => 'string|nullable',
@@ -137,7 +137,7 @@ class TransportController extends Controller
   public function update(Request $request, Transport $transport)
   {
     $validator = Validator::make($request->all(), [
-      'another_expedition_id' => 'integer',
+      'another_expedition_id' => 'integer|nullable',
       'num_pol'       => 'required|string',
       'merk'          => 'string|nullable',
       'type'          => 'string|nullable',

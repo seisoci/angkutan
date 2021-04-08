@@ -66,7 +66,7 @@ class DriverController extends Controller
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
-        'another_expedition_id' => 'integer',
+        'another_expedition_id' => 'integer|nullable',
         'name'          => 'required',
         'address'       => 'string|nullable',
         'phone'         => 'string|nullable',
@@ -160,7 +160,7 @@ class DriverController extends Controller
     public function update(Request $request, Driver $driver)
     {
       $validator = Validator::make($request->all(), [
-        'another_expedition_id' => 'integer',
+        'another_expedition_id' => 'integer|nullable',
         'name'          => 'required',
         'address'       => 'string|nullable',
         'phone'         => 'string|nullable',

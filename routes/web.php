@@ -17,6 +17,9 @@ use App\Http\Controllers\Backend\SparepartController as BackendSparepartControll
 use App\Http\Controllers\Backend\ServiceController as BackendServiceController;
 use App\Http\Controllers\Backend\BrandController as BackendBrandController;
 use App\Http\Controllers\Backend\CategoryController as BackendCategoryController;
+use App\Http\Controllers\Backend\CashController as BackendCashController;
+use App\Http\Controllers\Backend\BankController as BackendBankController;
+use App\Http\Controllers\Backend\CompanyController as BackendCompanyController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -71,5 +74,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('services', BackendServiceController::class)->except(['create', 'edit', 'show']);
     Route::resource('brands', BackendBrandController::class)->except(['create', 'edit', 'show']);
     Route::resource('categories', BackendCategoryController::class)->except(['create', 'edit', 'show']);
+    Route::resource('cashes', BackendCashController::class)->except(['create', 'edit', 'show']);
+    Route::resource('banks', BackendBankController::class)->except(['create', 'edit', 'show']);
+    Route::resource('companies', BackendCompanyController::class)->except(['create', 'edit', 'show']);
   });
 });
