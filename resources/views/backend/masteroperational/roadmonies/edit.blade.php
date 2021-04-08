@@ -125,16 +125,16 @@
       placeholder: "Search Costumer",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.roadmonies.select2') }}",
+          url: "{{ route('backend.costumers.select2') }}",
           dataType: "json",
           delay: 250,
+          cache: true,
           data: function(e) {
             return {
-                q: e.term || '',
-                page: e.page || 1
+              q: e.term || '',
+              page: e.page || 1
             }
           },
-          cache: true
       },
     });
 

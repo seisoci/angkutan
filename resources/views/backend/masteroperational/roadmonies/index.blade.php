@@ -125,9 +125,9 @@
         },
         columns: [
             {data: 'costumers.name', name: 'costumers.name'},
-            {data: 'route_from', name: 'route_from'},
-            {data: 'route_to', name: 'route_to'},
-            {data: 'cargo', name: 'cargo'},
+            {data: 'routeto.name', name: 'routeto.name'},
+            {data: 'routefrom.name', name: 'routefrom.name'},
+            {data: 'cargo.name', name: 'cargo.name'},
             {data: 'road_engkel', name: 'road_engkel', render: $.fn.dataTable.render.number( '.', '.', 0)},
             {data: 'road_tronton', name: 'road_tronton', render: $.fn.dataTable.render.number( '.', '.', 0)},
             {data: 'salary_engkel', name: 'salary_engkel', render: $.fn.dataTable.render.number( '.', '.', 0)},
@@ -155,16 +155,16 @@
       placeholder: "Search Costumer",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.roadmonies.select2') }}",
+          url: "{{ route('backend.costumers.select2') }}",
           dataType: "json",
           delay: 250,
+          cache: true,
           data: function(e) {
-              return {
-                  q: e.term || '',
-                  page: e.page || 1
-              }
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
           },
-          cache: true
       },
     }).on('change', function (e){
       dataTable.draw();

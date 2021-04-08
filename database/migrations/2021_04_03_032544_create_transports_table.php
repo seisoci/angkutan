@@ -19,7 +19,7 @@ class CreateTransportsTable extends Migration
         $table->string('num_pol');
         $table->string('merk')->nullable();
         $table->string('type')->nullable();
-        $table->string('type_car', ['engkel', 'tronton'])->default('engkel');
+        $table->enum('type_car', ['engkel', 'tronton'])->default('engkel');
         $table->enum('dump', ['ya', 'tidak'])->default('tidak');
         $table->year('year')->nullable();
         $table->integer('max_weight')->nullable();

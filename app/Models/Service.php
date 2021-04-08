@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model
 {
-    use HasFactory;
+  use HasFactory;
+
   protected $fillable = [
     'name',
   ];
@@ -16,6 +17,10 @@ class Service extends Model
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('Y-m-d H:i:s');
+  }
+
+  public function getNameAttribute($value){
+    return ucwords($value);
   }
 
 }

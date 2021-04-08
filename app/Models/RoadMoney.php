@@ -14,7 +14,7 @@ class RoadMoney extends Model
     'costumer_id',
     'route_from',
     'route_to',
-    'cargo',
+    'cargo_id',
     'road_engkel',
     'road_tronton',
     'salary_engkel',
@@ -29,5 +29,17 @@ class RoadMoney extends Model
 
   public function costumers(){
     return $this->belongsTo(Costumer::class, 'costumer_id');
+  }
+
+  public function routefrom(){
+    return $this->belongsTo(Route::class, 'route_from');
+  }
+
+  public function routeto(){
+    return $this->belongsTo(Route::class, 'route_to');
+  }
+
+  public function cargo(){
+    return $this->belongsTo(Cargo::class);
   }
 }

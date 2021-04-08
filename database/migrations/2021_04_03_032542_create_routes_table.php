@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCostumerRatesTable extends Migration
+class CreateRoutesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateCostumerRatesTable extends Migration
      */
     public function up()
     {
-        Schema::create('costumer_rates', function (Blueprint $table) {
+        Schema::create('routes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('costumer_id')->constrained('costumers')->nullable();
-            $table->string('rates');
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateCostumerRatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('costumer_rates');
+        Schema::dropIfExists('routes');
     }
 }

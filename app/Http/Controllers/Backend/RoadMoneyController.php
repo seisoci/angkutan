@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Costumer;
 use App\Models\RoadMoney;
 use Illuminate\Http\Request;
 use DataTables;
@@ -25,10 +24,9 @@ class RoadMoneyController extends Controller
     $page_breadcrumbs = [
       ['page' => '#','title' => "List Uang Jalan"],
     ];
-
     if ($request->ajax()) {
       $costumer_id = $request->costumer_id;
-      $data = RoadMoney::with('costumers')
+      $data = RoadMoney::with(['costumers', 'routefrom', 'routeto', 'cargo'])
       ->when($costumer_id, function ($query, $id) {
         return $query->where('costumer_id', $id);
       })
@@ -72,7 +70,7 @@ class RoadMoneyController extends Controller
       'costumer_id'   => 'required|integer',
       'route_from'    => 'string|nullable',
       'route_to'      => 'string|nullable',
-      'cargo'         => 'string|nullable',
+      'cargo_id'         => 'string|nullable',
       'road_engkel'   => 'integer|nullable',
       'road_tronton'  => 'integer|nullable',
       'salary_engkel' => 'integer|nullable',
@@ -85,7 +83,7 @@ class RoadMoneyController extends Controller
         'costumer_id'   => $request->input('costumer_id'),
         'route_from'    => $request->input('route_from'),
         'route_to'      => $request->input('route_to'),
-        'cargo'         => $request->input('cargo'),
+        'cargo_id'      => $request->input('cargo_id'),
         'road_engkel'   => $request->input('road_engkel'),
         'road_tronton'  => $request->input('road_tronton'),
         'salary_engkel' => $request->input('salary_engkel'),
@@ -136,7 +134,7 @@ class RoadMoneyController extends Controller
       'costumer_id'   => 'required|integer',
       'route_from'    => 'string|nullable',
       'route_to'      => 'string|nullable',
-      'cargo'         => 'string|nullable',
+      'cargo_id'      => 'string|nullable',
       'road_engkel'   => 'integer|nullable',
       'road_tronton'  => 'integer|nullable',
       'salary_engkel' => 'integer|nullable',
@@ -150,7 +148,7 @@ class RoadMoneyController extends Controller
         'costumer_id'   => $request->input('costumer_id'),
         'route_from'    => $request->input('route_from'),
         'route_to'      => $request->input('route_to'),
-        'cargo'         => $request->input('cargo'),
+        'cargo_id'      => $request->input('cargo_id'),
         'road_engkel'   => $request->input('road_engkel'),
         'road_tronton'  => $request->input('road_tronton'),
         'salary_engkel' => $request->input('salary_engkel'),
@@ -191,33 +189,5 @@ class RoadMoneyController extends Controller
       ]);
     }
     return $response;
-  }
-
-  public function select2(Request $request){
-    $page = $request->page;
-    $resultCount = 10;
-    $offset = ($page - 1) * $resultCount;
-    $data = Costumer::where('name', 'LIKE', '%' . $request->q. '%')
-        ->orderBy('name')
-        ->skip($offset)
-        ->take($resultCount)
-        ->selectRaw('id, name as text')
-        ->get();
-
-    $count = Costumer::where('name', 'LIKE', '%' . $request->q. '%')
-        ->get()
-        ->count();
-
-    $endCount = $offset + $resultCount;
-    $morePages = $count > $endCount;
-
-    $results = array(
-      "results" => $data,
-      "pagination" => array(
-          "more" => $morePages
-      )
-    );
-
-    return response()->json($results);
   }
 }

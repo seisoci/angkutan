@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Sparepart;
-use App\Models\SupplierSparepart;
 use Illuminate\Http\Request;
 use DataTables;
 use DB;
@@ -202,89 +200,5 @@ class SparepartController extends Controller
         ]);
       }
       return $response;
-    }
-
-    public function select2Brands(Request $request){
-      $page = $request->page;
-      $resultCount = 10;
-      $offset = ($page - 1) * $resultCount;
-      $data = Brand::where('name', 'LIKE', '%' . $request->q. '%')
-          ->orderBy('name')
-          ->skip($offset)
-          ->take($resultCount)
-          ->selectRaw('id, name as text')
-          ->get();
-
-      $count = Brand::where('name', 'LIKE', '%' . $request->q. '%')
-          ->get()
-          ->count();
-
-      $endCount = $offset + $resultCount;
-      $morePages = $count > $endCount;
-
-      $results = array(
-        "results" => $data,
-        "pagination" => array(
-            "more" => $morePages
-        )
-      );
-
-      return response()->json($results);
-    }
-
-    public function select2Suppliers(Request $request){
-      $page = $request->page;
-      $resultCount = 10;
-      $offset = ($page - 1) * $resultCount;
-      $data = SupplierSparepart::where('name', 'LIKE', '%' . $request->q. '%')
-          ->orderBy('name')
-          ->skip($offset)
-          ->take($resultCount)
-          ->selectRaw('id, name as text')
-          ->get();
-
-      $count = SupplierSparepart::where('name', 'LIKE', '%' . $request->q. '%')
-          ->get()
-          ->count();
-
-      $endCount = $offset + $resultCount;
-      $morePages = $count > $endCount;
-
-      $results = array(
-        "results" => $data,
-        "pagination" => array(
-            "more" => $morePages
-        )
-      );
-
-      return response()->json($results);
-    }
-
-    public function select2Categories(Request $request){
-      $page = $request->page;
-      $resultCount = 10;
-      $offset = ($page - 1) * $resultCount;
-      $data = Category::where('name', 'LIKE', '%' . $request->q. '%')
-          ->orderBy('name')
-          ->skip($offset)
-          ->take($resultCount)
-          ->selectRaw('id, name as text')
-          ->get();
-
-      $count = Category::where('name', 'LIKE', '%' . $request->q. '%')
-          ->get()
-          ->count();
-
-      $endCount = $offset + $resultCount;
-      $morePages = $count > $endCount;
-
-      $results = array(
-        "results" => $data,
-        "pagination" => array(
-            "more" => $morePages
-        )
-      );
-
-      return response()->json($results);
     }
 }

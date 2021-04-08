@@ -16,9 +16,9 @@ class CreateRoadMoneyTable extends Migration
         Schema::create('road_money', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('costumer_id');
-            $table->string('route_from')->nullable();
-            $table->string('route_to')->nullable();
-            $table->string('cargo')->nullable();
+            $table->foreignId('route_from')->constrained('routes');
+            $table->foreignId('route_to')->constrained('routes');
+            $table->foreignId('cargo_id')->constrained('cargos');
             $table->decimal('road_engkel', 15, 0)->nullable();
             $table->decimal('road_tronton', 15, 0)->nullable();
             $table->decimal('salary_engkel', 15, 0)->nullable();

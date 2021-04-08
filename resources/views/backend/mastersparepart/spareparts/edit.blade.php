@@ -156,16 +156,16 @@
       placeholder: "Search Brands",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.spareparts.select2Brands') }}",
+          url: "{{ route('backend.brands.select2') }}",
           dataType: "json",
           delay: 250,
+          cache: true,
           data: function(e) {
             return {
-                q: e.term || '',
-                page: e.page || 1
+              q: e.term || '',
+              page: e.page || 1
             }
           },
-          cache: true
       },
     });
 
@@ -173,16 +173,16 @@
       placeholder: "Search Suppliers",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.spareparts.select2Suppliers') }}",
+          url: "{{ route('backend.supplierspareparts.select2') }}",
           dataType: "json",
           delay: 250,
+          cache: true,
           data: function(e) {
             return {
-                q: e.term || '',
-                page: e.page || 1
+              q: e.term || '',
+              page: e.page || 1
             }
           },
-          cache: true
       },
     });
 
@@ -191,16 +191,16 @@
       allowClear: true,
       tags: true,
       ajax: {
-          url: "{{ route('backend.spareparts.select2Categories') }}",
+          url: "{{ route('backend.categories.select2') }}",
           dataType: "json",
           delay: 250,
+          cache: true,
           data: function(e) {
             return {
-                q: e.term || '',
-                page: e.page || 1
+              q: e.term || '',
+              page: e.page || 1
             }
           },
-          cache: true
       },
       createTag: function(params) {
       return undefined;

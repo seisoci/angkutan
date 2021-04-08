@@ -27,4 +27,8 @@ class Costumer extends Model
   public function roadmoney(){
     return $this->hasMany(RoadMoney::class);
   }
+
+  public function getNameAttribute($value){
+    return ucwords($value);
+  }
 }

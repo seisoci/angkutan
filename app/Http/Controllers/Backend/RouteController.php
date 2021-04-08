@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Service;
+use App\Models\Route;
 use Illuminate\Http\Request;
-use DataTables;
 use Illuminate\Support\Facades\Validator;
+use DataTables;
 
-class ServiceController extends Controller
+class RouteController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,13 +17,13 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-      $config['page_title']       = "List Servis";
-      $config['page_description'] = "Daftar List Servis";
+      $config['page_title']       = "List Rute";
+      $config['page_description'] = "Daftar List Rute";
       $page_breadcrumbs = [
-        ['page' => '#','title' => "List Servis"],
+        ['page' => '#','title' => "List Rute"],
       ];
       if ($request->ajax()) {
-        $data = Service::query();
+        $data = Route::query();
         return Datatables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
@@ -33,7 +33,7 @@ class ServiceController extends Controller
             return $actionBtn;
         })->make(true);
       }
-      return view('backend.mastersparepart.services.index', compact('config', 'page_breadcrumbs'));
+      return view('backend.masteroperational.routes.index', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -49,7 +49,7 @@ class ServiceController extends Controller
       ]);
 
       if($validator->passes()){
-        Service::create([
+        Route::create([
           'name'      => $request->input('name'),
         ]);
         $response = response()->json([
@@ -66,7 +66,7 @@ class ServiceController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Service  $Service
+     * @param  \App\Models\Route  $route
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -76,7 +76,7 @@ class ServiceController extends Controller
       ]);
 
       if($validator->passes()){
-        $data = Service::find($id);
+        $data = Route::find($id);
         $data->update([
           'name'      => $request->input('name'),
         ]);
@@ -93,17 +93,17 @@ class ServiceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Service  $Service
+     * @param  \App\Models\Route  $route
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
       $response = response()->json([
-          'status' => 'error',
-          'message' => 'Data cannot be deleted',
+        'status' => 'error',
+        'message' => 'Data cannot be deleted',
       ]);
 
-      $data = Service::find($id);
+      $data = Route::find($id);
       if($data->delete()){
         $response = response()->json([
           'status'  => 'success',
@@ -111,5 +111,33 @@ class ServiceController extends Controller
         ]);
       }
       return $response;
+    }
+
+    public function select2(Request $request){
+      $page = $request->page;
+      $resultCount = 10;
+      $offset = ($page - 1) * $resultCount;
+      $data = Route::where('name', 'LIKE', '%' . $request->q. '%')
+          ->orderBy('name')
+          ->skip($offset)
+          ->take($resultCount)
+          ->selectRaw('id, name as text')
+          ->get();
+
+      $count = Route::where('name', 'LIKE', '%' . $request->q. '%')
+          ->get()
+          ->count();
+
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
+
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
+
+      return response()->json($results);
     }
 }

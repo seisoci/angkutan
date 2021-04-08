@@ -20,7 +20,8 @@
           </div>
           <div class="form-group">
             <label>Old Password</label>
-            <input type="password" name="old_password" class="form-control form-control-solid" placeholder="Input Old Password" />
+            <input type="password" name="old_password" class="form-control form-control-solid"
+              placeholder="Input Old Password" />
           </div>
           <div class="form-group">
             <label>New Password</label>
@@ -46,12 +47,12 @@
 <script>
   $(document).ready(function(){
     $('#modalChangePassword').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('input[name="id"]').val(id);
     });
 
     $('#modalChangePassword').on('hidden.bs.modal', function (event) {
-      $(this).find('.modal-body').find('input[name="id"]').val('');
+      $(this).find('.modal-body').find('input[name="old_password"]').val('');
+      $(this).find('.modal-body').find('input[name="password"]').val('');
+      $(this).find('.modal-body').find('input[name="password_confirmation"]').val('');
     });
 
     $("#formChangePassword").submit(function(e) {
@@ -75,8 +76,7 @@
           btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
           if (response.status == "success") {
             toastr.success(response.message, 'Success !');
-            $('#modalCreate').modal('hide');
-            dataTable.draw();
+            $('#modalChangePassword').modal('hide');
             $("[role='changepassword']").parent().css("display", "none");
           } else {
             $("[role='changepassword']").parent().removeAttr("style");
@@ -90,8 +90,7 @@
         error: function(response) {
           btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
           toastr.error(response.responseJSON.message, 'Failed !');
-          $('#modalCreate').modal('hide');
-          $('#modalCreate').find('a[name="id"]').attr('href', '');
+          $('#modalChangePassword').modal('hide');
         }
       });
     });

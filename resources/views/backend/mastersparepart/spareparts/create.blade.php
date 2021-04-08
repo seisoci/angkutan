@@ -142,16 +142,16 @@
       placeholder: "Search Brands",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.spareparts.select2Brands') }}",
-          dataType: "json",
-          delay: 250,
-          data: function(e) {
-            return {
-                q: e.term || '',
-                page: e.page || 1
-            }
-          },
-          cache: true
+        url: "{{ route('backend.brands.select2') }}",
+        dataType: "json",
+        delay: 250,
+        cache: true,
+        data: function(e) {
+          return {
+            q: e.term || '',
+            page: e.page || 1
+          }
+        },
       },
     });
 
@@ -159,17 +159,17 @@
       placeholder: "Search Suppliers",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.spareparts.select2Suppliers') }}",
-          dataType: "json",
-          delay: 250,
-          data: function(e) {
-            return {
-                q: e.term || '',
-                page: e.page || 1
-            }
-          },
-          cache: true
-      },
+        url: "{{ route('backend.supplierspareparts.select2') }}",
+        dataType: "json",
+        delay: 250,
+        cache: true,
+        data: function(e) {
+          return {
+            q: e.term || '',
+            page: e.page || 1
+          }
+        },
+    },
     });
 
     $("#select2Categories").select2({
@@ -177,16 +177,16 @@
       allowClear: true,
       tags: true,
       ajax: {
-          url: "{{ route('backend.spareparts.select2Categories') }}",
-          dataType: "json",
-          delay: 250,
-          data: function(e) {
-            return {
-                q: e.term || '',
-                page: e.page || 1
-            }
-          },
-          cache: true
+        url: "{{ route('backend.categories.select2') }}",
+        dataType: "json",
+        delay: 250,
+        cache: true,
+        data: function(e) {
+          return {
+            q: e.term || '',
+            page: e.page || 1
+          }
+        },
       },
       createTag: function(params) {
       return undefined;
@@ -203,6 +203,7 @@
         reader.readAsDataURL(this.files[0]);
       }
     });
+
   });
 </script>
 @endsection

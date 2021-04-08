@@ -10,107 +10,135 @@ use Validator;
 
 class CategoryController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function index(Request $request)
-  {
-    $config['page_title']       = "List Kategori";
-    $config['page_description'] = "Daftar List Kategori";
-    $page_breadcrumbs = [
-      ['page' => '#','title' => "List Kategori"],
-    ];
-    if ($request->ajax()) {
-      $data = Category::query();
-      return Datatables::of($data)
-      ->addIndexColumn()
-      ->addColumn('action', function($row){
-          $actionBtn = '
-          <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-name="'.$row->name.'" class="edit btn btn-warning btn-sm">Edit</a>
-          <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
-          return $actionBtn;
-      })->make(true);
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+      $config['page_title']       = "List Kategori";
+      $config['page_description'] = "Daftar List Kategori";
+      $page_breadcrumbs = [
+        ['page' => '#','title' => "List Kategori"],
+      ];
+      if ($request->ajax()) {
+        $data = Category::query();
+        return Datatables::of($data)
+        ->addIndexColumn()
+        ->addColumn('action', function($row){
+            $actionBtn = '
+            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-name="'.$row->name.'" class="edit btn btn-warning btn-sm">Edit</a>
+            <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
+            return $actionBtn;
+        })->make(true);
 
+      }
+      return view('backend.mastersparepart.categories.index', compact('config', 'page_breadcrumbs'));
     }
-    return view('backend.mastersparepart.categories.index', compact('config', 'page_breadcrumbs'));
-  }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
-  public function store(Request $request)
-  {
-    $validator = Validator::make($request->all(), [
-      'name'    => 'required|string',
-    ]);
-
-    if($validator->passes()){
-      Category::create([
-        'name'      => $request->input('name'),
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+      $validator = Validator::make($request->all(), [
+        'name'    => 'required|string',
       ]);
+
+      if($validator->passes()){
+        Category::create([
+          'name'      => $request->input('name'),
+        ]);
+        $response = response()->json([
+          'status'  => 'success',
+          'message' => 'Data has been saved',
+        ]);
+      }else{
+        $response = response()->json(['error'=>$validator->errors()->all()]);
+      }
+      return $response;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Service  $Service
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+      $validator = Validator::make($request->all(), [
+        'name'    => 'required|string',
+      ]);
+
+      if($validator->passes()){
+        $data = Category::find($id);
+        $data->update([
+          'name'      => $request->input('name'),
+        ]);
+        $response = response()->json([
+          'status'  => 'success',
+          'message' => 'Data has been saved',
+        ]);
+      }else{
+        $response = response()->json(['error'=>$validator->errors()->all()]);
+      }
+      return $response;
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Service  $Service
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
       $response = response()->json([
-        'status'  => 'success',
-        'message' => 'Data has been saved',
+          'status' => 'error',
+          'message' => 'Data cannot be deleted',
       ]);
-    }else{
-      $response = response()->json(['error'=>$validator->errors()->all()]);
-    }
-    return $response;
-  }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  \App\Models\Service  $Service
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, $id)
-  {
-    $validator = Validator::make($request->all(), [
-      'name'    => 'required|string',
-    ]);
-
-    if($validator->passes()){
       $data = Category::find($id);
-      $data->update([
-        'name'      => $request->input('name'),
-      ]);
-      $response = response()->json([
-        'status'  => 'success',
-        'message' => 'Data has been saved',
-      ]);
-    }else{
-      $response = response()->json(['error'=>$validator->errors()->all()]);
+      if($data->delete()){
+        $response = response()->json([
+          'status'  => 'success',
+          'message' => 'Data has been deleted',
+        ]);
+      }
+      return $response;
     }
-    return $response;
-  }
 
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  \App\Models\Service  $Service
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy($id)
-  {
-    $response = response()->json([
-        'status' => 'error',
-        'message' => 'Data cannot be deleted',
-    ]);
+    public function select2(Request $request){
+      $page = $request->page;
+      $resultCount = 10;
+      $offset = ($page - 1) * $resultCount;
+      $data = Category::where('name', 'LIKE', '%' . $request->q. '%')
+          ->orderBy('name')
+          ->skip($offset)
+          ->take($resultCount)
+          ->selectRaw('id, name as text')
+          ->get();
 
-    $data = Category::find($id);
-    if($data->delete()){
-      $response = response()->json([
-        'status'  => 'success',
-        'message' => 'Data has been deleted',
-      ]);
+      $count = Category::where('name', 'LIKE', '%' . $request->q. '%')
+          ->get()
+          ->count();
+
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
+
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
+
+      return response()->json($results);
     }
-    return $response;
-  }
 }

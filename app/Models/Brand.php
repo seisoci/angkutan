@@ -22,4 +22,8 @@ class Brand extends Model
   public function spareparts(){
     return $this->hasMany(Sparepart::class);
   }
+
+  public function getNameAttribute($value){
+    return ucwords($value);
+  }
 }

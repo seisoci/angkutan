@@ -6,13 +6,12 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SupplierSparepart extends Model
+class Cargo extends Model
 {
     use HasFactory;
+
   protected $fillable = [
     'name',
-    'address',
-    'phone'
   ];
 
   public function getCreatedAtAttribute($value){
@@ -20,8 +19,8 @@ class SupplierSparepart extends Model
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function spareparts(){
-    return $this->hasMany(Sparepart::class);
+  public function roadmoney(){
+    return $this->hasMany(RoadMoney::class);
   }
 
   public function getNameAttribute($value){

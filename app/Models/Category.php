@@ -22,4 +22,8 @@ class Category extends Model
   public function spareparts(){
     return $this->belongsToMany(Sparepart::class);
   }
+
+  public function getNameAttribute($value){
+    return ucwords($value);
+  }
 }

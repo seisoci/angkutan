@@ -55,7 +55,7 @@
           <i aria-hidden="true" class="ki ki-close"></i>
         </button>
       </div>
-      <form id="formStore" action="{{ route('backend.services.store') }}">
+      <form id="formStore" action="{{ route('backend.cargos.store') }}">
         @csrf
         <div class="modal-body">
           <div class="form-group" style="display:none;">
@@ -66,8 +66,8 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Nama Servis</label>
-            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Servis" />
+            <label>Nama Muatan</label>
+            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Muatan" />
           </div>
         </div>
         <div class="modal-footer">
@@ -99,8 +99,8 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Nama Servis</label>
-            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Servis" />
+            <label>Nama Muatan</label>
+            <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Muatan" />
           </div>
         </div>
         <div class="modal-footer">
@@ -161,7 +161,7 @@
         order: [[1, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.services.index') }}",
+        ajax: "{{ route('backend.cargos.index') }}",
         columns: [
             {data: 'name', name: 'name'},
             {data: 'created_at', name: 'created_at'},
@@ -171,7 +171,7 @@
 
     $('#modalDelete').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.services.index") }}/'+ id);
+      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.cargos.index") }}/'+ id);
     });
     $('#modalDelete').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
@@ -184,7 +184,7 @@
     $('#modalEdit').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
       var name = $(event.relatedTarget).data('name');
-      $(this).find('#formUpdate').attr('action', '{{ route("backend.services.index") }}/'+id)
+      $(this).find('#formUpdate').attr('action', '{{ route("backend.cargos.index") }}/'+id)
       $(this).find('.modal-body').find('input[name="name"]').val(name);
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {
