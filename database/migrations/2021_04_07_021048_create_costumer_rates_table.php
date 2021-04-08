@@ -15,8 +15,6 @@ class CreateCostumerRatesTable extends Migration
     {
         Schema::create('costumer_rates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('costumer_id')->constrained('costumers')->nullable();
-            $table->string('rates');
             $table->timestamps();
         });
     }
