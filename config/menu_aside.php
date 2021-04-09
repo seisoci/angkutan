@@ -54,6 +54,10 @@ return [
               'page' => 'backend/cargos'
             ],
             [
+              'title' => 'Master Kapasitas',
+              'page' => 'backend/typecapacities'
+            ],
+            [
                 'title' => 'Master Uang Jalan',
                 'page' => 'backend/roadmonies'
             ],
@@ -116,7 +120,29 @@ return [
           ]
         ],
         [
-            'section' => 'Laporan',
+          'section' => 'Spare Parts',
+        ],
+        [
+          'title' => 'Spare Parts',
+          'desc' => '',
+          'icon' => 'media/svg/icons/Home/Book-open.svg',
+          'bullet' => 'dot',
+          'root' => true,
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Pembelian',
+              'page'  => 'backend/purcheses'
+            ],
+            [
+              'title' => 'Invoice Pembelian',
+              'page'  => 'backend/invoice'
+            ],
+            [
+              'title' => 'Master Perusahaan',
+              'page'  => 'backend/companies'
+            ]
+          ]
         ],
         [
             'title' => 'Logout',

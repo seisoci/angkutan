@@ -15,10 +15,6 @@ class RoadMoney extends Model
     'route_from',
     'route_to',
     'cargo_id',
-    'road_engkel',
-    'road_tronton',
-    'salary_engkel',
-    'salary_tronton',
     'amount',
   ];
 
@@ -41,5 +37,9 @@ class RoadMoney extends Model
 
   public function cargo(){
     return $this->belongsTo(Cargo::class);
+  }
+
+  public function typecapacities(){
+    return $this->belongsToMany(TypeCapacity::class, 'roadmoney_typecapacity')->withPivot(['road_engkel', 'road_tronton', 'salary_engkel', 'salary_tronton']);
   }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\RoadMoney;
+use App\Models\TypeCapacity;
 use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -26,7 +27,7 @@ class RoadMoneyController extends Controller
     ];
     if ($request->ajax()) {
       $costumer_id = $request->costumer_id;
-      $data = RoadMoney::with(['costumers', 'routefrom', 'routeto', 'cargo'])
+      $data = RoadMoney::with(['costumers', 'routefrom', 'routeto', 'cargo', 'typecapacities'])
       ->when($costumer_id, function ($query, $id) {
         return $query->where('costumer_id', $id);
       })
@@ -70,26 +71,20 @@ class RoadMoneyController extends Controller
       'costumer_id'   => 'required|integer',
       'route_from'    => 'string|nullable',
       'route_to'      => 'string|nullable',
-      'cargo_id'         => 'string|nullable',
-      'road_engkel'   => 'integer|nullable',
-      'road_tronton'  => 'integer|nullable',
-      'salary_engkel' => 'integer|nullable',
-      'salary_tronton'=> 'integer|nullable',
+      'cargo_id'      => 'string|nullable',
       'amount'        => 'integer|nullable',
     ]);
 
     if($validator->passes()){
-      RoadMoney::create([
+      $data = RoadMoney::create([
         'costumer_id'   => $request->input('costumer_id'),
         'route_from'    => $request->input('route_from'),
         'route_to'      => $request->input('route_to'),
         'cargo_id'      => $request->input('cargo_id'),
-        'road_engkel'   => $request->input('road_engkel'),
-        'road_tronton'  => $request->input('road_tronton'),
-        'salary_engkel' => $request->input('salary_engkel'),
-        'salary_tronton'=> $request->input('salary_tronton'),
         'amount'        => $request->input('amount')
       ]);
+      $type_capacities = TypeCapacity::all();
+      $data->typecapacities()->attach($type_capacities);
 
       $response = response()->json([
         'status' => 'success',
@@ -183,10 +178,54 @@ class RoadMoneyController extends Controller
     $data = RoadMoney::find($id);
 
     if($data->delete()){
+      $data->typecapacities()->detach();
       $response = response()->json([
         'status' => 'success',
         'message' => 'Data has been deleted',
       ]);
+    }
+    return $response;
+  }
+
+  public function typecapacities(Request $request){
+    $validator = Validator::make($request->all(), [
+      'type_capacity_id'  => 'integer',
+      'road_money_id'     => 'integer',
+    ]);
+
+    if($validator->passes()){
+      $data = RoadMoney::firstOrFail('id', $request->road_money_id)->typecapacities()->where('type_capacity_id', $request->type_capacity_id)
+      ->first();
+
+      $response = response()->json([
+        'data' => $data,
+      ]);
+    }
+    return $response;
+  }
+
+  public function updatetypecapacities(Request $request, $id){
+    $validator = Validator::make($request->all(), [
+      'type_capacity_id' => 'required|integer',
+      'road_engkel'   => 'integer|nullable',
+      'road_tronton'  => 'integer|nullable',
+      'salary_engkel' => 'integer|nullable',
+      'salary_tronton'=> 'integer|nullable',
+    ]);
+
+    if($validator->passes()){
+      $data = RoadMoney::firstOrFail('id', $request->road_money_id);
+      if($data->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->count() >= 1){
+        $data->typecapacities()->updateExistingPivot($request->type_capacity_id, $request->except(['type_capacity_id', '_method']));
+      }else{
+        $data->typecapacities()->attach($request->type_capacity_id, $request->except(['type_capacity_id','_method']));
+      }
+      $response = response()->json([
+        'status' => 'success',
+        'message' => 'Data has been updated',
+      ]);
+    }else{
+      $response = response()->json(['error'=>$validator->errors()->all()]);
     }
     return $response;
   }

@@ -20,6 +20,8 @@ use App\Http\Controllers\Backend\CategoryController as BackendCategoryController
 use App\Http\Controllers\Backend\CashController as BackendCashController;
 use App\Http\Controllers\Backend\BankController as BackendBankController;
 use App\Http\Controllers\Backend\CompanyController as BackendCompanyController;
+use App\Http\Controllers\Backend\TypeCapacityController as BackendTypeCapacityController;
+use App\Http\Controllers\Backend\PurchaseController as BackendPurchaseController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -44,23 +46,28 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::post('changepassword', [BackendUsersController::class, 'changepassword'])->name('users.changepassword');
     Route::resource('users', BackendUsersController::class)->except('show');
     Route::resource('roles', BackendRolesController::class)->except(['create', 'show', 'destroy']);
-    Route::prefix('menus')->name('menus.')->group(function() {
-      Route::post('change_hierarchy', [BackendMenusController::class,'change_hierarchy'])->name('change_hierarchy');
-      Route::post('autocomplete ', [BackendMenusController::class,'autocomplete '])->name('autocomplete');
-    });
+
+    //Select2
     Route::get('costumers/select2', [BackendCostumerController::class, 'select2'])->name('costumers.select2');
     Route::get('cargos/select2', [BackendCargoController::class, 'select2'])->name('cargos.select2');
     Route::get('routes/select2', [BackendRouteController::class, 'select2'])->name('routes.select2');
     Route::get('brands/select2', [BackendBrandController::class, 'select2'])->name('brands.select2');
+    Route::get('typecapacities/select2', [BackendTypeCapacityController::class, 'select2'])->name('typecapacities.select2');
     Route::get('categories/select2', [BackendCategoryController::class, 'select2'])->name('categories.select2');
     Route::get('supplierspareparts/select2', [BackendSupplierSparepartController::class, 'select2'])->name('supplierspareparts.select2');
+
+    //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
       Route::get('{id}/create_driver/', [BackendAnotherExpeditionController::class, 'create_driver'])->name('create_driver');
       Route::get('{id}/create_transport/', [BackendAnotherExpeditionController::class, 'create_transport'])->name('create_transport');
       Route::get('{id}/datatable_transport/', [BackendAnotherExpeditionController::class, 'datatable_transport'])->name('datatable_transport');
       Route::get('{id}/datatable_driver/', [BackendAnotherExpeditionController::class, 'datatable_driver'])->name('datatable_driver');
     });
-    Route::resource('menus', BackendMenusController::class)->except(['create', 'show']);
+
+    Route::post('roadmonies/typecapacities', [BackendRoadMoneyController::class, 'typecapacities'])->name('roadmonies.typecapacities');
+    Route::put('roadmonies/{id}/updatetypecapacities', [BackendRoadMoneyController::class, 'updatetypecapacities'])->name('roadmonies.updatetypecapacities');
+
+    //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
     Route::resource('drivers', BackendDriverController::class);
     Route::resource('routes', BackendRouteController::class)->except(['create', 'edit', 'show']);
@@ -69,13 +76,19 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('roadmonies', BackendRoadMoneyController::class)->except('show');
     Route::resource('expenses', BackendExpenseController::class)->except(['create', 'edit', 'show']);
     Route::resource('anotherexpedition', BackendAnotherExpeditionController::class)->except(['create', 'edit']);
+    Route::resource('typecapacities', BackendTypeCapacityController::class)->except(['create', 'edit', 'show']);
+    //Master Services
     Route::resource('supplierspareparts', BackendSupplierSparepartController::class)->except(['create', 'edit', 'show']);
     Route::resource('spareparts', BackendSparepartController::class)->except('show');
     Route::resource('services', BackendServiceController::class)->except(['create', 'edit', 'show']);
     Route::resource('brands', BackendBrandController::class)->except(['create', 'edit', 'show']);
     Route::resource('categories', BackendCategoryController::class)->except(['create', 'edit', 'show']);
+    //Master Accounting
     Route::resource('cashes', BackendCashController::class)->except(['create', 'edit', 'show']);
     Route::resource('banks', BackendBankController::class)->except(['create', 'edit', 'show']);
     Route::resource('companies', BackendCompanyController::class)->except(['create', 'edit', 'show']);
+
+    //Purchase
+    Route::resource('purchases', BackendPurchaseController::class)->only(['index', 'store']);
   });
 });

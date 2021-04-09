@@ -11,8 +11,10 @@
           {{ $config['page_title'] }}
         </h3>
       </div>
+
       <!--begin::Form-->
       <form id="formStore" action="{{ route('backend.roadmonies.store') }}">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         @csrf
         <div class="card-body">
           <div class="form-group" style="display:none;">
@@ -48,49 +50,11 @@
             <select class="form-control" id="select2Cargos" name="cargo_id">
             </select>
           </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Uang Jalan Engkel</label>
-                <input type="text" name="road_engkel" class="currency form-control"
-                  placeholder="Input Uang Jalan Engkel" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Uang Jalan Tronton</label>
-                <input type="text" name="road_tronton" class="currency form-control"
-                  placeholder="Input Uang Jalan Tronton" />
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Gaji Engkel</label>
-                <input type="text" name="salary_engkel" class="currency form-control" placeholder="Input Gaji Engkel" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Gaji Tronton</label>
-                <input type="text" name="salary_tronton" class="currency form-control"
-                  placeholder="Input Gaji Tronton" />
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Gaji Rumusan</label>
-                <input type="text" name="amount" class="currency form-control" placeholder="Input Gaji Rumusan" />
-              </div>
-            </div>
-          </div>
           <div class="card-footer d-flex justify-content-end">
             <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
             <button type="submit" class="btn btn-primary">Submit</button>
           </div>
+        </div>
       </form>
       <!--end::Form-->
     </div>
@@ -211,6 +175,7 @@
         }
       });
     });
+
   });
 </script>
 @endsection

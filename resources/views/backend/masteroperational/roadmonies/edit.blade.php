@@ -53,19 +53,46 @@
               <option value="{{ $data->cargo_id }}">{{ $data->cargo->name }}</option>
             </select>
           </div>
+          <div class="card-footer d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </form>
+      <!--end::Form-->
+    </div>
+  </div>
+  <div class="col-md-6 col-sm-12">
+    <div class="card card-custom">
+      <div class="card-header">
+        <h3 class="card-title">
+          Setting Uang Jalan
+        </h3>
+      </div>
+      <!--begin::Form-->
+      <form id="formUpdateTypeCapacity"
+        action="{{ route('backend.roadmonies.updatetypecapacities', Request::segment(3)) }}">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        @method('PUT')
+        <div class="card-body">
+          <div class="form-group">
+            <label>Kapasitas<span class="text-danger">*</span></label>
+            <select class="form-control" id="select2TypeCapacities" name="type_capacity_id">
+            </select>
+          </div>
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
                 <label>Uang Jalan Engkel</label>
                 <input type="text" name="road_engkel" class="currency form-control"
-                  placeholder="Input Uang Jalan Engkel" value="{{ $data->road_engkel ?? '' }}" />
+                  placeholder="Input Uang Jalan Engkel" />
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label>Uang Jalan Tronton</label>
                 <input type="text" name="road_tronton" class="currency form-control"
-                  placeholder="Input Uang Jalan Tronton" value="{{ $data->road_tronton ?? '' }}" />
+                  placeholder="Input Uang Jalan Tronton" />
               </div>
             </div>
           </div>
@@ -73,31 +100,21 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label>Gaji Engkel</label>
-                <input type="text" name="salary_engkel" class="currency form-control" placeholder="Input Gaji Engkel"
-                  value="{{ $data->salary_engkel ?? '' }}" />
+                <input type="text" name="salary_engkel" class="currency form-control" placeholder="Input Gaji Engkel" />
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label>Gaji Tronton</label>
-                <input type="text" name="salary_tronton" class="currency form-control" placeholder="Input Gaji Tronton"
-                  value="{{ $data->salary_tronton ?? '' }}" />
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Gaji Rumusan</label>
-                <input type="text" name="amount" class="currency form-control" placeholder="Input Gaji Rumusan"
-                  value="{{ $data->amount ?? '' }}" />
+                <input type="text" name="salary_tronton" class="currency form-control"
+                  placeholder="Input Gaji Tronton" />
               </div>
             </div>
           </div>
           <div class="card-footer d-flex justify-content-end">
-            <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Update Uang Jalan</button>
           </div>
+        </div>
       </form>
       <!--end::Form-->
     </div>
@@ -175,6 +192,47 @@
       },
     });
 
+    $("#select2TypeCapacities").select2({
+      placeholder: "Search Kapasitas",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.typecapacities.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    }).on('change', function (e){
+      getData();
+    });
+
+    function getData() {
+      var formData = {
+        type_capacity_id: $('#select2TypeCapacities').find(':selected').val(),
+        road_money_id: "{{ Request::segment(3) }}"
+      }
+      $.ajax({
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          type:'POST',
+          url: "{{ route('backend.roadmonies.typecapacities') }}",
+          data: formData,
+          success:function(response) {
+            let data = response.data.pivot;
+            $('input[name=road_engkel]').val(data.road_engkel);
+            $('input[name=road_tronton]').val(data.road_tronton);
+            $('input[name=salary_engkel]').val(data.salary_engkel);
+            $('input[name=salary_tronton]').val(data.salary_tronton);
+          }
+      });
+    }
+
     $("#formUpdate").submit(function(e){
       e.preventDefault();
       var form 	= $(this);
@@ -207,6 +265,46 @@
 								location.href = response.redirect;
 							}
             }, 1000);
+          }else{
+            $("[role='alert']").parent().removeAttr("style");
+            $(".alert-text").html('');
+            $.each( response.error, function( key, value ) {
+              $(".alert-text").append('<span style="display: block">'+value+'</span>');
+            });
+            toastr.error("Please complete your form",'Failed !');
+          }
+        },error: function(response){
+            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+            toastr.error(response.responseJSON.message, 'Failed !');
+        }
+      });
+    });
+
+    $("#formUpdateTypeCapacity").submit(function(e){
+      e.preventDefault();
+      var form 	= $(this);
+      var btnSubmit = form.find("[type='submit']");
+      var btnSubmitHtml = btnSubmit.html();
+      var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      var url 	= form.attr("action");
+      var data 	= new FormData(this);
+      $.ajax({
+        beforeSend:function() {
+          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled","disabled");
+        },
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
+        type: "POST",
+        url : url,
+        data : data,
+        success: function(response) {
+          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+          if ( response.status == "success" ){
+            toastr.success(response.message,'Success !');
           }else{
             $("[role='alert']").parent().removeAttr("style");
             $(".alert-text").html('');

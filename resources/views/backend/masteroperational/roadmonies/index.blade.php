@@ -56,11 +56,7 @@
           <th>Rute Dari</th>
           <th>Rute Ke</th>
           <th>Muatan</th>
-          <th>UJ Engkel</th>
-          <th>UJ Tronton</th>
-          <th>Gaji Engkel</th>
-          <th>Gaji Tronton</th>
-          <th>Gaji Rumusan</th>
+          <th>Ongkosan</th>
           <th>Created at</th>
           <th>Actions</th>
         </tr>
@@ -114,7 +110,7 @@
         autoWidth: false,
         processing: true,
         serverSide: true,
-        order: [[9, 'desc']],
+        order: [[5, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
@@ -128,27 +124,10 @@
             {data: 'routeto.name', name: 'routeto.name'},
             {data: 'routefrom.name', name: 'routefrom.name'},
             {data: 'cargo.name', name: 'cargo.name'},
-            {data: 'road_engkel', name: 'road_engkel', render: $.fn.dataTable.render.number( '.', '.', 0)},
-            {data: 'road_tronton', name: 'road_tronton', render: $.fn.dataTable.render.number( '.', '.', 0)},
-            {data: 'salary_engkel', name: 'salary_engkel', render: $.fn.dataTable.render.number( '.', '.', 0)},
-            {data: 'salary_tronton', name: 'salary_tronton', render: $.fn.dataTable.render.number( '.', '.', 0)},
             {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( '.', '.', 0)},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
-        columnDefs: [
-          {
-          className: 'dt-right',
-          targets: [4,5,6,7,8],
-          render: function(data, type, full, meta) {
-          let output = `
-          <div class="symbol symbol-80">
-            <img src="` + data + `" alt="photo">
-          </div>`
-          return output;
-          }
-          },
-        ]
     });
 
     $("#select2").select2({
