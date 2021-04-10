@@ -64,10 +64,6 @@
         <tr>
           <th>Image</th>
           <th>Nama</th>
-          <th>Supplier</th>
-          <th>Harga</th>
-          <th>Jumlah</th>
-          <th>Total</th>
           <th>Brand</th>
           <th>Kategori</th>
           <th>Created At</th>
@@ -127,7 +123,7 @@
       scrollX: true,
       processing: true,
       serverSide: true,
-      order: [[8, 'desc']],
+      order: [[4, 'desc']],
       lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
       pageLength: 10,
       ajax: {
@@ -141,10 +137,6 @@
       columns: [
           {data: 'image', name: 'image', searchable: false},
           {data: 'name', name: 'name'},
-          {data: 'supplier.name', name: 'supplier.name'},
-          {data: 'price', name: 'price', render: $.fn.dataTable.render.number( '.', '.', 0)},
-          {data: 'qty', name: 'qty'},
-          {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( '.', '.', 0)},
           {data: 'brand.name', name: 'brand.name'},
           {data: 'categories[,].name', name: 'created_at', orderable: false},
           {data: 'created_at', name: 'created_at'},
@@ -163,7 +155,7 @@
           }
         },
         {
-          targets: 7,
+          targets: 3,
           render: function(data, type, full, meta) {
             let array = data.split(',');
             let output = '';

@@ -13,8 +13,6 @@ class Sparepart extends Model
     'supplier_sparepart_id',
     'brand_id',
     'name',
-    'qty',
-    'price',
     'photo',
   ];
 

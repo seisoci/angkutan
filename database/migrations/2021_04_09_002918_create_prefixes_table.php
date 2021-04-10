@@ -16,6 +16,7 @@ class CreatePrefixesTable extends Migration
         Schema::create('prefixes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->enum('type', ['sparepart', 'operational']);
             $table->timestamps();
         });
     }

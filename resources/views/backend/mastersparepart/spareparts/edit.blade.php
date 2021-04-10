@@ -45,22 +45,6 @@
             <input type="text" name="name" class="form-control" placeholder="Input Nama Spare Spart"
               value="{{ $data->name ?? '' }}" />
           </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Harga</label>
-                <input type="text" name="price" class="currency form-control" placeholder="Input Harga"
-                  value="{{ $data->price ?? '' }}" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Jumlah</label>
-                <input type="number" name="qty" class="form-control" placeholder="Input Jumlah"
-                  value="{{ $data->qty ?? '' }}" />
-              </div>
-            </div>
-          </div>
           <div class="form-group">
             <label>Nama Brand<span class="text-danger">*</span></label>
             <select class="form-control" id="select2Brands" name="brand_id">
@@ -79,6 +63,7 @@
             <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
             <button type="submit" class="btn btn-primary">Submit</button>
           </div>
+        </div>
       </form>
       <!--end::Form-->
     </div>
@@ -98,12 +83,6 @@
 <script type="text/javascript">
   $(document).ready(function(){
     new KTImageInput('kt_image_2');
-    $(".currency").inputmask('decimal', {
-      groupSeparator: '.',
-      digits:0,
-      rightAlign: true,
-      removeMaskOnSubmit: true
-    });
 
     $("#formUpdate").submit(function(e){
       e.preventDefault();
@@ -152,7 +131,7 @@
       });
     });
 
-        $("#select2Brands").select2({
+    $("#select2Brands").select2({
       placeholder: "Search Brands",
       allowClear: true,
       ajax: {

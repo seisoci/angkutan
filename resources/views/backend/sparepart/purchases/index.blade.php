@@ -14,51 +14,97 @@
     <div class="card-toolbar">
     </div>
   </div>
-
   <div class="card-body">
-    <!--begin: Datatable-->
-    <table class="table table-bordered ">
-      <thead>
-        <tr>
-          <th class="text-center" scope="col" width="5%"><button type="button"
-              class="add btn btn-sm btn-primary">+</button>
-          </th>
-          <th class="text-left" scope="col" width="45%">Produk</th>
-          <th class="text-right" scope="col" width="10%">Jumlah</th>
-          <th class="text-right" scope="col" wdith="20%">Harga</th>
-          <th class="text-right" scope="col" width="20%">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="items" id="items_1">
-          <td></td>
-          <td><input type="text" name="name[]" class="form-control" /></td>
-          <td><input type="text" name="qty[]" class="form-control" /></td>
-          <td><input type="text" name="price[]" class="currency form-control" /></td>
-          <td><input type="text" name="total[]" class="currency form-control" disabled /></td>
-        </tr>
-      </tbody>
-    </table>
-    <table class="table table-borderless ">
-      <thead>
-        <tr>
-          <th class="text-center" scope="col" width="5%"></th>
-          <th class="text-left" scope="col" width="45%"></th>
-          <th class="text-right" scope="col" width="10%"></th>
-          <th class="text-right" scope="col" wdith="20%"></th>
-          <th class="text-right" scope="col" width="20%"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td class="text-right">Grand Total</td>
-          <td><input type="text" class="currency form-control" disabled /></td>
-        </tr>
-      </tbody>
-    </table>
+    <form id="formStore" action="{{ route('backend.purchases.store') }}">
+      <div class="row align-items-center">
+        <div class="col-md-6 col-sm-12">
+          <div class="form-group">
+            <label>Supplier:</label>
+            <select class="form-control" id="select2Suppliers">
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <div class="form-group">
+            <label>Tanggal & Waktu:</label>
+            <h5>{{ Carbon\Carbon::parse()->timezone('Asia/Jakarta')->format('Y-m-d H:i:s') }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-md-6 col-sm-12">
+          <div class="form-group">
+            <label>Phone:</label>
+            <h5 id="phone"></h5>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <div class="form-group">
+            <label>Prefix:</label>
+            <select name="prefix" class="form-control" id="select2Prefix">
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-md-6 col-sm-12">
+          <div class="form-group">
+            <label>Alamat:</label>
+            <h5 id="address"></h5>
+          </div>
+        </div>
+      </div>
+      <!--begin: Datatable-->
+      <table class="table table-bordered ">
+        <thead>
+          <tr>
+            <th class="text-center" scope="col" width="5%"><button type="button"
+                class="add btn btn-sm btn-primary">+</button>
+            </th>
+            <th class="text-left" scope="col" width="45%">Produk</th>
+            <th class="text-right" scope="col" width="10%">Unit</th>
+            <th class="text-right" scope="col" wdith="20%">Harga</th>
+            <th class="text-right" scope="col" width="20%">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="items" id="items_1">
+            <td></td>
+            <td><select class="form-control select2SparePart" name="name[]"></select></td>
+            <td><input type="number" name="qty[]" class="form-control" /></td>
+            <td><input type="text" name="price[]" class="currency form-control" /></td>
+            <td><input type="text" name="total[]" class="currency form-control" disabled /></td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-borderless ">
+        <thead>
+          <tr>
+            <th class="text-center" scope="col" width="5%"></th>
+            <th class="text-left" scope="col" width="45%"></th>
+            <th class="text-right" scope="col" width="10%"></th>
+            <th class="text-right" scope="col" wdith="20%"></th>
+            <th class="text-right" scope="col" width="20%"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Grand Total</td>
+            <td><input id="grandTotal" type="text" class="currency form-control" disabled /></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="text-right"><button type="submit" class="btn btn-primary">Submit</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
   </div>
 </div>
 @endsection
@@ -79,6 +125,63 @@
   $(document).ready(function() {
     initCurrency();
     initCalculation();
+    initSelect2();
+
+    $("#select2Suppliers").select2({
+      placeholder: "Search Suppliers",
+      allowClear: true,
+      ajax: {
+        url: "{{ route('backend.supplierspareparts.select2') }}",
+        dataType: "json",
+        delay: 250,
+        cache: true,
+        data: function(e) {
+          return {
+            q: e.term || '',
+            page: e.page || 1
+          }
+        },
+      },
+    }).on('select2:select', function(evt){
+      $('#phone').text(evt.params.data.phone);
+      $('#address').text(evt.params.data.address);
+    });
+
+    $("#select2Prefix").select2({
+      placeholder: "Choose Prefix",
+      allowClear: true,
+      ajax: {
+        url: "{{ route('backend.prefixes.select2') }}",
+        dataType: "json",
+        delay: 250,
+        cache: true,
+        data: function(e) {
+          return {
+            q: e.term || '',
+            page: e.page || 1
+          }
+        },
+      },
+    });
+
+    function initSelect2(){
+      $(".select2SparePart").select2({
+        placeholder: "Search SparePart",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.spareparts.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      });
+    }
 
     function initCurrency(){
       $(".currency").inputmask('decimal', {
@@ -102,7 +205,7 @@
           $('input[name^="total"]').each(function() {
             grandtotal += parseInt($(this).val());
           });
-          console.log(grandtotal);
+          $('#grandTotal').val(grandtotal);
       });
     }
 
@@ -124,15 +227,60 @@
         $("#items_" + nextindex).append(raw_items(nextindex));
         initCurrency();
         initCalculation();
+        initSelect2();
       }
     });
 
     function raw_items(nextindex){
-      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems'>-</button></td>"+'<td><input type="text" name="name[]" class="form-control" /></td>'+
-      '<td><input type="text" name="qty[]" class="form-control" /></td>'+
+      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems'>-</button></td>"+'<td><select class="form-control select2SparePart" name="name[]"></select></td>'+
+      '<td><input type="number" name="qty[]" class="form-control" /></td>'+
       '<td><input type="text" name="price[]" class="currency calculate form-control" /></td>'+
       '<td><input type="text" name="total[]" class="currency calculate form-control" disabled /></td>';
     }
+
+    $("#formStore").submit(function(e) {
+      e.preventDefault();
+      var form = $(this);
+      var btnSubmit = form.find("[type='submit']");
+      var btnSubmitHtml = btnSubmit.html();
+      var url = form.attr("action");
+      var data = new FormData(this);
+      $.ajax({
+        beforeSend: function() {
+          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
+        type: "POST",
+        url: url,
+        data: data,
+        success: function(response) {
+          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+          if (response.status == "success") {
+            toastr.success(response.message, 'Success !');
+            setTimeout(function() {
+              if(response.redirect == "" || response.redirect == "reload"){
+								location.reload();
+							} else {
+								location.href = response.redirect;
+							}
+            }, 1000);
+          } else {
+            $("[role='alert']").parent().removeAttr("style");
+            $(".alert-text").html('');
+            $.each(response.error, function(key, value) {
+              $(".alert-text").append('<span style="display: block">'+value+'</span>');
+            });
+            toastr.error("Please complete your form", 'Failed !');
+          }
+        },
+        error: function(response) {
+          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+          toastr.error(response.responseJSON.message, 'Failed !');
+        }
+      });
+    });
 
   });
 </script>

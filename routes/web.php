@@ -22,6 +22,7 @@ use App\Http\Controllers\Backend\BankController as BackendBankController;
 use App\Http\Controllers\Backend\CompanyController as BackendCompanyController;
 use App\Http\Controllers\Backend\TypeCapacityController as BackendTypeCapacityController;
 use App\Http\Controllers\Backend\PurchaseController as BackendPurchaseController;
+use App\Http\Controllers\Backend\PrefixController as BackendPrefixController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -55,6 +56,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('typecapacities/select2', [BackendTypeCapacityController::class, 'select2'])->name('typecapacities.select2');
     Route::get('categories/select2', [BackendCategoryController::class, 'select2'])->name('categories.select2');
     Route::get('supplierspareparts/select2', [BackendSupplierSparepartController::class, 'select2'])->name('supplierspareparts.select2');
+    Route::get('spareparts/select2', [BackendSparepartController::class, 'select2'])->name('spareparts.select2');
+    Route::get('prefixes/select2', [BackendPrefixController::class, 'select2'])->name('prefixes.select2');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
@@ -84,6 +87,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('brands', BackendBrandController::class)->except(['create', 'edit', 'show']);
     Route::resource('categories', BackendCategoryController::class)->except(['create', 'edit', 'show']);
     //Master Accounting
+    Route::resource('prefixes', BackendPrefixController::class)->except(['create', 'edit', 'show']);
     Route::resource('cashes', BackendCashController::class)->except(['create', 'edit', 'show']);
     Route::resource('banks', BackendBankController::class)->except(['create', 'edit', 'show']);
     Route::resource('companies', BackendCompanyController::class)->except(['create', 'edit', 'show']);

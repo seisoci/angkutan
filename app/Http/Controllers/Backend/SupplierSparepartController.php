@@ -123,30 +123,30 @@ class SupplierSparepartController extends Controller
   }
 
   public function select2(Request $request){
-      $page = $request->page;
-      $resultCount = 10;
-      $offset = ($page - 1) * $resultCount;
-      $data = SupplierSparepart::where('name', 'LIKE', '%' . $request->q. '%')
-          ->orderBy('name')
-          ->skip($offset)
-          ->take($resultCount)
-          ->selectRaw('id, name as text')
-          ->get();
+    $page = $request->page;
+    $resultCount = 10;
+    $offset = ($page - 1) * $resultCount;
+    $data = SupplierSparepart::where('name', 'LIKE', '%' . $request->q. '%')
+        ->orderBy('name')
+        ->skip($offset)
+        ->take($resultCount)
+        ->selectRaw('id, name as text, phone, address')
+        ->get();
 
-      $count = SupplierSparepart::where('name', 'LIKE', '%' . $request->q. '%')
-          ->get()
-          ->count();
+    $count = SupplierSparepart::where('name', 'LIKE', '%' . $request->q. '%')
+        ->get()
+        ->count();
 
-      $endCount = $offset + $resultCount;
-      $morePages = $count > $endCount;
+    $endCount = $offset + $resultCount;
+    $morePages = $count > $endCount;
 
-      $results = array(
-        "results" => $data,
-        "pagination" => array(
-            "more" => $morePages
-        )
-      );
+    $results = array(
+      "results" => $data,
+      "pagination" => array(
+          "more" => $morePages
+      )
+    );
 
-      return response()->json($results);
-    }
+    return response()->json($results);
+  }
 }

@@ -27,7 +27,6 @@ class SparepartController extends Controller
         ['page' => '#','title' => "List Spare Part"],
       ];
 
-      // dd(Sparepart::with(['supplier', 'brand'])->get()->toArray());
       if ($request->ajax()) {
         $categories_id = $request->category_id;
         $data = Sparepart::with(['supplier', 'brand', 'categories'])
@@ -39,7 +38,7 @@ class SparepartController extends Controller
         })
         ->whereHas('categories', function($query) use($categories_id) {
           isset($categories_id) ? $query->where('category_id', $categories_id) : NULL;
-        })->select('spareparts.*', DB::raw('price * qty as amount'));
+        })->select('spareparts.*');
         return Datatables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){
@@ -78,11 +77,8 @@ class SparepartController extends Controller
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
-        'supplier_sparepart_id' => 'required|integer',
         'brand_id'      => 'required|integer',
         'name'          => 'required|string',
-        'qty'           => 'string|nullable',
-        'price'         => 'string|nullable',
         'categories'    => 'required|array',
         'categories'    => 'required|distinct',
         'photo'         => 'image|mimes:jpg,png,jpeg|max:2048',
@@ -92,11 +88,8 @@ class SparepartController extends Controller
         $dimensions = [array('200', '200', 'thumbnail')];
         $image = isset($request->photo) && !empty($request->photo) ? Fileupload::uploadImagePublic('photo', $dimensions, 'public') : NULL;
         $data = Sparepart::create([
-          'supplier_sparepart_id' => $request->input('supplier_sparepart_id'),
           'brand_id'              => $request->input('brand_id'),
           'name'                  => $request->input('name'),
-          'qty'                   => $request->input('qty'),
-          'price'                 => $request->input('price'),
           'photo'                 => $image,
         ]);
         $categories = Category::find($request->input('categories'));
@@ -143,11 +136,8 @@ class SparepartController extends Controller
     public function update(Request $request, Sparepart $sparepart)
     {
       $validator = Validator::make($request->all(), [
-        'supplier_sparepart_id' => 'required|integer',
         'brand_id'      => 'required|integer',
         'name'          => 'required|string',
-        'qty'           => 'string|nullable',
-        'price'         => 'string|nullable',
         'categories'    => 'required|array',
         'categories'    => 'required|distinct',
         'photo'         => 'image|mimes:jpg,png,jpeg|max:2048',
@@ -157,11 +147,8 @@ class SparepartController extends Controller
         $dimensions = [array('200', '200', 'thumbnail')];
         $image = isset($request->photo) && !empty($request->photo) ? Fileupload::uploadImagePublic('photo', $dimensions, 'public', $sparepart->photo) : $sparepart->photo;
         $sparepart->update([
-          'supplier_sparepart_id' => $request->input('supplier_sparepart_id'),
           'brand_id'              => $request->input('brand_id'),
           'name'                  => $request->input('name'),
-          'qty'                   => $request->input('qty'),
-          'price'                 => $request->input('price'),
           'photo'                 => $image,
         ]);
         $categories = Category::find($request->input('categories'));
@@ -200,5 +187,33 @@ class SparepartController extends Controller
         ]);
       }
       return $response;
+    }
+
+    public function select2(Request $request){
+      $page = $request->page;
+      $resultCount = 10;
+      $offset = ($page - 1) * $resultCount;
+      $data = Sparepart::where('name', 'LIKE', '%' . $request->q. '%')
+          ->orderBy('name')
+          ->skip($offset)
+          ->take($resultCount)
+          ->selectRaw('id, name as text')
+          ->get();
+
+      $count = Sparepart::where('name', 'LIKE', '%' . $request->q. '%')
+          ->get()
+          ->count();
+
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
+
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
+
+      return response()->json($results);
     }
 }

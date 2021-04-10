@@ -15,9 +15,9 @@ class CreateInvoicePurchasesTable extends Migration
     {
         Schema::create('invoice_purchases', function (Blueprint $table) {
           $table->id();
-          $table->foreignId('purchase_id')->constrained('purchases')->onDelete('cascade');
           $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
-          $table->unique('num_bill');
+          $table->string('prefix');
+          $table->string('num_bill')->unique();
           $table->text('keterangan');
           $table->string('memo');
           $table->timestamps();

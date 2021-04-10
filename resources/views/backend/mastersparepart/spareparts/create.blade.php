@@ -33,27 +33,8 @@
                 2000kB</small></p>
           </div>
           <div class="form-group">
-            <label>Nama Supplier<span class="text-danger">*</span></label>
-            <select class="form-control" id="select2Suppliers" name="supplier_sparepart_id">
-            </select>
-          </div>
-          <div class="form-group">
             <label>Nama Spare Part</label>
             <input type="text" name="name" class="form-control" placeholder="Input Nama Spare Spart" />
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Harga</label>
-                <input type="text" name="price" class="currency form-control" placeholder="Input Harga" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Jumlah</label>
-                <input type="number" name="qty" class="form-control" placeholder="Input Jumlah" />
-              </div>
-            </div>
           </div>
           <div class="form-group">
             <label>Nama Brand<span class="text-danger">*</span></label>
@@ -88,12 +69,6 @@
 <script type="text/javascript">
   $(document).ready(function(){
     new KTImageInput('kt_image_2');
-    $(".currency").inputmask('decimal', {
-      groupSeparator: '.',
-      digits:0,
-      rightAlign: true,
-      removeMaskOnSubmit: true
-    });
     $("#formStore").submit(function(e) {
       e.preventDefault();
       var form = $(this);

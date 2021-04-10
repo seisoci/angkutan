@@ -106,6 +106,10 @@ return [
           'arrow' => true,
           'submenu' => [
             [
+              'title' => 'Master Prefix',
+              'page'  => 'backend/prefixes'
+            ],
+            [
               'title' => 'Master Akun Kas',
               'page'  => 'backend/cashes'
             ],
@@ -132,7 +136,7 @@ return [
           'submenu' => [
             [
               'title' => 'Pembelian',
-              'page'  => 'backend/purcheses'
+              'page'  => 'backend/purchases'
             ],
             [
               'title' => 'Invoice Pembelian',

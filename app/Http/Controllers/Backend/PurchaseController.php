@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Purchase;
+use DB;
 use Illuminate\Http\Request;
+use Validator;
 
 class PurchaseController extends Controller
 {
@@ -15,21 +17,11 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-      $config['page_title']       ="Pembelian Spare Parts";
+      $config['page_title']       ="Purchase Order";
       $page_breadcrumbs = [
-        ['page' => '#','title' => "Pembelian Spare Parts"],
+        ['page' => '#','title' => "Purchase Order"],
       ];
       return view('backend.sparepart.purchases.index', compact('config', 'page_breadcrumbs'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -40,7 +32,34 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $validator = Validator::make($request->all(), [
+        'name'      => 'required|array',
+        'name.*'    => 'required|integer',
+        'qty'       => 'required|array',
+        'qty.*'     => 'required|integer',
+        'price'     => 'required|array',
+        'price.*'   => 'required|integer',
+      ]);
+
+      if($validator->passes()){
+        try {
+          DB::beginTransaction();
+          $invoice = Purchase::create([
+            'name' => $request->input('name'),
+          ]);
+          DB::commit();
+        } catch (\Throwable $throw) {
+          DB::rollBack();
+        }
+
+        $response = response()->json([
+          'status'  => 'success',
+          'message' => 'Data has been saved',
+        ]);
+      }else{
+        $response = response()->json(['error'=>$validator->errors()->all()]);
+      }
+      return $response;
     }
 
     /**
