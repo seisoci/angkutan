@@ -140,19 +140,23 @@ return [
             ],
             [
               'title' => 'Invoice Pembelian',
+              'page'  => 'backend/invoicepurchases'
+            ],
+            [
+              'title' => 'Invoice Pengambilan',
               'page'  => 'backend/invoice'
             ],
             [
-              'title' => 'Master Perusahaan',
-              'page'  => 'backend/companies'
+              'title' => 'Stok Barang',
+              'page'  => 'backend/stocks'
             ]
           ]
         ],
         [
-            'title' => 'Logout',
+            'title' => 'Settings',
             'root' => true,
             'icon' => 'media/svg/icons/Electric/Shutdown.svg', // or can be 'flaticon-home' or any flaticon-*
-            'page' => '/logout',
+            'page' => 'backend/settings',
             'new-tab' => false,
         ]
 

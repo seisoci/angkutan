@@ -11,7 +11,7 @@ class Purchase extends Model
     use HasFactory;
 
   protected $fillable = [
-    'invoice_purchase',
+    'invoice_purchase_id',
     'sparepart_id',
     'supplier_sparepart_id',
     'qty',
@@ -22,5 +22,9 @@ class Purchase extends Model
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('Y-m-d H:i:s');
+  }
+
+  public function sparepart(){
+    return $this->belongsTo(Sparepart::class);
   }
 }

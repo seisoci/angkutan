@@ -23,6 +23,9 @@ use App\Http\Controllers\Backend\CompanyController as BackendCompanyController;
 use App\Http\Controllers\Backend\TypeCapacityController as BackendTypeCapacityController;
 use App\Http\Controllers\Backend\PurchaseController as BackendPurchaseController;
 use App\Http\Controllers\Backend\PrefixController as BackendPrefixController;
+use App\Http\Controllers\Backend\StockController as BackendStockController;
+use App\Http\Controllers\Backend\InvoicePurchaseController as BackendInvoicePurchaseController;
+use App\Http\Controllers\Backend\SettingController as BackendSettingController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -66,9 +69,9 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
       Route::get('{id}/datatable_transport/', [BackendAnotherExpeditionController::class, 'datatable_transport'])->name('datatable_transport');
       Route::get('{id}/datatable_driver/', [BackendAnotherExpeditionController::class, 'datatable_driver'])->name('datatable_driver');
     });
-
     Route::post('roadmonies/typecapacities', [BackendRoadMoneyController::class, 'typecapacities'])->name('roadmonies.typecapacities');
     Route::put('roadmonies/{id}/updatetypecapacities', [BackendRoadMoneyController::class, 'updatetypecapacities'])->name('roadmonies.updatetypecapacities');
+    Route::get('invoicepurchases/{id}/cetakpdf', [BackendInvoicePurchaseController::class, 'cetakPdfInvoice'])->name('invoicepurchases.cetakpdf');
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -94,5 +97,10 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
 
     //Purchase
     Route::resource('purchases', BackendPurchaseController::class)->only(['index', 'store']);
+    Route::resource('invoicepurchases', BackendInvoicePurchaseController::class);
+    Route::get('stocks', BackendStockController::class)->name('stocks');
+
+    //Settings
+    Route::resource('settings', BackendSettingController::class);
   });
 });

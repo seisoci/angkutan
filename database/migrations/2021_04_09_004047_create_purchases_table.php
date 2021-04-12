@@ -15,7 +15,7 @@ class CreatePurchasesTable extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('invoice_purchase')->constrained('invoice_purchases')->onDelete('cascade');
+            $table->foreignId('invoice_purchase_id')->constrained('invoice_purchases')->onDelete('cascade');
             $table->foreignId('sparepart_id')->constrained('spareparts');
             $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
             $table->bigInteger('qty');

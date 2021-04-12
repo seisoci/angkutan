@@ -80,6 +80,17 @@
             <select class="form-control" id="select2TypeCapacities" name="type_capacity_id">
             </select>
           </div>
+          <div class="form-group">
+            <label>Tipe Ongkosan<span class="text-danger">*</span></label>
+            <select class="form-control" id="select2Type" name="type">
+              <option value="fix">Fix</option>
+              <option value="calculate">Kalkulasi (Ongkosan * Kapasistas (KG/KUBIK/DLL) )</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Harga Ongkosan</label>
+            <input type="text" name="expense" class="currency form-control" placeholder="Input Harga Ongkosan" />
+          </div>
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
@@ -93,21 +104,6 @@
                 <label>Uang Jalan Tronton</label>
                 <input type="text" name="road_tronton" class="currency form-control"
                   placeholder="Input Uang Jalan Tronton" />
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Gaji Engkel</label>
-                <input type="text" name="salary_engkel" class="currency form-control" placeholder="Input Gaji Engkel" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Gaji Tronton</label>
-                <input type="text" name="salary_tronton" class="currency form-control"
-                  placeholder="Input Gaji Tronton" />
               </div>
             </div>
           </div>
@@ -211,9 +207,14 @@
       getData();
     });
 
+    $('#select2Type').on('change', function() {
+      getData();
+    });
+
     function getData() {
       var formData = {
         type_capacity_id: $('#select2TypeCapacities').find(':selected').val(),
+        type: $('#select2Type').find(':selected').val(),
         road_money_id: "{{ Request::segment(3) }}"
       }
       $.ajax({
@@ -224,11 +225,17 @@
           url: "{{ route('backend.roadmonies.typecapacities') }}",
           data: formData,
           success:function(response) {
-            let data = response.data.pivot;
-            $('input[name=road_engkel]').val(data.road_engkel);
-            $('input[name=road_tronton]').val(data.road_tronton);
-            $('input[name=salary_engkel]').val(data.salary_engkel);
-            $('input[name=salary_tronton]').val(data.salary_tronton);
+            if(response.data){
+              let data = response.data.pivot;
+              $('input[name=road_engkel]').val(data.road_engkel);
+              $('input[name=road_tronton]').val(data.road_tronton);
+              $('input[name=expense]').val(data.expense);
+              $('select[name=type]').val(data.type);
+            }else{
+              $('input[name=road_engkel]').val('');
+              $('input[name=road_tronton]').val('');
+              $('input[name=expense]').val('');
+            }
           }
       });
     }

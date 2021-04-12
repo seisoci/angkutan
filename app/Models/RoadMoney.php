@@ -15,7 +15,8 @@ class RoadMoney extends Model
     'route_from',
     'route_to',
     'cargo_id',
-    'amount',
+    'expense',
+    'weight',
   ];
 
   public function getCreatedAtAttribute($value){
@@ -40,6 +41,6 @@ class RoadMoney extends Model
   }
 
   public function typecapacities(){
-    return $this->belongsToMany(TypeCapacity::class, 'roadmoney_typecapacity')->withPivot(['road_engkel', 'road_tronton', 'salary_engkel', 'salary_tronton']);
+    return $this->belongsToMany(TypeCapacity::class, 'roadmoney_typecapacity')->withPivot(['road_engkel', 'road_tronton', 'type', 'expense']);
   }
 }

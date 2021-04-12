@@ -122,15 +122,15 @@ class PrefixController extends Controller
       $resultCount = 10;
       $offset = ($page - 1) * $resultCount;
       $data = Prefix::where('name', 'LIKE', '%' . $request->q. '%')
-          ->orderBy('name')
-          ->skip($offset)
-          ->take($resultCount)
-          ->selectRaw('id, name as text')
-          ->get();
+        ->orderBy('name')
+        ->skip($offset)
+        ->take($resultCount)
+        ->selectRaw('id, name as text')
+        ->get();
 
       $count = Prefix::where('name', 'LIKE', '%' . $request->q. '%')
-          ->get()
-          ->count();
+        ->get()
+        ->count();
 
       $endCount = $offset + $resultCount;
       $morePages = $count > $endCount;

@@ -15,7 +15,7 @@ class InvoicePurchase extends Model
     'prefix',
     'num_bill',
     'grandtotal',
-    'keterangan',
+    'description',
     'memo',
   ];
 
@@ -23,5 +23,13 @@ class InvoicePurchase extends Model
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('Y-m-d H:i:s');
+  }
+
+  public function purchases(){
+    return $this->hasMany(Purchase::class);
+  }
+
+  public function supplier(){
+    return $this->belongsTo(SupplierSparepart::class, 'supplier_sparepart_id');
   }
 }

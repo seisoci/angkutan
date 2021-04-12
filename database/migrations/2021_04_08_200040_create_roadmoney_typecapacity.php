@@ -17,10 +17,8 @@ class CreateRoadmoneyTypecapacity extends Migration
             $table->id();
             $table->foreignId('road_money_id')->constrained('road_money')->onDelete('cascade');
             $table->foreignId('type_capacity_id')->constrained('type_capacities');
-            $table->decimal('road_engkel', 15, 0);
-            $table->decimal('road_tronton', 15, 0);
-            $table->decimal('salary_engkel', 15, 0);
-            $table->decimal('salary_tronton', 15, 0);
+            $table->decimal('road_engkel', 15, 0)->nullable();
+            $table->decimal('road_tronton', 15, 0)->nullable();
             $table->timestamps();
         });
     }

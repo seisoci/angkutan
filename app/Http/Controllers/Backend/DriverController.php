@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Fileupload;
 use App\Http\Controllers\Controller;
+use App\Facades\Fileupload;
 use App\Models\Driver;
 use Illuminate\Http\Request;
 use DataTables;

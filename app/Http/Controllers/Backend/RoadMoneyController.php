@@ -132,8 +132,6 @@ class RoadMoneyController extends Controller
       'cargo_id'      => 'string|nullable',
       'road_engkel'   => 'integer|nullable',
       'road_tronton'  => 'integer|nullable',
-      'salary_engkel' => 'integer|nullable',
-      'salary_tronton'=> 'integer|nullable',
       'amount'        => 'integer|nullable',
     ]);
 
@@ -146,8 +144,6 @@ class RoadMoneyController extends Controller
         'cargo_id'      => $request->input('cargo_id'),
         'road_engkel'   => $request->input('road_engkel'),
         'road_tronton'  => $request->input('road_tronton'),
-        'salary_engkel' => $request->input('salary_engkel'),
-        'salary_tronton'=> $request->input('salary_tronton'),
         'amount'        => $request->input('amount')
       ]);
 
@@ -194,7 +190,7 @@ class RoadMoneyController extends Controller
     ]);
 
     if($validator->passes()){
-      $data = RoadMoney::firstOrFail('id', $request->road_money_id)->typecapacities()->where('type_capacity_id', $request->type_capacity_id)
+      $data = RoadMoney::firstOrFail('id', $request->road_money_id)->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->where('type', $request->type)
       ->first();
 
       $response = response()->json([
@@ -206,17 +202,16 @@ class RoadMoneyController extends Controller
 
   public function updatetypecapacities(Request $request, $id){
     $validator = Validator::make($request->all(), [
-      'type_capacity_id' => 'required|integer',
-      'road_engkel'   => 'integer|nullable',
-      'road_tronton'  => 'integer|nullable',
-      'salary_engkel' => 'integer|nullable',
-      'salary_tronton'=> 'integer|nullable',
+      'type_capacity_id'  => 'required|integer',
+      'road_engkel'       => 'integer|nullable',
+      'road_tronton'      => 'integer|nullable',
+      'type'              => 'in:fix,calculate',
     ]);
 
     if($validator->passes()){
       $data = RoadMoney::firstOrFail('id', $request->road_money_id);
-      if($data->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->count() >= 1){
-        $data->typecapacities()->updateExistingPivot($request->type_capacity_id, $request->except(['type_capacity_id', '_method']));
+      if($data->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->wherePivot('type', $request->type)->count() >= 1){
+        $data->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->wherePivot('type', $request->type)->updateExistingPivot($request->type_capacity_id, $request->except(['type_capacity_id', '_method']));
       }else{
         $data->typecapacities()->attach($request->type_capacity_id, $request->except(['type_capacity_id','_method']));
       }

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\InvoicePurchase;
+use App\Models\Prefix;
 use App\Models\Purchase;
+use App\Models\Stock;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -47,37 +49,48 @@ class PurchaseController extends Controller
         try {
           DB::beginTransaction();
           $invoice_date = Carbon::parse()->timezone('Asia/Jakarta')->format('Ymd');
-          $invoice_num  = InvoicePurchase::select(DB::raw('MAX(SUBSTRING_INDEX(num_bill, "-", -1)+1) AS `num`'))->first();
+          $invoice_db  = InvoicePurchase::select(DB::raw('MAX(SUBSTRING_INDEX(num_bill, "-", -1)+1) AS `num`'))->first();
           $grandtotal   = 0;
           $items        = $request->items;
-          // dd($request->supplier_sparepart_id);
+          $prefix       = Prefix::find($request->prefix);
+          $invoice_num  = $invoice_db['num'] != NULL ? $invoice_db['num'] : 1;
           foreach($items['sparepart_id'] as $key => $item):
             $grandtotal += $items['qty'][$key] * $items['price'][$key];
           endforeach;
+
           $invoice = InvoicePurchase::create([
             'supplier_sparepart_id'        => $request->input('supplier_sparepart_id'),
-            'prefix'      => $request->input('prefix'),
-            'num_bill'    => $invoice_date. "-" .$invoice_num['num'],
+            'prefix'      => $prefix->name,
+            'num_bill'    => $invoice_date. "-" .$invoice_num,
             'grandtotal'  => $grandtotal,
             'memo'        => $request->input('memo'),
-            'keterangan'  => $request->input('keterangan'),
+            'description' => $request->input('description'),
           ]);
 
-          foreach($items['sparepart_id'] as $item):
-          $data [] = [
-              'invoice_purchase'      => $invoice->id,
-              'supplier_sparepart_id' => $request->supplier_sparepart_id,
-              'sparepart_id'          => $items['sparepart_id'][$key],
-              'qty'                   => $items['qty'][$key],
-              'price'                 => $items['price'][$key],
+          foreach($items['sparepart_id'] as $key => $item):
+            $data[] = [
+                'invoice_purchase_id'   => $invoice->id,
+                'supplier_sparepart_id' => $request->supplier_sparepart_id,
+                'sparepart_id'          => $items['sparepart_id'][$key],
+                'qty'                   => $items['qty'][$key],
+                'price'                 => $items['price'][$key],
             ];
+            $stockSummary = Stock::firstOrCreate(
+                ['sparepart_id' => $items['sparepart_id'][$key] ],
+                ['qty' => $items['qty'][$key],]
+            );
+            if (!$stockSummary->wasRecentlyCreated) {
+              $stockSummary->increment('qty', $items['qty'][$key]);
+            }
           endforeach;
 
-          $transaction = Purchase::insert($data);
+          Purchase::insert($data);
+
           DB::commit();
           $response = response()->json([
-            'status'  => 'success',
-            'message' => 'Data has been saved',
+            'status'    => 'success',
+            'message'   => 'Data has been saved',
+            'redirect'  => '/backend/purchases',
           ]);
         } catch (\Throwable $throw) {
           DB::rollBack();

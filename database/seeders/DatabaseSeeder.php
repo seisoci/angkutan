@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Setting;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 
@@ -15,6 +16,40 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
-        User::factory()->count(1)->create();
+      $settings = [
+        [
+          'name'  => 'name',
+          'value' => '',
+          'type'  => 'settings'
+        ],
+        [
+          'name'  => 'address',
+          'value' => '',
+          'type'  => 'settings'
+        ],
+        [
+          'name'  => 'telp',
+          'value' => '',
+          'type'  => 'settings'
+        ],
+        [
+          'name'  => 'email',
+          'value' => '',
+          'type'  => 'settings'
+        ],
+        [
+          'name'  => 'logo_url',
+          'value' => '',
+          'type'  => 'image'
+        ],
+        [
+          'name'  => 'favicon_url',
+          'value' => '',
+          'type'  => 'image'
+        ],
+
+
+      ];
+      Setting::insert($settings);
     }
 }

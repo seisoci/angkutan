@@ -15,9 +15,9 @@ class CreateSparepartsTable extends Migration
     {
         Schema::create('spareparts', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->foreignId('brand_id')->constrained('brands')->nullable();
             $table->string('photo')->nullable();
-            $table->string('name')->nullable();
             $table->timestamps();
         });
     }

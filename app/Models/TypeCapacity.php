@@ -24,6 +24,6 @@ class TypeCapacity extends Model
   }
 
   public function roadmonies(){
-    return $this->belongsToMany(RoadMoney::class, 'roadmoney_typecapacity')->withPivot(['road_engkel', 'road_tronton', 'salary_engkel', 'salary_tronton']);
+    return $this->belongsToMany(RoadMoney::class, 'roadmoney_typecapacity')->withPivot(['road_engkel', 'road_tronton']);
   }
 }

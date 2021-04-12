@@ -72,7 +72,7 @@
           <tr class="items" id="items_1">
             <td></td>
             <td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>
-            <td><input type="number" name="items[qty][]" class="form-control" /></td>
+            <td><input min="1" pattern="^[1-9]\d*$" type="number" name="items[qty][]" class="form-control" /></td>
             <td><input type="text" name="items[price][]" class="currency form-control" /></td>
             <td><input type="text" name="items[total][]" class="currency form-control" disabled /></td>
           </tr>
@@ -124,9 +124,9 @@
 <script src="{{ asset('js/pages/crud/datatables/basic/basic.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
-    initCurrency();
     initCalculation();
     initSelect2();
+    initCurrency();
 
     $("#select2Suppliers").select2({
       placeholder: "Search Suppliers",
@@ -193,6 +193,7 @@
         autoUnmask: true,
       });
     }
+
     function initCalculation(){
       $('input[name^="items[qty]"],input[name^="items[price]"],input[name ^= "items[grandtotal]"]').on('keyup',function()  {
           var total      = 0;
@@ -233,12 +234,13 @@
 
     function raw_items(nextindex){
       return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems'>-</button></td>"+'<td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>'+
-      '<td><input type="number" name="items[qty][]" class="form-control" /></td>'+
-      '<td><input type="text" name="items[price][]" class="currency form-control" /></td>'+
+      '<td><input min="1" type="number" name="items[qty][]" class="form-control" /></td>'+
+      '<td><input type="text" data-inputmask=""alias": "decimal"" name="items[price][]" class="currency form-control" /></td>'+
       '<td><input type="text" name="items[total][]" class="currency form-control" disabled /></td>';
     }
 
     $("#formStore").submit(function(e) {
+      $('.currency').inputmask('remove');
       e.preventDefault();
       var form = $(this);
       var btnSubmit = form.find("[type='submit']");
@@ -267,6 +269,7 @@
 							}
             }, 1000);
           } else {
+            initCurrency();
             $("[role='alert']").parent().removeAttr("style");
             $(".alert-text").html('');
             $.each(response.error, function(key, value) {
@@ -276,6 +279,7 @@
           }
         },
         error: function(response) {
+          initCurrency();
           btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
           toastr.error(response.responseJSON.message, 'Failed !');
         }
