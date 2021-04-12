@@ -15,7 +15,7 @@ class CreateStocksTable extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sparepart_id')->constrained('spareparts');
+            $table->foreignId('sparepart_id')->unique('sparepart_id')->constrained('spareparts');
             $table->bigInteger('qty');
             $table->timestamps();
         });

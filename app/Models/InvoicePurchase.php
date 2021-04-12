@@ -11,8 +11,12 @@ class InvoicePurchase extends Model
     use HasFactory;
 
   protected $fillable = [
-    'name',
-    'cost',
+    'supplier_sparepart_id',
+    'prefix',
+    'num_bill',
+    'grandtotal',
+    'keterangan',
+    'memo',
   ];
 
 

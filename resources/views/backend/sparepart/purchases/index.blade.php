@@ -16,11 +16,12 @@
   </div>
   <div class="card-body">
     <form id="formStore" action="{{ route('backend.purchases.store') }}">
+      @csrf
       <div class="row align-items-center">
         <div class="col-md-6 col-sm-12">
           <div class="form-group">
             <label>Supplier:</label>
-            <select class="form-control" id="select2Suppliers">
+            <select class="form-control" name="supplier_sparepart_id" id="select2Suppliers">
             </select>
           </div>
         </div>
@@ -70,10 +71,10 @@
         <tbody>
           <tr class="items" id="items_1">
             <td></td>
-            <td><select class="form-control select2SparePart" name="name[]"></select></td>
-            <td><input type="number" name="qty[]" class="form-control" /></td>
-            <td><input type="text" name="price[]" class="currency form-control" /></td>
-            <td><input type="text" name="total[]" class="currency form-control" disabled /></td>
+            <td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>
+            <td><input type="number" name="items[qty][]" class="form-control" /></td>
+            <td><input type="text" name="items[price][]" class="currency form-control" /></td>
+            <td><input type="text" name="items[total][]" class="currency form-control" disabled /></td>
           </tr>
         </tbody>
       </table>
@@ -193,16 +194,15 @@
       });
     }
     function initCalculation(){
-      $('input[name^="qty"],input[name^="price"],input[name^="gp"],input[name ^= "discount"], input[name ^= "qty"], input[name ^= "total"],input[name ^= "totaltax"], input[name ^= "totalamtincltax"],input[name ^= "grandtotal"]').on('keyup',function()  {
-          //alert("The text has been changed.");
+      $('input[name^="items[qty]"],input[name^="items[price]"],input[name ^= "items[grandtotal]"]').on('keyup',function()  {
           var total      = 0;
           var grandtotal = 0;
           var $row       = $(this).closest("tr"); //<table> class
-          var qty        = parseInt($row.find('input[name="qty[]"]').val());
-          var price      = parseFloat($row.find('input[name="price[]"]').val());
+          var qty        = parseInt($row.find('input[name="items[qty][]"]').val());
+          var price      = parseFloat($row.find('input[name="items[price][]"]').val());
           total          = (price * qty) || 0;
-          $row.find('input[name="total[]"]').val(total);
-          $('input[name^="total"]').each(function() {
+          $row.find('input[name="items[total][]"]').val(total);
+          $('input[name^="items[total]"]').each(function() {
             grandtotal += parseInt($(this).val());
           });
           $('#grandTotal').val(grandtotal);
@@ -225,17 +225,17 @@
       if(total_items < max ){
         $(".items:last").after("<tr class='items' id='items_"+ nextindex +"'></tr>");
         $("#items_" + nextindex).append(raw_items(nextindex));
-        initCurrency();
         initCalculation();
         initSelect2();
+        initCurrency();
       }
     });
 
     function raw_items(nextindex){
-      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems'>-</button></td>"+'<td><select class="form-control select2SparePart" name="name[]"></select></td>'+
-      '<td><input type="number" name="qty[]" class="form-control" /></td>'+
-      '<td><input type="text" name="price[]" class="currency calculate form-control" /></td>'+
-      '<td><input type="text" name="total[]" class="currency calculate form-control" disabled /></td>';
+      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems'>-</button></td>"+'<td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>'+
+      '<td><input type="number" name="items[qty][]" class="form-control" /></td>'+
+      '<td><input type="text" name="items[price][]" class="currency form-control" /></td>'+
+      '<td><input type="text" name="items[total][]" class="currency form-control" disabled /></td>';
     }
 
     $("#formStore").submit(function(e) {
