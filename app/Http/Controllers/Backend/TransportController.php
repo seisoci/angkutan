@@ -199,4 +199,62 @@ class TransportController extends Controller
     }
     return $response;
   }
+
+  public function select2tonase(Request $request){
+    $page = $request->page;
+    $resultCount = 10;
+    $offset = ($page - 1) * $resultCount;
+    $type = !empty($request->type) || isset($request->type) ? $request->type : NULL;
+    $data = Transport::where('num_pol', 'LIKE', '%' . $request->q. '%')
+        ->where('another_expedition_id', $type)
+        ->orderBy('num_pol')
+        ->skip($offset)
+        ->take($resultCount)
+        ->selectRaw('id, num_pol as text')
+        ->get();
+
+    $count = Transport::where('num_pol', 'LIKE', '%' . $request->q. '%')
+        ->where('another_expedition_id', $type)
+        ->get()
+        ->count();
+
+    $endCount = $offset + $resultCount;
+    $morePages = $count > $endCount;
+
+    $results = array(
+      "results" => $data,
+      "pagination" => array(
+          "more" => $morePages
+      )
+    );
+
+    return response()->json($results);
+  }
+  public function select2(Request $request){
+    $page = $request->page;
+    $resultCount = 10;
+    $offset = ($page - 1) * $resultCount;
+    $data = Transport::where('num_pol', 'LIKE', '%' . $request->q. '%')
+        ->orderBy('num_pol')
+        ->skip($offset)
+        ->take($resultCount)
+        ->selectRaw('id, CONCAT(`num_pol`," (", UPPER(`type_car`), ")") as text')
+        ->get();
+
+    $count = Transport::where('num_pol', 'LIKE', '%' . $request->q. '%')
+        ->get()
+        ->count();
+
+    $endCount = $offset + $resultCount;
+    $morePages = $count > $endCount;
+
+    $results = array(
+      "results" => $data,
+      "pagination" => array(
+          "more" => $morePages
+      )
+    );
+
+    return response()->json($results);
+  }
 }

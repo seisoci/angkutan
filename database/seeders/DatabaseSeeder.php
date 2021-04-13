@@ -47,6 +47,11 @@ class DatabaseSeeder extends Seeder
           'value' => '',
           'type'  => 'image'
         ],
+        [
+          'name'  => 'potongan sparepart',
+          'value' => '20',
+          'type'  => 'settings'
+        ],
 
 
       ];

@@ -26,6 +26,7 @@ use App\Http\Controllers\Backend\PrefixController as BackendPrefixController;
 use App\Http\Controllers\Backend\StockController as BackendStockController;
 use App\Http\Controllers\Backend\InvoicePurchaseController as BackendInvoicePurchaseController;
 use App\Http\Controllers\Backend\SettingController as BackendSettingController;
+use App\Http\Controllers\Backend\JobOrderController as BackendJobOrderController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -56,6 +57,14 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('cargos/select2', [BackendCargoController::class, 'select2'])->name('cargos.select2');
     Route::get('routes/select2', [BackendRouteController::class, 'select2'])->name('routes.select2');
     Route::get('brands/select2', [BackendBrandController::class, 'select2'])->name('brands.select2');
+    Route::get('drivers/select2', [BackendDriverController::class, 'select2'])->name('drivers.select2');
+    Route::get('roadmonies/select2costumers', [BackendRoadMoneyController::class, 'select2costumers'])->name('roadmonies.select2costumers');
+    Route::get('roadmonies/select2routefrom', [BackendRoadMoneyController::class, 'select2routefrom'])->name('roadmonies.select2routefrom');
+    Route::get('roadmonies/select2routeto', [BackendRoadMoneyController::class, 'select2routeto'])->name('roadmonies.select2routeto');
+    Route::get('roadmonies/select2cargos', [BackendRoadMoneyController::class, 'select2cargos'])->name('roadmonies.select2cargos');
+    Route::get('anotherexpedition/select2', [BackendAnotherExpeditionController::class, 'select2'])->name('anotherexpedition.select2');
+    Route::get('transports/select2', [BackendTransportController::class, 'select2'])->name('transports.select2');
+    Route::get('transports/select2tonase', [BackendTransportController::class, 'select2tonase'])->name('transports.select2tonase');
     Route::get('typecapacities/select2', [BackendTypeCapacityController::class, 'select2'])->name('typecapacities.select2');
     Route::get('categories/select2', [BackendCategoryController::class, 'select2'])->name('categories.select2');
     Route::get('supplierspareparts/select2', [BackendSupplierSparepartController::class, 'select2'])->name('supplierspareparts.select2');
@@ -70,6 +79,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
       Route::get('{id}/datatable_driver/', [BackendAnotherExpeditionController::class, 'datatable_driver'])->name('datatable_driver');
     });
     Route::post('roadmonies/typecapacities', [BackendRoadMoneyController::class, 'typecapacities'])->name('roadmonies.typecapacities');
+    Route::post('roadmonies/roadmoney', [BackendRoadMoneyController::class, 'roadmoney'])->name('roadmonies.roadmoney');
     Route::put('roadmonies/{id}/updatetypecapacities', [BackendRoadMoneyController::class, 'updatetypecapacities'])->name('roadmonies.updatetypecapacities');
     Route::get('invoicepurchases/{id}/cetakpdf', [BackendInvoicePurchaseController::class, 'cetakPdfInvoice'])->name('invoicepurchases.cetakpdf');
 
@@ -102,5 +112,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
 
     //Settings
     Route::resource('settings', BackendSettingController::class);
+
+    //Job Order
+    Route::resource('joborders', BackendJobOrderController::class);
   });
 });
