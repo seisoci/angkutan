@@ -58,10 +58,10 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('routes/select2', [BackendRouteController::class, 'select2'])->name('routes.select2');
     Route::get('brands/select2', [BackendBrandController::class, 'select2'])->name('brands.select2');
     Route::get('drivers/select2', [BackendDriverController::class, 'select2'])->name('drivers.select2');
-    Route::get('roadmonies/select2costumers', [BackendRoadMoneyController::class, 'select2costumers'])->name('roadmonies.select2costumers');
-    Route::get('roadmonies/select2routefrom', [BackendRoadMoneyController::class, 'select2routefrom'])->name('roadmonies.select2routefrom');
-    Route::get('roadmonies/select2routeto', [BackendRoadMoneyController::class, 'select2routeto'])->name('roadmonies.select2routeto');
-    Route::get('roadmonies/select2cargos', [BackendRoadMoneyController::class, 'select2cargos'])->name('roadmonies.select2cargos');
+    Route::get('joborders/select2costumers', [BackendJobOrderController::class, 'select2costumers'])->name('joborders.select2costumers');
+    Route::get('joborders/select2routefrom', [BackendJobOrderController::class, 'select2routefrom'])->name('joborders.select2routefrom');
+    Route::get('joborders/select2routeto', [BackendJobOrderController::class, 'select2routeto'])->name('joborders.select2routeto');
+    Route::get('joborders/select2cargos', [BackendJobOrderController::class, 'select2cargos'])->name('joborders.select2cargos');
     Route::get('anotherexpedition/select2', [BackendAnotherExpeditionController::class, 'select2'])->name('anotherexpedition.select2');
     Route::get('transports/select2', [BackendTransportController::class, 'select2'])->name('transports.select2');
     Route::get('transports/select2tonase', [BackendTransportController::class, 'select2tonase'])->name('transports.select2tonase');
@@ -79,7 +79,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
       Route::get('{id}/datatable_driver/', [BackendAnotherExpeditionController::class, 'datatable_driver'])->name('datatable_driver');
     });
     Route::post('roadmonies/typecapacities', [BackendRoadMoneyController::class, 'typecapacities'])->name('roadmonies.typecapacities');
-    Route::post('roadmonies/roadmoney', [BackendRoadMoneyController::class, 'roadmoney'])->name('roadmonies.roadmoney');
+    Route::post('joborders/roadmoney', [BackendJobOrderController::class, 'roadmoney'])->name('joborders.roadmoney');
     Route::put('roadmonies/{id}/updatetypecapacities', [BackendRoadMoneyController::class, 'updatetypecapacities'])->name('roadmonies.updatetypecapacities');
     Route::get('invoicepurchases/{id}/cetakpdf', [BackendInvoicePurchaseController::class, 'cetakPdfInvoice'])->name('invoicepurchases.cetakpdf');
 

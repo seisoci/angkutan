@@ -10,7 +10,7 @@
     </h3>
   </div>
   <!--begin::Form-->
-  <form id="formStore" action="{{ route('backend.drivers.store') }}">
+  <form id="formStore" method="POST" action="{{ route('backend.joborders.store') }}">
     @csrf
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="card-body">
@@ -24,8 +24,25 @@
       <div class="row">
         <div class="col-md-4">
           <div class="form-group">
+            <label>Tanggal Muat</label>
+            <div class="input-group date">
+              <input type="text" class="form-control datepicker" name="date_begin" readonly="readonly"
+                placeholder="Tanggal Muat">
+              <div class="input-group-append">
+                <span class="input-group-text">
+                  <i class="la la-calendar-check-o"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Prefix:</label>
+            <select name="prefix" class="form-control" id="select2Prefix">
+            </select>
+          </div>
+          <div class="form-group">
             <label for="activeSelect">Expedisi<span class="text-danger">*</span></label>
-            <select id="selectExpedition" class="form-control" id="activeSelect">
+            <select id="selectExpedition" name="type" class="form-control">
               <option>Pilih Jenis Expedisi</option>
               <option value="self">Sendiri</option>
               <option value="ldo">LDO (Luar)</option>
@@ -61,7 +78,7 @@
           </div>
           <div class="form-group">
             <label>Rute Ke<span class="text-danger">*</span></label>
-            <select id="select2RoadTo" class="form-control" name="rotue_to">
+            <select id="select2RoadTo" class="form-control" name="route_to">
             </select>
           </div>
           <div class="form-group">
@@ -77,12 +94,12 @@
         <div class="col-md-4">
           <div class="form-group">
             <label for="activeSelect">Pilih Kapasitas<span class="text-danger">*</span></label>
-            <select id="select2TypeCapacity" class="form-control">
+            <select id="select2TypeCapacity" name="type_capacity" class="form-control">
             </select>
           </div>
           <div class="form-group">
             <label for="activeSelect">Tipe Ongkosan<span class="text-danger">*</span></label>
-            <select id="selectTypeOngkosan" class="form-control">
+            <select id="selectTypeOngkosan" name="type_payload" class="form-control">
               <option>-- Pilih Ongkosan --</option>
               <option value="calculate">Kalkulasi (Uang Jalan Master * KG)</option>
               <option value="fix">FIX</option>
@@ -90,42 +107,38 @@
           </div>
           <div class="form-group">
             <label>Harga Dasar</label>
+            <input type="hidden" name="basic_price" class="form-control currency" />
             <input type="text" name="basic_price" class="form-control currency" disabled />
           </div>
           <div class="form-group" style="display: none">
             <label>Harga Dasar LDO</label>
             <input type="text" name="basic_price_ldo" class="form-control currency" style="width:100% !important" />
           </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Muatan</label>
-                <div class="input-group">
-                  <input type="number" name="payload" class="form-control">
-                  <div class="input-group-append">
-                    <span class="input-group-text">KG</span>
-                  </div>
-                </div>
+          <div class="form-group">
+            <label>Muatan</label>
+            <div class="input-group">
+              <input type="number" name="payload" class="form-control text-right">
+              <div class="input-group-append">
+                <span class="input-group-text">KG</span>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Convert to</label>
-                <div class="input-group">
-                  <input id="convertToTon" type="number" class="form-control" disabled>
-                  <div class="input-group-append">
-                    <span class="input-group-text">Ton</span>
-                  </div>
-                </div>
+          </div>
+          <div class="form-group">
+            <label>Convert to</label>
+            <div class="input-group">
+              <input id="convertToTon" name="convertToTon" type="number" class="form-control text-right" disabled>
+              <div class="input-group-append">
+                <span class="input-group-text">Ton</span>
               </div>
             </div>
           </div>
           <div class="form-group">
             <label>Total Ongkosan Dasar</label>
-            <input id="totalPayload" type="text" class="form-control currency" disabled />
+            <input id="totalPayload" name="basic_price" type="text" class="form-control currency" disabled />
           </div>
           <div class="form-group">
             <label>Uang Jalan</label>
+            <input type="hidden" name="road_money" class="form-control currency" />
             <input type="text" name="road_money" class="form-control currency" disabled />
           </div>
           <div class="form-group">
@@ -133,16 +146,14 @@
             <input type="text" name="grandtotalgross" class="form-control currency" disabled />
           </div>
         </div>
-      </div>
-      <div class="row">
         <div class="col-md-4">
           <div class="row">
             <div class="col-md-6">
               <div class="form-group" style="display: none">
                 <label>Potongan Spare Part</label>
                 <div class="input-group">
-                  <input id="percentSparepart" type="text" class="form-control" value="{{ $sparepart->value }}"
-                    disabled>
+                  <input id="percentSparepart" name="cut_sparepart_percent" type="text" class="form-control"
+                    value="{{ $sparepart->value }}" disabled>
                   <div class="input-group-append">
                     <span class="input-group-text">%</span>
                   </div>
@@ -153,7 +164,8 @@
               <div class="form-group" style="display: none">
                 <label>Gaji Supir</label>
                 <div class="input-group">
-                  <input id="percentSalary" type="text" class="form-control" value="{{ $gaji->value }}" disabled>
+                  <input id="percentSalary" name="salary_percent" type="text" class="form-control"
+                    value="{{ $gaji->value }}" disabled>
                   <div class="input-group-append">
                     <span class="input-group-text">%</span>
                   </div>
@@ -167,7 +179,7 @@
             <div class="col-md-6">
               <div class="form-group" style="display: none">
                 <label>Potongan SparePart</label>
-                <input name="cutsparepart" type="text" class="form-control currency" disabled>
+                <input name="cut_sparepart" type="text" class="form-control currency" disabled>
               </div>
             </div>
             <div class="col-md-6">
@@ -189,10 +201,10 @@
           </div>
         </div>
       </div>
-      <div class="card-footer d-flex justify-content-end">
-        <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </div>
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+      <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </div>
   </form>
   <!--end::Form-->
@@ -218,6 +230,29 @@
       removeMaskOnSubmit: true
     });
 
+    $('.datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      todayHighlight: !0,
+    });
+
+    $("#select2Prefix").select2({
+      placeholder: "Choose Prefix",
+      allowClear: true,
+      ajax: {
+        url: "{{ route('backend.prefixes.select2') }}",
+        dataType: "json",
+        delay: 250,
+        cache: true,
+        data: function(e) {
+          return {
+            type: 'operational',
+            q: e.term || '',
+            page: e.page || 1
+          }
+        },
+      },
+    });
+
     $('#selectExpedition').on('change', function (e) {
       if(this.value == 'self'){
         $("#select2AnotherExpedition").parent().css("display", "none");
@@ -226,8 +261,8 @@
         $("#percentSparepart").parent().parent().find('label').css("display", "block");
         $("#percentSalary").parent().parent().css("display", "block");
         $("#percentSalary").parent().parent().find('label').css("display", "block");
-        $('input[name="cutsparepart"]').parent().css("display", "block");
-        $('input[name="cutsparepart"]').parent().find('label').css("display", "block");
+        $('input[name="cut_sparepart"]').parent().css("display", "block");
+        $('input[name="cut_sparepart"]').parent().find('label').css("display", "block");
         $('input[name="salary"]').parent().css("display", "block");
         $('input[name="salary"]').parent().find('label').css("display", "block");
         $('input[name="grandtotalgross"]').parent().css("display", "block");
@@ -250,7 +285,7 @@
         $('#totalpayloadldo').parent().find('label').css("display", "block");
         $("#percentSparepart").parent().parent().css("display", "none");
         $("#percentSalary").parent().parent().css("display", "none");
-        $('input[name="cutsparepart"]').parent().css("display", "none");
+        $('input[name="cut_sparepart"]').parent().css("display", "none");
         $('input[name="salary"]').parent().css("display", "none");
       }
     });
@@ -271,6 +306,11 @@
             return query
           },
       },
+    }).on('change', function(){
+      $("#select2Transport").val("");
+      $("#select2Transport").trigger("change");
+      $("#select2Drivers").val("");
+      $("#select2Drivers").trigger("change");
     });
 
     $("#select2Transport").select2({
@@ -315,7 +355,7 @@
       placeholder: "Search Pelanggan",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.roadmonies.select2costumers') }}",
+          url: "{{ route('backend.joborders.select2costumers') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -327,39 +367,49 @@
             return query
           },
       },
+    }).on('change', function(){
+      $("#select2RoadFrom").val("");
+      $("#select2RoadFrom").trigger("change");
+      $("#select2RoadTo").val("");
+      $("#select2RoadTo").trigger("change");
+      $("#select2RoadTo").val("");
+      $("#select2RoadTo").trigger("change");
     });
 
     $("#select2RoadFrom").select2({
       placeholder: "Search Rute Dari",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.roadmonies.select2routefrom') }}",
+          url: "{{ route('backend.joborders.select2routefrom') }}",
           dataType: "json",
           delay: 250,
           cache: true,
           data: function(e) {
             var query = {
-              costumer_id: $('#select2Costumers').find(":selected").val(),
+              costumer_id: $('#select2Costumers').find(":selected").val() || null,
               q: e.term || '',
               page: e.page || 1
             }
             return query
           },
       },
+    }).on('change', function(){
+      $("#select2RoadTo").val("");
+      $("#select2RoadTo").trigger("change");
     });
 
     $("#select2RoadTo").select2({
       placeholder: "Search Rute Ke",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.roadmonies.select2routeto') }}",
+          url: "{{ route('backend.joborders.select2routeto') }}",
           dataType: "json",
           delay: 250,
           cache: true,
           data: function(e) {
             var query = {
-              costumer_id : $('#select2Costumers').find(":selected").val(),
-              route_from  : $('#select2RoadFrom').find(":selected").val(),
+              costumer_id : $('#select2Costumers').find(":selected").val() || null,
+              route_from  : $('#select2RoadFrom').find(":selected").val() | null,
               q: e.term || '',
               page: e.page || 1
             }
@@ -372,15 +422,15 @@
       placeholder: "Search Muatan",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.roadmonies.select2cargos') }}",
+          url: "{{ route('backend.joborders.select2cargos') }}",
           dataType: "json",
           delay: 250,
           cache: true,
           data: function(e) {
             var query = {
-              costumer_id : $('#select2Costumers').find(":selected").val(),
-              route_from  : $('#select2RoadFrom').find(":selected").val(),
-              route_to    : $('#select2RoadTo').find(":selected").val(),
+              costumer_id : $('#select2Costumers').find(":selected").val()|| null,
+              route_from  : $('#select2RoadFrom').find(":selected").val() || null,
+              route_to    : $('#select2RoadTo').find(":selected").val() || null,
               q: e.term || '',
               page: e.page || 1
             }
@@ -405,6 +455,18 @@
             return query
           },
       },
+    }).on('change', function(){
+      $('#selectTypeOngkosan').val('');
+      $('#selectTypeOngkosan').val('');
+      $('#convertToTon').val('');
+      $('#totalPayload').val('');
+      $('input[name=basic_price_ldo]').val('');
+      $('input[name=payload]').val('');
+      $('input[name=road_money]').val('');
+      $('input[name=grandtotalgross]').val('');
+      $('input[name=cut_sparepart]').val('');
+      $('input[name=salary]').val('');
+      $('input[name=grandtotalnetto]').val('');
     });
 
     $('#selectTypeOngkosan').on('change', function() {
@@ -431,7 +493,7 @@
       $('#convertToTon').val(convertTo);
       $('#totalPayload').val(sumPayload);
       $('input[name="grandtotalgross"]').val(totalGross);
-      $('input[name="cutsparepart"]').val(sparepart);
+      $('input[name="cut_sparepart"]').val(sparepart);
       $('input[name="salary"]').val(salary);
       $('input[name="grandtotalnetto"]').val(totalNetto);
     }
@@ -453,7 +515,7 @@
         $('#convertToTon').val(convertTo);
         $('#totalPayload').val(sumPayload);
         $('input[name="grandtotalgross"]').val(totalGross);
-        $('input[name="cutsparepart"]').val(sparepart);
+        $('input[name="cut_sparepart"]').val(sparepart);
         $('input[name="salary"]').val(salary);
         $('input[name="grandtotalnetto"]').val(totalNetto);
       }else{
@@ -489,10 +551,9 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           },
           type:'POST',
-          url: "{{ route('backend.roadmonies.roadmoney') }}",
+          url: "{{ route('backend.joborders.roadmoney') }}",
           data: formData,
           success:function(response) {
-            console.log(response.data.pivot);
             if(response.data){
               let data = response.data.pivot;
               let transport = response.type.type_car;
@@ -555,17 +616,6 @@
           toastr.error(response.responseJSON.message, 'Failed !');
         }
       });
-    });
-
-    $(".image").change(function() {
-      let thumb = $(this).parent().find('img');
-      if (this.files && this.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          thumb.attr('src', e.target.result);
-        }
-        reader.readAsDataURL(this.files[0]);
-      }
     });
   });
 </script>

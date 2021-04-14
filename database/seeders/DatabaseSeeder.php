@@ -33,6 +33,11 @@ class DatabaseSeeder extends Seeder
           'type'  => 'settings'
         ],
         [
+          'name'  => 'fax',
+          'value' => '',
+          'type'  => 'settings'
+        ],
+        [
           'name'  => 'email',
           'value' => '',
           'type'  => 'settings'
@@ -49,6 +54,11 @@ class DatabaseSeeder extends Seeder
         ],
         [
           'name'  => 'potongan sparepart',
+          'value' => '20',
+          'type'  => 'settings'
+        ],
+        [
+          'name'  => 'gaji supir',
           'value' => '20',
           'type'  => 'settings'
         ],

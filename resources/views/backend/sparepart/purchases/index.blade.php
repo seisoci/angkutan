@@ -158,6 +158,7 @@
         cache: true,
         data: function(e) {
           return {
+            type: 'sparepart',
             q: e.term || '',
             page: e.page || 1
           }

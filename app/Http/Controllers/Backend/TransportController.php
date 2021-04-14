@@ -230,6 +230,7 @@ class TransportController extends Controller
 
     return response()->json($results);
   }
+
   public function select2(Request $request){
     $page = $request->page;
     $resultCount = 10;

@@ -122,6 +122,7 @@ class PrefixController extends Controller
       $resultCount = 10;
       $offset = ($page - 1) * $resultCount;
       $data = Prefix::where('name', 'LIKE', '%' . $request->q. '%')
+        ->where('type', $request->type)
         ->orderBy('name')
         ->skip($offset)
         ->take($resultCount)
@@ -129,6 +130,7 @@ class PrefixController extends Controller
         ->get();
 
       $count = Prefix::where('name', 'LIKE', '%' . $request->q. '%')
+        ->where('type', $request->type)
         ->get()
         ->count();
 

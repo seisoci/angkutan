@@ -32,7 +32,7 @@ class InvoicePurchaseController extends Controller
             $actionBtn = '
               <div class="dropdown">
                   <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-cog"></i>
+                      <i class="fas fa-eye"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a href="invoicepurchases/'.$row->id.'" class="dropdown-item">Invoice Detail</a>
@@ -60,7 +60,7 @@ class InvoicePurchaseController extends Controller
         ['page' => '/backend/drivers','title' => "List Supir"],
         ['page' => '#','title' => "Detail Supir"],
       ];
-      $collection =Setting::all();
+      $collection = Setting::all();
       $profile = collect($collection)->mapWithKeys(function ($item) {
           return [$item['name'] => $item['value']];
       });
