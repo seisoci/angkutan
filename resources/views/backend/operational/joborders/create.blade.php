@@ -342,6 +342,7 @@
           cache: true,
           data: function(e) {
             var query = {
+              status: 'active',
               type: $('#select2AnotherExpedition').find(":selected").val(),
               q: e.term || '',
               page: e.page || 1
@@ -460,6 +461,7 @@
       $('#selectTypeOngkosan').val('');
       $('#convertToTon').val('');
       $('#totalPayload').val('');
+      $('input[name=basic_price]').val('');
       $('input[name=basic_price_ldo]').val('');
       $('input[name=payload]').val('');
       $('input[name=road_money]').val('');
@@ -470,6 +472,16 @@
     });
 
     $('#selectTypeOngkosan').on('change', function() {
+      $('#convertToTon').val('');
+      $('#totalPayload').val('');
+      $('input[name=basic_price]').val('');
+      $('input[name=basic_price_ldo]').val('');
+      $('input[name=payload]').val('');
+      $('input[name=road_money]').val('');
+      $('input[name=grandtotalgross]').val('');
+      $('input[name=cut_sparepart]').val('');
+      $('input[name=salary]').val('');
+      $('input[name=grandtotalnetto]').val('');
       getData();
       if(this.value == 'fix'){
         $('input[name="payload"]').prop('disabled', true).val(1);

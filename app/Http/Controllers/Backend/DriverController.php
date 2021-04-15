@@ -233,8 +233,12 @@ class DriverController extends Controller
       $resultCount = 10;
       $offset = ($page - 1) * $resultCount;
       $type = !empty($request->type) || isset($request->type) ? $request->type : NULL;
+      $status = $request->status ?? NULL;
       $data = Driver::where('name', 'LIKE', '%' . $request->q. '%')
           ->where('another_expedition_id', $type)
+          ->when($status, function ($q, $status) {
+              return $q->where('status', $status);
+          })
           ->orderBy('name')
           ->skip($offset)
           ->take($resultCount)

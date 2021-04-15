@@ -40,7 +40,7 @@
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>LDO:</label>
-                <select class="form-control" id="select2Driver">
+                <select class="form-control" id="select2AnotherExpedition">
                 </select>
               </div>
             </div>
@@ -54,14 +54,14 @@
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>No. Pol:</label>
-                <select class="form-control" id="select2Driver">
+                <select class="form-control" id="select2Transport">
                 </select>
               </div>
             </div>
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Costumer:</label>
-                <select class="form-control" id="select2Driver">
+                <select class="form-control" id="select2Costumer">
                 </select>
               </div>
             </div>
@@ -70,29 +70,28 @@
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Rute Dari:</label>
-                <select class="form-control" id="select2Driver">
+                <select class="form-control" id="select2RouteFrom">
                 </select>
               </div>
             </div>
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Rute Ke:</label>
-                <select class="form-control" id="select2Driver">
+                <select class="form-control" id="select2RouteTo">
                 </select>
               </div>
             </div>
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Muatan:</label>
-                <select class="form-control" id="select2Driver">
+                <select class="form-control" id="select2Cargo">
                 </select>
               </div>
             </div>
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Tanggal Mulai:</label>
-                <select class="form-control" id="select2Driver">
-                </select>
+                <input id="dateBegin" readonly type="text" class="form-control datepicker" placeholder="Cari Tanggal">
               </div>
             </div>
           </div>
@@ -100,14 +99,19 @@
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Rute Selesai:</label>
-                <select class="form-control" id="select2Driver">
-                </select>
+                <input id="dateEnd" readonly type="text" class="form-control datepicker" placeholder="Cari Tanggal">
               </div>
             </div>
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Status Job Order:</label>
-                <select class="form-control" id="select2Driver">
+                <select class="form-control" id="selectStatus">
+                  <option value="">Pilih Status</option>
+                  <option value="mulai">Mulai</option>
+                  <option value="muat">Muat</option>
+                  <option value="bongkar">Bongkar</option>
+                  <option value="selesai">Selesai</option>
+                  <option value="batal">Batal</option>
                 </select>
               </div>
             </div>
@@ -175,22 +179,29 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
-    $(".currency").inputmask('decimal', {
-      groupSeparator: '.',
-      digits:0,
-      rightAlign: true,
-      removeMaskOnSubmit: true
-    });
-
     var dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[9, 'desc']],
+        order: [[12, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.joborders.index') }}",
+        ajax: {
+          url: "{{ route('backend.joborders.index') }}",
+          data: function(d){
+            d.another_expedition_id = $('#select2AnotherExpedition').find(':selected').val();
+            d.driver_id = $('#select2Driver').find(':selected').val();
+            d.transport_id = $('#select2Transport').find(':selected').val();
+            d.costumer_id = $('#select2Costumer').find(':selected').val();
+            d.cargo_id = $('#select2Cargo').find(':selected').val();
+            d.route_from = $('#select2RouteFrom').find(':selected').val();
+            d.route_to = $('#select2RouteTo').find(':selected').val();
+            d.date_begin = $('#dateBegin').val();
+            d.date_end = $('#dateEnd').val();
+            d.status_cargo = $('#selectStatus').find(':selected').val();
+          }
+        },
         columns: [
             {data: 'prefix', name: 'prefix'},
             {data: 'num_bill', name: 'num_bill'},
@@ -230,113 +241,150 @@
         ],
     });
 
+    $('.datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      todayHighlight: !0,
+      todayBtn: "linked",
+      clearBtn: !0,
+    }).on('change', function(){
+      dataTable.draw();
+    });
+    $("#select2AnotherExpedition").select2({
+      placeholder: "Search LDO",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.anotherexpedition.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    }).on('change', function (e){
+      dataTable.draw();
+    });
+    $("#select2Driver").select2({
+      placeholder: "Search LDO",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.drivers.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    }).on('change', function (e){
+      dataTable.draw();
+    });
+    $("#select2Transport").select2({
+      placeholder: "Search Kendaraan",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.transports.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    }).on('change', function (e){
+      dataTable.draw();
+    });
+    $("#select2Costumer").select2({
+      placeholder: "Search Pelanggan",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.costumers.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    }).on('change', function (e){
+      dataTable.draw();
+    });
+    $("#select2Cargo").select2({
+      placeholder: "Search Muatan",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.transports.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    }).on('change', function (e){
+      dataTable.draw();
+    });
+    $("#select2RouteFrom").select2({
+      placeholder: "Search Rute Dari",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.routes.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    }).on('change', function (e){
+      dataTable.draw();
+    });
+    $("#select2RouteTo").select2({
+      placeholder: "Search Rute Ke",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.routes.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    }).on('change', function (e){
+      dataTable.draw();
+    });
+    $('#selectStatus').on('change', function(){
+      dataTable.draw();
+    })
+
     $('#modalDelete').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.brands.index") }}/'+ id);
     });
     $('#modalDelete').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
-    });
-    $('#modalCreate').on('show.bs.modal', function (event) {
-    });
-    $('#modalCreate').on('hidden.bs.modal', function (event) {
-      $(this).find('.modal-body').find('input[name="name"]').val('');
-    });
-    $('#modalEdit').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
-      var name = $(event.relatedTarget).data('name');
-      $(this).find('#formUpdate').attr('action', '{{ route("backend.brands.index") }}/'+id)
-      $(this).find('.modal-body').find('input[name="name"]').val(name);
-    });
-    $('#modalEdit').on('hidden.bs.modal', function (event) {
-      $(this).find('.modal-body').find('input[name="name"]').val('');
-    });
-
-    $("#formStore").submit(function(e) {
-      e.preventDefault();
-      var form = $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
-      $.ajax({
-        beforeSend: function() {
-          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
-        },
-        cache: false,
-        processData: false,
-        contentType: false,
-        type: "POST",
-        url: url,
-        data: data,
-        success: function(response) {
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          if (response.status == "success") {
-            toastr.success(response.message, 'Success !');
-            $('#modalCreate').modal('hide');
-            dataTable.draw();
-            $("[role='alert']").parent().css("display", "none");
-          } else {
-            $("[role='alert']").parent().removeAttr("style");
-            $(".alert-text").html('');
-            $.each(response.error, function(key, value) {
-              $(".alert-text").append('<span style="display: block">'+value+'</span>');
-            });
-            toastr.error("Please complete your form", 'Failed !');
-          }
-        },
-        error: function(response) {
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          toastr.error(response.responseJSON.message, 'Failed !');
-          $('#modalCreate').modal('hide');
-          $('#modalCreate').find('a[name="id"]').attr('href', '');
-        }
-      });
-    });
-
-    $("#formUpdate").submit(function(e){
-      e.preventDefault();
-      var form 	= $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
-      var url 	= form.attr("action");
-      var data 	= new FormData(this);
-      $.ajax({
-        beforeSend:function() {
-          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled","disabled");
-        },
-        headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        cache: false,
-        processData: false,
-        contentType: false,
-        type: "POST",
-        url : url,
-        data : data,
-        success: function(response) {
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          if (response.status == "success" ){
-            toastr.success(response.message,'Success !');
-            $('#modalEdit').modal('hide');
-            dataTable.draw();
-            $("[role='alert']").parent().css("display", "none");
-          }else{
-            $("[role='alert']").parent().removeAttr("style");
-            $(".alert-text").html('');
-            $.each( response.error, function( key, value ) {
-              $(".alert-text").append('<span style="display: block">'+value+'</span>');
-            });
-            toastr.error("Please complete your form",'Failed !');
-          }
-        },error: function(response){
-            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-            toastr.error(response.responseJSON.message, 'Failed !');
-            $('#modalEdit').modal('hide');
-            $('#modalEdit').find('a[name="id"]').attr('href', '');
-        }
-      });
     });
 
     $("#formDelete").click(function(e){

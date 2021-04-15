@@ -195,7 +195,7 @@ class RoadMoneyController extends Controller
     ]);
 
     if($validator->passes()){
-      $data = RoadMoney::firstOrFail('id', $request->road_money_id)->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->where('type', $request->type)
+      $data = RoadMoney::findOrFail($request->road_money_id)->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->where('type', $request->type)
       ->first();
 
       $response = response()->json([
@@ -214,7 +214,7 @@ class RoadMoneyController extends Controller
     ]);
 
     if($validator->passes()){
-      $data = RoadMoney::firstOrFail('id', $request->road_money_id);
+      $data = RoadMoney::findOrFail($id);
       if($data->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->wherePivot('type', $request->type)->count() >= 1){
         $data->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->wherePivot('type', $request->type)->updateExistingPivot($request->type_capacity_id, $request->except(['type_capacity_id', '_method']));
       }else{

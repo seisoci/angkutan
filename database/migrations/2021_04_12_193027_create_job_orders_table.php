@@ -43,7 +43,7 @@ class CreateJobOrdersTable extends Migration
             $table->decimal('invoice_bill',15,0);
             $table->string('description')->nullable();
             $table->enum('status_salary', [1, 0])->default(0);
-            $table->enum('status_cargo', ['mulai', 'muat', 'bongkar', 'selesai'])->default('mulai');
+            $table->enum('status_cargo', ['mulai', 'muat', 'bongkar', 'selesai,', 'batal'])->default('mulai');
             $table->enum('status_payment', [1, 0])->nullable();
             $table->string('type');
             $table->timestamps();

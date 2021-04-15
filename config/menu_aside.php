@@ -106,10 +106,6 @@ return [
           'arrow' => true,
           'submenu' => [
             [
-              'title' => 'Master Prefix',
-              'page'  => 'backend/prefixes'
-            ],
-            [
               'title' => 'Master Akun Kas',
               'page'  => 'backend/cashes'
             ],
@@ -121,6 +117,23 @@ return [
               'title' => 'Master Perusahaan',
               'page'  => 'backend/companies'
             ]
+          ]
+        ],
+        [
+          'section' => 'Operational',
+        ],
+        [
+          'title' => 'Job Order',
+          'desc' => '',
+          'icon' => 'media/svg/icons/Communication/Archive.svg',
+          'bullet' => 'dot',
+          'root' => true,
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Job Order',
+              'page'  => 'backend/joborders'
+            ],
           ]
         ],
         [
@@ -153,12 +166,26 @@ return [
           ]
         ],
         [
-            'title' => 'Settings',
-            'root' => true,
-            'icon' => 'media/svg/icons/Electric/Shutdown.svg', // or can be 'flaticon-home' or any flaticon-*
-            'page' => 'backend/settings',
-            'new-tab' => false,
-        ]
+          'section' => 'Master Settings',
+        ],
+        [
+          'title' => 'Settings',
+          'desc' => '',
+          'icon' => 'media/svg/icons/General/Settings-2.svg',
+          'bullet' => 'dot',
+          'root' => true,
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Master Setting Web',
+              'page'  => 'backend/settings'
+            ],
+            [
+              'title' => 'Master Prefix',
+              'page'  => 'backend/prefixes'
+            ]
+          ]
+        ],
 
         // Custom
         // [

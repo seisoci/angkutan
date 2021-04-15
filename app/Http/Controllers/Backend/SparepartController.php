@@ -38,7 +38,8 @@ class SparepartController extends Controller
         })
         ->whereHas('categories', function($query) use($categories_id) {
           isset($categories_id) ? $query->where('category_id', $categories_id) : NULL;
-        })->select('spareparts.*');
+        })
+        ->select('spareparts.*');
         return Datatables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){
