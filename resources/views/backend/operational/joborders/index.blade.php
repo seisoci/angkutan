@@ -91,7 +91,8 @@
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Tanggal Mulai:</label>
-                <input id="dateBegin" readonly type="text" class="form-control datepicker" placeholder="Cari Tanggal">
+                <input id="dateBegin" readonly type="text" class="form-control datepicker" placeholder="Cari Tanggal"
+                  style="width:100% !important">
               </div>
             </div>
           </div>
@@ -99,7 +100,8 @@
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Rute Selesai:</label>
-                <input id="dateEnd" readonly type="text" class="form-control datepicker" placeholder="Cari Tanggal">
+                <input id="dateEnd" readonly type="text" class="form-control datepicker" placeholder="Cari Tanggal"
+                  style="width:100% !important">
               </div>
             </div>
             <div class="col-md-3 my-md-0">
@@ -113,6 +115,11 @@
                   <option value="selesai">Selesai</option>
                   <option value="batal">Batal</option>
                 </select>
+              </div>
+              <div class="form-group">
+                <label>Tanggal Selesai:</label>
+                <input name="date_end" readonly type="text" class="form-control datepicker" placeholder="Cari Tanggal"
+                  style="width:100% !important">
               </div>
             </div>
           </div>
@@ -161,6 +168,45 @@
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button id="formDelete" type="button" class="btn btn-danger">Submit</button>
       </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit {{ $config['page_title'] }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <i aria-hidden="true" class="ki ki-close"></i>
+        </button>
+      </div>
+      <form id="formUpdate" action="#">
+        @method('PUT')
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <div class="modal-body">
+          <div class="form-group" style="display:none;">
+            <div class="alert alert-custom alert-light-danger" role="alert">
+              <div class="alert-icon"><i class="flaticon-danger text-danger"></i></div>
+              <div class="alert-text">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Status Job Order:</label>
+            <select class="form-control" name="status_cargo">
+              <option value="mulai">Mulai</option>
+              <option value="muat">Muat</option>
+              <option value="bongkar">Bongkar</option>
+              <option value="selesai">Selesai</option>
+              <option value="batal">Batal</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" type="button" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -249,6 +295,7 @@
     }).on('change', function(){
       dataTable.draw();
     });
+
     $("#select2AnotherExpedition").select2({
       placeholder: "Search LDO",
       allowClear: true,
@@ -386,7 +433,62 @@
     $('#modalDelete').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
     });
-
+    $('#modalEdit').on('show.bs.modal', function (event) {
+      var id = $(event.relatedTarget).data('id');
+      var status_cargo = $(event.relatedTarget).data('status_cargo');
+      var date_end = $(event.relatedTarget).data('date_end');
+      $(this).find('#formUpdate').attr('action', '{{ route("backend.joborders.index") }}/'+id)
+      $(this).find('.modal-body').find('select[name="status_cargo"]').val(status_cargo);
+      $(this).find('.modal-body').find('input[name="date_end"]').val(date_end);
+    });
+    $('#modalEdit').on('hidden.bs.modal', function (event) {
+      $(this).find('.modal-body').find('select[name="status_cargo"]').val('');
+      $(this).find('.modal-body').find('input[name="date_end"]').val('');
+    });
+    $("#formUpdate").submit(function(e){
+      e.preventDefault();
+      var form 	= $(this);
+      var btnSubmit = form.find("[type='submit']");
+      var btnSubmitHtml = btnSubmit.html();
+      var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      var url 	= form.attr("action");
+      var data 	= new FormData(this);
+      $.ajax({
+        beforeSend:function() {
+          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled","disabled");
+        },
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
+        type: "POST",
+        url : url,
+        data : data,
+        success: function(response) {
+          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+          if (response.status == "success" ){
+            toastr.success(response.message,'Success !');
+            $('#modalEdit').modal('hide');
+            dataTable.draw();
+            $("[role='alert']").parent().css("display", "none");
+          }else{
+            $("[role='alert']").parent().removeAttr("style");
+            $(".alert-text").html('');
+            $.each( response.error, function( key, value ) {
+              $(".alert-text").append('<span style="display: block">'+value+'</span>');
+            });
+            toastr.error("Please complete your form",'Failed !');
+          }
+        },error: function(response){
+            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+            toastr.error(response.responseJSON.message, 'Failed !');
+            $('#modalEdit').modal('hide');
+            $('#modalEdit').find('a[name="id"]').attr('href', '');
+        }
+      });
+    });
     $("#formDelete").click(function(e){
       e.preventDefault();
       var form 	    = $(this);

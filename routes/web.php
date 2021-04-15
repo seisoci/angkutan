@@ -27,6 +27,7 @@ use App\Http\Controllers\Backend\StockController as BackendStockController;
 use App\Http\Controllers\Backend\InvoicePurchaseController as BackendInvoicePurchaseController;
 use App\Http\Controllers\Backend\SettingController as BackendSettingController;
 use App\Http\Controllers\Backend\JobOrderController as BackendJobOrderController;
+use App\Http\Controllers\Backend\OperationalExpenseController as BackendOperationalExpenseController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -70,6 +71,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('supplierspareparts/select2', [BackendSupplierSparepartController::class, 'select2'])->name('supplierspareparts.select2');
     Route::get('spareparts/select2', [BackendSparepartController::class, 'select2'])->name('spareparts.select2');
     Route::get('prefixes/select2', [BackendPrefixController::class, 'select2'])->name('prefixes.select2');
+    Route::get('expenses/select2', [BackendExpenseController::class, 'select2'])->name('expenses.select2');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
@@ -82,6 +84,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::post('joborders/roadmoney', [BackendJobOrderController::class, 'roadmoney'])->name('joborders.roadmoney');
     Route::put('roadmonies/{id}/updatetypecapacities', [BackendRoadMoneyController::class, 'updatetypecapacities'])->name('roadmonies.updatetypecapacities');
     Route::get('invoicepurchases/{id}/cetakpdf', [BackendInvoicePurchaseController::class, 'cetakPdfInvoice'])->name('invoicepurchases.cetakpdf');
+    Route::post('joborders/storeexpense', [BackendJobOrderController::class, 'storeexpense'])->name('joborders.storeexpense');
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -115,5 +118,6 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
 
     //Job Order
     Route::resource('joborders', BackendJobOrderController::class);
+    Route::resource('operationalexpenses', BackendOperationalExpenseController::class);
   });
 });

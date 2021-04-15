@@ -66,7 +66,7 @@
             <label for="activeSelect">Active</label>
             <select class="form-control" id="activeSelect" name="status">
               <option value="active" {{ $data->status == 'active' ? 'selected' : NULL }}>Active</option>
-              <option value="inactive {{ $data->status == 'inactive' ? 'selected' : NULL }}">Inactive</option>
+              <option value="inactive" {{ $data->status == 'inactive' ? 'selected' : NULL }}>Inactive</option>
             </select>
           </div>
         </div>

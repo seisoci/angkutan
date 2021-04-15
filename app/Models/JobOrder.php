@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 class JobOrder extends Model
 {
     use HasFactory;
-
+  protected $fillable = [
+    'status_cargo',
+    'status_salary',
+    'status_payment',
+  ];
 
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
@@ -42,5 +46,9 @@ class JobOrder extends Model
 
   public function anotherexpedition(){
     return $this->belongsTo(AnotherExpedition::class, 'another_expedition_id');
+  }
+
+  public function operationalexpense(){
+    return $this->hasMany(OperationalExpense::class);
   }
 }

@@ -149,7 +149,7 @@
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
     });
 
-     $("#formDelete").click(function(e){
+    $("#formDelete").click(function(e){
       e.preventDefault();
       var form 	    = $(this);
       var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');

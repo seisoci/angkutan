@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Expense;
 use App\Models\JobOrder;
+use App\Models\OperationalExpense;
 use App\Models\Prefix;
 use App\Models\RoadMoney;
 use App\Models\Setting;
@@ -77,15 +79,8 @@ class JobOrderController extends Controller
           ->addIndexColumn()
           ->addColumn('action', function($row){
               $actionBtn = '
-              <div class="dropdown">
-                  <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-eye"></i>
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a href="joborders/'.$row->id.'" class="dropdown-item">Job Order Detail</a>
-                    <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete dropdown-item">Delete</a>
-                  </div>
-              </div>';
+              <a href="joborders/'.$row->id.'" class="btn btn-info btn-sm">Show Detail</a>
+              <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-status_cargo="'.$row->status_cargo.'" data-date_end="'.$row->date_end.'" class="edit btn btn-warning btn-sm">Edit</a>';
               return $actionBtn;
           })
           ->make(true);
@@ -156,11 +151,11 @@ class JobOrderController extends Controller
         $data->basic_price            = $request->basic_price;
         $data->road_money             = $request->road_money;
         $data->cut_sparepart_percent  = $qsparepart->value;
-        $data->cut_sparepart          = $sparepart;
-        $data->salary                 = $salary;
-        $data->salary_percent         = $qsalary;
-        $data->grandtotalgross        = $totalGross;
-        $data->grandtotalnetto        = $totalNetto;
+        // $data->cut_sparepart          = $sparepart;
+        // $data->salary                 = $salary;
+        $data->salary_percent         = $qsalary->value;
+        // $data->grandtotalgross        = $totalGross;
+        // $data->grandtotalnetto        = $totalNetto;
         $data->invoice_bill           = $sumPayload;
         if($data->save()){
           $response = response()->json([
@@ -197,9 +192,9 @@ class JobOrderController extends Controller
         $data->basic_price            = $request->basic_price;
         $data->basic_price_ldo        = $request->basic_price_ldo;
         $data->road_money             = $request->road_money;
-        $data->grandtotalgross        = $sumPayloadLDO;
-        $data->grandtotalnetto        = $totalNetto;
-        $data->grandtotalnettoldo     = $totalNettoLDO;
+        // $data->grandtotalgross        = $sumPayloadLDO;
+        // $data->grandtotalnetto        = $totalNetto;
+        // $data->grandtotalnettoldo     = $totalNettoLDO;
         $data->invoice_bill           = $sumPayload;
         if($data->save()){
           $response = response()->json([
@@ -229,7 +224,8 @@ class JobOrderController extends Controller
       $profile = collect($collection)->mapWithKeys(function ($item) {
         return [$item['name'] => $item['value']];
       });
-      $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto'])->findOrFail($id);
+      $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
+      // dd($data->toArray());
       return view('backend.operational.joborders.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
@@ -251,9 +247,24 @@ class JobOrderController extends Controller
      * @param  \App\Models\JobOrder  $jobOrder
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, JobOrder $jobOrder)
+    public function update(Request $request, $id)
     {
-        //
+      $validator = Validator::make($request->all(), [
+          'status_cargo'    => 'required|string',
+        ]);
+        // dd($request->all());
+
+        if($validator->passes()){
+          $data = JobOrder::find($id);
+          $data->update($request->except('_method'));
+          $response = response()->json([
+            'status'  => 'success',
+            'message' => 'Data has been saved',
+          ]);
+        }else{
+          $response = response()->json(['error'=>$validator->errors()->all()]);
+        }
+        return $response;
     }
 
     /**
@@ -267,187 +278,189 @@ class JobOrderController extends Controller
         //
     }
 
-  public function select2costumers(Request $request){
-    $page = $request->page;
-    $resultCount = 10;
-    $offset = ($page - 1) * $resultCount;
-    $q    = $request->q;
-    $data = DB::table('road_money')
-        ->rightJoin('costumers', 'costumers.id', '=', 'road_money.costumer_id')
-        ->where('costumers.name', 'LIKE', '%'.$q.'%')
-        ->orderBy('costumers.name')
-        ->skip($offset)
-        ->take($resultCount)
-        ->selectRaw('costumers.id AS id, costumers.name as text')
-        ->groupBy('road_money.costumer_id')
-        ->get();
+    public function select2costumers(Request $request){
+      $page = $request->page;
+      $resultCount = 10;
+      $offset = ($page - 1) * $resultCount;
+      $q    = $request->q;
+      $data = DB::table('road_money')
+          ->rightJoin('costumers', 'costumers.id', '=', 'road_money.costumer_id')
+          ->where('costumers.name', 'LIKE', '%'.$q.'%')
+          ->orderBy('costumers.name')
+          ->skip($offset)
+          ->take($resultCount)
+          ->selectRaw('costumers.id AS id, costumers.name as text')
+          ->groupBy('road_money.costumer_id')
+          ->get();
 
-    $count = DB::table('road_money')
-        ->rightJoin('costumers', 'costumers.id', '=', 'road_money.costumer_id')
-        ->where('costumers.name', 'LIKE', '%'.$q.'%')
-        ->groupBy('road_money.costumer_id')
-        ->get()
-        ->count();
+      $count = DB::table('road_money')
+          ->rightJoin('costumers', 'costumers.id', '=', 'road_money.costumer_id')
+          ->where('costumers.name', 'LIKE', '%'.$q.'%')
+          ->groupBy('road_money.costumer_id')
+          ->get()
+          ->count();
 
-    $endCount = $offset + $resultCount;
-    $morePages = $count > $endCount;
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
 
-    $results = array(
-      "results" => $data,
-      "pagination" => array(
-          "more" => $morePages
-      )
-    );
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
 
-    return response()->json($results);
-  }
-
-  public function select2routefrom(Request $request){
-    $page         = $request->page;
-    $resultCount  = 10;
-    $offset       = ($page - 1) * $resultCount;
-    $costumer_id  = !empty($request->costumer_id) || isset($request->costumer_id) ? $request->costumer_id : 0;
-    $q            = !empty($request->q) || isset($request->q) ? $request->q : NULL;
-    $data = DB::table('road_money')
-        ->rightJoin('routes', 'routes.id', '=', 'road_money.route_from')
-        ->where('routes.name', 'LIKE', '%'.$q.'%')
-        ->where('road_money.costumer_id', $costumer_id)
-        ->orderBy('routes.name')
-        ->skip($offset)
-        ->take($resultCount)
-        ->selectRaw('routes.id AS id, routes.name as text')
-        ->groupBy('road_money.route_from')
-        ->get();
-    // dd($data);
-    $count = DB::table('road_money')
-        ->rightJoin('routes', 'routes.id', '=', 'road_money.route_from')
-        ->where('routes.name', 'LIKE', '%'.$q.'%')
-        ->where('road_money.costumer_id', $costumer_id)
-        ->groupBy('road_money.route_from')
-        ->get()
-        ->count();
-
-    $endCount = $offset + $resultCount;
-    $morePages = $count > $endCount;
-
-    $results = array(
-      "results" => $data,
-      "pagination" => array(
-          "more" => $morePages
-      )
-    );
-
-    return response()->json($results);
-  }
-
-  public function select2routeto(Request $request){
-    $page   = $request->page;
-    $resultCount = 10;
-    $offset = ($page - 1) * $resultCount;
-    $q      = $request->q;
-    $costumer_id  = !empty($request->costumer_id) || isset($request->costumer_id) ? $request->costumer_id : 0;
-    $route_from  = !empty($request->route_from) || isset($request->route_from) ? $request->route_from : 0;
-    $data = DB::table('road_money')
-        ->rightJoin('routes', 'routes.id', '=', 'road_money.route_to')
-        ->where('routes.name', 'LIKE', '%'.$q.'%')
-        ->where('road_money.costumer_id', $costumer_id)
-        ->where('road_money.route_from', $route_from)
-        ->orderBy('routes.name')
-        ->skip($offset)
-        ->take($resultCount)
-        ->selectRaw('routes.id AS id, routes.name as text')
-        ->groupBy('road_money.route_to')
-        ->get();
-
-    $count = DB::table('road_money')
-        ->rightJoin('routes', 'routes.id', '=', 'road_money.route_to')
-        ->where('routes.name', 'LIKE', '%'.$q.'%')
-        ->where('road_money.costumer_id', $costumer_id)
-        ->where('road_money.route_from', $route_from)
-        ->groupBy('road_money.route_to')
-        ->get()
-        ->count();
-
-    $endCount = $offset + $resultCount;
-    $morePages = $count > $endCount;
-
-    $results = array(
-      "results" => $data,
-      "pagination" => array(
-          "more" => $morePages
-      )
-    );
-
-    return response()->json($results);
-  }
-
-  public function select2cargos(Request $request){
-    $page         = $request->page;
-    $resultCount = 10;
-    $offset   = ($page - 1) * $resultCount;
-    $q        = $request->q;
-    $costumer_id  = !empty($request->costumer_id) || isset($request->costumer_id) ? $request->costumer_id : 0;
-    $route_from  = !empty($request->route_from) || isset($request->route_from) ? $request->route_from : 0;
-    $route_to  = !empty($request->route_to) || isset($request->route_to) ? $request->route_to : 0;
-    $data = DB::table('road_money')
-        ->rightJoin('cargos', 'cargos.id', '=', 'road_money.cargo_id')
-        ->where('cargos.name', 'LIKE', '%'.$q.'%')
-        ->where('road_money.costumer_id', $costumer_id)
-        ->where('road_money.route_from', $route_from)
-        ->where('road_money.route_to', $route_to)
-        ->orderBy('cargos.name')
-        ->skip($offset)
-        ->take($resultCount)
-        ->selectRaw('cargos.id AS id, cargos.name as text')
-        ->groupBy('road_money.cargo_id')
-        ->get();
-
-    $count = DB::table('road_money')
-        ->rightJoin('cargos', 'cargos.id', '=', 'road_money.cargo_id')
-        ->where('cargos.name', 'LIKE', '%'.$q.'%')
-        ->where('road_money.costumer_id', $costumer_id)
-        ->where('road_money.route_from', $route_from)
-        ->where('road_money.route_to', $route_to)
-        ->groupBy('road_money.cargo_id')
-        ->get()
-        ->count();
-
-    $endCount = $offset + $resultCount;
-    $morePages = $count > $endCount;
-
-    $results = array(
-      "results" => $data,
-      "pagination" => array(
-          "more" => $morePages
-      )
-    );
-
-    return response()->json($results);
-  }
-
-  public function roadmoney(Request $request){
-    $validator = Validator::make($request->all(), [
-      'costumer_id'  => 'integer',
-      'route_from'   => 'integer',
-      'route_to'     => 'integer',
-      'cargo_id'     => 'integer',
-      'type_capacity_id' => 'integer',
-      'transport_id' => 'integer',
-    ]);
-    if($validator->passes()){
-      $transport = Transport::select('type_car')->firstOrFail($request->transport_id);
-      $data = RoadMoney::where('costumer_id', $request->costumer_id)
-      ->where('route_from', $request->route_from)
-      ->where('route_to', $request->route_to)
-      ->where('cargo_id', $request->cargo_id)
-      ->first()->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->where('type', $request->type)
-      ->first();
-
-      $response = response()->json([
-        'data' => $data,
-        'type' => $transport
-      ]);
+      return response()->json($results);
     }
-    return $response;
-  }
+
+    public function select2routefrom(Request $request){
+      $page         = $request->page;
+      $resultCount  = 10;
+      $offset       = ($page - 1) * $resultCount;
+      $costumer_id  = !empty($request->costumer_id) || isset($request->costumer_id) ? $request->costumer_id : 0;
+      $q            = !empty($request->q) || isset($request->q) ? $request->q : NULL;
+      $data = DB::table('road_money')
+          ->rightJoin('routes', 'routes.id', '=', 'road_money.route_from')
+          ->where('routes.name', 'LIKE', '%'.$q.'%')
+          ->where('road_money.costumer_id', $costumer_id)
+          ->orderBy('routes.name')
+          ->skip($offset)
+          ->take($resultCount)
+          ->selectRaw('routes.id AS id, routes.name as text')
+          ->groupBy('road_money.route_from')
+          ->get();
+      // dd($data);
+      $count = DB::table('road_money')
+          ->rightJoin('routes', 'routes.id', '=', 'road_money.route_from')
+          ->where('routes.name', 'LIKE', '%'.$q.'%')
+          ->where('road_money.costumer_id', $costumer_id)
+          ->groupBy('road_money.route_from')
+          ->get()
+          ->count();
+
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
+
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
+
+      return response()->json($results);
+    }
+
+    public function select2routeto(Request $request){
+      $page   = $request->page;
+      $resultCount = 10;
+      $offset = ($page - 1) * $resultCount;
+      $q      = $request->q;
+      $costumer_id  = !empty($request->costumer_id) || isset($request->costumer_id) ? $request->costumer_id : 0;
+      $route_from  = !empty($request->route_from) || isset($request->route_from) ? $request->route_from : 0;
+      $data = DB::table('road_money')
+          ->rightJoin('routes', 'routes.id', '=', 'road_money.route_to')
+          ->where('routes.name', 'LIKE', '%'.$q.'%')
+          ->where('road_money.costumer_id', $costumer_id)
+          ->where('road_money.route_from', $route_from)
+          ->orderBy('routes.name')
+          ->skip($offset)
+          ->take($resultCount)
+          ->selectRaw('routes.id AS id, routes.name as text')
+          ->groupBy('road_money.route_to')
+          ->get();
+
+      $count = DB::table('road_money')
+          ->rightJoin('routes', 'routes.id', '=', 'road_money.route_to')
+          ->where('routes.name', 'LIKE', '%'.$q.'%')
+          ->where('road_money.costumer_id', $costumer_id)
+          ->where('road_money.route_from', $route_from)
+          ->groupBy('road_money.route_to')
+          ->get()
+          ->count();
+
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
+
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
+
+      return response()->json($results);
+    }
+
+    public function select2cargos(Request $request){
+      $page         = $request->page;
+      $resultCount = 10;
+      $offset   = ($page - 1) * $resultCount;
+      $q        = $request->q;
+      $costumer_id  = !empty($request->costumer_id) || isset($request->costumer_id) ? $request->costumer_id : 0;
+      $route_from  = !empty($request->route_from) || isset($request->route_from) ? $request->route_from : 0;
+      $route_to  = !empty($request->route_to) || isset($request->route_to) ? $request->route_to : 0;
+      $data = DB::table('road_money')
+          ->rightJoin('cargos', 'cargos.id', '=', 'road_money.cargo_id')
+          ->where('cargos.name', 'LIKE', '%'.$q.'%')
+          ->where('road_money.costumer_id', $costumer_id)
+          ->where('road_money.route_from', $route_from)
+          ->where('road_money.route_to', $route_to)
+          ->orderBy('cargos.name')
+          ->skip($offset)
+          ->take($resultCount)
+          ->selectRaw('cargos.id AS id, cargos.name as text')
+          ->groupBy('road_money.cargo_id')
+          ->get();
+
+      $count = DB::table('road_money')
+          ->rightJoin('cargos', 'cargos.id', '=', 'road_money.cargo_id')
+          ->where('cargos.name', 'LIKE', '%'.$q.'%')
+          ->where('road_money.costumer_id', $costumer_id)
+          ->where('road_money.route_from', $route_from)
+          ->where('road_money.route_to', $route_to)
+          ->groupBy('road_money.cargo_id')
+          ->get()
+          ->count();
+
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
+
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
+
+      return response()->json($results);
+    }
+
+    public function roadmoney(Request $request){
+      $validator = Validator::make($request->all(), [
+        'costumer_id'  => 'integer',
+        'route_from'   => 'integer',
+        'route_to'     => 'integer',
+        'cargo_id'     => 'integer',
+        'type_capacity_id' => 'integer',
+        'transport_id' => 'integer',
+      ]);
+      if($validator->passes()){
+        $transport = Transport::select('type_car')->firstOrFail($request->transport_id);
+        $data = RoadMoney::where('costumer_id', $request->costumer_id)
+        ->where('route_from', $request->route_from)
+        ->where('route_to', $request->route_to)
+        ->where('cargo_id', $request->cargo_id)
+        ->first()->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->where('type', $request->type)
+        ->first();
+
+        $response = response()->json([
+          'data' => $data,
+          'type' => $transport
+        ]);
+      }
+      return $response;
+    }
+
+
 }

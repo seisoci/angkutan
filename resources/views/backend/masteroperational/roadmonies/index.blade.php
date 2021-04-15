@@ -56,7 +56,6 @@
           <th>Rute Dari</th>
           <th>Rute Ke</th>
           <th>Muatan</th>
-          <th>Ongkosan</th>
           <th>Created at</th>
           <th>Actions</th>
         </tr>
@@ -121,10 +120,9 @@
         },
         columns: [
             {data: 'costumers.name', name: 'costumers.name'},
-            {data: 'routeto.name', name: 'routeto.name'},
             {data: 'routefrom.name', name: 'routefrom.name'},
+            {data: 'routeto.name', name: 'routeto.name'},
             {data: 'cargo.name', name: 'cargo.name'},
-            {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( '.', '.', 0)},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],

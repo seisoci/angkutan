@@ -224,7 +224,7 @@
   $(document).ready(function(){
     $(".currency").inputmask('decimal', {
       groupSeparator: '.',
-      digits:0,
+      digits: 0,
       rightAlign: true,
       autoUnmask: true,
       removeMaskOnSubmit: true

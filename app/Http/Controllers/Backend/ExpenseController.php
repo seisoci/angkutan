@@ -52,7 +52,6 @@ class ExpenseController extends Controller
       if($validator->passes()){
         Expense::create([
           'name'      => $request->input('name'),
-          'cost'    => $request->input('cost'),
         ]);
         $response = response()->json([
           'status' => 'success',
@@ -81,7 +80,6 @@ class ExpenseController extends Controller
         $data = Expense::find($id);
         $data->update([
           'name'      => $request->input('name'),
-          'cost'    => $request->input('cost'),
         ]);
         $response = response()->json([
           'status'  => 'success',
@@ -114,5 +112,33 @@ class ExpenseController extends Controller
         ]);
       }
       return $response;
+    }
+
+    public function select2(Request $request){
+      $page = $request->page;
+      $resultCount = 10;
+      $offset = ($page - 1) * $resultCount;
+      $data = Expense::where('name', 'LIKE', '%' . $request->q. '%')
+        ->orderBy('name')
+        ->skip($offset)
+        ->take($resultCount)
+        ->selectRaw('id, name as text')
+        ->get();
+
+      $count = Expense::where('name', 'LIKE', '%' . $request->q. '%')
+        ->get()
+        ->count();
+
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
+
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
+
+      return response()->json($results);
     }
 }

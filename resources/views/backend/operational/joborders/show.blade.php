@@ -55,7 +55,7 @@
           </div>
           <div class="d-flex flex-column flex-root">
             <span class="font-weight-bolder mb-2">{{ $data->type == 'ldo' ? 'Pemilik' : NULL }}</span>
-            <span class="opacity-70">{{ $data->anotherexpedition->name }}</span>
+            <span class="opacity-70">{{ $data->anotherexpedition->name ?? '' }}</span>
           </div>
         </div>
       </div>
@@ -90,6 +90,43 @@
             </tbody>
           </table>
         </div>
+        <h4 class="display-7 font-weight-boldest mt-15">Tambahan Operasional</h4>
+        <div class="border-bottom w-100"></div>
+        <div class="table-responsive">
+          <table class="table-borderless d-print-table">
+            <thead>
+            </thead>
+            <tbody>
+              @foreach ($data->operationalexpense as $item)
+              <tr class="font-weight-boldest py-1" style="height: 50px">
+                <td width="30%" class="pr-7">{{ $item->expense->name }}</td>
+                <td width="45%" class="pr-7">{{ $item->description  }}</td>
+                <td width="100%" class="currency pr-7 text-right">{{ $item->amount }}</td>
+                <td width="20%"><button href="#" data-toggle="modal" data-target="#modalDelete"
+                    data-id="{{ $item->id }}" class="delete btn btn-danger btn-sm d-print-none">X</button></td>
+              </tr>
+              @endforeach
+              <form id="formStore" action="{{ route('backend.operationalexpenses.store') }}" method="post"
+                class="d-print-none">
+                @csrf
+                <input type="hidden" name="job_order_id" value="{{ $data->id }}">
+                <tr class="font-weight-boldest">
+                  <td class="d-print-none pr-7" width="30%"><select class="form-control select2Expense"
+                      name="expense_id"></select>
+                  </td>
+                  <td class="d-print-none pr-7" width="45%"><input type="text" class="form-control" name="description"
+                      placeholder="Keterangan" />
+                  </td>
+                  <td class="d-print-none pr-7" width="20%"><input type="text" class="form-control currency text-right"
+                      name="amount" placeholder="Biaya" />
+                  </td>
+                  <td class="d-print-none pr-7" width="20%"><button id="submit" type="submit"
+                      class="btn btn-primary btn-sm">+</button></td>
+                </tr>
+              </form>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
     <!-- end: Invoice body-->
@@ -106,6 +143,27 @@
     <!-- end: Invoice-->
   </div>
 </div>
+<div class="modal fade" id="modalDelete" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <i aria-hidden="true" class="ki ki-close"></i>
+        </button>
+      </div>
+      <meta name="csrf-token" content="{{ csrf_token() }}">
+      @method('DELETE')
+      <div class="modal-body">
+        <a href="" type="hidden" name="id" disabled></a>
+        Are you sure you want to delete this item? </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="formDelete" type="button" class="btn btn-danger">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 {{-- Styles Section --}}
@@ -118,6 +176,123 @@
 <script>
   $(document).ready(function(){
     $('body').addClass('print-content-only');
+    $(".currency").inputmask('decimal', {
+      groupSeparator: '.',
+      digits: 0,
+      rightAlign: true,
+      autoUnmask: true,
+      removeMaskOnSubmit: true
+    });
+    $(".select2Expense").select2({
+      placeholder: "Search Biaya",
+      allowClear: true,
+      ajax: {
+          url: "{{ route('backend.expenses.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function(e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+      },
+    });
+    $("#formStore").submit(function(e) {
+      e.preventDefault();
+      var form = $(this);
+      var btnSubmit = $('#submit');
+      var btnSubmitHtml = btnSubmit.html();
+      var url = form.attr("action");
+      var data = new FormData(this);
+      $.ajax({
+        beforeSend: function() {
+          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i>").prop("disabled","disabled");
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
+        type: "POST",
+        url: url,
+        data: data,
+        success: function(response) {
+          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+          if (response.status == "success") {
+            toastr.success(response.message, 'Success !');
+            setTimeout(function() {
+              if(response.redirect == "" || response.redirect == "reload"){
+								location.reload();
+							} else {
+								location.href = response.redirect;
+							}
+            }, 1000);
+          } else {
+            $("[role='alert']").parent().removeAttr("style");
+            $(".alert-text").html('');
+            $.each(response.error, function(key, value) {
+              $(".alert-text").append('<span style="display: block">'+value+'</span>');
+            });
+            toastr.error("Please complete your form", 'Failed !');
+          }
+        },
+        error: function(response) {
+          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+          toastr.error(response.responseJSON.message, 'Failed !');
+        }
+      });
+    });
+
+    $('#modalDelete').on('show.bs.modal', function (event) {
+      var id = $(event.relatedTarget).data('id');
+      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.operationalexpenses.index") }}/'+ id);
+    });
+    $('#modalDelete').on('hidden.bs.modal', function (event) {
+      $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
+    });
+
+    $("#formDelete").click(function(e){
+      e.preventDefault();
+      var form 	    = $(this);
+      var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
+      var btnHtml   = form.html();
+      var spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      $.ajax({
+        beforeSend:function() {
+          form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");
+        },
+        type: 'DELETE',
+        url: url,
+        dataType: 'json',
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+        success: function (response) {
+          if (response.status == "success") {
+            toastr.success(response.message, 'Success !');
+            $('#modalDelete').modal('hide');
+            setTimeout(function() {
+              if(response.redirect == "" || response.redirect == "reload"){
+								location.reload();
+							} else {
+								location.href = response.redirect;
+							}
+            }, 1000);
+          } else {
+            $("[role='alert']").parent().removeAttr("style");
+            $(".alert-text").html('');
+            $.each(response.error, function(key, value) {
+              $(".alert-text").append('<span style="display: block">'+value+'</span>');
+            });
+            toastr.error("Please complete your form", 'Failed !');
+          }
+        },
+        error: function (response) {
+          form.prop('disabled', false).text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
+          toastr.error(response.responseJSON.message ,'Failed !');
+          $('#modalDelete').modal('hide');
+          $('#modalDelete').find('a[name="id"]').attr('href', '');
+        }
+      });
+    });
   });
 </script>
 {{-- page scripts --}}

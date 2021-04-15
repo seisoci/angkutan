@@ -38,7 +38,6 @@
       <thead>
         <tr>
           <th>Nama</th>
-          <th>Cost</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -69,11 +68,6 @@
           <div class="form-group">
             <label>Nama Biaya</label>
             <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Biaya" />
-          </div>
-          <div class="form-group">
-            <label>Nominal</label>
-            <input type="text" name="cost" class="currency form-control form-control-solid"
-              placeholder="Input Nominal" />
           </div>
         </div>
         <div class="modal-footer">
@@ -107,11 +101,6 @@
           <div class="form-group">
             <label>Nama Biaya</label>
             <input type="text" name="name" class="form-control form-control-solid" placeholder="Input Nama Biaya" />
-          </div>
-          <div class="form-group">
-            <label>Nominal</label>
-            <input type="text" name="cost" class="currency form-control form-control-solid"
-              placeholder="Input Nominal" />
           </div>
         </div>
         <div class="modal-footer">
@@ -175,7 +164,6 @@
         ajax: "{{ route('backend.expenses.index') }}",
         columns: [
             {data: 'name', name: 'name'},
-            {data: 'cost', name: 'cost', render: $.fn.dataTable.render.number( '.', '.', 0)},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
@@ -192,19 +180,15 @@
     });
     $('#modalCreate').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');
-      $(this).find('.modal-body').find('input[name="cost"]').val('');
     });
     $('#modalEdit').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
       var name = $(event.relatedTarget).data('name');
-      var cost = $(event.relatedTarget).data('cost');
       $(this).find('#formUpdate').attr('action', '{{ route("backend.expenses.index") }}/'+id)
       $(this).find('.modal-body').find('input[name="name"]').val(name);
-      $(this).find('.modal-body').find('input[name="cost"]').val(cost);
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');
-      $(this).find('.modal-body').find('input[name="cost"]').val('');
     });
 
     $("#formStore").submit(function(e) {
