@@ -138,6 +138,14 @@ return [
               'title' => 'Gaji Supir',
               'page'  => 'backend/salaries'
             ],
+            [
+              'title' => 'Pembayaran Gaji',
+              'page'  => 'backend/paymentsalaries'
+            ],
+            [
+              'title' => 'Laporan Rekapitulasi',
+              'page'  => 'backend/salaries'
+            ],
           ]
         ],
         [
