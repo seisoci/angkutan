@@ -117,6 +117,16 @@
                 </select>
               </div>
             </div>
+            <div class="col-md-3 my-md-0">
+              <div class="form-group">
+                <label>Status Gaji Supir:</label>
+                <select class="form-control" id="selectStatusSalary">
+                  <option value="">Pilih Status</option>
+                  <option value="0">Belum dibayar</option>
+                  <option value="1">Sudah Dibayar</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -127,18 +137,15 @@
         <tr>
           <th>Nama</th>
           <th>No. Job Order</th>
-          <th>LDO</th>
           <th>Supir</th>
           <th>No. Pol</th>
           <th>Pelanggan</th>
-          <th>Rute Dari</th>
-          <th>Rute Ke</th>
           <th>Muatan</th>
           <th>Tanggal Mulai</th>
           <th>Tanggal Selesai</th>
-          <th>Status JO</th>
+          <th>Status Gaji</th>
+          <th>Gaji</th>
           <th>Created At</th>
-          <th>Actions</th>
         </tr>
       </thead>
     </table>
@@ -225,11 +232,11 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[12, 'desc']],
+        order: [[9, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
-          url: "{{ route('backend.joborders.index') }}",
+          url: "{{ route('backend.salaries.index') }}",
           data: function(d){
             d.another_expedition_id = $('#select2AnotherExpedition').find(':selected').val();
             d.driver_id = $('#select2Driver').find(':selected').val();
@@ -241,36 +248,31 @@
             d.date_begin = $('#dateBegin').val();
             d.date_end = $('#dateEnd').val();
             d.status_cargo = $('#selectStatus').find(':selected').val();
+            d.status_salary = $('#selectStatusSalary').find(':selected').val();
           }
         },
         columns: [
             {data: 'prefix', name: 'prefix'},
             {data: 'num_bill', name: 'num_bill'},
-            {data: 'anotherexpedition.name', name: 'anotherexpedition.name', defaultContent: ''},
             {data: 'driver.name', name: 'driver.name'},
             {data: 'transport.num_pol', name: 'transport.num_pol'},
             {data: 'costumer.name', name: 'costumer.name'},
-            {data: 'routefrom.name', name: 'routefrom.name'},
-            {data: 'routeto.name', name: 'routeto.name'},
             {data: 'cargo.name', name: 'cargo.name'},
             {data: 'date_begin', name: 'date_begin'},
             {data: 'date_end', name: 'date_end', defaultContent: ''},
-            {data: 'status_cargo', name: 'status_cargo'},
+            {data: 'status_salary', name: 'status_salary', defaultContent: ''},
+            {data: 'total_salary', name: 'total_salary', defaultContent: '', render: $.fn.dataTable.render.number( '.', '.', 0)},
             {data: 'created_at', name: 'created_at'},
-            {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
         columnDefs: [
         {
           className: 'dt-center',
-          targets: 11,
+          targets: 8,
           width: '75px',
           render: function(data, type, full, meta) {
             var status = {
-              'mulai': {'title': 'Mulai', 'class': ' label-light-info'},
-              'muat': {'title': 'Muat', 'class': ' label-light-dark'},
-              'bongkar': {'title': 'Bongkar', 'class': ' label-light-primary'},
-              'selesai': {'title': 'Selesai', 'class': ' label-light-success'},
-              'batal': {'title': 'Batal', 'class': ' label-light-danger'},
+              0: {'title': 'Belum dibayar', 'class': ' label-light-danger'},
+              1: {'title': 'Sudah dibayar', 'class': ' label-light-success'},
             };
             if (typeof status[data] === 'undefined') {
               return data;

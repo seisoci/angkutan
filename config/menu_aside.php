@@ -135,8 +135,8 @@ return [
               'page'  => 'backend/joborders'
             ],
             [
-              'title' => 'Tambahan Biaya Op',
-              'page'  => 'backend/operationalexpenses'
+              'title' => 'Laporan Rekapitulasi',
+              'page'  => 'backend/recapitulation'
             ],
           ]
         ],

@@ -19,7 +19,7 @@ class CreateInvoicePurchasesTable extends Migration
           $table->string('prefix');
           $table->string('num_bill')->unique();
           $table->decimal('grandtotal',15,0);
-          $table->text('keterangan')->nullable();
+          $table->text('description')->nullable();
           $table->string('memo')->nullable();
           $table->timestamps();
         });

@@ -106,6 +106,7 @@
                     data-id="{{ $item->id }}" class="delete btn btn-danger btn-sm d-print-none">X</button></td>
               </tr>
               @endforeach
+              @if ($data->status_cargo != 'selesai' && $data->status_cargo != 'batal')
               <form id="formStore" action="{{ route('backend.operationalexpenses.store') }}" method="post"
                 class="d-print-none">
                 @csrf
@@ -124,6 +125,7 @@
                       class="btn btn-primary btn-sm">+</button></td>
                 </tr>
               </form>
+              @endif
             </tbody>
           </table>
         </div>

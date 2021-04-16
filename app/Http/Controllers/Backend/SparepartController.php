@@ -29,12 +29,10 @@ class SparepartController extends Controller
 
       if ($request->ajax()) {
         $categories_id = $request->category_id;
+        $brand_id = $request->brand_id;
         $data = Sparepart::with(['supplier', 'brand', 'categories'])
-        ->when($request->supplier_sparepart_id, function ($query, $id) {
-          return $query->where('supplier_sparepart_id', $id);
-        })
-        ->when($request->brand_id, function ($query, $id) {
-          return $query->where('brand_id', $id);
+        ->when($request->brand_id, function ($query, $brand_id) {
+          return $query->where('brand_id', $brand_id);
         })
         ->whereHas('categories', function($query) use($categories_id) {
           isset($categories_id) ? $query->where('category_id', $categories_id) : NULL;

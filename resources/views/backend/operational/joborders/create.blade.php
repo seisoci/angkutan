@@ -101,7 +101,7 @@
             <label for="activeSelect">Tipe Ongkosan<span class="text-danger">*</span></label>
             <select id="selectTypeOngkosan" name="type_payload" class="form-control">
               <option>-- Pilih Ongkosan --</option>
-              <option value="calculate">Kalkulasi (Uang Jalan Master * KG)</option>
+              <option value="calculate">Kalkulasi (Uang Jalan Master * TON)</option>
               <option value="fix">FIX</option>
             </select>
           </div>
@@ -117,18 +117,9 @@
           <div class="form-group">
             <label>Muatan</label>
             <div class="input-group">
-              <input type="number" name="payload" class="form-control text-right">
+              <input name="payload" class="form-control text-right ton">
               <div class="input-group-append">
-                <span class="input-group-text">KG</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Convert to</label>
-            <div class="input-group">
-              <input id="convertToTon" name="convertToTon" type="number" class="form-control text-right" disabled>
-              <div class="input-group-append">
-                <span class="input-group-text">Ton</span>
+                <span class="input-group-text">TON</span>
               </div>
             </div>
           </div>
@@ -178,13 +169,13 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group" style="display: none">
-                <label>Potongan SparePart</label>
+                <label>Potongan SparePart (Estimasi)</label>
                 <input name="cut_sparepart" type="text" class="form-control currency" disabled>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group" style="display: none">
-                <label>Gaji Supir</label>
+                <label>Gaji Supir (Estimasi)</label>
                 <input name="salary" type="text" class="form-control currency" disabled>
               </div>
             </div>
@@ -224,10 +215,19 @@
   $(document).ready(function(){
     $(".currency").inputmask('decimal', {
       groupSeparator: '.',
-      digits: 0,
+      digits: 2,
       rightAlign: true,
       autoUnmask: true,
       removeMaskOnSubmit: true
+    });
+
+    $(".ton").inputmask({
+      'alias': 'decimal',
+      'groupSeparator': ',',
+      'autoGroup': true,
+      'digits': 3,
+      'digitsOptional': false,
+        'placeholder': '0.00'
     });
 
     $('.datepicker').datepicker({
@@ -514,8 +514,10 @@
       var select = $('#selectExpedition').find(":selected").val();
       if(select == 'self'){
         let basicPrice    = parseInt($('input[name="basic_price"]').val());
-        let payload       = parseInt($('input[name="payload"]').val());
+        let payload       = parseFloat($('input[name="payload"]').val());
         let roadMoney     = parseInt($('input[name="road_money"]').val());
+        console.log(payload);
+        console.log(payload *1000);
         let sumPayload    = basicPrice * payload;
         let convertTo     = (payload / 1000);
         let totalGross    = sumPayload - roadMoney;
@@ -533,7 +535,7 @@
       }else{
         let basicPrice    = parseInt($('input[name="basic_price"]').val());
         let basicPriceLDO = parseInt($('input[name="basic_price_ldo"]').val());
-        let payload       = parseInt($('input[name="payload"]').val());
+        let payload       = parseFloat($('input[name="payload"]').val());
         let roadMoney     = parseInt($('input[name="road_money"]').val());
         let sumPayload    = basicPrice * payload;
         let sumPayloadLDO = basicPriceLDO * payload;

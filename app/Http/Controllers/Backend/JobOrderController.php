@@ -42,6 +42,7 @@ class JobOrderController extends Controller
       $date_begin   = $request->date_begin;
       $date_end     = $request->date_end;
       $status_cargo = $request->status_cargo;
+      $status_salary = $request->status_salary;
       if ($request->ajax()) {
         $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
         ->when($another_expedition_id, function ($query, $another_expedition_id) {
@@ -73,6 +74,9 @@ class JobOrderController extends Controller
         })
         ->when($status_cargo, function ($query, $status_cargo) {
           return $query->where('status_cargo', $status_cargo);
+        })
+        ->when($status_salary, function ($query, $status_salary) {
+          return $query->where('status_salary', $status_salary);
         })
         ;
         return DataTables::of($data)

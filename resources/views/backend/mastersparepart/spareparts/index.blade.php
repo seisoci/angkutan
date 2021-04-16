@@ -37,13 +37,6 @@
       <div class="row align-items-center">
         <div class="col-md-3 my-2 my-md-0">
           <div class="form-group">
-            <label>Supplier:</label>
-            <select class="form-control" id="select2Suppliers">
-            </select>
-          </div>
-        </div>
-        <div class="col-md-3 my-2 my-md-0">
-          <div class="form-group">
             <label>Brand:</label>
             <select class="form-control" id="select2Brands">
             </select>

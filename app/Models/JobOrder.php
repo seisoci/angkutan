@@ -20,6 +20,14 @@ class JobOrder extends Model
     return $date->format('Y-m-d H:i:s');
   }
 
+  public function getStatusSalaryAttribute($value){
+    if("{$this->type}" == 'self'){
+      return $value;
+    }else{
+      return NULL;
+    }
+  }
+
   public function routeto(){
     return $this->belongsTo(Route::class, 'route_to');
   }
@@ -51,4 +59,5 @@ class JobOrder extends Model
   public function operationalexpense(){
     return $this->hasMany(OperationalExpense::class);
   }
+
 }

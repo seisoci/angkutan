@@ -28,6 +28,7 @@ use App\Http\Controllers\Backend\InvoicePurchaseController as BackendInvoicePurc
 use App\Http\Controllers\Backend\SettingController as BackendSettingController;
 use App\Http\Controllers\Backend\JobOrderController as BackendJobOrderController;
 use App\Http\Controllers\Backend\OperationalExpenseController as BackendOperationalExpenseController;
+use App\Http\Controllers\Backend\SalaryController as BackendSalaryController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -119,5 +120,6 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     //Job Order
     Route::resource('joborders', BackendJobOrderController::class);
     Route::resource('operationalexpenses', BackendOperationalExpenseController::class);
+    Route::resource('salaries', BackendSalaryController::class);
   });
 });

@@ -63,8 +63,8 @@ class PurchaseController extends Controller
             'prefix'      => $prefix->name,
             'num_bill'    => $invoice_date. "-" .$invoice_num,
             'grandtotal'  => $grandtotal,
-            'memo'        => $request->input('memo'),
-            'description' => $request->input('description'),
+            'memo'        => $request->input('memo') ?? NULL,
+            'description' => $request->input('description') ?? NULL,
           ]);
 
           foreach($items['sparepart_id'] as $key => $item):

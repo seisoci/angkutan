@@ -29,7 +29,7 @@ class CreateJobOrdersTable extends Migration
             $table->foreignId('route_to')->constrained('routes');
             $table->string('type_capacity');
             $table->string('type_payload');
-            $table->integer('payload');
+            $table->double('payload');
             $table->decimal('basic_price',15,0);
             $table->decimal('basic_price_ldo',15,0)->nullable();
             $table->decimal('road_money',15,0);
@@ -44,7 +44,7 @@ class CreateJobOrdersTable extends Migration
             $table->string('description')->nullable();
             $table->enum('status_salary', [1, 0])->default(0);
             $table->enum('status_cargo', ['mulai', 'muat', 'bongkar', 'selesai', 'batal'])->default('mulai');
-            $table->enum('status_payment', [1, 0])->nullable();
+            $table->enum('status_payment', [1, 0])->default(0);
             $table->string('type');
             $table->timestamps();
         });
