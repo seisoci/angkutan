@@ -135,8 +135,8 @@ return [
               'page'  => 'backend/joborders'
             ],
             [
-              'title' => 'Laporan Rekapitulasi',
-              'page'  => 'backend/recapitulation'
+              'title' => 'Gaji Supir',
+              'page'  => 'backend/salaries'
             ],
           ]
         ],
