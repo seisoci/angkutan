@@ -17,7 +17,7 @@ class CreateOperationalExpensesTable extends Migration
             $table->id();
             $table->foreignId('job_order_id')->constrained('job_orders');
             $table->foreignId('expense_id')->constrained('expenses');
-            $table->decimal('amount',15,0);
+            $table->decimal('amount',15, 2);
             $table->string('description')->nullable();
             $table->timestamps();
         });

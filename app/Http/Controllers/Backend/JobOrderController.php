@@ -82,9 +82,14 @@ class JobOrderController extends Controller
         return DataTables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){
+              $btnEdit = '';
+              if($row->status_cargo != 'selesai'){
+                $btnEdit = '
+                  <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-status_cargo="'.$row->status_cargo.'" data-date_end="'.$row->date_end.'" class="edit btn btn-warning btn-sm">Edit</a>';
+              }
               $actionBtn = '
               <a href="joborders/'.$row->id.'" class="btn btn-info btn-sm">Show Detail</a>
-              <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-status_cargo="'.$row->status_cargo.'" data-date_end="'.$row->date_end.'" class="edit btn btn-warning btn-sm">Edit</a>';
+              '.$btnEdit.'';
               return $actionBtn;
           })
           ->make(true);
@@ -255,12 +260,17 @@ class JobOrderController extends Controller
     {
       $validator = Validator::make($request->all(), [
           'status_cargo'    => 'required|string',
+          'date_end'        => 'date_format:Y-m-d|required_if:status_cargo,selesai',
         ]);
         // dd($request->all());
 
         if($validator->passes()){
           $data = JobOrder::find($id);
-          $data->update($request->except('_method'));
+          if($request->status_cargo != 'selesai'){
+            $data->update($request->except('date_end'));
+          }else{
+            $data->update($request->all());
+          }
           $response = response()->json([
             'status'  => 'success',
             'message' => 'Data has been saved',

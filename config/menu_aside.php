@@ -144,7 +144,7 @@ return [
             ],
             [
               'title' => 'Laporan Rekapitulasi',
-              'page'  => 'backend/salaries'
+              'page'  => 'backend/recapitulation'
             ],
           ]
         ],

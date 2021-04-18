@@ -5,150 +5,317 @@
 @section('content')
 
 <!--begin::Card-->
-<div class="card card-custom">
-  <div class="card-header flex-wrap py-3">
+<div class="card card-custom gutter-b mb-8">
+  <div class="card-header">
     <div class="card-title">
-      <h3 class="card-label">{{ $config['page_title'] }}
-        <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
-    </div>
-    <div class="card-toolbar">
-      <!--begin::Button-->
-      <a href="{{ route('backend.joborders.create') }}" class="btn btn-primary font-weight-bolder">
-        <span class="svg-icon svg-icon-md">
-          <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
-          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
-            viewBox="0 0 24 24" version="1.1">
-            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-              <rect x="0" y="0" width="24" height="24"></rect>
-              <circle fill="#000000" cx="9" cy="15" r="6"></circle>
-              <path
-                d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z"
-                fill="#000000" opacity="0.3"></path>
-            </g>
-          </svg>
-          <!--end::Svg Icon-->
-        </span>New Record</a>
-      <!--end::Button-->
+      <h3 class="card-label text-center">
+        Laporan Rekapitulasi
+      </h3>
     </div>
   </div>
-
-  <div class="card-body">
-    <div class="mb-10">
-      <div class="row align-items-center">
-        <div class="col-12">
-          <div class="row align-items-center">
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>LDO:</label>
-                <select class="form-control" id="select2AnotherExpedition">
-                </select>
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Supir:</label>
-                <select class="form-control" id="select2Driver">
-                </select>
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>No. Pol:</label>
-                <select class="form-control" id="select2Transport">
-                </select>
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Costumer:</label>
-                <select class="form-control" id="select2Costumer">
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="row align-items-center">
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Rute Dari:</label>
-                <select class="form-control" id="select2RouteFrom">
-                </select>
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Rute Ke:</label>
-                <select class="form-control" id="select2RouteTo">
-                </select>
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Muatan:</label>
-                <select class="form-control" id="select2Cargo">
-                </select>
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Tanggal Mulai:</label>
-                <input id="dateBegin" readonly type="text" class="form-control datepicker" placeholder="Cari Tanggal"
-                  style="width:100% !important">
-              </div>
+  <form action="{{ route('backend.recapitulation.index') }}">
+    <div class="card-body">
+      @if ($errors->any())
+      <div class="alert alert-danger">
+        <ul>
+          @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+      @endif
+      <div class="form-group row">
+        <label class="col-form-label text-left col-lg-3 col-sm-12">No. Polisi</label>
+        <div class=" col-lg-4 col-md-9 col-sm-12">
+          <select id="select2Transport" class="form-control" name="transport_id">
+            @if ($transport && $transport != 'Semua Mobil')
+            <option value="{{ $transport->id }}">{{ $transport->num_pol }}</option>
+            @endif
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label text-left col-lg-3 col-sm-12">Supir</label>
+        <div class=" col-lg-4 col-md-9 col-sm-12">
+          <select id="select2Driver" class="form-control" name="driver_id">
+            @if ($driver && $driver != 'Semua Supir')
+            <option value="{{ $driver->id }}">{{ $driver->name }}</option>
+            @endif
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label text-left col-lg-3 col-sm-12">Tanggal Mulai (Dari)</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <div class="input-group date">
+            <input type="text" class="form-control datepicker" readonly name="date_begin"
+              value="{{ $date_begin ?? '' }}" />
+            <div class="input-group-append">
+              <span class="input-group-text">
+                <i class="la la-calendar"></i>
+              </span>
             </div>
           </div>
-          <div class="row align-items-center">
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Tanggal Selesai:</label>
-                <input id="dateEnd" name="date_end" readonly type="text" class="form-control datepicker"
-                  placeholder="Cari Tanggal" style="width:100% !important">
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Status Job Order:</label>
-                <select class="form-control" id="selectStatus">
-                  <option value="">Pilih Status</option>
-                  <option value="mulai">Mulai</option>
-                  <option value="muat">Muat</option>
-                  <option value="bongkar">Bongkar</option>
-                  <option value="selesai">Selesai</option>
-                  <option value="batal">Batal</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Status Gaji Supir:</label>
-                <select class="form-control" id="selectStatusSalary">
-                  <option value="">Pilih Status</option>
-                  <option value="0">Belum dibayar</option>
-                  <option value="1">Sudah Dibayar</option>
-                </select>
-              </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-form-label text-left col-lg-3 col-sm-12">Tanggal Mulai (Sampai)</label>
+        <div class="col-lg-4 col-md-9 col-sm-12">
+          <div class="input-group date">
+            <input type="text" class="form-control datepicker" readonly name="date_end" value="{{ $date_end ?? '' }}" />
+            <div class="input-group-append">
+              <span class="input-group-text">
+                <i class="la la-calendar"></i>
+              </span>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!--begin: Datatable-->
-    <table class="table table-bordered table-hover" id="Datatable">
+    <div class="card-footer d-flex justify-content-end">
+      <button type="submit" class="btn btn-primary font-weight-bold">Cari Data</a>
+    </div>
+  </form>
+</div>
+<div class="card card-custom">
+  <div class="card-body">
+    {{-- Laporan Pendapatan Mobil --}}
+    <div class="d-flex justify-content-lg-between mb-10">
+      <div>
+        <h4 class="text-dark-75"><u>Laporan Pendapatan Mobil</u></h4>
+        <p class="text-dark-75 font-weight-normal my-0">No. Polisi: {{ $transport->num_pol ?? $transport }}</p>
+        <p class="text-dark-75 font-weight-normal my-0">Priode: {{ $date_begin ?? ''}} sd {{ $date_end ?? '' }}</p>
+      </div>
+      <div>
+        <h4 class="text-dark-75"><u>ALUSINDO</u></h4>
+        <p class="text-muted font-weight-normal my-0">{{ $profile['address'] ?? '' }}</p>
+        <p class="text-muted font-weight-normal my-0">Telp: {{ $profile['telp'] }}</p>
+        <p class="text-muted font-weight-normal my-0">Fax: {{ $profile['fax'] }}</p>
+      </div>
+    </div>
+    @if(!empty($data))
+    <table class="table table-bordered w-full small">
       <thead>
-        <tr>
-          <th>Nama</th>
-          <th>No. Job Order</th>
-          <th>Supir</th>
-          <th>No. Pol</th>
-          <th>Pelanggan</th>
-          <th>Muatan</th>
-          <th>Tanggal Mulai</th>
-          <th>Tanggal Selesai</th>
-          <th>Status Gaji</th>
-          <th>Gaji</th>
-          <th>Created At</th>
+        <tr class="table-primary">
+          <th class="text-center">No.</th>
+          <th class="text-center">Tanggal</th>
+          <th class="text-center">S. Jalan</th>
+          <th class="text-center">Pelanggan</th>
+          <th class="text-center">Dari</th>
+          <th class="text-center">Tujuan</th>
+          <th class="text-center">Jenis Barang</th>
+          <th class="text-center">Tarif(Rp.)</th>
+          <th class="text-center">Qty(Unit)</th>
+          <th class="text-center">Total(Rp.)</th>
         </tr>
       </thead>
+      <tbody>
+        @foreach ($data as $item)
+        <tr>
+          <td class="text-center">{{ $loop->iteration }}</td>
+          <td>{{ $item->date_begin }}</td>
+          <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+          <td>{{ $item->costumer->name }}</td>
+          <td>{{ $item->routefrom->name }}</td>
+          <td>{{ $item->routeto->name }}</td>
+          <td>{{ $item->cargo->name }}</td>
+          <td class="text-right">{{ number_format($item->basic_price, 2,'.', ',') }}</td>
+          <td class="text-right">{{ $item->payload }}</td>
+          <td class="text-right">{{ number_format($item->total_basic_price, 2, '.', ',') }}</td>
+        </tr>
+        @endforeach
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="9" class="text-right">Total Rp. </td>
+          <td class="text-right">{{ number_format($data->sum('total_basic_price'), 2, '.', ',') }}</td>
+        </tr>
+      </tfoot>
     </table>
+    <div class="separator separator-solid separator-border-1 my-20"></div>
+    {{-- Laporan Biaya Operasional --}}
+    <div class="d-flex justify-content-lg-between mb-10">
+      <div>
+        <h4 class="text-dark-75"><u>Laporan Biaya Operasional</u></h4>
+      </div>
+      <div>
+        <h4 class="text-dark-75"><u>ALUSINDO</u></h4>
+        <p class="text-muted font-weight-normal my-0">{{ $profile['address'] ?? '' }}</p>
+        <p class="text-muted font-weight-normal my-0">Telp: {{ $profile['telp'] }}</p>
+        <p class="text-muted font-weight-normal my-0">Fax: {{ $profile['fax'] }}</p>
+      </div>
+    </div>
+    @foreach ($data as $item)
+    @php $noOperational = 1; @endphp
+    <table class="table w-full small">
+      <thead>
+        <tr class="table-primary">
+          <th class="text-center">No.</th>
+          <th>Tanggal</th>
+          <th>Master Biaya</th>
+          <th>Keterangan</th>
+          <th class="text-right">Jumlah</th>
+          <th>S. Jalan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-center">{{ $noOperational++ }}</td>
+          <td>{{ $item->date_begin }}</td>
+          <td>UANG JALAN</td>
+          <td></td>
+          <td class="text-right">{{ number_format($item->road_money, 2, '.', ',') }}</td>
+          <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+        </tr>
+        @foreach ($item->operationalexpense as $itemExpense)
+        <tr>
+          <td class="text-center">{{ $noOperational++ }}</td>
+          <td>{{ $item->date_begin }}</td>
+          <td>{{ $itemExpense->expense->name }}</td>
+          <td>{{ $itemExpense->description }}</td>
+          <td class="text-right">{{ number_format($itemExpense->amount, 2, '.', ',') }}</td>
+          <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+        </tr>
+        @endforeach
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" class="text-right">Sub Total Rp. </td>
+          <td class="text-right">
+            {{ number_format($item->total_operational, 2, '.', ',') }}</td>
+          <td></td>
+        </tr>
+        @if($loop->last)
+        <tr>
+          <td colspan="4" class="text-right">Total Operational Rp. </td>
+          <td class="text-right">
+            {{ number_format($data->sum('total_operational'), 2, '.', ',') }}</td>
+          <td></td>
+        </tr>
+        @endif
+        <tr>
+          <td colspan="6"></td>
+        </tr>
+      </tfoot>
+    </table>
+    @endforeach
+    <div class="separator separator-solid separator-border-1 my-20"></div>
+    {{-- Laporan Sparepart --}}
+    <div class="d-flex justify-content-lg-between mb-10">
+      <div>
+        <h4 class="text-dark-75"><u>Laporan Sparepart</u></h4>
+      </div>
+      <div>
+        <h4 class="text-dark-75"><u>ALUSINDO</u></h4>
+        <p class="text-muted font-weight-normal my-0">{{ $profile['address'] ?? '' }}</p>
+        <p class="text-muted font-weight-normal my-0">Telp: {{ $profile['telp'] }}</p>
+        <p class="text-muted font-weight-normal my-0">Fax: {{ $profile['fax'] }}</p>
+      </div>
+    </div>
+    <table class="table w-full small">
+      <thead>
+        <tr class="table-primary">
+          <th class="text-center">No.</th>
+          <th>Tanggal</th>
+          <th>S. Jalan</th>
+          <th>Nama Supir</th>
+          <th>No. Polisi</th>
+          <th class="text-right">Jumlah</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach ($data as $item)
+        <tr>
+          <td class="text-center">{{ $loop->iteration }}</td>
+          <td>{{ $item->date_begin }}</td>
+          <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+          <td>{{ $item->driver->name }}</td>
+          <td>{{ $item->transport->num_pol }}</td>
+          <td class="text-right">{{ number_format($item->total_sparepart, 2, '.', ',') }}</td>
+        </tr>
+        @endforeach
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5" class="text-right">Total Rp. </td>
+          <td class="text-right">{{ number_format($data->sum('total_sparepart'), 2, '.', ',') }}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6"></td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="separator separator-solid separator-border-1 my-20"></div>
+    {{-- Laporan Gaji Supir --}}
+    <div class="d-flex justify-content-lg-between mb-10">
+      <div>
+        <h4 class="text-dark-75"><u>Laporan Gaji Supir</u></h4>
+      </div>
+      <div>
+        <h4 class="text-dark-75"><u>ALUSINDO</u></h4>
+        <p class="text-muted font-weight-normal my-0">{{ $profile['address'] ?? '' }}</p>
+        <p class="text-muted font-weight-normal my-0">Telp: {{ $profile['telp'] }}</p>
+        <p class="text-muted font-weight-normal my-0">Fax: {{ $profile['fax'] }}</p>
+      </div>
+    </div>
+    <table class="table w-full small">
+      <thead>
+        <tr class="table-primary">
+          <th class="text-center">No.</th>
+          <th>Tanggal</th>
+          <th>S. Jalan</th>
+          <th>Nama Supir</th>
+          <th>No. Polisi</th>
+          <th class="text-right">Gaji</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach ($data as $item)
+        <tr>
+          <td class="text-center">{{ $loop->iteration }}</td>
+          <td>{{ $item->date_begin }}</td>
+          <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+          <td>{{ $item->driver->name }}</td>
+          <td>{{ $item->transport->num_pol }}</td>
+          <td class="text-right">{{ number_format($item->total_salary, 2, '.', ',') }}</td>
+        </tr>
+        @endforeach
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5" class="text-right">Total Rp. </td>
+          <td class="text-right">{{ number_format($data->sum('total_salary'), 2, '.', ',') }}</td>
+        </tr>
+        <tr>
+          <td colspan="6"></td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="separator separator-solid separator-border-1 my-20"></div>
+    <table class="table w-full small">
+      <tbody>
+        <tr>
+          <td>Total Pendapatan</td>
+          <td class="text-right">{{ number_format($data->sum('total_basic_price'), 2, '.', ',') }}</td>
+        </tr>
+        <tr>
+          <td>Total Biaya</td>
+          <td class="text-right">
+            {{ number_format(($data->sum('total_operational') + $data->sum('total_sparepart') + $data->sum('total_salary')), 2, '.', ',') }}
+          </td>
+        </tr>
+        <tr>
+          <td>Total Bersih</td>
+          <td class="text-right">
+            {{ number_format($data->sum('total_basic_price') - ($data->sum('total_operational') + $data->sum('total_sparepart') + $data->sum('total_salary')), 2, '.', ',') }}
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+      </tfoot>
+    </table>
+    @endif
   </div>
 </div>
 {{-- Modal --}}
@@ -227,6 +394,7 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
+
     var dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
@@ -289,8 +457,6 @@
       todayHighlight: !0,
       todayBtn: "linked",
       clearBtn: !0,
-    }).on('change', function(){
-      dataTable.draw();
     });
 
     $("#select2AnotherExpedition").select2({
@@ -312,7 +478,7 @@
       dataTable.draw();
     });
     $("#select2Driver").select2({
-      placeholder: "Search Supir",
+      placeholder: "Search Driver",
       allowClear: true,
       ajax: {
           url: "{{ route('backend.drivers.select2') }}",

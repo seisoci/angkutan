@@ -397,6 +397,8 @@
     }).on('change', function(){
       $("#select2RoadTo").val("");
       $("#select2RoadTo").trigger("change");
+      $("#select2Cargo").val("");
+      $("#select2Cargo").trigger("change");
     });
 
     $("#select2RoadTo").select2({
@@ -417,7 +419,10 @@
             return query
           },
       },
-    });
+    }).on('change', function(){
+      $("#select2Cargo").val("");
+      $("#select2Cargo").trigger("change");
+    });;
 
     $("#select2Cargo").select2({
       placeholder: "Search Muatan",

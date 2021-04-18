@@ -17,6 +17,6 @@ class OperationalExpense extends Model
   ];
 
   public function expense(){
-    return $this->belongsTo(Expense::class, 'expense_id');
+    return $this->belongsTo(Expense::class, 'expense_id')->select(['id','name']);
   }
 }

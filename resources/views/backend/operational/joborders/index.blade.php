@@ -100,8 +100,8 @@
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Tanggal Selesai:</label>
-                <input id="dateEnd" name="date_end" readonly type="text" class="form-control datepicker"
-                  placeholder="Cari Tanggal" style="width:100% !important">
+                <input id="dateEnd" type="text" class="form-control datepicker" placeholder="Cari Tanggal"
+                  style="width:100% !important" readonl>
               </div>
             </div>
             <div class="col-md-3 my-md-0">
@@ -188,13 +188,19 @@
           </div>
           <div class="form-group">
             <label>Status Job Order:</label>
-            <select class="form-control" name="status_cargo">
+            <select id="statusCargoModal" class="form-control" name="status_cargo">
               <option value="mulai">Mulai</option>
               <option value="muat">Muat</option>
               <option value="bongkar">Bongkar</option>
               <option value="selesai">Selesai</option>
               <option value="batal">Batal</option>
             </select>
+          </div>
+          <div class="form-group" style="display: none">
+            <label>Tanggal Selesai:</label>
+            <input id="dateEndModal" type="text" class="form-control" name="date_end" readonly
+              data-toggle="datetimepicker"
+              value="{{ Carbon\Carbon::parse()->timezone('Asia/Jakarta')->format('Y-m-d') }}">
           </div>
         </div>
         <div class="modal-footer">
@@ -281,6 +287,21 @@
         },
         ],
     });
+
+    $('#statusCargoModal').on('change', function(){
+      if(this.value == 'selesai'){
+        $("#dateEndModal").parent().css("display", "block");
+        $("#dateEndModal").parent().find('label').css("display", "block");
+      }else{
+        $("#dateEndModal").parent().css("display", "none");
+        $("#dateEndModal").parent().find('label').css("display", "none");
+      }
+    });
+
+
+      $('input[name="date_end"]').datetimepicker({
+        format: 'YYYY-MM-DD'
+      });
 
     $('.datepicker').datepicker({
       format: 'yyyy-mm-dd',
@@ -434,12 +455,10 @@
       var date_end = $(event.relatedTarget).data('date_end');
       $(this).find('#formUpdate').attr('action', '{{ route("backend.joborders.index") }}/'+id)
       $(this).find('.modal-body').find('select[name="status_cargo"]').val(status_cargo);
-      $(this).find('.modal-body').find('input[name="date_end"]').val(date_end);
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('select[name="status_cargo"]').val('');
-      $(this).find('.modal-body').find('input[name="date_end"]').val('');
-    });
+s    });
     $("#formUpdate").submit(function(e){
       e.preventDefault();
       var form 	= $(this);

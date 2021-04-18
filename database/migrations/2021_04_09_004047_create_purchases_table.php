@@ -19,7 +19,7 @@ class CreatePurchasesTable extends Migration
             $table->foreignId('sparepart_id')->constrained('spareparts');
             $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
             $table->bigInteger('qty');
-            $table->decimal('price', 15, 0);
+            $table->decimal('price', 15, 2);
             $table->timestamps();
         });
     }

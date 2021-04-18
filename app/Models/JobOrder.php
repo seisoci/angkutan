@@ -8,12 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class JobOrder extends Model
 {
-    use HasFactory;
+  use HasFactory;
   protected $fillable = [
     'status_cargo',
+    'date_end',
     'status_salary',
     'status_payment',
   ];
+  protected $appends = ['total_basic_price','total_operational', 'total_sparepart', 'total_salary'];
+
 
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
@@ -60,4 +63,23 @@ class JobOrder extends Model
     return $this->hasMany(OperationalExpense::class);
   }
 
+  public function getTotalBasicPriceAttribute()
+  {
+      return $this->basic_price * $this->payload;
+  }
+
+  public function getTotalOperationalAttribute()
+  {
+      return $this->operationalexpense_sum_amount + $this->road_money;
+  }
+
+  public function getTotalSparepartAttribute()
+  {
+      return ($this->total_basic_price - $this->total_operational) * ($this->cut_sparepart_percent /100);
+  }
+
+  public function getTotalSalaryAttribute()
+  {
+      return ($this->total_basic_price - $this->total_operational - $this->total_sparepart) * ($this->salary_percent /100);
+  }
 }

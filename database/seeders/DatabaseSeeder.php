@@ -19,22 +19,22 @@ class DatabaseSeeder extends Seeder
       $settings = [
         [
           'name'  => 'name',
-          'value' => '',
+          'value' => 'Alusindo',
           'type'  => 'settings'
         ],
         [
           'name'  => 'address',
-          'value' => '',
+          'value' => 'Jl. Ikan Kakap No . 33-35 T. Betung, Bandar Lampung',
           'type'  => 'settings'
         ],
         [
           'name'  => 'telp',
-          'value' => '',
+          'value' => '0811993623',
           'type'  => 'settings'
         ],
         [
           'name'  => 'fax',
-          'value' => '',
+          'value' => '(0721)489924',
           'type'  => 'settings'
         ],
         [
