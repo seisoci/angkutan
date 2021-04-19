@@ -39,13 +39,6 @@
           <div class="row align-items-center">
             <div class="col-md-3 my-md-0">
               <div class="form-group">
-                <label>LDO:</label>
-                <select class="form-control" id="select2AnotherExpedition">
-                </select>
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
                 <label>Supir:</label>
                 <select class="form-control" id="select2Driver">
                 </select>
@@ -65,22 +58,6 @@
                 </select>
               </div>
             </div>
-          </div>
-          <div class="row align-items-center">
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Rute Dari:</label>
-                <select class="form-control" id="select2RouteFrom">
-                </select>
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Rute Ke:</label>
-                <select class="form-control" id="select2RouteTo">
-                </select>
-              </div>
-            </div>
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Muatan:</label>
@@ -88,6 +65,8 @@
                 </select>
               </div>
             </div>
+          </div>
+          <div class="row align-items-center">
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Tanggal Mulai:</label>
@@ -95,26 +74,11 @@
                   style="width:100% !important">
               </div>
             </div>
-          </div>
-          <div class="row align-items-center">
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Tanggal Selesai:</label>
                 <input id="dateEnd" name="date_end" readonly type="text" class="form-control datepicker"
                   placeholder="Cari Tanggal" style="width:100% !important">
-              </div>
-            </div>
-            <div class="col-md-3 my-md-0">
-              <div class="form-group">
-                <label>Status Job Order:</label>
-                <select class="form-control" id="selectStatus">
-                  <option value="">Pilih Status</option>
-                  <option value="mulai">Mulai</option>
-                  <option value="muat">Muat</option>
-                  <option value="bongkar">Bongkar</option>
-                  <option value="selesai">Selesai</option>
-                  <option value="batal">Batal</option>
-                </select>
               </div>
             </div>
             <div class="col-md-3 my-md-0">
@@ -135,7 +99,7 @@
     <table class="table table-bordered table-hover" id="Datatable">
       <thead>
         <tr>
-          <th>Nama</th>
+          <th>Prefix</th>
           <th>No. Job Order</th>
           <th>Supir</th>
           <th>No. Pol</th>
@@ -261,7 +225,7 @@
             {data: 'date_begin', name: 'date_begin'},
             {data: 'date_end', name: 'date_end', defaultContent: ''},
             {data: 'status_salary', name: 'status_salary', defaultContent: ''},
-            {data: 'total_salary', name: 'total_salary', defaultContent: '', render: $.fn.dataTable.render.number( '.', '.', 0)},
+            {data: 'total_salary', name: 'total_salary', orderable: false, searchable: false, defaultContent: '', render: $.fn.dataTable.render.number( ',', '.', 2)},
             {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [
@@ -271,8 +235,8 @@
           width: '75px',
           render: function(data, type, full, meta) {
             var status = {
-              0: {'title': 'Belum dibayar', 'class': ' label-light-danger'},
-              1: {'title': 'Sudah dibayar', 'class': ' label-light-success'},
+              0: {'title': 'Unapid', 'class': ' label-light-danger'},
+              1: {'title': 'Paid', 'class': ' label-light-success'},
             };
             if (typeof status[data] === 'undefined') {
               return data;
@@ -315,7 +279,7 @@
       placeholder: "Search Supir",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.drivers.select2') }}",
+          url: "{{ route('backend.drivers.select2self') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -333,7 +297,7 @@
       placeholder: "Search Kendaraan",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.transports.select2') }}",
+          url: "{{ route('backend.transports.select2self') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -369,7 +333,7 @@
       placeholder: "Search Muatan",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.transports.select2') }}",
+          url: "{{ route('backend.cargos.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,

@@ -12,7 +12,7 @@
         <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
     </div>
   </div>
-  <form id="formStore" action="{{ route('backend.invoicesalaries.store') }}">
+  <form id="formStore" action="{{ route('backend.invoicecostumers.store') }}">
     @csrf
     <div id="TampungId">
     </div>
@@ -30,7 +30,7 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-lg-3 col-form-label">No. Slip Gaji:</label>
+                  <label class="col-lg-3 col-form-label">No. Invoice Costumer:</label>
                   <div class="col-lg-6">
                     <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                     <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
@@ -40,17 +40,16 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-lg-3 col-form-label">Supir:</label>
-                  <div class="col-lg-6">
-                    <select name="driver_id" class="form-control" id="select2Driver">
+                  <label class="col-lg-3 col-form-label">Pelanggan:</label>
+                  <div class="col-lg-9">
+                    <select name="costumer_id" class="form-control" id="select2Costumer">
                     </select>
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-lg-3 col-form-label">Kendaraan:</label>
-                  <div class="col-lg-6">
-                    <select name="transport_id" class="form-control" id="select2Transport">
-                    </select>
+                  <label class="col-lg-3 col-form-label">Memo:</label>
+                  <div class="col-lg-9">
+                    <textarea name="memo" class="form-control rounded-0"></textarea>
                   </div>
                 </div>
               </div>
@@ -61,8 +60,13 @@
                   <th scope="col" class="text-center">#</th>
                   <th scope="col">Tanggal</th>
                   <th scope="col">S. Jalan</th>
-                  <th scope="col">No. Polisi</th>
-                  <th scope="col" class="text-right">Jumlah</th>
+                  <th scope="col">Pelanggan</th>
+                  <th scope="col">Rute Dari</th>
+                  <th scope="col">Rute Ke</th>
+                  <th scope="col">Jenis Barang</th>
+                  <th scope="col" class="text-right">Tarif (Rp.)</th>
+                  <th scope="col">Qty (Unit)</th>
+                  <th scope="col" class="text-right">Total (Rp.)</th>
                 </tr>
               </thead>
               <tbody>
@@ -89,7 +93,7 @@
     </div>
     <div class="card-toolbar">
       <meta name="csrf-token" content="{{ csrf_token() }}">
-      <button id="submitAppend" class="btn btn-primary">Masukan Ke Form Gaji</button>
+      <button id="submitAppend" class="btn btn-primary">Masukan Ke Form Invoice</button>
     </div>
   </div>
   <div class="card-body">
@@ -101,9 +105,13 @@
           <th>Tanggal Mulai</th>
           <th>Prefix</th>
           <th>No. Job Order</th>
-          <th>Supir</th>
-          <th>No. Pol</th>
-          <th>Gaji</th>
+          <th>Pelanggan</th>
+          <th>Rute Dari</th>
+          <th>Rute Ke</th>
+          <th>Jenis Barang</th>
+          <th>Ongkosan Dasar</th>
+          <th>Qty (Unit)</th>
+          <th>Tagihan</th>
           <th>Created At</th>
         </tr>
       </thead>
@@ -137,14 +145,13 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[7, 'desc']],
+        order: [[11, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
-          url: "{{ route('backend.invoicesalaries.create') }}",
+          url: "{{ route('backend.invoicecostumers.create') }}",
           data: function(d){
-            d.driver_id = $('#select2Driver').find(':selected').val();
-            d.transport_id = $('#select2Transport').find(':selected').val();
+            d.costumer_id = $('#select2Costumer').find(':selected').val();
           }
         },
         columns: [
@@ -152,9 +159,13 @@
             {data: 'date_begin', name: 'date_begin'},
             {data: 'prefix', name: 'prefix'},
             {data: 'num_bill', name: 'num_bill'},
-            {data: 'driver.name', name: 'driver.name'},
-            {data: 'transport.num_pol', name: 'transport.num_pol'},
-            {data: 'total_salary', name: 'total_salary', render: $.fn.dataTable.render.number( '.', '.', 2), orderable:false, searchable: false},
+            {data: 'costumer.name', name: 'costumer.name'},
+            {data: 'routefrom.name', name: 'routefrom.name'},
+            {data: 'routeto.name', name: 'routeto.name'},
+            {data: 'cargo.name', name: 'cargo.name'},
+            {data: 'basic_price', name: 'basic_price', render: $.fn.dataTable.render.number( '.', '.', 2)},
+            {data: 'payload', name: 'payload'},
+            {data: 'invoice_bill', name: 'invoice_bill', render: $.fn.dataTable.render.number( '.', '.', 2)},
             {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [
@@ -183,7 +194,7 @@
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         type:'POST',
-        url: "{{ route('backend.invoicesalaries.findbypk') }}",
+        url: "{{ route('backend.invoicecostumers.findbypk') }}",
         data: {data: JSON.stringify(dataSelected)},
         success:function(response) {
           if(response.data){
@@ -192,20 +203,25 @@
             $('#TampungId').empty();
             var total = 0;
             $.each(response.data, function(index, data){
-              total += data.total_salary;
+              total += parseFloat(data.invoice_bill);
               $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="'+data.id+'">');
               $('#table_invoice tbody').append('<tr>'+
               ' <td class="text-center">'+(index+1)+'</td>'+
               ' <td>'+data.date_begin+'</td>'+
               ' <td>'+data.prefix+'-'+data.num_bill+'</td>'+
-              ' <td>'+data.transport.num_pol+'</td>'+
-              ' <td class="text-right money">'+data.total_salary+'</td>'+
+              ' <td>'+data.costumer.name+'</td>'+
+              ' <td>'+data.routefrom.name+'</td>'+
+              ' <td>'+data.routeto.name+'</td>'+
+              ' <td>'+data.cargo.name+'</td>'+
+              ' <td class="text-right money">'+data.basic_price+'</td>'+
+              ' <td>'+data.payload+'</td>'+
+              ' <td class="text-right money">'+data.invoice_bill+'</td>'+
               '</tr>');
             });
             $('#TampungId').append('<input type="hidden" name="grand_total" value="'+total+'">');
 
             $('#table_invoice tfoot').append('<tr>'+
-              '<td colspan="4" class="text-right">Total</td>'+
+              '<td colspan="9" class="text-right">Total</td>'+
               '<td class="text-right money">'+total+'</td>'+
               '</tr>');
 
@@ -249,33 +265,11 @@
       },
     });
 
-    $("#select2Driver").select2({
-      placeholder: "Search Supir",
+    $("#select2Costumer").select2({
+      placeholder: "Search Pelanggan",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.drivers.select2') }}",
-          dataType: "json",
-          delay: 250,
-          cache: true,
-          data: function(e) {
-            return {
-              q: e.term || '',
-              page: e.page || 1
-            }
-          },
-      },
-    }).on('change', function (e){
-      dataTable.draw();
-      $('#table_invoice tbody').empty();
-      $('#table_invoice tfoot').empty();
-      $('#TampungId').empty();
-    });
-
-    $("#select2Transport").select2({
-      placeholder: "Search Kendaraan",
-      allowClear: true,
-      ajax: {
-          url: "{{ route('backend.transports.select2self') }}",
+          url: "{{ route('backend.costumers.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,

@@ -259,6 +259,40 @@ class DriverController extends Controller
             "more" => $morePages
         )
       );
+      return response()->json($results);
+    }
+
+    public function select2self(Request $request){
+      $page = $request->page;
+      $resultCount = 10;
+      $offset = ($page - 1) * $resultCount;
+      $type = !empty($request->type) || isset($request->type) ? $request->type : NULL;
+      $status = $request->status ?? NULL;
+      $data = Driver::where('name', 'LIKE', '%' . $request->q. '%')
+          ->where('another_expedition_id', NULL)
+          ->when($status, function ($q, $status) {
+              return $q->where('status', $status);
+          })
+          ->orderBy('name')
+          ->skip($offset)
+          ->take($resultCount)
+          ->selectRaw('id, name as text')
+          ->get();
+
+      $count = Driver::where('name', 'LIKE', '%' . $request->q. '%')
+          ->where('another_expedition_id', NULL)
+          ->get()
+          ->count();
+
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
+
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
 
       return response()->json($results);
     }

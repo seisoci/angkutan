@@ -13,7 +13,7 @@
     </div>
     <div class="card-toolbar">
       <!--begin::Button-->
-      <a href="{{ route('backend.invoicesalaries.create') }}" class="btn btn-primary font-weight-bolder">
+      <a href="{{ route('backend.invoicecostumers.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
           <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
@@ -38,8 +38,7 @@
       <thead>
         <tr>
           <th>Invoice Number</th>
-          <th>Nama Supir</th>
-          <th>No. Polisi</th>
+          <th>Nama Pelanggan</th>
           <th>Grand Total</th>
           <th>Created At</th>
         </tr>
@@ -68,61 +67,16 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[4, 'desc']],
+        order: [[3, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.invoicesalaries.index') }}",
+        ajax: "{{ route('backend.invoicecostumers.index') }}",
         columns: [
-            {data: 'num_invoice', name: 'num_bill', orderable:false},
-            {data: 'driver.name', name: 'driver.name'},
-            {data: 'transport.num_pol', name: 'transport.num_pol'},
-            {data: 'grandtotal', name: 'grandtotal' , render: $.fn.dataTable.render.number( '.', '.', 2)},
+            {data: 'num_invoice', name: 'num_invoice', orderable:false},
+            {data: 'costumer.name', name: 'costumer.name'},
+            {data: 'grandtotal', name: 'grandtotal' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
             {data: 'created_at', name: 'created_at'},
         ],
-    });
-
-    $('#modalDelete').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.drivers.index") }}/'+ id);
-    });
-
-    $('#modalDelete').on('hidden.bs.modal', function (event) {
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
-    });
-
-    $("#formDelete").click(function(e){
-      e.preventDefault();
-      var form 	    = $(this);
-      var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
-      var btnHtml   = form.html();
-      var spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
-      $.ajax({
-        beforeSend:function() {
-          form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");
-        },
-        type: 'DELETE',
-        url: url,
-        dataType: 'json',
-        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-        success: function (response) {
-          if(response.status == "success"){
-            form.prop('disabled', false).html(btnHtml);
-            toastr.success(response.message,'Success !');
-            $('#modalDelete').modal('hide');
-            dataTable.draw();
-          }else{
-            form.prop('disabled', false).html(btnHtml);
-            toastr.error(response.message,'Failed !');
-            $('#modalDelete').modal('hide');
-          }
-        },
-        error: function (response) {
-          form.prop('disabled', false).text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
-          toastr.error(response.responseJSON.message ,'Failed !');
-          $('#modalDelete').modal('hide');
-          $('#modalDelete').find('a[name="id"]').attr('href', '');
-        }
-      });
     });
   });
 </script>

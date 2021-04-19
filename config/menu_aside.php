@@ -138,14 +138,6 @@ return [
               'title' => 'Gaji Supir',
               'page'  => 'backend/salaries'
             ],
-            [
-              'title' => 'Laporan Rekapitulasi',
-              'page'  => 'backend/recapitulation'
-            ],
-            [
-              'title' => 'Invoice Gaji',
-              'page'  => 'backend/invoicesalaries'
-            ],
           ]
         ],
         [
@@ -175,6 +167,31 @@ return [
               'title' => 'Stok Barang',
               'page'  => 'backend/stocks'
             ]
+          ]
+        ],
+                [
+          'section' => 'Laporan',
+        ],
+        [
+          'title' => 'Laporan & Invoice Operational',
+          'desc' => '',
+          'icon' => 'media/svg/icons/Communication/Clipboard-list.svg',
+          'bullet' => 'dot',
+          'root' => true,
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Laporan Rekapitulasi',
+              'page'  => 'backend/recapitulation'
+            ],
+            [
+              'title' => 'Invoice Gaji',
+              'page'  => 'backend/invoicesalaries'
+            ],
+            [
+              'title' => 'Invoice Costumers',
+              'page'  => 'backend/invoicecostumers'
+            ],
           ]
         ],
         [

@@ -15,7 +15,7 @@ class JobOrder extends Model
     'status_salary',
     'status_payment',
   ];
-  protected $appends = ['total_basic_price','total_operational', 'total_sparepart', 'total_salary'];
+  protected $appends = ['num_prefix', 'total_basic_price','total_operational', 'total_sparepart', 'total_salary'];
 
 
   public function getCreatedAtAttribute($value){
@@ -81,5 +81,10 @@ class JobOrder extends Model
   public function getTotalSalaryAttribute()
   {
       return ($this->total_basic_price - $this->total_operational - $this->total_sparepart) * ($this->salary_percent /100);
+  }
+
+  public function getNumPrefixAttribute()
+  {
+      return ($this->prefix ."-". $this->num_bill);
   }
 }

@@ -31,6 +31,7 @@ use App\Http\Controllers\Backend\OperationalExpenseController as BackendOperatio
 use App\Http\Controllers\Backend\SalaryController as BackendSalaryController;
 use App\Http\Controllers\Backend\RecapitulationController as BackendRecapitulationController;
 use App\Http\Controllers\Backend\InvoiceSalaryController as BackendInvoiceSalaryController;
+use App\Http\Controllers\Backend\InvoiceCostumerController as BackendInvoiceCostumerController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -62,6 +63,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('routes/select2', [BackendRouteController::class, 'select2'])->name('routes.select2');
     Route::get('brands/select2', [BackendBrandController::class, 'select2'])->name('brands.select2');
     Route::get('drivers/select2', [BackendDriverController::class, 'select2'])->name('drivers.select2');
+    Route::get('drivers/select2self', [BackendDriverController::class, 'select2self'])->name('drivers.select2self');
     Route::get('joborders/select2costumers', [BackendJobOrderController::class, 'select2costumers'])->name('joborders.select2costumers');
     Route::get('joborders/select2routefrom', [BackendJobOrderController::class, 'select2routefrom'])->name('joborders.select2routefrom');
     Route::get('joborders/select2routeto', [BackendJobOrderController::class, 'select2routeto'])->name('joborders.select2routeto');
@@ -90,6 +92,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('invoicepurchases/{id}/cetakpdf', [BackendInvoicePurchaseController::class, 'cetakPdfInvoice'])->name('invoicepurchases.cetakpdf');
     Route::post('joborders/storeexpense', [BackendJobOrderController::class, 'storeexpense'])->name('joborders.storeexpense');
     Route::post('invoicesalaries/findbypk', [BackendInvoiceSalaryController::class, 'findbypk'])->name('invoicesalaries.findbypk');
+    Route::post('invoicecostumers/findbypk', [BackendInvoiceCostumerController::class, 'findbypk'])->name('invoicecostumers.findbypk');
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -127,5 +130,6 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('salaries', BackendSalaryController::class);
     Route::resource('recapitulation', BackendRecapitulationController::class);
     Route::resource('invoicesalaries', BackendInvoiceSalaryController::class);
+    Route::resource('invoicecostumers', BackendInvoiceCostumerController::class);
   });
 });

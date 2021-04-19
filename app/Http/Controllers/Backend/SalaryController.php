@@ -58,19 +58,10 @@ class SalaryController extends Controller
           return $query->where('status_cargo', $status_cargo);
         });
         return DataTables::of($data)
-        ->addColumn ('total_salary', function($data){
-            $basicPrice = $data->basic_price;
-            $payload    = $data->payload ?? 1;
-            $roadMoneyExtended = $data->operationalexpense_sum_amount;
-            $roadMoney  = $data->road_money + $roadMoneyExtended;
-            $sumPayload = $basicPrice * $payload;
-            $totalGross = $sumPayload - $roadMoney;
-            $pecentSparePart = $data->cut_sparepart_percent / 100;
-            $pecentSalary = $data->salary_percent / 100;
-            $sparepart  = $totalGross * $pecentSparePart;
-            $salary     = ($totalGross - $sparepart) * $pecentSalary;
-            return $salary;
-        })
+          ->editColumn('num_bill', function(JobOrder $jobOrder){
+            return '<a target="_blank" href="/backend/joborders/'.$jobOrder->id.'">'.$jobOrder->num_bill.'</a>';
+          })
+          ->rawColumns(['num_bill'])
           ->make(true);
       }
       return view('backend.operational.salaries.index', compact('config', 'page_breadcrumbs'));
