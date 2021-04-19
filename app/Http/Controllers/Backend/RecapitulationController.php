@@ -41,7 +41,7 @@ class RecapitulationController extends Controller
 
         if($request->all() != NULL){
           $transport = isset($transport_id) || !empty($transport_id) ? Transport::findOrFail($transport_id) : 'Semua Mobil';
-          $driver = isset($driver_id) || !empty($driver_id) ? Driver::findOrFail($driver_id)->select('id', 'num_pol') : 'Semua Supir';
+          $driver = isset($driver_id) || !empty($driver_id) ? Driver::select('id', 'name')->findOrFail($driver_id) : 'Semua Supir';
           $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense'])
           ->withSum('operationalexpense','amount')
           ->where('type', 'self')
