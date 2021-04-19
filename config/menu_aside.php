@@ -139,12 +139,12 @@ return [
               'page'  => 'backend/salaries'
             ],
             [
-              'title' => 'Pembayaran Gaji',
-              'page'  => 'backend/paymentsalaries'
-            ],
-            [
               'title' => 'Laporan Rekapitulasi',
               'page'  => 'backend/recapitulation'
+            ],
+            [
+              'title' => 'Invoice Gaji',
+              'page'  => 'backend/invoicesalaries'
             ],
           ]
         ],

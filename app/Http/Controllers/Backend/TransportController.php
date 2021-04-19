@@ -258,4 +258,33 @@ class TransportController extends Controller
 
     return response()->json($results);
   }
+
+  public function select2self(Request $request){
+    $page = $request->page;
+    $resultCount = 10;
+    $offset = ($page - 1) * $resultCount;
+    $data = Transport::where('num_pol', 'LIKE', '%' . $request->q. '%')
+        ->where('another_expedition_id', NULL)
+        ->orderBy('num_pol')
+        ->skip($offset)
+        ->take($resultCount)
+        ->selectRaw('id, CONCAT(`num_pol`," (", UPPER(`type_car`), ")") as text')
+        ->get();
+
+    $count = Transport::where('num_pol', 'LIKE', '%' . $request->q. '%')
+        ->where('another_expedition_id', NULL)
+        ->get()
+        ->count();
+    $endCount = $offset + $resultCount;
+    $morePages = $count > $endCount;
+
+    $results = array(
+      "results" => $data,
+      "pagination" => array(
+          "more" => $morePages
+      )
+    );
+
+    return response()->json($results);
+  }
 }

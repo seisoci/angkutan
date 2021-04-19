@@ -18,7 +18,7 @@ class CreateInvoicePurchasesTable extends Migration
           $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
           $table->string('prefix');
           $table->string('num_bill')->unique();
-          $table->decimal('grandtotal',15,0);
+          $table->decimal('grandtotal', 15, 2);
           $table->text('description')->nullable();
           $table->string('memo')->nullable();
           $table->timestamps();

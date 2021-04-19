@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
         ],
         [
           'name'  => 'gaji supir',
-          'value' => '20',
+          'value' => '15',
           'type'  => 'settings'
         ],
 

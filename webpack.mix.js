@@ -76,7 +76,7 @@ mix.sass('resources/metronic/sass/style.scss', 'public/css/style.bundle.css', {
 
 // Backend js backend (single page use)
 (glob.sync('resources/backend/js/**/*.js') || []).forEach(file => {
-    mix.js(file, `public/js/backend/${file.replace('resources/backend/js', '')}`);
+    mix.copy(file, `public/js/backend/${file.replace('resources/backend/js', '')}`);
 });
 
 // Metronic media

@@ -19,7 +19,7 @@ class CreateJobOrdersTable extends Migration
             $table->string('prefix');
             $table->date('date_begin');
             $table->date('date_end')->nullable();
-            $table->foreignId('invoice_purchase_id')->nullable()->references('id')->on('invoice_purchases');
+            $table->foreignId('invoice_salary_id')->nullable()->references('id')->on('invoice_salaries');
             $table->foreignId('another_expedition_id')->nullable()->references('id')->on('another_expeditions');
             $table->foreignId('driver_id')->constrained('drivers');
             $table->foreignId('transport_id')->constrained('transports');

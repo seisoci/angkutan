@@ -458,7 +458,7 @@
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('select[name="status_cargo"]').val('');
-s    });
+    });
     $("#formUpdate").submit(function(e){
       e.preventDefault();
       var form 	= $(this);

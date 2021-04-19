@@ -66,6 +66,7 @@ class PurchaseController extends Controller
             'memo'        => $request->input('memo') ?? NULL,
             'description' => $request->input('description') ?? NULL,
           ]);
+          dd($invoice);
 
           foreach($items['sparepart_id'] as $key => $item):
             $data[] = [
