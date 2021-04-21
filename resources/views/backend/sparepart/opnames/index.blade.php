@@ -3,7 +3,7 @@
 
 {{-- Content --}}
 @section('content')
-
+{{-- Dashboard 1 --}}
 <!--begin::Card-->
 <div class="card card-custom">
   <div class="card-header flex-wrap py-3">
@@ -13,7 +13,7 @@
     </div>
     <div class="card-toolbar">
       <!--begin::Button-->
-      <a href="#" data-toggle="modal" data-target="#modalCreate" class="btn btn-primary font-weight-bolder">
+      <a href="{{ route('backend.opnames.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
           <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
@@ -37,9 +37,10 @@
     <table class="table table-bordered table-hover" id="Datatable">
       <thead>
         <tr>
-          <th>Nama Spare part</th>
-          <th>Unit</th>
+          <th>No.</th>
+          <th>Keterangan</th>
           <th>Created At</th>
+          <th>Action</th>
         </tr>
       </thead>
     </table>
@@ -52,14 +53,15 @@
 <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
-
 {{-- Scripts Section --}}
 @section('scripts')
 {{-- vendors --}}
 <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
+
 {{-- page scripts --}}
+<script src="{{ asset('js/pages/crud/datatables/basic/basic.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
-  $(document).ready(function(){
+  $(function () {
     var dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
@@ -68,14 +70,14 @@
         order: [[2, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.stocks.index') }}",
+        ajax: "{{ route('backend.opnames.index') }}",
         columns: [
-            {data: 'sparepart.name', name: 'sparepart.name'},
-            {data: 'qty', name: 'qty'},
+            {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+            {data: 'description', name: 'description'},
             {data: 'created_at', name: 'created_at'},
+            {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
     });
-
   });
 </script>
 @endsection

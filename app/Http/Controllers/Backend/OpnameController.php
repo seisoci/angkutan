@@ -1,0 +1,134 @@
+<?php
+
+namespace App\Http\Controllers\Backend;
+
+use App\Http\Controllers\Controller;
+use App\Models\Opname;
+use App\Models\OpnameDetail;
+use App\Models\Setting;
+use App\Models\Stock;
+use DataTables;
+use DB;
+use Illuminate\Http\Request;
+use Validator;
+
+class OpnameController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+      $config['page_title']       = "List Opname";
+      $config['page_description'] = "Daftar List Opname";
+      $page_breadcrumbs = [
+        ['page' => '#','title' => "List Opname"],
+      ];
+
+      if ($request->ajax()) {
+        $data = Opname::query();
+        return DataTables::of($data)
+          ->addIndexColumn()
+          ->addColumn('action', function($row){
+              $actionBtn = '
+              <a href="opnames/'.$row->id.'" class="btn btn-light btn-sm"><i class="fas fa-eye"></i></a>';
+              return $actionBtn;
+          })
+          ->make(true);
+      }
+      return view('backend.sparepart.opnames.index', compact('config', 'page_breadcrumbs'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+      $config['page_title'] = "Create Opname";
+      $page_breadcrumbs = [
+        ['page' => '/backend/opnames','title' => "List Opname"],
+        ['page' => '#','title' => "Create Opname"],
+      ];
+      return view('backend.sparepart.opnames.create', compact('config', 'page_breadcrumbs'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+      $validator = Validator::make($request->all(), [
+        'items.sparepart_id'      => 'required|array',
+        'items.sparepart_id.*'    => 'required|integer',
+        'items.qty_now'           => 'required|array',
+        'items.qty_now.*'         => 'required|integer',
+      ]);
+      if($validator->passes()){
+      try {
+        $items   = $request->items;
+        DB::beginTransaction();
+        $opanme  = Opname::create(['description' => $request->description]);
+        foreach($items['sparepart_id'] as $key => $item):
+          $stock = Stock::findOrFail($items['sparepart_id'][$key]);
+          $data[] = [
+              'opname_id'             => $opanme->id,
+              'sparepart_id'          => $items['sparepart_id'][$key],
+              'qty'                   => $items['qty_now'][$key],
+              'qty_system'            => $stock->qty,
+              'qty_difference'        => $items['qty_now'][$key] - $stock->qty,
+          ];
+          $stockSummary = Stock::firstOrCreate(
+              ['sparepart_id' => $items['sparepart_id'][$key] ],
+              ['qty' => $items['qty_now'][$key],]
+          );
+          if (!$stockSummary->wasRecentlyCreated) {
+            $stockSummary->update(['qty' => $items['qty_now'][$key]]);
+          }
+        endforeach;
+        OpnameDetail::insert($data);
+        DB::commit();
+        $response = response()->json([
+          'status'    => 'success',
+          'message'   => 'Data has been saved',
+          'redirect'  => '/backend/opnames',
+        ]);
+      }catch (\Throwable $throw) {
+        DB::rollBack();
+        $response = $throw;
+      }
+
+      }else{
+        $response = response()->json(['error'=>$validator->errors()->all()]);
+      }
+      return $response;
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Opname  $opname
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+      $config['page_title'] = "Detail Supir";
+      $page_breadcrumbs = [
+        ['page' => '/backend/drivers','title' => "List Supir"],
+        ['page' => '#','title' => "Detail Supir"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+        return [$item['name'] => $item['value']];
+      });
+      $data = Opname::with(['opnamedetail.sparepart:id,name'])->findOrFail($id);
+      return view('backend.sparepart.opnames.show',compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    }
+
+}

@@ -11,11 +11,12 @@ class JobOrder extends Model
   use HasFactory;
   protected $fillable = [
     'status_cargo',
+    'status_document',
     'date_end',
     'status_salary',
     'status_payment',
   ];
-  protected $appends = ['num_prefix', 'total_basic_price','total_operational', 'total_sparepart', 'total_salary'];
+  protected $appends = ['num_prefix', 'total_basic_price','total_operational', 'total_sparepart', 'total_salary', 'total_netto_ldo'];
 
 
   public function getCreatedAtAttribute($value){
@@ -81,6 +82,11 @@ class JobOrder extends Model
   public function getTotalSalaryAttribute()
   {
       return ($this->total_basic_price - $this->total_operational - $this->total_sparepart) * ($this->salary_percent /100);
+  }
+
+  public function getTotalNettoLdoAttribute()
+  {
+      return ($this->basic_price_ldo * $this->payload) - ($this->operationalexpense_sum_amount + $this->road_money);
   }
 
   public function getNumPrefixAttribute()

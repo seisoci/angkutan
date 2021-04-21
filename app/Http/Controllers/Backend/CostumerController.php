@@ -28,8 +28,8 @@ class CostumerController extends Controller
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '
-            <a href="#" data-toggle="modal" data-target="#modalShow" data-name="'.$row->name.'" data-emergency_name="'.$row->emergency_name.'" data-emergency_phone="'.$row->emergency_phone.'" data-phone="'.$row->phone.'" data-address="'.$row->address.'" data-description="'.$row->description.'"  class="btn btn-info btn-sm">Show Detail</a>
-            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-name="'.$row->name.'" data-emergency_name="'.$row->emergency_name.'" data-emergency_phone="'.$row->emergency_phone.'" data-phone="'.$row->phone.'" data-address="'.$row->address.'" data-description="'.$row->description.'" class="edit btn btn-warning btn-sm">Edit</a>
+            <a href="#" data-toggle="modal" data-target="#modalShow" data-name="'.$row->name.'" data-emergency_name="'.$row->emergency_name.'" data-emergency_phone="'.$row->emergency_phone.'" data-phone="'.$row->phone.'" data-address="'.$row->address.'" data-description="'.$row->description.'" data-cooperation="'.$row->cooperation.'" data-tax="'.$row->tax.'"   class="btn btn-info btn-sm">Show Detail</a>
+            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-name="'.$row->name.'" data-emergency_name="'.$row->emergency_name.'" data-emergency_phone="'.$row->emergency_phone.'" data-phone="'.$row->phone.'" data-address="'.$row->address.'" data-description="'.$row->description.'" data-cooperation="'.$row->cooperation.'" data-tax="'.$row->tax.'"  class="edit btn btn-warning btn-sm">Edit</a>
             <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
             return $actionBtn;
         })->make(true);
@@ -49,6 +49,8 @@ class CostumerController extends Controller
       $validator = Validator::make($request->all(), [
         'name'            => 'required|string',
         'phone'           => 'required|string',
+        'cooperation'     => 'required|in:alusindo,triel',
+        'tax'             => 'required',
       ]);
 
       if($validator->passes()){
@@ -59,6 +61,8 @@ class CostumerController extends Controller
           'phone'           => $request->input('phone'),
           'address'         => $request->input('address'),
           'description'     => $request->input('description'),
+          'cooperation'     => $request->input('cooperation'),
+          'tax'             => $request->input('tax'),
         ]);
         $response = response()->json([
           'status' => 'success',
@@ -82,6 +86,8 @@ class CostumerController extends Controller
       $validator = Validator::make($request->all(), [
         'name'            => 'required|string',
         'phone'           => 'required|string',
+        'cooperation'     => 'required|in:alusindo,triel',
+        'tax'             => 'required',
       ]);
 
       if($validator->passes()){
@@ -92,6 +98,8 @@ class CostumerController extends Controller
           'phone'           => $request->input('phone'),
           'address'         => $request->input('address'),
           'description'     => $request->input('description'),
+          'cooperation'     => $request->input('cooperation'),
+          'tax'             => $request->input('tax'),
         ]);
         $response = response()->json([
           'status' => 'success',

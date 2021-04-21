@@ -88,10 +88,6 @@ return [
               'page'  => 'backend/categories'
             ],
             [
-              'title' => 'Master Servis',
-              'page'  => 'backend/services'
-            ],
-            [
               'title' => 'Master Spare Part',
               'page'  => 'backend/spareparts'
             ],
@@ -120,7 +116,7 @@ return [
           ]
         ],
         [
-          'section' => 'Operational',
+          'section' => 'Transaksi',
         ],
         [
           'title' => 'Job Order',
@@ -135,41 +131,52 @@ return [
               'page'  => 'backend/joborders'
             ],
             [
-              'title' => 'Gaji Supir',
+              'title' => 'Status Gaji Supir',
               'page'  => 'backend/salaries'
+            ],
+            [
+              'title' => 'Status Pembayaran LDO',
+              'page'  => 'backend/paymentldo'
             ],
           ]
         ],
         [
-          'section' => 'Spare Parts',
-        ],
-        [
-          'title' => 'Spare Parts',
+          'title' => 'Pembelian & Pengambilan',
           'desc' => '',
-          'icon' => 'media/svg/icons/Home/Book-open.svg',
+          'icon' => 'media/svg/icons/Shopping/Cart2.svg',
           'bullet' => 'dot',
           'root' => true,
           'arrow' => true,
           'submenu' => [
             [
-              'title' => 'Pembelian',
-              'page'  => 'backend/purchases'
-            ],
-            [
               'title' => 'Invoice Pembelian',
               'page'  => 'backend/invoicepurchases'
             ],
             [
-              'title' => 'Invoice Pengambilan',
+              'title' => 'Ambil barang',
               'page'  => 'backend/invoice'
             ],
+          ]
+        ],
+          [
+          'title' => 'Inventory',
+          'desc' => '',
+          'icon' => 'media/svg/icons/Shopping/Bag2.svg',
+          'bullet' => 'dot',
+          'root' => true,
+          'arrow' => true,
+          'submenu' => [
             [
               'title' => 'Stok Barang',
               'page'  => 'backend/stocks'
-            ]
+            ],
+            [
+              'title' => 'Stok Opname',
+              'page'  => 'backend/invoice'
+            ],
           ]
         ],
-                [
+        [
           'section' => 'Laporan',
         ],
         [
@@ -191,6 +198,10 @@ return [
             [
               'title' => 'Invoice Costumers',
               'page'  => 'backend/invoicecostumers'
+            ],
+            [
+              'title' => 'Invoice LDO',
+              'page'  => 'backend/invoiceldo'
             ],
           ]
         ],

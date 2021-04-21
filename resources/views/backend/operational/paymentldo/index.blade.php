@@ -39,6 +39,13 @@
           <div class="row align-items-center">
             <div class="col-md-3 my-md-0">
               <div class="form-group">
+                <label>LDO:</label>
+                <select class="form-control" id="select2AnotherExpedition">
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3 my-md-0">
+              <div class="form-group">
                 <label>Supir:</label>
                 <select class="form-control" id="select2Driver">
                 </select>
@@ -58,6 +65,8 @@
                 </select>
               </div>
             </div>
+          </div>
+          <div class="row align-items-center">
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Muatan:</label>
@@ -65,8 +74,6 @@
                 </select>
               </div>
             </div>
-          </div>
-          <div class="row align-items-center">
             <div class="col-md-3 my-md-0">
               <div class="form-group">
                 <label>Tanggal Mulai:</label>
@@ -83,7 +90,7 @@
             </div>
             <div class="col-md-3 my-md-0">
               <div class="form-group">
-                <label>Status Gaji Supir:</label>
+                <label>Status Pembayaran:</label>
                 <select class="form-control" id="selectStatusSalary">
                   <option value="">Pilih Status</option>
                   <option value="0">Belum dibayar</option>
@@ -101,77 +108,19 @@
         <tr>
           <th>Prefix</th>
           <th>No. Job Order</th>
+          <th>LDO</th>
           <th>Supir</th>
           <th>No. Pol</th>
           <th>Pelanggan</th>
           <th>Muatan</th>
           <th>Tanggal Mulai</th>
           <th>Tanggal Selesai</th>
-          <th>Status Gaji</th>
-          <th>Gaji</th>
+          <th>Status Pembayaran</th>
+          <th>Tagihan</th>
           <th>Created At</th>
         </tr>
       </thead>
     </table>
-  </div>
-</div>
-{{-- Modal --}}
-<div class="modal fade" id="modalDelete" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Delete</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <i aria-hidden="true" class="ki ki-close"></i>
-        </button>
-      </div>
-      <meta name="csrf-token" content="{{ csrf_token() }}">
-      @method('DELETE')
-      <div class="modal-body">
-        <a href="" type="hidden" name="id" disabled></a>
-        Are you sure you want to delete this item? </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="formDelete" type="button" class="btn btn-danger">Submit</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-md" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit {{ $config['page_title'] }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <i aria-hidden="true" class="ki ki-close"></i>
-        </button>
-      </div>
-      <form id="formUpdate" action="#">
-        @method('PUT')
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <div class="modal-body">
-          <div class="form-group" style="display:none;">
-            <div class="alert alert-custom alert-light-danger" role="alert">
-              <div class="alert-icon"><i class="flaticon-danger text-danger"></i></div>
-              <div class="alert-text">
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Status Job Order:</label>
-            <select class="form-control" name="status_cargo">
-              <option value="mulai">Mulai</option>
-              <option value="selesai">Selesai</option>
-              <option value="batal">Batal</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" type="button" class="btn btn-primary">Submit</button>
-        </div>
-      </form>
-    </div>
   </div>
 </div>
 @endsection
@@ -190,46 +139,47 @@
 <script type="text/javascript">
   $(document).ready(function(){
     var dataTable = $('#Datatable').DataTable({
-        responsive: false,
-        scrollX: true,
-        processing: true,
-        serverSide: true,
-        order: [[9, 'desc']],
-        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        pageLength: 10,
-        ajax: {
-          url: "{{ route('backend.salaries.index') }}",
-          data: function(d){
-            d.another_expedition_id = $('#select2AnotherExpedition').find(':selected').val();
-            d.driver_id = $('#select2Driver').find(':selected').val();
-            d.transport_id = $('#select2Transport').find(':selected').val();
-            d.costumer_id = $('#select2Costumer').find(':selected').val();
-            d.cargo_id = $('#select2Cargo').find(':selected').val();
-            d.route_from = $('#select2RouteFrom').find(':selected').val();
-            d.route_to = $('#select2RouteTo').find(':selected').val();
-            d.date_begin = $('#dateBegin').val();
-            d.date_end = $('#dateEnd').val();
-            d.status_cargo = $('#selectStatus').find(':selected').val();
-            d.status_salary = $('#selectStatusSalary').find(':selected').val();
-          }
-        },
-        columns: [
-            {data: 'prefix', name: 'prefix'},
-            {data: 'num_bill', name: 'num_bill'},
-            {data: 'driver.name', name: 'driver.name'},
-            {data: 'transport.num_pol', name: 'transport.num_pol'},
-            {data: 'costumer.name', name: 'costumer.name'},
-            {data: 'cargo.name', name: 'cargo.name'},
-            {data: 'date_begin', name: 'date_begin'},
-            {data: 'date_end', name: 'date_end', defaultContent: ''},
-            {data: 'status_salary', name: 'status_salary', defaultContent: ''},
-            {data: 'total_salary', name: 'total_salary', orderable: false, searchable: false, defaultContent: '', render: $.fn.dataTable.render.number( ',', '.', 2)},
-            {data: 'created_at', name: 'created_at'},
-        ],
-        columnDefs: [
+      responsive: false,
+      scrollX: true,
+      processing: true,
+      serverSide: true,
+      order: [[11, 'desc']],
+      lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+      pageLength: 10,
+      ajax: {
+        url: "{{ route('backend.paymentldo.index') }}",
+        data: function(d){
+          d.another_expedition_id = $('#select2AnotherExpedition').find(':selected').val();
+          d.driver_id = $('#select2Driver').find(':selected').val();
+          d.transport_id = $('#select2Transport').find(':selected').val();
+          d.costumer_id = $('#select2Costumer').find(':selected').val();
+          d.cargo_id = $('#select2Cargo').find(':selected').val();
+          d.route_from = $('#select2RouteFrom').find(':selected').val();
+          d.route_to = $('#select2RouteTo').find(':selected').val();
+          d.date_begin = $('#dateBegin').val();
+          d.date_end = $('#dateEnd').val();
+          d.status_cargo = $('#selectStatus').find(':selected').val();
+          d.status_salary = $('#selectStatusSalary').find(':selected').val();
+        }
+      },
+      columns: [
+          {data: 'prefix', name: 'prefix'},
+          {data: 'num_bill', name: 'num_bill'},
+          {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},
+          {data: 'driver.name', name: 'driver.name'},
+          {data: 'transport.num_pol', name: 'transport.num_pol'},
+          {data: 'costumer.name', name: 'costumer.name'},
+          {data: 'cargo.name', name: 'cargo.name'},
+          {data: 'date_begin', name: 'date_begin'},
+          {data: 'date_end', name: 'date_end', defaultContent: ''},
+          {data: 'status_payment_ldo', name: 'status_payment_ldo',},
+          {data: 'total_netto_ldo', name: 'total_netto_ldo', orderable: false, searchable: false, defaultContent: '', render: $.fn.dataTable.render.number( ',', '.', 2)},
+          {data: 'created_at', name: 'created_at'},
+      ],
+      columnDefs: [
         {
           className: 'dt-center',
-          targets: 8,
+          targets: 9,
           width: '75px',
           render: function(data, type, full, meta) {
             var status = {
@@ -243,7 +193,7 @@
               '</span>';
           },
         },
-        ],
+      ],
     });
 
     $('.datepicker').datepicker({

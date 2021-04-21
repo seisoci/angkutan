@@ -43,8 +43,8 @@
           <th>Tipe</th>
           <th>Jenis Mobil</th>
           <th>Tahun</th>
-          <th>Tanggal Berlaku STNK</th>
-          <th>Dump</th>
+          <th>Expired STNK</th>
+          <th>Expired KIR</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -122,28 +122,28 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label>Dump</label>
-              <input type="text" name="dump" class="form-control form-control-solid " disabled />
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
               <label>Max Muatan</label>
               <input type="text" name="max_weight" class="form-control form-control-solid " disabled />
             </div>
           </div>
-        </div>
-        <div class="row">
           <div class="col-md-4">
             <div class="form-group">
               <label>Tahun</label>
               <input type="text" name="year" class="form-control form-control-solid " disabled />
             </div>
           </div>
+        </div>
+        <div class="row">
           <div class="col-md-4">
             <div class="form-group">
               <label>Tgl Berlaku STNK</label>
               <input type="text" name="expired_stnk" class="form-control form-control-solid " disabled />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Expired KIR</label>
+              <input type="text" name="expired_kir" class="form-control form-control-solid " disabled />
             </div>
           </div>
         </div>
@@ -191,7 +191,7 @@
             {data: 'type_car', name: 'type_car'},
             {data: 'year', name: 'year'},
             {data: 'expired_stnk', name: 'expired_stnk'},
-            {data: 'dump', name: 'dump'},
+            {data: 'expired_kir', name: 'expired_kir'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
@@ -254,7 +254,7 @@
       var merk = $(event.relatedTarget).data('merk');
       var type = $(event.relatedTarget).data('type');
       var type_car = $(event.relatedTarget).data('type_car');
-      var dump = $(event.relatedTarget).data('dump');
+      var expired_kir = $(event.relatedTarget).data('expired_kir');
       var year = $(event.relatedTarget).data('year');
       var max_weight = $(event.relatedTarget).data('max_weight');
       var expired_stnk = $(event.relatedTarget).data('expired_stnk');
@@ -264,7 +264,7 @@
       $(this).find('.modal-body').find('input[name="merk"]').val(merk);
       $(this).find('.modal-body').find('input[name="type"]').val(type);
       $(this).find('.modal-body').find('input[name="type_car"]').val(type_car);
-      $(this).find('.modal-body').find('input[name="dump"]').val(capitalizeFirstLetter(dump));
+      $(this).find('.modal-body').find('input[name="expired_kir"]').val(expired_kir);
       $(this).find('.modal-body').find('input[name="year"]').val(year);
       $(this).find('.modal-body').find('input[name="max_weight"]').val(max_weight + ' Ton');
       $(this).find('.modal-body').find('input[name="expired_stnk"]').val(expired_stnk);
@@ -277,7 +277,7 @@
       $(this).find('.modal-body').find('input[name="merk"]').val('');
       $(this).find('.modal-body').find('input[name="type"]').val('');
       $(this).find('.modal-body').find('input[name="type_car"]').val('');
-      $(this).find('.modal-body').find('input[name="dump"]').val('');
+      $(this).find('.modal-body').find('input[name="expired_kir"]').val('');
       $(this).find('.modal-body').find('input[name="year"]').val('');
       $(this).find('.modal-body').find('input[name="max_weight"]').val('');
       $(this).find('.modal-body').find('input[name="expired_stnk"]').val('');

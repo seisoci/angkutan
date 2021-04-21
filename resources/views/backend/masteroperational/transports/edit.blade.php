@@ -69,14 +69,15 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label class="d-block">Dump</label>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-sm btn-info active">
-                    <input type="radio" name="dump" value="ya" {{ $data->dump == 'ya' ? 'checked' : NULL }}> Ya
-                  </label>
-                  <label class="btn btn-sm btn-info">
-                    <input type="radio" name="dump" value="tidak" {{ $data->dump == 'tidak' ? 'checked' : NULL }}> Tidak
-                  </label>
+                <label>Tahun</label>
+                <div class="input-group">
+                  <input type="text" name="year" class="form-control yearDate" readonly="readonly" placeholder="Tahun"
+                    value="{{ $data->year ?? '' }}" />
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i class="la la-calendar"></i>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -96,13 +97,13 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label>Tahun</label>
-                <div class="input-group">
-                  <input type="text" name="year" class="form-control yearDate" readonly="readonly" placeholder="Tahun"
-                    value="{{ $data->year ?? '' }}" />
+                <label>Tgl Berlaku KIR</label>
+                <div class="input-group date">
+                  <input type="text" name="expired_kir" class="form-control" readonly="readonly"
+                    placeholder="Tgl Berlaku KIR" value="{{ $data->expired_kir ?? '' }}" />
                   <div class="input-group-append">
                     <span class="input-group-text">
-                      <i class="la la-calendar"></i>
+                      <i class="la la-calendar-check-o"></i>
                     </span>
                   </div>
                 </div>

@@ -86,10 +86,12 @@
             <select id="select2Cargo" class="form-control" name="cargo_id">
             </select>
           </div>
+          @hasanyrole('super-admin|admin|akunting')
           <div class="form-group" style="display: none">
             <label>Total Ongkosan Dasar LDO</label>
             <input id="totalpayloadldo" type="text" class="form-control currency" disabled />
           </div>
+          @endhasanyrole
         </div>
         <div class="col-md-4">
           <div class="form-group">
@@ -105,11 +107,14 @@
               <option value="fix">FIX</option>
             </select>
           </div>
+          <input type="hidden" name="basic_price" class="form-control currency" />
+          @hasanyrole('super-admin|admin|akunting')
           <div class="form-group">
             <label>Harga Dasar</label>
             <input type="hidden" name="basic_price" class="form-control currency" />
             <input type="text" name="basic_price" class="form-control currency" disabled />
           </div>
+          @endhasanyrole
           <div class="form-group" style="display: none">
             <label>Harga Dasar LDO</label>
             <input type="text" name="basic_price_ldo" class="form-control currency" style="width:100% !important" />
@@ -123,20 +128,25 @@
               </div>
             </div>
           </div>
+          @hasanyrole('super-admin|admin|akunting')
           <div class="form-group">
             <label>Total Ongkosan Dasar</label>
             <input id="totalPayload" name="basic_price" type="text" class="form-control currency" disabled />
           </div>
+          @endhasanyrole
           <div class="form-group">
             <label>Uang Jalan</label>
             <input type="hidden" name="road_money" class="form-control currency" />
             <input type="text" name="road_money" class="form-control currency" disabled />
           </div>
+          @hasanyrole('super-admin|admin|akunting')
           <div class="form-group">
             <label>Grand Total Kotor</label>
             <input type="text" name="grandtotalgross" class="form-control currency" disabled />
           </div>
+          @endhasanyrole
         </div>
+        @hasanyrole('super-admin|admin|akunting')
         <div class="col-md-4">
           <div class="row">
             <div class="col-md-6">
@@ -191,6 +201,7 @@
             <input name="grandtotalnetto" type="text" class="form-control currency" disabled>
           </div>
         </div>
+        @endhasanyrole
       </div>
     </div>
     <div class="card-footer d-flex justify-content-end">
@@ -291,7 +302,7 @@
     });
 
     $("#select2AnotherExpedition").select2({
-      placeholder: "Search No. Pol",
+      placeholder: "Search LDO",
       allowClear: true,
       ajax: {
           url: "{{ route('backend.anotherexpedition.select2') }}",
@@ -521,8 +532,6 @@
         let basicPrice    = parseInt($('input[name="basic_price"]').val());
         let payload       = parseFloat($('input[name="payload"]').val());
         let roadMoney     = parseInt($('input[name="road_money"]').val());
-        console.log(payload);
-        console.log(payload *1000);
         let sumPayload    = basicPrice * payload;
         let convertTo     = (payload / 1000);
         let totalGross    = sumPayload - roadMoney;

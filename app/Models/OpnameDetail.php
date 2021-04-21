@@ -6,12 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Service extends Model
+class OpnameDetail extends Model
 {
-  use HasFactory;
-
+    use HasFactory;
   protected $fillable = [
-    'name',
+    'opname_id',
+    'sparepart_id',
+    'qty',
+    'qty_system',
+    'qty_difference',
   ];
 
   public function getCreatedAtAttribute($value){
@@ -19,8 +22,7 @@ class Service extends Model
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function getNameAttribute($value){
-    return ucwords($value);
+  public function sparepart(){
+    return $this->belongsTo(Sparepart::class);
   }
-
 }

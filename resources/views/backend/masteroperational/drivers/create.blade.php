@@ -47,6 +47,14 @@
             <input type="text" name="name" class="form-control" placeholder="Input Nama" />
           </div>
           <div class="form-group">
+            <label>Nama Bank (Untuk Gaji) <span class="text-danger">*</span></label>
+            <input type="text" name="bank_name" class="form-control" placeholder="Input Nama Bank (Untuk Gaji)" />
+          </div>
+          <div class="form-group">
+            <label>No. Rekening<span class="text-danger">*</span></label>
+            <input type="text" name="no_card" class="form-control" placeholder="Input No Rekening" />
+          </div>
+          <div class="form-group">
             <label>Telp</label>
             <input type="text" name="phone" class="phone form-control" placeholder="Input Telp" />
           </div>
@@ -57,6 +65,11 @@
           <div class="form-group">
             <label>No. SIM</label>
             <input type="text" name="sim" class="form-control" placeholder="Input No. SIM" />
+          </div>
+          <div class="form-group">
+            <label>Masa Berlaku SIM</label>
+            <input type="text" name="expired_sim" class="form-control datepicker" placeholder="Input Masa Berlaku SIM"
+              style="width:100% !important" readonly />
           </div>
           <div class="form-group">
             <label for="activeSelect">Active</label>
@@ -158,6 +171,13 @@
           toastr.error(response.responseJSON.message, 'Failed !');
         }
       });
+    });
+
+    $('.datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      todayHighlight: !0,
+      todayBtn: "linked",
+      clearBtn: !0,
     });
 
     $(".phone").inputmask("mask", {

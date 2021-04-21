@@ -61,14 +61,15 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label style="display: block;">Dump</label>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-sm btn-info active">
-                    <input type="radio" name="dump" value="ya" checked> Ya
-                  </label>
-                  <label class="btn btn-sm btn-info">
-                    <input type="radio" name="dump" value="tidak"> Tidak
-                  </label>
+                <label>Tahun</label>
+                <div class="input-group">
+                  <input type="text" name="year" class="form-control yearDate" readonly="readonly"
+                    placeholder="Tahun" />
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i class="la la-calendar"></i>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -87,13 +88,13 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label>Tahun</label>
-                <div class="input-group">
-                  <input type="text" name="year" class="form-control yearDate" readonly="readonly"
-                    placeholder="Tahun" />
+                <label>Tgl Berlaku KIR</label>
+                <div class="input-group date">
+                  <input type="text" name="expired_kir" class="form-control" readonly="readonly"
+                    placeholder="Tgl Berlaku KIR" />
                   <div class="input-group-append">
                     <span class="input-group-text">
-                      <i class="la la-calendar"></i>
+                      <i class="la la-calendar-check-o"></i>
                     </span>
                   </div>
                 </div>
@@ -189,6 +190,9 @@
 
     $('.date').datepicker({
       format: 'yyyy-mm-dd',
+      todayBtn: "linked",
+      clearBtn: true,
+      todayHighlight: true,
     });
 
     $('.yearDate').datepicker({

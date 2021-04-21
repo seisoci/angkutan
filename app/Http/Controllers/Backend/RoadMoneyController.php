@@ -94,7 +94,7 @@ class RoadMoneyController extends Controller
       $response = response()->json([
         'status' => 'success',
         'message' => 'Data has been saved',
-        'redirect' => '/backend/roadmonies'
+        'redirect' => '/backend/roadmonies/'.$data->id.'/edit'
       ]);
 
     }else{

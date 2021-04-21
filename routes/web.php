@@ -32,6 +32,8 @@ use App\Http\Controllers\Backend\SalaryController as BackendSalaryController;
 use App\Http\Controllers\Backend\RecapitulationController as BackendRecapitulationController;
 use App\Http\Controllers\Backend\InvoiceSalaryController as BackendInvoiceSalaryController;
 use App\Http\Controllers\Backend\InvoiceCostumerController as BackendInvoiceCostumerController;
+use App\Http\Controllers\Backend\PaymentLdoController as BackendPaymentLdoController;
+use App\Http\Controllers\Backend\OpnameController as BackendOpnameController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -78,6 +80,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('spareparts/select2', [BackendSparepartController::class, 'select2'])->name('spareparts.select2');
     Route::get('prefixes/select2', [BackendPrefixController::class, 'select2'])->name('prefixes.select2');
     Route::get('expenses/select2', [BackendExpenseController::class, 'select2'])->name('expenses.select2');
+    Route::get('stocks/select2', [BackendStockController::class, 'select2'])->name('stocks.select2');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
@@ -119,17 +122,19 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     //Purchase
     Route::resource('purchases', BackendPurchaseController::class)->only(['index', 'store']);
     Route::resource('invoicepurchases', BackendInvoicePurchaseController::class);
-    Route::get('stocks', BackendStockController::class)->name('stocks');
+    Route::resource('stocks', BackendStockController::class)->only('index');
 
     //Settings
     Route::resource('settings', BackendSettingController::class);
 
     //Job Order
     Route::resource('joborders', BackendJobOrderController::class);
-    Route::resource('operationalexpenses', BackendOperationalExpenseController::class);
+    Route::resource('operationalexpenses', BackendOperationalExpenseController::class)->only(['store', 'destroy', 'index']);
     Route::resource('salaries', BackendSalaryController::class);
     Route::resource('recapitulation', BackendRecapitulationController::class);
     Route::resource('invoicesalaries', BackendInvoiceSalaryController::class);
     Route::resource('invoicecostumers', BackendInvoiceCostumerController::class);
+    Route::resource('paymentldo', BackendPaymentLdoController::class);
+    Route::resource('opnames', BackendOpnameController::class);
   });
 });

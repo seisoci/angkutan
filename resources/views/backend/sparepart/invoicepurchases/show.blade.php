@@ -102,6 +102,7 @@
         </div>
       </div>
     </div>
+    @if (!empty($data->memo))
     <div class="row justify-content-center py-2 px-8 py-md-2 px-md-0">
       <div class="col-md-9">
         <div class="table-responsive">
@@ -120,6 +121,8 @@
         </div>
       </div>
     </div>
+    @endif
+    @if (!empty($data->keterangan))
     <div class="row justify-content-center py-2 px-8 py-md-2 px-md-0">
       <div class="col-md-9">
         <div class="table-responsive">
@@ -138,6 +141,7 @@
         </div>
       </div>
     </div>
+    @endif
     <!-- end: Invoice footer-->
     <!-- begin: Invoice action-->
     <div class="row justify-content-center py-8 px-8 py-md-10 px-md-0 d-print-none">

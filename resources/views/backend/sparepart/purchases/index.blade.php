@@ -17,94 +17,107 @@
   <div class="card-body">
     <form id="formStore" action="{{ route('backend.purchases.store') }}">
       @csrf
-      <div class="row align-items-center">
-        <div class="col-md-6 col-sm-12">
-          <div class="form-group">
-            <label>Supplier:</label>
-            <select class="form-control" name="supplier_sparepart_id" id="select2Suppliers">
-            </select>
+      <div class="row align-items-center border border-dark py-10 px-4">
+        <div class="col-12">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="form-group row">
+                <label class="col-lg-4 col-form-label">Tanggal & Waktu:</label>
+                <div class="col-md-6">
+                  <input type="text" class="form-control rounded-0"
+                    value="{{ Carbon\Carbon::parse()->timezone('Asia/Jakarta')->format('Y-m-d H:i') }}" disabled />
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-lg-4 col-form-label">Prefix:</label>
+                <div class="col-lg-6">
+                  <select name="prefix" class="form-control" id="select2Prefix">
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-lg-4 col-form-label">No. Invoice Pembelian:</label>
+                <div class="col-lg-6">
+                  <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
+                  <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group row">
+                <label class="col-lg-4 col-form-label">Supplier:</label>
+                <div class="col-lg-6">
+                  <select class="form-control rounded-0" name="supplier_sparepart_id" id="select2Suppliers">
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-lg-4 col-form-label">Phone:</label>
+                <div class="col-lg-6">
+                  <input type="text" class="form-control rounded-0" id="phone" disabled>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-lg-4 col-form-label">Alamat:</label>
+                <div class="col-lg-6">
+                  <input type="text" class="form-control rounded-0" id="address" disabled>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col-md-6 col-sm-12">
-          <div class="form-group">
-            <label>Tanggal & Waktu:</label>
-            <h5>{{ Carbon\Carbon::parse()->timezone('Asia/Jakarta')->format('Y-m-d H:i:s') }}</h5>
-          </div>
-        </div>
+        <table class="table table-bordered ">
+          <thead>
+            <tr>
+              <th class="text-center" scope="col" width="5%"><button type="button"
+                  class="add btn btn-sm btn-primary rounded-0">+</button>
+              </th>
+              <th class="text-left" scope="col" width="45%">Produk</th>
+              <th class="text-right" scope="col" width="10%">Unit</th>
+              <th class="text-right" scope="col" wdith="20%">Harga</th>
+              <th class="text-right" scope="col" width="20%">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="items" id="items_1">
+              <td></td>
+              <td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>
+              <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" />
+              </td>
+              <td><input type="text" name="items[price][]" class="currency rounded-0 form-control" /></td>
+              <td><input type="text" name="items[total][]" class="currency rounded-0 form-control" disabled /></td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="table table-borderless ">
+          <thead>
+            <tr>
+              <th class="text-center" scope="col" width="5%"></th>
+              <th class="text-left" scope="col" width="45%"></th>
+              <th class="text-right" scope="col" width="10%"></th>
+              <th class="text-right" scope="col" wdith="20%"></th>
+              <th class="text-right" scope="col" width="20%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="pt-6">Grand Total</td>
+              <td><input id="grandTotal" type="text" class="currency form-control rounded-0" disabled /></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="text-right"><button type="submit" class="btn btn-primary">Submit</button></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="row align-items-center">
-        <div class="col-md-6 col-sm-12">
-          <div class="form-group">
-            <label>Phone:</label>
-            <h5 id="phone"></h5>
-          </div>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <div class="form-group">
-            <label>Prefix:</label>
-            <select name="prefix" class="form-control" id="select2Prefix">
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="row align-items-center">
-        <div class="col-md-6 col-sm-12">
-          <div class="form-group">
-            <label>Alamat:</label>
-            <h5 id="address"></h5>
-          </div>
-        </div>
-      </div>
-      <!--begin: Datatable-->
-      <table class="table table-bordered ">
-        <thead>
-          <tr>
-            <th class="text-center" scope="col" width="5%"><button type="button"
-                class="add btn btn-sm btn-primary">+</button>
-            </th>
-            <th class="text-left" scope="col" width="45%">Produk</th>
-            <th class="text-right" scope="col" width="10%">Unit</th>
-            <th class="text-right" scope="col" wdith="20%">Harga</th>
-            <th class="text-right" scope="col" width="20%">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="items" id="items_1">
-            <td></td>
-            <td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>
-            <td><input min="1" pattern="^[1-9]\d*$" type="number" name="items[qty][]" class="form-control" /></td>
-            <td><input type="text" name="items[price][]" class="currency form-control" /></td>
-            <td><input type="text" name="items[total][]" class="currency form-control" disabled /></td>
-          </tr>
-        </tbody>
-      </table>
-      <table class="table table-borderless ">
-        <thead>
-          <tr>
-            <th class="text-center" scope="col" width="5%"></th>
-            <th class="text-left" scope="col" width="45%"></th>
-            <th class="text-right" scope="col" width="10%"></th>
-            <th class="text-right" scope="col" wdith="20%"></th>
-            <th class="text-right" scope="col" width="20%"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Grand Total</td>
-            <td><input id="grandTotal" type="text" class="currency form-control" disabled /></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="text-right"><button type="submit" class="btn btn-primary">Submit</button></td>
-          </tr>
-        </tbody>
-      </table>
     </form>
   </div>
 </div>
@@ -113,6 +126,11 @@
 {{-- Styles Section --}}
 @section('styles')
 <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
+<style>
+  .select2-container--default .select2-selection--single {
+    border-radius: 0 !important;
+  }
+</style>
 @endsection
 
 {{-- Scripts Section --}}
@@ -193,10 +211,19 @@
         removeMaskOnSubmit: true,
         autoUnmask: true,
       });
+
+      $(".unit").inputmask('numeric', {
+        groupSeparator: '.',
+        digits:0,
+        rightAlign: true,
+        removeMaskOnSubmit: true,
+        autoUnmask: true,
+        allowMinus: false
+      });
     }
 
     function initCalculation(){
-      $('input[name^="items[qty]"],input[name^="items[price]"],input[name ^= "items[grandtotal]"]').on('keyup',function()  {
+      $('input[name^="items[qty]"],input[name^="items[price]"]').on('keyup',function()  {
           var total      = 0;
           var grandtotal = 0;
           var $row       = $(this).closest("tr"); //<table> class
@@ -234,14 +261,15 @@
     });
 
     function raw_items(nextindex){
-      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems'>-</button></td>"+'<td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>'+
-      '<td><input min="1" type="number" name="items[qty][]" class="form-control" /></td>'+
-      '<td><input type="text" data-inputmask=""alias": "decimal"" name="items[price][]" class="currency form-control" /></td>'+
-      '<td><input type="text" name="items[total][]" class="currency form-control" disabled /></td>';
+      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>"+'<td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>'+
+      '<td><input type="text" name="items[qty][]" class="form-control unit rounded-0" /></td>'+
+      '<td><input type="text" data-inputmask=""alias": "decimal"" name="items[price][]" class="currency form-control rounded-0" /></td>'+
+      '<td><input type="text" name="items[total][]" class="currency form-control rounded-0" disabled /></td>';
     }
 
     $("#formStore").submit(function(e) {
       $('.currency').inputmask('remove');
+      $('.unit').inputmask('remove');
       e.preventDefault();
       var form = $(this);
       var btnSubmit = form.find("[type='submit']");

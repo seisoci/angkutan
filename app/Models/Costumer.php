@@ -17,6 +17,8 @@ class Costumer extends Model
     'phone',
     'address',
     'description',
+    'cooperation',
+    'tax',
   ];
 
   public function getCreatedAtAttribute($value){

@@ -51,6 +51,14 @@
           <h5>{{ $data->name }}</h5>
         </div>
         <div class="form-group">
+          <label>Nama Bank (Untuk Gaji)</label>
+          <h5>{{ $data->bank_name }}</h5>
+        </div>
+        <div class="form-group">
+          <label>No. Rekening</label>
+          <h5>{{ $data->no_card }}</h5>
+        </div>
+        <div class="form-group">
           <label>Telp</label>
           <h5>{{ $data->phone }}</h5>
         </div>
@@ -61,6 +69,10 @@
         <div class="form-group">
           <label>No. SIM</label>
           <h5>{{ $data->sim }}</h5>
+        </div>
+        <div class="form-group">
+          <label>Masa Berlaku SIM</label>
+          <h5>{{ $data->expired_sim }}</h5>
         </div>
         <div class="form-group">
           <label class="form-text" for="activeSelect">Status</label>

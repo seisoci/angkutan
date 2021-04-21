@@ -48,6 +48,16 @@
               value="{{ $data->name ?? '' }}" />
           </div>
           <div class="form-group">
+            <label>Nama Bank (Untuk Gaji) <span class="text-danger">*</span></label>
+            <input type="text" name="bank_name" class="form-control" placeholder="Input Nama Bank (Untuk Gaji)"
+              value="{{ $data->bank_name ?? '' }}" />
+          </div>
+          <div class="form-group">
+            <label>No. Rekening<span class="text-danger">*</span></label>
+            <input type="text" name="no_card" class="form-control" placeholder="Input No Rekening"
+              value="{{ $data->no_card ?? '' }}" />
+          </div>
+          <div class="form-group">
             <label>Telp</label>
             <input type="text" name="phone" class="phone form-control" placeholder="Input Telp"
               value="{{ $data->phone ?? '' }}" />
@@ -61,6 +71,11 @@
             <label>No. SIM</label>
             <input type="text" name="sim" class="form-control" placeholder="Input No. SIM"
               value="{{ $data->sim ?? '' }}" />
+          </div>
+          <div class="form-group">
+            <label>Masa Berlaku SIM</label>
+            <input type="text" name="expired_sim" class="form-control datepicker" placeholder="Input Masa Berlaku SIM"
+              style="width:100% !important" readonly value="{{ $data->expired_sim ?? '' }}" />
           </div>
           <div class="form-group">
             <label for="activeSelect">Active</label>
@@ -172,6 +187,13 @@
     $(".phone").inputmask("mask", {
       mask: "(9999) 9999-99999",
       placeholder: ""
+    });
+
+    $('.datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      todayHighlight: !0,
+      todayBtn: "linked",
+      clearBtn: !0,
     });
 
     $(".image").change(function() {

@@ -110,8 +110,6 @@
                 <select class="form-control" id="selectStatus">
                   <option value="">Pilih Status</option>
                   <option value="mulai">Mulai</option>
-                  <option value="muat">Muat</option>
-                  <option value="bongkar">Bongkar</option>
                   <option value="selesai">Selesai</option>
                   <option value="batal">Batal</option>
                 </select>
@@ -137,6 +135,7 @@
           <th>Tanggal Mulai</th>
           <th>Tanggal Selesai</th>
           <th>Status JO</th>
+          <th>Status Dokumen</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -175,7 +174,7 @@
           <i aria-hidden="true" class="ki ki-close"></i>
         </button>
       </div>
-      <form id="formUpdate" action="#">
+      <form class="formUpdate" action="#">
         @method('PUT')
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <div class="modal-body">
@@ -190,8 +189,6 @@
             <label>Status Job Order:</label>
             <select id="statusCargoModal" class="form-control" name="status_cargo">
               <option value="mulai">Mulai</option>
-              <option value="muat">Muat</option>
-              <option value="bongkar">Bongkar</option>
               <option value="selesai">Selesai</option>
               <option value="batal">Batal</option>
             </select>
@@ -206,6 +203,30 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="submit" type="button" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modalEditDocument" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Status Surat Jalan {{ $config['page_title'] }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <i aria-hidden="true" class="ki ki-close"></i>
+        </button>
+      </div>
+      <form class="formUpdate" action="#">
+        @method('PUT')
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <div class="modal-body">
+          <p>Surat jalan sudah di serahkan ?</p>
+          <input type="hidden" value="1" name="status_document">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Belum</button>
+          <button type="submit" type="button" class="btn btn-primary">Sudah</button>
         </div>
       </form>
     </div>
@@ -231,7 +252,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[12, 'desc']],
+        order: [[13, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
@@ -262,6 +283,7 @@
             {data: 'date_begin', name: 'date_begin'},
             {data: 'date_end', name: 'date_end', defaultContent: ''},
             {data: 'status_cargo', name: 'status_cargo'},
+            {data: 'status_document', name: 'status_document'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
@@ -273,10 +295,24 @@
           render: function(data, type, full, meta) {
             var status = {
               'mulai': {'title': 'Mulai', 'class': ' label-light-info'},
-              'muat': {'title': 'Muat', 'class': ' label-light-dark'},
-              'bongkar': {'title': 'Bongkar', 'class': ' label-light-primary'},
               'selesai': {'title': 'Selesai', 'class': ' label-light-success'},
               'batal': {'title': 'Batal', 'class': ' label-light-danger'},
+            };
+            if (typeof status[data] === 'undefined') {
+              return data;
+            }
+            return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
+              '</span>';
+          },
+        },
+        {
+          className: 'dt-center',
+          targets: 12,
+          width: '75px',
+          render: function(data, type, full, meta) {
+            var status = {
+              0: {'title': 'Belum', 'class': ' label-light-danger'},
+              1: {'title': 'Selesai', 'class': ' label-light-success'},
             };
             if (typeof status[data] === 'undefined') {
               return data;
@@ -388,7 +424,7 @@
       placeholder: "Search Muatan",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.transports.select2') }}",
+          url: "{{ route('backend.cargos.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -453,13 +489,21 @@
       var id = $(event.relatedTarget).data('id');
       var status_cargo = $(event.relatedTarget).data('status_cargo');
       var date_end = $(event.relatedTarget).data('date_end');
-      $(this).find('#formUpdate').attr('action', '{{ route("backend.joborders.index") }}/'+id)
+      $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/'+id)
       $(this).find('.modal-body').find('select[name="status_cargo"]').val(status_cargo);
+      $("#dateEndModal").parent().css("display", "none");
+      $("#dateEndModal").parent().find('label').css("display", "none");
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('select[name="status_cargo"]').val('');
     });
-    $("#formUpdate").submit(function(e){
+    $('#modalEditDocument').on('show.bs.modal', function (event) {
+      var id = $(event.relatedTarget).data('id');
+      $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/'+id)
+    });
+    $('#modalEditDocument').on('hidden.bs.modal', function (event) {
+    });
+    $(".formUpdate").submit(function(e){
       e.preventDefault();
       var form 	= $(this);
       var btnSubmit = form.find("[type='submit']");
@@ -485,6 +529,7 @@
           if (response.status == "success" ){
             toastr.success(response.message,'Success !');
             $('#modalEdit').modal('hide');
+            $('#modalEditDocument').modal('hide');
             dataTable.draw();
             $("[role='alert']").parent().css("display", "none");
           }else{
@@ -500,6 +545,8 @@
             toastr.error(response.responseJSON.message, 'Failed !');
             $('#modalEdit').modal('hide');
             $('#modalEdit').find('a[name="id"]').attr('href', '');
+            $('#modalEditDocument').modal('hide');
+            $('#modalEditDocument').find('a[name="id"]').attr('href', '');
         }
       });
     });

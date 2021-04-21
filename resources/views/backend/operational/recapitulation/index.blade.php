@@ -364,8 +364,6 @@
             <label>Status Job Order:</label>
             <select class="form-control" name="status_cargo">
               <option value="mulai">Mulai</option>
-              <option value="muat">Muat</option>
-              <option value="bongkar">Bongkar</option>
               <option value="selesai">Selesai</option>
               <option value="batal">Batal</option>
             </select>

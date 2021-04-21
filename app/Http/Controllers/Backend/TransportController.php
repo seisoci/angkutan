@@ -31,7 +31,7 @@ class TransportController extends Controller
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '
-            <a href="#" data-toggle="modal" data-target="#modalShow" data-num_pol="'.$row->num_pol.'" data-merk="'.$row->merk.'" data-type="'.$row->type.'" data-type_car="'.$row->type_car.'" data-dump="'.$row->dump.'" data-year="'.$row->year.'" data-max_weight="'.$row->max_weight.'" data-expired_stnk="'.$row->expired_stnk.'" data-description="'.$row->description.'" data-photo="'.$row->photo.'"  class="btn btn-info btn-sm">Show Detail</a>
+            <a href="#" data-toggle="modal" data-target="#modalShow" data-num_pol="'.$row->num_pol.'" data-merk="'.$row->merk.'" data-type="'.$row->type.'" data-type_car="'.$row->type_car.'" data-dump="'.$row->dump.'" data-year="'.$row->year.'" data-max_weight="'.$row->max_weight.'" data-expired_stnk="'.$row->expired_stnk.'" data-expired_kir="'.$row->expired_kir.'" data-description="'.$row->description.'" data-photo="'.$row->photo.'"  class="btn btn-info btn-sm">Show Detail</a>
             <a href="transports/'.$row->id.'/edit" class="edit btn btn-warning btn-sm">Edit</a>
             <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
             return $actionBtn;
@@ -71,10 +71,10 @@ class TransportController extends Controller
       'merk'          => 'string|nullable',
       'type'          => 'string|nullable',
       'type_car'      => 'string|nullable',
-      'dump'          => 'required|in:ya,tidak',
       'year'          => 'date_format:Y|nullable',
       'max_weight'    => 'integer|nullable',
       'expired_stnk'  => 'date_format:Y-m-d|nullable',
+      'expired_kir'   => 'date_format:Y-m-d|nullable',
       'description'   => 'string|nullable',
       'photo'         => 'image|mimes:jpg,png,jpeg|max:2048',
     ]);
@@ -92,6 +92,7 @@ class TransportController extends Controller
         'year'          => $request->input('year'),
         'max_weight'    => $request->input('max_weight'),
         'expired_stnk'  => $request->input('expired_stnk'),
+        'expired_kir'   => $request->input('expired_kir'),
         'description'   => $request->input('description'),
         'photo'         => $image,
       ]);
@@ -142,10 +143,10 @@ class TransportController extends Controller
       'merk'          => 'string|nullable',
       'type'          => 'string|nullable',
       'type_car'      => 'string|nullable',
-      'dump'          => 'required|in:ya,tidak',
       'year'          => 'date_format:Y|nullable',
       'max_weight'    => 'integer|nullable',
       'expired_stnk'  => 'date_format:Y-m-d|nullable',
+      'expired_kir'  => 'date_format:Y-m-d|nullable',
       'description'   => 'string|nullable',
       'photo'         => 'image|mimes:jpg,png,jpeg|max:2048'
     ]);
@@ -159,10 +160,10 @@ class TransportController extends Controller
         'merk'          => $request->input('merk'),
         'type'          => $request->input('type'),
         'type_car'      => $request->input('type_car'),
-        'dump'          => $request->input('dump'),
         'year'          => $request->input('year'),
         'max_weight'    => $request->input('max_weight'),
         'expired_stnk'  => $request->input('expired_stnk'),
+        'expired_kir'   => $request->input('expired_kir'),
         'description'   => $request->input('description'),
         'photo'         => $image,
       ]);

@@ -13,10 +13,13 @@ class Driver extends Model
   protected $fillable = [
     'another_expedition_id',
     'name',
+    'bank_name',
+    'no_card',
     'address',
     'phone',
     'ktp',
     'sim',
+    'expired_sim',
     'status',
     'description',
     'photo',

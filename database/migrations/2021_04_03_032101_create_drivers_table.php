@@ -17,10 +17,13 @@ class CreateDriversTable extends Migration
             $table->id();
             $table->unsignedBigInteger('another_expedition_id')->nullable();
             $table->string('name');
+            $table->string('bank_name')->nullable();
+            $table->string('no_card')->nullable();
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('ktp')->nullable();
             $table->string('sim')->nullable();
+            $table->date('expired_sim')->nullable();
             $table->enum('status', ['active', 'inactive']);
             $table->text('description')->nullable();
             $table->string('photo')->nullable();

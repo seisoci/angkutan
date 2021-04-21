@@ -21,6 +21,8 @@ class CreateCostumersTable extends Migration
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->text('description')->nullable();
+            $table->enum('cooperation', ['alusindo','triel'])->default('alusindo');
+            $table->decimal('tax', 15, 2);
             $table->timestamps();
         });
     }

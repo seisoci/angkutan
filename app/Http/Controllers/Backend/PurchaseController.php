@@ -48,12 +48,12 @@ class PurchaseController extends Controller
       if($validator->passes()){
         try {
           DB::beginTransaction();
-          $invoice_date = Carbon::parse()->timezone('Asia/Jakarta')->format('Ymd');
+          // $invoice_date = Carbon::parse()->timezone('Asia/Jakarta')->format('Ymd');
+          // $invoice_num  = $invoice_db['num'] != NULL ? $invoice_db['num'] : 1;
           $invoice_db  = InvoicePurchase::select(DB::raw('MAX(SUBSTRING_INDEX(num_bill, "-", -1)+1) AS `num`'))->first();
           $grandtotal   = 0;
           $items        = $request->items;
           $prefix       = Prefix::find($request->prefix);
-          $invoice_num  = $invoice_db['num'] != NULL ? $invoice_db['num'] : 1;
           foreach($items['sparepart_id'] as $key => $item):
             $grandtotal += $items['qty'][$key] * $items['price'][$key];
           endforeach;
@@ -61,12 +61,11 @@ class PurchaseController extends Controller
           $invoice = InvoicePurchase::create([
             'supplier_sparepart_id'        => $request->input('supplier_sparepart_id'),
             'prefix'      => $prefix->name,
-            'num_bill'    => $invoice_date. "-" .$invoice_num,
+            'num_bill'    => $request->input('num_bill'),
             'grandtotal'  => $grandtotal,
-            'memo'        => $request->input('memo') ?? NULL,
-            'description' => $request->input('description') ?? NULL,
+            'memo'        => $request->input('memo'),
+            'description' => $request->input('description'),
           ]);
-          dd($invoice);
 
           foreach($items['sparepart_id'] as $key => $item):
             $data[] = [
@@ -91,7 +90,7 @@ class PurchaseController extends Controller
           $response = response()->json([
             'status'    => 'success',
             'message'   => 'Data has been saved',
-            'redirect'  => '/backend/purchases',
+            'redirect'  => '/backend/invoicepurchases',
           ]);
         } catch (\Throwable $throw) {
           DB::rollBack();

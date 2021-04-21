@@ -20,10 +20,10 @@ class CreateTransportsTable extends Migration
         $table->string('merk')->nullable();
         $table->string('type')->nullable();
         $table->enum('type_car', ['engkel', 'tronton'])->default('engkel');
-        $table->enum('dump', ['ya', 'tidak'])->default('tidak');
         $table->year('year')->nullable();
         $table->integer('max_weight')->nullable();
         $table->date('expired_stnk')->nullable();
+        $table->date('expired_kir')->nullable();
         $table->text('description')->nullable();
         $table->string('photo')->nullable();
         $table->timestamps();

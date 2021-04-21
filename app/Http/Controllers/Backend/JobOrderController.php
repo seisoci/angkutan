@@ -83,13 +83,27 @@ class JobOrderController extends Controller
           ->addIndexColumn()
           ->addColumn('action', function($row){
               $btnEdit = '';
-              if($row->status_cargo != 'selesai'){
+              $btnEditDocument = '';
+              if($row->status_cargo != 'selesai' && $row->status_cargo != 'batal'){
                 $btnEdit = '
-                  <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-status_cargo="'.$row->status_cargo.'" data-date_end="'.$row->date_end.'" class="edit btn btn-warning btn-sm">Edit</a>';
+                  <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-status_cargo="'.$row->status_cargo.'" data-date_end="'.$row->date_end.'" class="edit dropdown-item">Edit</a>';
               }
-              $actionBtn = '
-              <a href="joborders/'.$row->id.'" class="btn btn-info btn-sm">Show Detail</a>
-              '.$btnEdit.'';
+              if($row->status_document != 1){
+                $btnEditDocument = '
+                  <a href="#" data-toggle="modal" data-target="#modalEditDocument" data-id="'. $row->id.'" class="edit dropdown-item">Edit Dokumen</a>';
+              }
+              $actionBtn = '<div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                    <div class="btn-group" role="group">
+                        <button id="btnGroupVerticalDrop1" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop1">
+                      <a href="joborders/'.$row->id.'" class="dropdown-item">Show Detail</a>
+                      '.$btnEdit.' '.$btnEditDocument.'
+                        </div>
+                    </div>
+                </div>
+              ';
               return $actionBtn;
           })
           ->make(true);
@@ -122,96 +136,103 @@ class JobOrderController extends Controller
      */
     public function store(Request $request)
     {
-      $jo_date    = Carbon::parse()->timezone('Asia/Jakarta')->format('Ymd');
-      $invoice_db = JobOrder::select(DB::raw('MAX(SUBSTRING_INDEX(num_bill, "-", -1)+1) AS `num`'))->first();
-      $jo_num     = $invoice_db['num'] != NULL ? $invoice_db['num'] : 1;
-      $type_capacity = TypeCapacity::findOrFail($request->type_capacity);
-      $qsparepart = Setting::where('name', 'potongan sparepart')->first();
-      $qsalary    = Setting::where('name', 'gaji supir')->first();
-      $prefix     = Prefix::findOrFail($request->prefix);
-      $data       = new JobOrder();
-      if($request->type == 'self'){
-        //CALCULATE
-        $basicPrice = $request->basic_price;
-        $payload    = $request->payload ?? 1;
-        $roadMoney  = $request->road_money;
-        $sumPayload = $basicPrice * $payload;
-        $totalGross = $sumPayload - $roadMoney;
-        $pecentSparePart = $qsparepart->value / 100;
-        $pecentSalary = $qsalary->value / 100;
-        $sparepart  = $totalGross * $pecentSparePart;
-        $salary     = ($totalGross - $sparepart) * $pecentSalary;
-        $totalNetto = $totalGross - $sparepart - $salary;
-        //MODEL DB
-        $data->date_begin             = $request->date_begin;
-        $data->type                   = $request->type;
-        $data->num_bill               = $jo_date ."-". $jo_num;
-        $data->prefix                 = $prefix->name;
-        $data->another_expedition_id  = $request->another_expedition_id ?? NULL;
-        $data->driver_id              = $request->driver_id;
-        $data->transport_id           = $request->transport_id;
-        $data->costumer_id            = $request->costumer_id;
-        $data->cargo_id               = $request->cargo_id;
-        $data->route_from             = $request->route_from;
-        $data->route_to               = $request->route_to;
-        $data->type_capacity          = $type_capacity->name;
-        $data->type_payload           = $request->type_payload;
-        $data->payload                = $request->payload ?? 1;
-        $data->basic_price            = $request->basic_price;
-        $data->road_money             = $request->road_money;
-        $data->cut_sparepart_percent  = $qsparepart->value;
-        // $data->cut_sparepart          = $sparepart;
-        // $data->salary                 = $salary;
-        $data->salary_percent         = $qsalary->value;
-        // $data->grandtotalgross        = $totalGross;
-        // $data->grandtotalnetto        = $totalNetto;
-        $data->invoice_bill           = $sumPayload;
-        if($data->save()){
-          $response = response()->json([
-            'status'    => 'success',
-            'message'   => 'Data has been saved',
-            'redirect'  => '/backend/joborders'
-          ]);
+      $validator = Validator::make($request->all(), [
+        'basic_price'    => 'required|gt:0',
+      ]);
+      if($validator->passes()){
+        $jo_date    = Carbon::parse()->timezone('Asia/Jakarta')->format('Ymd');
+        $invoice_db = JobOrder::select(DB::raw('MAX(SUBSTRING_INDEX(num_bill, "-", -1)+1) AS `num`'))->first();
+        $jo_num     = $invoice_db['num'] != NULL ? $invoice_db['num'] : 1;
+        $type_capacity = TypeCapacity::findOrFail($request->type_capacity);
+        $qsparepart = Setting::where('name', 'potongan sparepart')->first();
+        $qsalary    = Setting::where('name', 'gaji supir')->first();
+        $prefix     = Prefix::findOrFail($request->prefix);
+        $data       = new JobOrder();
+        if($request->type == 'self'){
+          //CALCULATE
+          $basicPrice = $request->basic_price;
+          $payload    = $request->payload ?? 1;
+          $roadMoney  = $request->road_money;
+          $sumPayload = $basicPrice * $payload;
+          $totalGross = $sumPayload - $roadMoney;
+          $pecentSparePart = $qsparepart->value / 100;
+          $pecentSalary = $qsalary->value / 100;
+          $sparepart  = $totalGross * $pecentSparePart;
+          $salary     = ($totalGross - $sparepart) * $pecentSalary;
+          $totalNetto = $totalGross - $sparepart - $salary;
+          //MODEL DB
+          $data->date_begin             = $request->date_begin;
+          $data->type                   = $request->type;
+          $data->num_bill               = $jo_date ."-". $jo_num;
+          $data->prefix                 = $prefix->name;
+          $data->another_expedition_id  = $request->another_expedition_id ?? NULL;
+          $data->driver_id              = $request->driver_id;
+          $data->transport_id           = $request->transport_id;
+          $data->costumer_id            = $request->costumer_id;
+          $data->cargo_id               = $request->cargo_id;
+          $data->route_from             = $request->route_from;
+          $data->route_to               = $request->route_to;
+          $data->type_capacity          = $type_capacity->name;
+          $data->type_payload           = $request->type_payload;
+          $data->payload                = $request->payload ?? 1;
+          $data->basic_price            = $request->basic_price;
+          $data->road_money             = $request->road_money;
+          $data->cut_sparepart_percent  = $qsparepart->value;
+          // $data->cut_sparepart          = $sparepart;
+          // $data->salary                 = $salary;
+          $data->salary_percent         = $qsalary->value;
+          // $data->grandtotalgross        = $totalGross;
+          // $data->grandtotalnetto        = $totalNetto;
+          $data->invoice_bill           = $sumPayload;
+          if($data->save()){
+            $response = response()->json([
+              'status'    => 'success',
+              'message'   => 'Data has been saved',
+              'redirect'  => '/backend/joborders'
+            ]);
+          }
+        }elseif($request->type == 'ldo'){
+          //CALCULATE
+          $basicPrice = $request->basic_price;
+          $basicPriceLDO = $request->basic_price_ldo;
+          $payload    = $request->payload ?? 1;
+          $roadMoney  = $request->road_money;
+          $sumPayload = $basicPrice * $payload;
+          $sumPayloadLDO = $basicPriceLDO * $payload;
+          $totalNettoLDO = $sumPayloadLDO - $roadMoney;
+          $totalNetto = $sumPayload - $sumPayloadLDO;
+          //MODEL DB
+          $data->date_begin             = $request->date_begin;
+          $data->type                   = $request->type;
+          $data->num_bill               = $jo_date ."-". $jo_num;
+          $data->prefix                 = $prefix->name;
+          $data->another_expedition_id  = $request->another_expedition_id ?? NULL;
+          $data->driver_id              = $request->driver_id;
+          $data->transport_id           = $request->transport_id;
+          $data->costumer_id            = $request->costumer_id;
+          $data->cargo_id               = $request->cargo_id;
+          $data->route_from             = $request->route_from;
+          $data->route_to               = $request->route_to;
+          $data->type_capacity          = $type_capacity->name;
+          $data->type_payload           = $request->type_payload;
+          $data->payload                = $request->payload ?? 1;
+          $data->basic_price            = $request->basic_price;
+          $data->basic_price_ldo        = $request->basic_price_ldo;
+          $data->road_money             = $request->road_money;
+          // $data->grandtotalgross        = $sumPayloadLDO;
+          // $data->grandtotalnetto        = $totalNetto;
+          // $data->grandtotalnettoldo     = $totalNettoLDO;
+          $data->invoice_bill           = $sumPayload;
+          if($data->save()){
+            $response = response()->json([
+              'status'    => 'success',
+              'message'   => 'Data has been saved',
+              'redirect'  => '/backend/joborders'
+            ]);
+          }
         }
-      }elseif($request->type == 'ldo'){
-        //CALCULATE
-        $basicPrice = $request->basic_price;
-        $basicPriceLDO = $request->basic_price_ldo;
-        $payload    = $request->payload ?? 1;
-        $roadMoney  = $request->road_money;
-        $sumPayload = $basicPrice * $payload;
-        $sumPayloadLDO = $basicPriceLDO * $payload;
-        $totalNettoLDO = $sumPayloadLDO - $roadMoney;
-        $totalNetto = $sumPayload - $sumPayloadLDO;
-        //MODEL DB
-        $data->date_begin             = $request->date_begin;
-        $data->type                   = $request->type;
-        $data->num_bill               = $jo_date ."-". $jo_num;
-        $data->prefix                 = $prefix->name;
-        $data->another_expedition_id  = $request->another_expedition_id ?? NULL;
-        $data->driver_id              = $request->driver_id;
-        $data->transport_id           = $request->transport_id;
-        $data->costumer_id            = $request->costumer_id;
-        $data->cargo_id               = $request->cargo_id;
-        $data->route_from             = $request->route_from;
-        $data->route_to               = $request->route_to;
-        $data->type_capacity          = $type_capacity->name;
-        $data->type_payload           = $request->type_payload;
-        $data->payload                = $request->payload ?? 1;
-        $data->basic_price            = $request->basic_price;
-        $data->basic_price_ldo        = $request->basic_price_ldo;
-        $data->road_money             = $request->road_money;
-        // $data->grandtotalgross        = $sumPayloadLDO;
-        // $data->grandtotalnetto        = $totalNetto;
-        // $data->grandtotalnettoldo     = $totalNettoLDO;
-        $data->invoice_bill           = $sumPayload;
-        if($data->save()){
-          $response = response()->json([
-            'status'    => 'success',
-            'message'   => 'Data has been saved',
-            'redirect'  => '/backend/joborders'
-          ]);
-        }
+      }else{
+        $response = response()->json(['error'=>$validator->errors()->all()]);
       }
       return $response;
     }
@@ -259,7 +280,7 @@ class JobOrderController extends Controller
     public function update(Request $request, $id)
     {
       $validator = Validator::make($request->all(), [
-          'status_cargo'    => 'required|string',
+          'status_cargo'    => 'string',
           'date_end'        => 'date_format:Y-m-d|required_if:status_cargo,selesai',
         ]);
         // dd($request->all());
