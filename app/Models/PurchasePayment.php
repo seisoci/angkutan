@@ -6,19 +6,16 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Purchase extends Model
+class PurchasePayment extends Model
 {
     use HasFactory;
 
   protected $fillable = [
     'invoice_purchase_id',
-    'sparepart_id',
-    'supplier_sparepart_id',
-    'qty',
-    'price',
+    'date_payment',
+    'payment',
   ];
 
-  protected $appends = ['total'];
 
 
   public function getCreatedAtAttribute($value){
@@ -26,12 +23,9 @@ class Purchase extends Model
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function sparepart(){
-    return $this->belongsTo(Sparepart::class);
+  public function invoicepurchase(){
+    return $this->belongsTo(InvoicePurchase::class);
   }
 
-  public function getTotalAttribute()
-  {
-      return $this->qty * $this->price;
-  }
+
 }

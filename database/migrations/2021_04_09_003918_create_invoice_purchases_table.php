@@ -15,11 +15,16 @@ class CreateInvoicePurchasesTable extends Migration
     {
         Schema::create('invoice_purchases', function (Blueprint $table) {
           $table->id();
-          $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
           $table->string('prefix');
           $table->string('num_bill')->unique();
-          $table->decimal('grandtotal', 15, 2);
-          $table->text('description')->nullable();
+          $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
+          $table->date('invoice_date');
+          $table->date('due_date');
+          $table->decimal('discount', 15, 2);
+          $table->decimal('total_bill', 15, 2);
+          $table->decimal('total_payment', 15, 2);
+          $table->decimal('rest_payment', 15, 2);
+          $table->enum('method_payment', ['cash', 'credit'])->default('cash');
           $table->string('memo')->nullable();
           $table->timestamps();
         });

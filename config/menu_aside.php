@@ -153,6 +153,10 @@ return [
               'page'  => 'backend/invoicepurchases'
             ],
             [
+              'title' => 'Retur Pembelian',
+              'page'  => 'backend/returpurchases'
+            ],
+            [
               'title' => 'Ambil barang',
               'page'  => 'backend/invoice'
             ],

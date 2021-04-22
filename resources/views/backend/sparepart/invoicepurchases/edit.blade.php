@@ -15,8 +15,9 @@
     </div>
   </div>
   <div class="card-body">
-    <form id="formStore" action="{{ route('backend.purchases.store') }}">
-      @csrf
+    <form id="formUpdate" action="{{ route('backend.invoicepurchases.update', Request::segment(3)) }}">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
+      @method('PUT')
       <div class="row align-items-center border border-dark py-10 px-4">
         <div class="col-12">
           <div class="row align-items-center">
@@ -24,32 +25,27 @@
               <div class="form-group row">
                 <label class="col-lg-4 col-form-label">Tanggal Invoice:</label>
                 <div class="col-md-6">
-                  <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date"
-                    placeholder="Tanggal Invoice" readonly>
+                  <input type="text" class="form-control rounded-0 w-100" name="invoice_date"
+                    value="{{ $data->invoice_date }}" disabled>
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-lg-4 col-form-label">Prefix:</label>
                 <div class="col-lg-6">
-                  <select name="prefix" class="form-control" id="select2Prefix">
-                  </select>
+                  <input type="text" class="form-control rounded-0 w-100" name="invoice_date"
+                    value="{{ $data->prefix }}" disabled>
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-lg-4 col-form-label">No. Invoice Pembelian:</label>
                 <div class="col-lg-6">
-                  <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
-                  <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
-                  </select>
+                  <input class="form-control rounded-0" value="{{ $data->num_bill }}" disabled>
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-lg-4 col-form-label">Metode Pembayaran</label>
                 <div class="col-lg-6">
-                  <select id="method_payment" name="method_payment" class="form-control rounded-0">
-                    <option value="cash">Tunai</option>
-                    <option value="credit">Kredit</option>
-                  </select>
+                  <input class="form-control rounded-0" value="{{ $data->method_payment }}" disabled>
                 </div>
               </div>
             </div>
@@ -57,27 +53,24 @@
               <div class="form-group row">
                 <label class="col-lg-4 offset-md-2 col-form-label">Supplier:</label>
                 <div class="col-lg-6">
-                  <select class="form-control rounded-0" name="supplier_sparepart_id" id="select2Suppliers">
-                  </select>
+                  <input class="form-control rounded-0" value="{{ $data->supplier->name }}" disabled>
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-lg-4 offset-md-2 col-form-label">Phone:</label>
                 <div class="col-lg-6">
-                  <input type="text" class="form-control rounded-0" id="phone" disabled>
-                </div>
+                  <input class="form-control rounded-0" value="{{ $data->supplier->phone }}" disabled> </div>
               </div>
               <div class="form-group row">
                 <label class="col-lg-4 offset-md-2 col-form-label">Alamat:</label>
                 <div class="col-lg-6">
-                  <input type="text" class="form-control rounded-0" id="address" disabled>
+                  <input class="form-control rounded-0" value="{{ $data->supplier->address }}" disabled>
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-lg-4 offset-md-2 col-form-label">Tgl Jatuh Tempo:</label>
                 <div class="col-lg-6">
-                  <input type="text" class="form-control rounded-0 datepicker w-100" name="due_date"
-                    placeholder="Tgl Jatuh Tempo" readonly>
+                  <input class="form-control rounded-0" value="{{ $data->due_date }}" disabled>
                 </div>
               </div>
             </div>
@@ -86,8 +79,7 @@
         <table class="table table-bordered ">
           <thead>
             <tr>
-              <th class="text-center" scope="col" width="5%"><button type="button"
-                  class="add btn btn-sm btn-primary rounded-0">+</button>
+              <th class="text-center" scope="col" width="5%">No
               </th>
               <th class="text-left" scope="col" width="45%">Produk</th>
               <th class="text-right" scope="col" width="10%">Unit</th>
@@ -96,14 +88,17 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="items" id="items_1">
-              <td></td>
-              <td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>
-              <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" />
+            @foreach ($data->purchases as $item)
+            <tr>
+              <td class="text-center">{{ $loop->iteration }}</td>
+              <td><input type="text" class="form-control rounded-0" value="{{ $item->sparepart->name}}" disabled />
               </td>
-              <td><input type="text" name="items[price][]" class="currency rounded-0 form-control" /></td>
-              <td><input type="text" name="items[total][]" class="currency rounded-0 form-control" disabled /></td>
+              <td><input type="text" class="form-control rounded-0 unit" value="{{ $item->qty }}" disabled />
+              </td>
+              <td><input type="text" class="currency rounded-0 form-control" value="{{ $item->price }}" disabled /></td>
+              <td><input type="text" class="currency rounded-0 form-control" value="{{ $item->total }}" disabled /></td>
             </tr>
+            @endforeach
           </tbody>
         </table>
         <table class="table table-borderless ">
@@ -123,7 +118,7 @@
               <td></td>
               <td class="pt-6">Diskon</td>
               <td width="22%"><input id="diskon" name="discount" type="text" class="currency form-control rounded-0"
-                  value="0" />
+                  value="{{ $data->discount }}" disabled />
               </td>
             </tr>
             <tr>
@@ -131,7 +126,8 @@
               <td></td>
               <td></td>
               <td class="pt-6">Grand Total</td>
-              <td width="22%"><input id="grandTotal" type="text" class="currency form-control rounded-0" disabled />
+              <td width="22%"><input id="grandTotal" type="text" class="currency form-control rounded-0"
+                  value="{{ $data->total_net }}" disabled />
               </td>
             </tr>
           </tbody>
@@ -148,6 +144,19 @@
             </tr>
           </thead>
           <tbody>
+            @foreach ($data->purchasepayments as $item)
+            <tr class="payment">
+              <td></td>
+              <td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"
+                  style="width:100% !important" value="{{ $item->date_payment }}" disabled />
+              </td>
+              <td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control"
+                  value="{{ $item->payment }}" disabled /></td>
+              <td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control"
+                  value="{{ $item->payment }}" disabled />
+              </td>
+            </tr>
+            @endforeach
             <tr class="payment" id="payment_1">
               <td></td>
               <td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"
@@ -175,7 +184,8 @@
               <td></td>
               <td></td>
               <td class="pt-6">Total Tagihan</td>
-              <td width="22%"><input id="totalTagihan" type="text" class="currency form-control rounded-0" disabled />
+              <td width="22%"><input id="totalTagihan" type="text" class="currency form-control rounded-0"
+                  value="{{ $data->total_net }}" disabled />
               </td>
             </tr>
             <tr>
@@ -184,7 +194,7 @@
               <td></td>
               <td class="pt-6">Total Pembayaran</td>
               <td width="22%"><input id="totalPembayaran" type="text" class="currency form-control rounded-0"
-                  disabled />
+                  value="{{ $data->total_payment }}" disabled />
               </td>
             </tr>
             <tr>
@@ -192,7 +202,8 @@
               <td></td>
               <td></td>
               <td class="pt-6">Sisa Tagihan</td>
-              <td width="22%"><input id="sisaPembayaran" type="text" class="currency form-control rounded-0" disabled />
+              <td width="22%"><input id="sisaPembayaran" type="text" class="currency form-control rounded-0"
+                  value="{{ $data->rest_payment }}" disabled />
               </td>
             </tr>
             <tr>
@@ -415,29 +426,34 @@
         '</td>';
     }
 
-    $("#formStore").submit(function(e) {
+    $("#formUpdate").submit(function(e){
       $('.currency').inputmask('remove');
       $('.unit').inputmask('remove');
       e.preventDefault();
-      var form = $(this);
+      var form 	= $(this);
       var btnSubmit = form.find("[type='submit']");
       var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
+      var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      var url 	= form.attr("action");
+      var data 	= new FormData(this);
       $.ajax({
-        beforeSend: function() {
-          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
+        beforeSend:function() {
+          btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled","disabled");
+        },
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         cache: false,
         processData: false,
         contentType: false,
         type: "POST",
-        url: url,
-        data: data,
+        url : url,
+        data : data,
         success: function(response) {
+          initCurrency();
           btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          if (response.status == "success") {
-            toastr.success(response.message, 'Success !');
+          if ( response.status == "success" ){
+            toastr.success(response.message,'Success !');
             setTimeout(function() {
               if(response.redirect == "" || response.redirect == "reload"){
 								location.reload();
@@ -445,20 +461,18 @@
 								location.href = response.redirect;
 							}
             }, 1000);
-          } else {
-            initCurrency();
+          }else{
             $("[role='alert']").parent().removeAttr("style");
             $(".alert-text").html('');
-            $.each(response.error, function(key, value) {
+            $.each( response.error, function( key, value ) {
               $(".alert-text").append('<span style="display: block">'+value+'</span>');
             });
-            toastr.error("Please complete your form", 'Failed !');
+            toastr.error(response.message, 'Failed !');
           }
-        },
-        error: function(response) {
-          initCurrency();
-          btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          toastr.error(response.responseJSON.message, 'Failed !');
+        },error: function(response){
+            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+            toastr.error(response.responseJSON.message, 'Failed !');
+            initCurrency();
         }
       });
     });

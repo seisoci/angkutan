@@ -14,10 +14,16 @@ class InvoicePurchase extends Model
     'supplier_sparepart_id',
     'prefix',
     'num_bill',
-    'grandtotal',
-    'description',
-    'memo',
+    'invoice_date',
+    'due_date',
+    'discount',
+    'total_bill',
+    'total_payment',
+    'rest_payment',
+    'method_payment',
   ];
+
+  protected $appends = ['total_net'];
 
 
   public function getCreatedAtAttribute($value){
@@ -26,10 +32,19 @@ class InvoicePurchase extends Model
   }
 
   public function purchases(){
-    return $this->hasMany(Purchase::class);
+    return $this->hasMany(Purchase::class, 'invoice_purchase_id');
+  }
+
+  public function purchasepayments(){
+    return $this->hasMany(PurchasePayment::class);
   }
 
   public function supplier(){
     return $this->belongsTo(SupplierSparepart::class, 'supplier_sparepart_id');
+  }
+
+  public function getTotalNetAttribute()
+  {
+      return $this->total_bill - $this->discount;
   }
 }

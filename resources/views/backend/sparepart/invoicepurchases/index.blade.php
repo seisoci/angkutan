@@ -39,8 +39,10 @@
         <tr>
           <th>Prefix</th>
           <th>No Bill</th>
-          <th>Grand Total</th>
-          <th>Memo</th>
+          <th>Total Tagihan</th>
+          <th>Total Pembayaran</th>
+          <th>Sisa Pembayaran</th>
+          <th>Metode</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -89,15 +91,17 @@
         responsive: true,
         processing: true,
         serverSide: true,
-        order: [[4, 'desc']],
+        order: [[7, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.invoicepurchases.index') }}",
         columns: [
             {data: 'prefix', name: 'prefix', className: 'dt-center'},
             {data: 'num_bill', name: 'num_bill', },
-            {data: 'grandtotal', name: 'grandtotal', className: 'dt-right', render: $.fn.dataTable.render.number( '.', '.', 0)},
-            {data: 'memo', name: 'memo'},
+            {data: 'total_bill', name: 'total_bill', className: 'dt-right', render: $.fn.dataTable.render.number( '.', ',', 2)},
+            {data: 'total_payment', name: 'total_payment', className: 'dt-right', render: $.fn.dataTable.render.number( '.', ',', 2)},
+            {data: 'rest_payment', name: 'rest_payment', className: 'dt-right', render: $.fn.dataTable.render.number( '.', ',', 2)},
+            {data: 'method_payment', name: 'method_payment'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],

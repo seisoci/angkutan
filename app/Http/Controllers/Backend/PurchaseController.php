@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InvoicePurchase;
 use App\Models\Prefix;
 use App\Models\Purchase;
+use App\Models\PurchasePayment;
 use App\Models\Stock;
 use Carbon\Carbon;
 use DB;
@@ -37,34 +38,60 @@ class PurchaseController extends Controller
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
-        'items.sparepart_id'      => 'required|array',
-        'items.sparepart_id.*'    => 'required|integer',
-        'items.qty'       => 'required|array',
-        'items.qty.*'     => 'required|integer',
-        'items.price'     => 'required|array',
-        'items.price.*'   => 'required|integer',
+        'invoice_date'          => 'required|date_format:Y-m-d',
+        'due_date'              => 'required|date_format:Y-m-d',
+        'discount'              => 'integer|nullable',
+        'method_payment'        => 'required|in:cash,credit',
+        'supplier_sparepart_id' => 'required|integer',
+        'items.sparepart_id'    => 'required|array',
+        'items.sparepart_id.*'  => 'required|integer',
+        'items.qty'             => 'required|array',
+        'items.qty.*'           => 'required|integer',
+        'items.price'           => 'required|array',
+        'items.price.*'         => 'required|integer',
+        'payment.date'          => 'required|array',
+        'payment.date.*'        => 'required|date_format:Y-m-d',
+        'payment.payment'       => 'required|array',
+        'payment.payment.*'     => 'required|integer',
       ]);
 
       if($validator->passes()){
+        // dd($request->all());
         try {
           DB::beginTransaction();
           // $invoice_date = Carbon::parse()->timezone('Asia/Jakarta')->format('Ymd');
           // $invoice_num  = $invoice_db['num'] != NULL ? $invoice_db['num'] : 1;
-          $invoice_db  = InvoicePurchase::select(DB::raw('MAX(SUBSTRING_INDEX(num_bill, "-", -1)+1) AS `num`'))->first();
-          $grandtotal   = 0;
+          // $invoice_db  = InvoicePurchase::select(DB::raw('MAX(SUBSTRING_INDEX(num_bill, "-", -1)+1) AS `num`'))->first();
+          $totalBill    = 0;
+          $totalPayment = 0;
+          $restPayment  = 0;
           $items        = $request->items;
+          $discount     = $request->discount;
+          $payments     = $request->payment;
           $prefix       = Prefix::find($request->prefix);
+
           foreach($items['sparepart_id'] as $key => $item):
-            $grandtotal += $items['qty'][$key] * $items['price'][$key];
+            $totalBill += $items['qty'][$key] * $items['price'][$key];
           endforeach;
+
+          foreach($payments['date'] as $key => $item):
+            $totalPayment += $payments['payment'][$key];
+          endforeach;
+
+          $restPayment = ($totalBill - $discount) - $totalPayment;
 
           $invoice = InvoicePurchase::create([
             'supplier_sparepart_id'        => $request->input('supplier_sparepart_id'),
-            'prefix'      => $prefix->name,
-            'num_bill'    => $request->input('num_bill'),
-            'grandtotal'  => $grandtotal,
-            'memo'        => $request->input('memo'),
-            'description' => $request->input('description'),
+            'prefix'        => $prefix->name,
+            'num_bill'      => $request->input('num_bill'),
+            'invoice_date'  => $request->invoice_date,
+            'due_date'      => $request->due_date,
+            'total_bill'    => $totalBill,
+            'total_payment' => $totalPayment,
+            'rest_payment'  => $restPayment,
+            'discount'      => $discount,
+            'method_payment'=> $request->method_payment,
+            'memo'          => $request->input('memo'),
           ]);
 
           foreach($items['sparepart_id'] as $key => $item):
@@ -84,9 +111,18 @@ class PurchaseController extends Controller
             }
           endforeach;
 
-          Purchase::insert($data);
+          foreach($payments['date'] as $key => $item):
+            $dataPayment[] = [
+              'invoice_purchase_id' => $invoice->id,
+              'date_payment'        => $payments['date'][$key],
+              'payment'             => $payments['payment'][$key],
+            ];
+          endforeach;
 
+          Purchase::insert($data);
+          count($dataPayment) > 0 ? PurchasePayment::insert($dataPayment) : NULL;
           DB::commit();
+
           $response = response()->json([
             'status'    => 'success',
             'message'   => 'Data has been saved',
@@ -102,48 +138,4 @@ class PurchaseController extends Controller
       return $response;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Purchase $purchase)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Purchase $purchase)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Purchase $purchase)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Purchase $purchase)
-    {
-        //
-    }
 }
