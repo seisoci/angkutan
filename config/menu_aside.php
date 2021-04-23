@@ -149,15 +149,19 @@ return [
           'arrow' => true,
           'submenu' => [
             [
-              'title' => 'Invoice Pembelian',
+              'title' => 'Pembelian',
               'page'  => 'backend/invoicepurchases'
             ],
             [
               'title' => 'Retur Pembelian',
-              'page'  => 'backend/returpurchases'
+              'page'  => 'backend/invoicereturpurchases'
             ],
             [
-              'title' => 'Ambil barang',
+              'title' => 'Pakai Barang',
+              'page'  => 'backend/using barang'
+            ],
+            [
+              'title' => 'Buat Nota',
               'page'  => 'backend/invoice'
             ],
           ]
@@ -176,25 +180,18 @@ return [
             ],
             [
               'title' => 'Stok Opname',
-              'page'  => 'backend/invoice'
+              'page'  => 'backend/opnames'
             ],
           ]
         ],
         [
-          'section' => 'Laporan',
-        ],
-        [
-          'title' => 'Laporan & Invoice Operational',
+          'title' => 'Invoice Operational',
           'desc' => '',
-          'icon' => 'media/svg/icons/Communication/Clipboard-list.svg',
+          'icon' => 'media/svg/icons/Shopping/Wallet2.svg',
           'bullet' => 'dot',
           'root' => true,
           'arrow' => true,
           'submenu' => [
-            [
-              'title' => 'Laporan Rekapitulasi',
-              'page'  => 'backend/recapitulation'
-            ],
             [
               'title' => 'Invoice Gaji',
               'page'  => 'backend/invoicesalaries'
@@ -206,6 +203,23 @@ return [
             [
               'title' => 'Invoice LDO',
               'page'  => 'backend/invoiceldo'
+            ],
+          ]
+        ],
+        [
+          'section' => 'Laporan',
+        ],
+        [
+          'title' => 'Laporan',
+          'desc' => '',
+          'icon' => 'media/svg/icons/Communication/Clipboard-list.svg',
+          'bullet' => 'dot',
+          'root' => true,
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Laporan Rekapitulasi',
+              'page'  => 'backend/recapitulation'
             ],
           ]
         ],

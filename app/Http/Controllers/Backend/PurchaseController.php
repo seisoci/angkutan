@@ -66,7 +66,7 @@ class PurchaseController extends Controller
           $totalPayment = 0;
           $restPayment  = 0;
           $items        = $request->items;
-          $discount     = $request->discount;
+          $discount     = $request->discount ?? 0;
           $payments     = $request->payment;
           $prefix       = Prefix::find($request->prefix);
 

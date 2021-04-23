@@ -29,10 +29,13 @@ class InvoiceCostumerController extends Controller
         $data = InvoiceCostumer::with(['costumer:id,name']);
         return Datatables::of($data)
         ->addIndexColumn()
+        ->addColumn('details_url', function(InvoiceCostumer $invoiceCostumer) {
+          return route('backend.invoicecostumers.datatabledetail', $invoiceCostumer->id);
+        })
         ->make(true);
 
       }
-      return view('backend.operational.invoicecostumers.index', compact('config', 'page_breadcrumbs'));
+      return view('backend.invoice.invoicecostumers.index', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -72,7 +75,7 @@ class InvoiceCostumerController extends Controller
           ->addIndexColumn()
           ->make(true);
       }
-      return view('backend.operational.invoicecostumers.create', compact('config', 'page_breadcrumbs'));
+      return view('backend.invoice.invoicecostumers.create', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -178,5 +181,12 @@ class InvoiceCostumerController extends Controller
         ]);
       }
       return $response;
+    }
+
+    public function datatabledetail($id)
+    {
+        $data = JobOrder::where('invoice_costumer_id', $id);
+
+        return Datatables::of($data)->make(true);
     }
 }

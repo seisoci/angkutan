@@ -93,7 +93,7 @@
                 <td></td>
                 <td class="text-right pr-0 font-weight-bold text-muted text-uppercase">Total Tagihan</td>
                 <td class="text-danger text-right pr-0 font-weight-bold text-uppercase">
-                  {{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
+                  {{ number_format($data->total_net ?? 0,2, ',', '.') }}</td>
               </tr>
             </tfoot>
           </table>
@@ -124,7 +124,7 @@
                 <td></td>
                 <td class="text-right pr-0 font-weight-bold text-muted text-uppercase">Total Tagihan</td>
                 <td class="text-right pr-0 font-weight-bold text-muted text-uppercase">
-                  {{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
+                  {{ number_format($data->total_net ?? 0,2, ',', '.') }}</td>
               </tr>
               <tr>
                 <td></td>

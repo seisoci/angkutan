@@ -13,7 +13,7 @@
     </div>
     <div class="card-toolbar">
       <!--begin::Button-->
-      <a href="{{ route('backend.purchases.index') }}" class="btn btn-primary font-weight-bolder">
+      <a href="{{ route('backend.invoicereturpurchases.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
           <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
@@ -39,11 +39,9 @@
         <tr>
           <th>Prefix</th>
           <th>No Bill</th>
-          <th>Total Tagihan</th>
-          <th>Total Pembayaran</th>
-          <th>Diskon</th>
-          <th>Sisa Pembayaran</th>
-          <th>Metode</th>
+          <th>Tanggal Nota</th>
+          <th>Supplier</th>
+          <th>Nominal Retur</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -92,18 +90,16 @@
         responsive: true,
         processing: true,
         serverSide: true,
-        order: [[7, 'desc']],
+        order: [[5, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.invoicepurchases.index') }}",
+        ajax: "{{ route('backend.invoicereturpurchases.index') }}",
         columns: [
             {data: 'prefix', name: 'prefix', className: 'dt-center'},
             {data: 'num_bill', name: 'num_bill', },
-            {data: 'total_bill', name: 'total_bill', className: 'dt-right', render: $.fn.dataTable.render.number( '.', ',', 2)},
+            {data: 'note_date', name: 'note_date', },
+            {data: 'supplier.name', name: 'supplier.name', },
             {data: 'total_payment', name: 'total_payment', className: 'dt-right', render: $.fn.dataTable.render.number( '.', ',', 2)},
-            {data: 'discount', name: 'discount', className: 'dt-right', render: $.fn.dataTable.render.number( '.', ',', 2)},
-            {data: 'rest_payment', name: 'rest_payment', className: 'dt-right', render: $.fn.dataTable.render.number( '.', ',', 2)},
-            {data: 'method_payment', name: 'method_payment'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],

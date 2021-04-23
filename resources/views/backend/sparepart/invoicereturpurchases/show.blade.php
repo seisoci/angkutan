@@ -11,7 +11,7 @@
     <div class="row justify-content-center py-8 px-8 py-md-27 px-md-0">
       <div class="col-md-9">
         <div class="d-flex justify-content-between pb-10 pb-md-20 flex-column flex-md-row">
-          <h1 class="display-4 font-weight-boldest mb-10">INVOICE <br>PURCHASE ORDER</h1>
+          <h1 class="display-4 font-weight-boldest mb-10">NOTA RETUR</h1>
           <div class="d-flex flex-column align-items-md-end px-0">
             <!--begin::Logo-->
             <a href="#" class="mb-5">
@@ -69,7 +69,7 @@
               </tr>
             </thead>
             <tbody>
-              @foreach ($data->purchases as $item)
+              @foreach ($data->returpurchases as $item)
               <tr class="font-weight-boldest">
                 <td class="pl-0 pt-7">{{ $item->sparepart->name }}</td>
                 <td class="text-right pt-7">{{ $item->qty }}</td>
@@ -83,16 +83,9 @@
               <tr>
                 <td></td>
                 <td></td>
-                <td class="text-right pr-0 font-weight-bold text-uppercase">Diskon</td>
-                <td class="text-success text-right pr-0 font-weight-bold text-uppercase">
-                  {{ number_format($data->discount ?? 0,2, ',', '.') }}</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td></td>
                 <td class="text-right pr-0 font-weight-bold text-muted text-uppercase">Total Tagihan</td>
                 <td class="text-danger text-right pr-0 font-weight-bold text-uppercase">
-                  {{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
+                  {{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
               </tr>
             </tfoot>
           </table>
@@ -100,53 +93,6 @@
       </div>
     </div>
     <!-- end: Invoice body-->
-    <!-- begin: Invoice footer-->
-    <div class="row justify-content-center bg-gray-100 py-8 px-8 py-md-10 px-md-0">
-      <div class="col-md-9">
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th class="font-weight-bold text-muted text-uppercase"></th>
-                <th class="font-weight-bold text-muted text-uppercase"></th>
-                <th class="font-weight-bold text-muted text-uppercase"></th>
-                <th class="font-weight-bold text-muted text-uppercase text-right">Grand Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="font-weight-bolder">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="text-danger font-size-h3 font-weight-boldest text-right">
-                  {{ number_format($data->total_net ?? 0,0, ',', '.') }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    @if (!empty($data->memo))
-    <div class="row justify-content-center py-2 px-8 py-md-2 px-md-0">
-      <div class="col-md-9">
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th class="font-weight-bold text-muted text-uppercase">Memo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="font-weight-bolder">
-                <td>{{ $data->memo }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    @endif
-    <!-- end: Invoice footer-->
     <!-- begin: Invoice action-->
     <div class="row justify-content-center py-8 px-8 py-md-10 px-md-0 d-print-none">
       <div class="col-md-9">

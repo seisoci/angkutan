@@ -15,8 +15,8 @@ class CreateInvoiceCostumersTable extends Migration
     {
         Schema::create('invoice_costumers', function (Blueprint $table) {
             $table->id();
-            $table->string('prefix');
             $table->string('num_bill')->unique();
+            $table->string('prefix');
             $table->foreignId('costumer_id')->constrained('costumers');
             $table->decimal('grandtotal',15, 2);
             $table->text('description')->nullable();

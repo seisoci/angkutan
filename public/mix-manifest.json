@@ -199,6 +199,7 @@
     "/css/pages/error/error-4.css": "/css/pages/error/error-4.css",
     "/css/pages/error/error-3.css": "/css/pages/error/error-3.css",
     "/css/backend/datatables/dataTables.checkboxes.css": "/css/backend/datatables/dataTables.checkboxes.css",
+    "/css/backend/datatables/dataTables.control.css": "/css/backend/datatables/dataTables.control.css",
     "/css/backend/menus/menus.css": "/css/backend/menus/menus.css",
     "/css/backend/menus/nestable.css": "/css/backend/menus/nestable.css",
     "/js/backend/datatables/dataTables.checkboxes.js": "/js/backend/datatables/dataTables.checkboxes.js",

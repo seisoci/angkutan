@@ -13,7 +13,7 @@
     </div>
     <div class="card-toolbar">
       <!--begin::Button-->
-      <a href="{{ route('backend.invoicesalaries.create') }}" class="btn btn-primary font-weight-bolder">
+      <a href="{{ route('backend.invoicecostumers.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
           <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
@@ -37,9 +37,9 @@
     <table class="table table-bordered table-hover" id="Datatable">
       <thead>
         <tr>
+          <th></th>
           <th>Invoice Number</th>
-          <th>Nama Supir</th>
-          <th>No. Polisi</th>
+          <th>Nama Pelanggan</th>
           <th>Grand Total</th>
           <th>Created At</th>
         </tr>
@@ -51,6 +51,7 @@
 
 {{-- Styles Section --}}
 @section('styles')
+<link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
@@ -58,11 +59,21 @@
 @section('scripts')
 {{-- vendors --}}
 <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
-
-{{-- page scripts --}}
-<script src="{{ asset('js/pages/crud/datatables/basic/basic.js') }}" type="text/javascript"></script>
+<script id="details-template" type="text/x-handlebars-template">
+  @verbatim
+  <table class="table table-bordered " id="posts-{{id}}">
+      <thead>
+      <tr>
+        <th>No. Surat Jalan</th>
+        <th>Total Tagihan</th>
+      </tr>
+      </thead>
+  </table>
+  @endverbatim
+</script>
 <script type="text/javascript">
   $(function () {
+    var template = Handlebars.compile($("#details-template").html());
     var dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
@@ -71,59 +82,51 @@
         order: [[4, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.invoicesalaries.index') }}",
+        ajax: "{{ route('backend.invoicecostumers.index') }}",
         columns: [
-            {data: 'num_invoice', name: 'num_bill', orderable:false},
-            {data: 'driver.name', name: 'driver.name'},
-            {data: 'transport.num_pol', name: 'transport.num_pol'},
-            {data: 'grandtotal', name: 'grandtotal' , render: $.fn.dataTable.render.number( '.', '.', 2)},
+            {
+                "className": 'details-control',
+                "orderable": false,
+                "searchable":false,
+                "data": null,
+                "defaultContent": ''
+            },
+            {data: 'num_invoice', name: 'num_invoice', orderable:false},
+            {data: 'costumer.name', name: 'costumer.name'},
+            {data: 'grandtotal', name: 'grandtotal' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
             {data: 'created_at', name: 'created_at'},
         ],
     });
 
-    $('#modalDelete').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.drivers.index") }}/'+ id);
+    $('#Datatable tbody').on('click', 'td.details-control', function () {
+      var tr = $(this).closest('tr');
+      var row = dataTable.row(tr);
+      var tableId = 'posts-' + row.data().id;
+
+      if (row.child.isShown()) {
+        // This row is already open - close it
+        row.child.hide();
+        tr.removeClass('shown');
+      } else {
+        // Open this row
+        row.child(template(row.data())).show();
+        initTable(tableId, row.data());
+        tr.addClass('shown');
+        tr.next().find('td').addClass('no-padding bg-gray');
+      }
     });
 
-    $('#modalDelete').on('hidden.bs.modal', function (event) {
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
-    });
-
-    $("#formDelete").click(function(e){
-      e.preventDefault();
-      var form 	    = $(this);
-      var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
-      var btnHtml   = form.html();
-      var spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
-      $.ajax({
-        beforeSend:function() {
-          form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");
-        },
-        type: 'DELETE',
-        url: url,
-        dataType: 'json',
-        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-        success: function (response) {
-          if(response.status == "success"){
-            form.prop('disabled', false).html(btnHtml);
-            toastr.success(response.message,'Success !');
-            $('#modalDelete').modal('hide');
-            dataTable.draw();
-          }else{
-            form.prop('disabled', false).html(btnHtml);
-            toastr.error(response.message,'Failed !');
-            $('#modalDelete').modal('hide');
-          }
-        },
-        error: function (response) {
-          form.prop('disabled', false).text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
-          toastr.error(response.responseJSON.message ,'Failed !');
-          $('#modalDelete').modal('hide');
-          $('#modalDelete').find('a[name="id"]').attr('href', '');
-        }
-      });
-    });
+    function initTable(tableId, data) {
+      $('#' + tableId).DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: data.details_url,
+        columns: [
+            { data: 'num_prefix', name: 'num_bill', orderable: false },
+            { data: 'invoice_bill', name: 'invoice_bill', render: $.fn.dataTable.render.number( '.', '.', 2), orderable: false, searchable:false, className: 'dt-right' }
+        ]
+      })
+    }
   });
 </script>
 @endsection

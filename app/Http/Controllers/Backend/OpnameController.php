@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Opname;
 use App\Models\OpnameDetail;
 use App\Models\Setting;
+use App\Models\Sparepart;
 use App\Models\Stock;
 use DataTables;
 use DB;
@@ -32,8 +33,16 @@ class OpnameController extends Controller
         return DataTables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){
-              $actionBtn = '
-              <a href="opnames/'.$row->id.'" class="btn btn-light btn-sm"><i class="fas fa-eye"></i></a>';
+            $actionBtn = '
+              <div class="dropdown">
+                  <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-eye"></i>
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a href="opnames/'.$row->id.'" class="dropdown-item">Retur Detail</a>
+                  </div>
+              </div>
+            ';
               return $actionBtn;
           })
           ->make(true);
@@ -69,14 +78,17 @@ class OpnameController extends Controller
         'items.sparepart_id.*'    => 'required|integer',
         'items.qty_now'           => 'required|array',
         'items.qty_now.*'         => 'required|integer',
+        'items.stock_id'           => 'required|array',
+        'items.stock_id.*'         => 'required|integer',
       ]);
       if($validator->passes()){
       try {
         $items   = $request->items;
+        // dd($items);
         DB::beginTransaction();
         $opanme  = Opname::create(['description' => $request->description]);
         foreach($items['sparepart_id'] as $key => $item):
-          $stock = Stock::findOrFail($items['sparepart_id'][$key]);
+          $stock = Stock::where('sparepart_id', $items['stock_id'][$key])->firstOrFail();
           $data[] = [
               'opname_id'             => $opanme->id,
               'sparepart_id'          => $items['sparepart_id'][$key],
@@ -84,13 +96,8 @@ class OpnameController extends Controller
               'qty_system'            => $stock->qty,
               'qty_difference'        => $items['qty_now'][$key] - $stock->qty,
           ];
-          $stockSummary = Stock::firstOrCreate(
-              ['sparepart_id' => $items['sparepart_id'][$key] ],
-              ['qty' => $items['qty_now'][$key],]
-          );
-          if (!$stockSummary->wasRecentlyCreated) {
-            $stockSummary->update(['qty' => $items['qty_now'][$key]]);
-          }
+          $stock->qty = $items['qty_now'][$key];
+          $stock->save();
         endforeach;
         OpnameDetail::insert($data);
         DB::commit();

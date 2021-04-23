@@ -33,7 +33,9 @@
           <tbody>
             <tr class="items" id="items_1">
               <td></td>
-              <td><select class="form-control select2Stocks" name="items[sparepart_id][]"></select></td>
+              <td>
+                <input type="hidden" name="items[stock_id][]">
+                <select class="form-control select2Stocks" name="items[sparepart_id][]"></select></td>
               <td><input type="text" name="items[qty_system][]" class="form-control rounded-0 unit" disabled />
               </td>
               <td><input type="text" name="items[qty_now][]" class="unit rounded-0 form-control" /></td>
@@ -101,10 +103,12 @@
         var $row = $(this).closest("tr");
         $row.find('input[name="items[qty_system][]"]').val('');
         $row.find('input[name="items[qty_difference][]"]').val('');
+        $row.find('input[name="items[stock_id][]"]').val('');
       })
       .on('select2:select', function(evt){
         var $row = $(this).closest("tr");
         $row.find('input[name="items[qty_system][]"]').val(evt.params.data.qty);
+        $row.find('input[name="items[stock_id][]"]').val(evt.params.data.stock_id);
       });
     }
 
@@ -151,8 +155,8 @@
     });
 
     function raw_items(nextindex){
-      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>"+'<td><select class="form-control select2Stocks" name="items[sparepart_id][]"></select></td>'+
-      '<td><input type="text" name="items[qty_system][]" class="form-control unit rounded-0" /></td>'+
+      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>"+'<td><input type="hidden" name="items[stock_id][]"><select class="form-control select2Stocks" name="items[sparepart_id][]"></select></td>'+
+      '<td><input type="text" name="items[qty_system][]" class="form-control unit rounded-0" disabled/></td>'+
       '<td><input type="text" data-inputmask=""alias": "decimal"" name="items[qty_now][]" class="unit form-control rounded-0" /></td>'+
       '<td><input type="text" name="items[qty_difference][]" class="unit form-control rounded-0" disabled /></td>';
     }

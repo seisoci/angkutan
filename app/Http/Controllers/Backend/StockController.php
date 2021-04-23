@@ -34,7 +34,7 @@ class StockController extends Controller
         ->orderBy('spareparts.name')
         ->skip($offset)
         ->take($resultCount)
-        ->selectRaw('spareparts.id as id, spareparts.name as text, qty')
+        ->selectRaw('spareparts.id as id, spareparts.name as text, qty, stocks.id as stock_id')
         ->get();
 
     $count = Stock::leftJoin('spareparts', 'stocks.sparepart_id', '=', 'spareparts.id')

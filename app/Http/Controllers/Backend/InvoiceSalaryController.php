@@ -30,10 +30,13 @@ class InvoiceSalaryController extends Controller
         $data = InvoiceSalary::with(['transport:id,num_pol', 'driver:id,name']);
         return Datatables::of($data)
         ->addIndexColumn()
+        ->addColumn('details_url', function(InvoiceSalary $invoiceSalary) {
+          return route('backend.invoicesalaries.datatabledetail', $invoiceSalary->id);
+        })
         ->make(true);
 
       }
-      return view('backend.operational.invoicesalaries.index', compact('config', 'page_breadcrumbs'));
+      return view('backend.invoice.invoicesalaries.index', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -64,7 +67,7 @@ class InvoiceSalaryController extends Controller
           ->addIndexColumn()
           ->make(true);
       }
-      return view('backend.operational.invoicesalaries.create', compact('config', 'page_breadcrumbs'));
+      return view('backend.invoice.invoicesalaries.create', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -161,6 +164,13 @@ class InvoiceSalaryController extends Controller
         ]);
       }
       return $response;
+    }
+
+    public function datatabledetail($id)
+    {
+        $data = JobOrder::where('invoice_salary_id', $id);
+
+        return Datatables::of($data)->make(true);
     }
 
 }
