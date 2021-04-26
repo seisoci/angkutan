@@ -21,7 +21,6 @@ use App\Http\Controllers\Backend\CashController as BackendCashController;
 use App\Http\Controllers\Backend\BankController as BackendBankController;
 use App\Http\Controllers\Backend\CompanyController as BackendCompanyController;
 use App\Http\Controllers\Backend\TypeCapacityController as BackendTypeCapacityController;
-use App\Http\Controllers\Backend\PurchaseController as BackendPurchaseController;
 use App\Http\Controllers\Backend\PrefixController as BackendPrefixController;
 use App\Http\Controllers\Backend\StockController as BackendStockController;
 use App\Http\Controllers\Backend\InvoicePurchaseController as BackendInvoicePurchaseController;
@@ -32,7 +31,10 @@ use App\Http\Controllers\Backend\SalaryController as BackendSalaryController;
 use App\Http\Controllers\Backend\RecapitulationController as BackendRecapitulationController;
 use App\Http\Controllers\Backend\InvoiceSalaryController as BackendInvoiceSalaryController;
 use App\Http\Controllers\Backend\InvoiceCostumerController as BackendInvoiceCostumerController;
+use App\Http\Controllers\Backend\InvoiceLdoController as BackendInvoiceLdoController;
 use App\Http\Controllers\Backend\PaymentLdoController as BackendPaymentLdoController;
+use App\Http\Controllers\Backend\InvoiceUsageItemController as BackendInvoiceUsageItemController;
+use App\Http\Controllers\Backend\InvoiceUsageItemOutsideController as BackendInvoiceUsageItemOutsideController;
 use App\Http\Controllers\Backend\OpnameController as BackendOpnameController;
 use App\Http\Controllers\Backend\InvoiceReturPurchaseController as BackendInvoiceReturPurchaseController;
 use App\Http\Controllers\PagesController;
@@ -86,6 +88,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     //Datatables Details
     Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
     Route::get('invoicecostumers/datatabledetail/{id}', [BackendInvoiceCostumerController::class, 'datatabledetail'])->name('invoicecostumers.datatabledetail');
+    Route::get('invoiceldo/datatabledetail/{id}', [BackendInvoiceLdoController::class, 'datatabledetail'])->name('invoiceldo.datatabledetail');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
@@ -102,6 +105,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::post('invoicesalaries/findbypk', [BackendInvoiceSalaryController::class, 'findbypk'])->name('invoicesalaries.findbypk');
     Route::post('invoicecostumers/findbypk', [BackendInvoiceCostumerController::class, 'findbypk'])->name('invoicecostumers.findbypk');
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
+    Route::get('recapitulation/excel', [BackendRecapitulationController::class, 'excel'])->name('recapitulation.excel');
+    Route::get('recapitulation/print/{transport_id}/{driver_id}/{date_begin}/{date_end}', [BackendRecapitulationController::class, 'print']);
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -119,6 +124,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('services', BackendServiceController::class)->except(['create', 'edit', 'show']);
     Route::resource('brands', BackendBrandController::class)->except(['create', 'edit', 'show']);
     Route::resource('categories', BackendCategoryController::class)->except(['create', 'edit', 'show']);
+
     //Master Accounting
     Route::resource('prefixes', BackendPrefixController::class)->except(['create', 'edit', 'show']);
     Route::resource('cashes', BackendCashController::class)->except(['create', 'edit', 'show']);
@@ -126,7 +132,6 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('companies', BackendCompanyController::class)->except(['create', 'edit', 'show']);
 
     //Purchase
-    Route::resource('purchases', BackendPurchaseController::class)->only(['index', 'store']);
     Route::resource('invoicepurchases', BackendInvoicePurchaseController::class);
     Route::resource('invoicereturpurchases', BackendInvoiceReturPurchaseController::class);
     Route::resource('stocks', BackendStockController::class)->only('index');
@@ -141,7 +146,9 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('recapitulation', BackendRecapitulationController::class);
     Route::resource('invoicesalaries', BackendInvoiceSalaryController::class);
     Route::resource('invoicecostumers', BackendInvoiceCostumerController::class);
-    Route::resource('invoiceldo', BackendInvoiceCostumerController::class);
+    Route::resource('invoiceldo', BackendInvoiceLdoController::class);
+    Route::resource('invoiceusageitems', BackendInvoiceUsageItemController::class);
+    Route::resource('invoiceusageitemsoutside', BackendInvoiceUsageItemOutsideController::class);
     Route::resource('paymentldo', BackendPaymentLdoController::class);
     Route::resource('opnames', BackendOpnameController::class);
   });

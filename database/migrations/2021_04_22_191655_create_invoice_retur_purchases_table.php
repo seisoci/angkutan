@@ -15,8 +15,8 @@ class CreateInvoiceReturPurchasesTable extends Migration
     {
         Schema::create('invoice_retur_purchases', function (Blueprint $table) {
           $table->id();
-          $table->string('prefix');
           $table->string('num_bill')->unique();
+          $table->string('prefix');
           $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
           $table->date('note_date')->nullable();
           $table->decimal('total_payment', 15, 2);

@@ -13,7 +13,7 @@
     </div>
     <div class="card-toolbar">
       <!--begin::Button-->
-      <a href="{{ route('backend.purchases.index') }}" class="btn btn-primary font-weight-bolder">
+      <a href="{{ route('backend.invoicepurchases.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
           <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
@@ -38,7 +38,7 @@
       <thead>
         <tr>
           <th>Prefix</th>
-          <th>No Bill</th>
+          <th>No. Invoice</th>
           <th>Total Tagihan</th>
           <th>Total Pembayaran</th>
           <th>Diskon</th>
@@ -89,7 +89,8 @@
 <script type="text/javascript">
   $(document).ready(function(){
     var dataTable = $('#Datatable').DataTable({
-        responsive: true,
+        responsive: false,
+        scrollX: true,
         processing: true,
         serverSide: true,
         order: [[7, 'desc']],

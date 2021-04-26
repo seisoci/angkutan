@@ -193,6 +193,9 @@ class SparepartController extends Controller
       $resultCount = 10;
       $offset = ($page - 1) * $resultCount;
       $data = Sparepart::where('name', 'LIKE', '%' . $request->q. '%')
+          ->when($request->used, function ($query, $used) {
+            return $query->whereNotIn('id', $used);
+          })
           ->orderBy('name')
           ->skip($offset)
           ->take($resultCount)
@@ -200,6 +203,9 @@ class SparepartController extends Controller
           ->get();
 
       $count = Sparepart::where('name', 'LIKE', '%' . $request->q. '%')
+          ->when($request->used, function ($query, $used) {
+            return $query->whereNotIn('id', $used);
+          })
           ->get()
           ->count();
 

@@ -15,7 +15,7 @@
     </div>
   </div>
   <div class="card-body">
-    <form id="formStore" action="{{ route('backend.purchases.store') }}">
+    <form id="formStore" action="{{ route('backend.invoicepurchases.store') }}">
       @csrf
       <div class="row align-items-center border border-dark py-10 px-4">
         <div class="col-12">
@@ -282,7 +282,14 @@
           delay: 250,
           cache: true,
           data: function(e) {
+            var arrayUsed = [];
+            $('select[name^="items[sparepart_id]"]').each(function() {
+              if($(this).val()){
+                arrayUsed.push($(this).val());
+              }
+            });
             return {
+              used: arrayUsed,
               q: e.term || '',
               page: e.page || 1
             }

@@ -15,6 +15,7 @@ class JobOrder extends Model
     'date_end',
     'status_salary',
     'status_payment',
+    'status_payment_ldo',
   ];
   protected $appends = ['num_prefix', 'total_basic_price','total_operational', 'total_sparepart', 'total_salary', 'total_netto_ldo'];
 

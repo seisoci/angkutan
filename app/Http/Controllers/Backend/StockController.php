@@ -31,6 +31,9 @@ class StockController extends Controller
     $offset = ($page - 1) * $resultCount;
     $data = Stock::leftJoin('spareparts', 'stocks.sparepart_id', '=', 'spareparts.id')
         ->where('spareparts.name', 'LIKE', '%' . $request->q. '%')
+        ->when($request->used, function ($query, $used) {
+          return $query->whereNotIn('sparepart_id', $used);
+        })
         ->orderBy('spareparts.name')
         ->skip($offset)
         ->take($resultCount)
@@ -38,6 +41,9 @@ class StockController extends Controller
         ->get();
 
     $count = Stock::leftJoin('spareparts', 'stocks.sparepart_id', '=', 'spareparts.id')
+        ->when($request->used, function ($query, $used) {
+          return $query->whereNotIn('sparepart_id', $used);
+        })
         ->where('spareparts.name', 'LIKE', '%' . $request->q. '%')
         ->get()
         ->count();

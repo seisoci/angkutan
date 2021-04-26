@@ -86,7 +86,7 @@
               <td><select class="form-control select2Stock" name="items[sparepart_id][]"></select></td>
               <td><input type="text" name="items[unit][]" class="form-control rounded-0 unit" disabled>
               </td>
-              <td><input type="type" name="items[qty][]" class="form-control rounded-0 unit">
+              <td><input type="number" min="1" name="items[qty][]" class="form-control rounded-0 unit">
               </td>
               <td><input type="text" name="items[price][]" class="currency rounded-0 form-control"></td>
               <td><input type="text" name="items[total][]" class="currency rounded-0 form-control" disabled></td>
@@ -208,11 +208,18 @@
             }
           },
         },
-      }).on('select2:select', function(evt){
+      }).on('change', function(evt){
         var $row = $(this).closest("tr");
-        $row.find('input[name="items[unit][]"]').val(evt.params.data.qty);
+        $row.find('input[name="items[unit][]"]').val('');
+        $row.find('input[name="items[qty][]"]').val('').attr('max', 0);
+      })
+      .on('select2:select', function(evt){
+        var $row = $(this).closest("tr");
+        $row.find('input[name="items[unit][]"]').val(evt.params.data.qty)
+        $row.find('input[name="items[qty][]"]').attr('max', evt.params.data.qty);
       });
     }
+
 
     function initDate(){
       $('.datepicker').datepicker({
@@ -301,7 +308,7 @@
     function raw_items(nextindex){
       return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>"+'<td><select class="form-control select2Stock" name="items[sparepart_id][]"></select></td>'+
       '<td><input type="text" name="items[unit][]" class="form-control unit rounded-0" disabled></td>'+
-      '<td><input type="text" name="items[qty][]" class="form-control unit rounded-0" ></td>'+
+      '<td><input type="number" min="1" name="items[qty][]" class="form-control rounded-0" ></td>'+
       '<td><input type="text" name="items[price][]" class="currency form-control rounded-0"></td>'+
       '<td><input type="text" name="items[total][]" class="currency form-control rounded-0" disabled ></td>';
     }

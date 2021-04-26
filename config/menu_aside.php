@@ -141,7 +141,7 @@ return [
           ]
         ],
         [
-          'title' => 'Pembelian & Pengambilan',
+          'title' => 'Purchase & Usage',
           'desc' => '',
           'icon' => 'media/svg/icons/Shopping/Cart2.svg',
           'bullet' => 'dot',
@@ -149,7 +149,7 @@ return [
           'arrow' => true,
           'submenu' => [
             [
-              'title' => 'Pembelian',
+              'title' => 'Pembelian Barang',
               'page'  => 'backend/invoicepurchases'
             ],
             [
@@ -157,12 +157,12 @@ return [
               'page'  => 'backend/invoicereturpurchases'
             ],
             [
-              'title' => 'Pakai Barang',
-              'page'  => 'backend/using barang'
+              'title' => 'Pemakaian Barang',
+              'page'  => 'backend/invoiceusageitems'
             ],
             [
-              'title' => 'Buat Nota',
-              'page'  => 'backend/invoice'
+              'title' => 'Pembelian Barang Diluar',
+              'page'  => 'backend/invoiceusageitemsoutside'
             ],
           ]
         ],
@@ -185,7 +185,7 @@ return [
           ]
         ],
         [
-          'title' => 'Invoice Operational',
+          'title' => 'Payment Operational',
           'desc' => '',
           'icon' => 'media/svg/icons/Shopping/Wallet2.svg',
           'bullet' => 'dot',

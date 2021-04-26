@@ -89,7 +89,6 @@
           <th>Tipe</th>
           <th>Tahun</th>
           <th>Tanggal Berlaku STNK</th>
-          <th>Dump</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -217,7 +216,7 @@
         serverSide: true,
         order: [[7, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        pageLength: 10,
+        pageLength: 9,
         ajax: "{{ route('backend.anotherexpedition.datatable_transport', $id) }}",
         columns: [
             {data: 'image', name: 'image', searchable: false},
@@ -226,7 +225,6 @@
             {data: 'type', name: 'type'},
             {data: 'year', name: 'year'},
             {data: 'expired_stnk', name: 'expired_stnk'},
-            {data: 'dump', name: 'dump'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],

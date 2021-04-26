@@ -87,8 +87,8 @@ class InvoiceCostumerController extends Controller
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
-        'job_order_id'      => 'required|array',
-        'job_order_id.*'      => 'required|integer',
+        'job_order_id'  => 'required|array',
+        'job_order_id.*'=> 'required|integer',
         'prefix'        => 'required|integer',
         'num_bill'      => 'required|integer',
         'costumer_id'   => 'required|integer',

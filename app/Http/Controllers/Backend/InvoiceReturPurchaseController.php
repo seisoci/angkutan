@@ -22,8 +22,8 @@ class InvoiceReturPurchaseController extends Controller
      */
     public function index(Request $request)
     {
-      $config['page_title']       = "List Nota Retur Pembelian";
-      $config['page_description'] = "Daftar List Nota Retur Pembelian";
+      $config['page_title']       = "List Invoice Retur Pembelian";
+      $config['page_description'] = "Daftar List Invoice Retur Pembelian";
       $page_breadcrumbs = [
         ['page' => '#','title' => "List Retur Pembelian"],
       ];
@@ -58,9 +58,9 @@ class InvoiceReturPurchaseController extends Controller
      */
     public function create()
     {
-      $config['page_title']       ="Nota Retur Pembelian";
+      $config['page_title']       ="Invoice Retur Pembelian";
       $page_breadcrumbs = [
-        ['page' => '#','title' => "List Nota Retur Pembelian"],
+        ['page' => '#','title' => "List Invoice Retur Pembelian"],
       ];
       return view('backend.sparepart.invoicereturpurchases.create', compact('config', 'page_breadcrumbs'));
     }
@@ -146,10 +146,10 @@ class InvoiceReturPurchaseController extends Controller
      */
     public function show($id)
     {
-      $config['page_title'] = "Detail Nota Retur Pembelian";
+      $config['page_title'] = "Detail Invoice Retur Pembelian";
       $page_breadcrumbs = [
-        ['page' => '/backend/invoicereturpurchases','title' => "List Nota Retur Pembelian"],
-        ['page' => '#','title' => "Detail Nota Retur Pembelian"],
+        ['page' => '/backend/invoicereturpurchases','title' => "List Invoice Retur Pembelian"],
+        ['page' => '#','title' => "Detail Invoice Retur Pembelian"],
       ];
       $collection = Setting::all();
       $profile = collect($collection)->mapWithKeys(function ($item) {

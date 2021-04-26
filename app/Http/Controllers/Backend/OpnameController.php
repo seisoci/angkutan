@@ -88,7 +88,7 @@ class OpnameController extends Controller
         DB::beginTransaction();
         $opanme  = Opname::create(['description' => $request->description]);
         foreach($items['sparepart_id'] as $key => $item):
-          $stock = Stock::where('sparepart_id', $items['stock_id'][$key])->firstOrFail();
+          $stock = Stock::where('sparepart_id', $items['sparepart_id'][$key])->firstOrFail();
           $data[] = [
               'opname_id'             => $opanme->id,
               'sparepart_id'          => $items['sparepart_id'][$key],
@@ -125,10 +125,10 @@ class OpnameController extends Controller
      */
     public function show($id)
     {
-      $config['page_title'] = "Detail Supir";
+      $config['page_title'] = "Detail Opname";
       $page_breadcrumbs = [
-        ['page' => '/backend/drivers','title' => "List Supir"],
-        ['page' => '#','title' => "Detail Supir"],
+        ['page' => '/backend/opnames','title' => "List Opname"],
+        ['page' => '#','title' => "Detail Opname"],
       ];
       $collection = Setting::all();
       $profile = collect($collection)->mapWithKeys(function ($item) {
