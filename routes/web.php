@@ -105,7 +105,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::post('invoicesalaries/findbypk', [BackendInvoiceSalaryController::class, 'findbypk'])->name('invoicesalaries.findbypk');
     Route::post('invoicecostumers/findbypk', [BackendInvoiceCostumerController::class, 'findbypk'])->name('invoicecostumers.findbypk');
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
-    Route::get('recapitulation/excel', [BackendRecapitulationController::class, 'excel'])->name('recapitulation.excel');
+    Route::get('recapitulation/document', [BackendRecapitulationController::class, 'document'])->name('recapitulation.document');
     Route::get('recapitulation/print/{transport_id}/{driver_id}/{date_begin}/{date_end}', [BackendRecapitulationController::class, 'print']);
 
     //Master Operationals
