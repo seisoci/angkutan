@@ -37,6 +37,8 @@ use App\Http\Controllers\Backend\InvoiceUsageItemController as BackendInvoiceUsa
 use App\Http\Controllers\Backend\InvoiceUsageItemOutsideController as BackendInvoiceUsageItemOutsideController;
 use App\Http\Controllers\Backend\OpnameController as BackendOpnameController;
 use App\Http\Controllers\Backend\InvoiceReturPurchaseController as BackendInvoiceReturPurchaseController;
+use App\Http\Controllers\Backend\ReportCostumerController as BackendReportCostumerController;
+use App\Http\Controllers\Backend\DashboardController as BackendDashboardController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -54,9 +56,8 @@ Route::get('backend', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('backend', [LoginController::class, 'login']);
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/quick-search', [PagesController::class, 'quicksearch'])->name('quick-search');
-
 Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(function () {
-  Route::group(['middleware' => ['role:super-admin|admin|employee']], function () {
+  Route::group(['middleware' => ['role:super-admin|admin|operasional|akunting|sparepart']], function () {
     Route::post('resetpassword', [BackendUsersController::class,'resetpassword'])->name('users.resetpassword');
     Route::post('changepassword', [BackendUsersController::class, 'changepassword'])->name('users.changepassword');
     Route::resource('users', BackendUsersController::class)->except('show');
@@ -69,6 +70,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('brands/select2', [BackendBrandController::class, 'select2'])->name('brands.select2');
     Route::get('drivers/select2', [BackendDriverController::class, 'select2'])->name('drivers.select2');
     Route::get('drivers/select2self', [BackendDriverController::class, 'select2self'])->name('drivers.select2self');
+    Route::get('drivers/select2joborder', [BackendDriverController::class, 'select2joborder'])->name('drivers.select2joborder');
     Route::get('joborders/select2costumers', [BackendJobOrderController::class, 'select2costumers'])->name('joborders.select2costumers');
     Route::get('joborders/select2routefrom', [BackendJobOrderController::class, 'select2routefrom'])->name('joborders.select2routefrom');
     Route::get('joborders/select2routeto', [BackendJobOrderController::class, 'select2routeto'])->name('joborders.select2routeto');
@@ -77,6 +79,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('transports/select2', [BackendTransportController::class, 'select2'])->name('transports.select2');
     Route::get('transports/select2tonase', [BackendTransportController::class, 'select2tonase'])->name('transports.select2tonase');
     Route::get('transports/select2self', [BackendTransportController::class, 'select2self'])->name('transports.select2self');
+    Route::get('transports/select2joborder', [BackendTransportController::class, 'select2joborder'])->name('transports.select2joborder');
     Route::get('typecapacities/select2', [BackendTypeCapacityController::class, 'select2'])->name('typecapacities.select2');
     Route::get('categories/select2', [BackendCategoryController::class, 'select2'])->name('categories.select2');
     Route::get('supplierspareparts/select2', [BackendSupplierSparepartController::class, 'select2'])->name('supplierspareparts.select2');
@@ -106,7 +109,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::post('invoicecostumers/findbypk', [BackendInvoiceCostumerController::class, 'findbypk'])->name('invoicecostumers.findbypk');
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
     Route::get('recapitulation/document', [BackendRecapitulationController::class, 'document'])->name('recapitulation.document');
-    Route::get('recapitulation/print/{transport_id}/{driver_id}/{date_begin}/{date_end}', [BackendRecapitulationController::class, 'print']);
+    Route::get('recapitulation/print', [BackendRecapitulationController::class, 'print'])->name('recapitulation.print');
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -151,5 +154,10 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('invoiceusageitemsoutside', BackendInvoiceUsageItemOutsideController::class);
     Route::resource('paymentldo', BackendPaymentLdoController::class);
     Route::resource('opnames', BackendOpnameController::class);
+
+    Route::get('dashboard', BackendDashboardController::class);
+    //Report
+    Route::resource('reportcostumers', BackendReportCostumerController::class);
+
   });
 });

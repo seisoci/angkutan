@@ -306,7 +306,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[3, 'desc']],
+        order: [[5, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.costumers.index') }}",
@@ -398,7 +398,7 @@
       $(this).find('.modal-body').find('textarea[name="address"]').val(address);
       $(this).find('.modal-body').find('textarea[name="description"]').val(description);
       $(this).find('.modal-body').find('input[name="cooperation"]').val(description);
-      $(this).find('.modal-body').find('input[name="tax"]').val(description);
+      $(this).find('.modal-body').find('input[name="tax"]').val(tax);
     });
     $('#modalShow').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');

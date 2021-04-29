@@ -7,6 +7,7 @@ use App\Facades\Fileupload;
 use App\Models\Driver;
 use Illuminate\Http\Request;
 use DataTables;
+use DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 
@@ -308,6 +309,45 @@ class DriverController extends Controller
         )
       );
 
+      return response()->json($results);
+    }
+
+    public function select2joborder(Request $request){
+      $page = $request->page;
+      $resultCount = 10;
+      $offset = ($page - 1) * $resultCount;
+      $type = !empty($request->type) || isset($request->type) ? $request->type : NULL;
+      $status = $request->status ?? NULL;
+      $data = Driver::where('name', 'LIKE', '%' . $request->q. '%')
+          ->where('another_expedition_id', $type)
+          ->when($status, function ($q, $status) {
+              return $q->where('status', $status);
+          })
+          ->whereNotIn('id', [DB::raw('SELECT driver_id FROM job_orders WHERE `status_cargo`= "mulai"')])
+          ->orderBy('name')
+          ->skip($offset)
+          ->take($resultCount)
+          ->selectRaw('id, name as text')
+          ->get();
+
+      $count = Driver::where('name', 'LIKE', '%' . $request->q. '%')
+          ->where('another_expedition_id', $type)
+          ->when($status, function ($q, $status) {
+              return $q->where('status', $status);
+          })
+          ->whereNotIn('id', [DB::raw('SELECT driver_id FROM job_orders WHERE `status_cargo`= "mulai"')])
+          ->get()
+          ->count();
+
+      $endCount = $offset + $resultCount;
+      $morePages = $count > $endCount;
+
+      $results = array(
+        "results" => $data,
+        "pagination" => array(
+            "more" => $morePages
+        )
+      );
       return response()->json($results);
     }
 }

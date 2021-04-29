@@ -5,6 +5,13 @@ return [
     'items' => [
         // Dashboard
         [
+          'title' => 'Dashboard',
+          'root' => true,
+          'icon' => 'media/svg/icons/Design/Layers.svg', // or can be 'flaticon-home' or any flaticon-*
+          'page' => 'backend/dashboard',
+          'new-tab' => false,
+        ],
+        [
           'title' => 'Users',
           'root' => true,
           'icon' => 'media/svg/icons/General/User.svg', // or can be 'flaticon-home' or any flaticon-*
@@ -197,7 +204,7 @@ return [
               'page'  => 'backend/invoicesalaries'
             ],
             [
-              'title' => 'Invoice Costumers',
+              'title' => 'Invoice Pelanggan',
               'page'  => 'backend/invoicecostumers'
             ],
             [
@@ -220,6 +227,10 @@ return [
             [
               'title' => 'Laporan Rekapitulasi',
               'page'  => 'backend/recapitulation'
+            ],
+            [
+              'title' => 'Laporan Pelanggan',
+              'page'  => 'backend/reportcostumers'
             ],
           ]
         ],

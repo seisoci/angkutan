@@ -120,7 +120,7 @@ class SparepartController extends Controller
         ['page' => '#','title' => "Edit Kendaraan"],
       ];
 
-      $data = Sparepart::with(['supplier', 'brand', 'categories'])->findOrFail($id);
+      $data = Sparepart::with([ 'brand', 'categories'])->findOrFail($id);
 
       return view('backend.mastersparepart.spareparts.edit',compact('config', 'page_breadcrumbs', 'data'));
     }

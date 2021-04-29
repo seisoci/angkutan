@@ -67,6 +67,55 @@ class RecapitulationController extends Controller
       return view('backend.operational.recapitulation.index', compact('config', 'page_breadcrumbs', 'data', 'profile', 'date_begin', 'date_end', 'transport_id', 'driver_id', 'driver', 'transport'));
     }
 
+    public function print(Request $request)
+    {
+      $validator = Validator::make($request->all(), [
+        'transport_id'  => 'integer|nullable',
+        'driver_id'     => 'integer|nullable',
+        'date_begin'    => 'date_format:Y-m-d',
+        'date_end'      => 'date_format:Y-m-d',
+      ]);
+
+      $config['page_title']       = "Laporan Rekapitulasi";
+      $config['page_description'] = "Laporan Rekapitulasi";
+      $page_breadcrumbs = [
+        ['page' => '#','title' => "Laporan Rekapitulasi"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+        return [$item['name'] => $item['value']];
+      });
+      $data         = array();
+      $transport    = NULL;
+      $driver       = NULL;
+      if($validator->passes()){
+        $driver_id    = $request->driver_id;
+        $transport_id = $request->transport_id;
+        $date_begin   = $request->date_begin;
+        $date_end     = $request->date_end;
+
+        if($request->all() != NULL){
+          $transport = isset($transport_id) || !empty($transport_id) ? Transport::findOrFail($transport_id) : 'Semua Mobil';
+          $driver = isset($driver_id) || !empty($driver_id) ? Driver::select('id', 'name')->findOrFail($driver_id) : 'Semua Supir';
+          $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense'])
+          ->withSum('operationalexpense','amount')
+          ->where('type', 'self')
+          ->when($driver_id, function ($query, $driver_id) {
+            return isset($driver_id) ? $query->where('driver_id', $driver_id) : NULL;
+          })
+          ->when($transport_id, function ($query, $transport_id) {
+            return isset($transport_id) ? $query->where('transport_id', $transport_id) : NULL;
+          })
+          ->whereBetween('date_begin', [$date_begin, $date_end])
+          ->get();
+        }
+      }else{
+        return redirect()->back()->withErrors($validator->errors());
+      }
+
+      return view('backend.operational.recapitulation.print', compact('config', 'page_breadcrumbs', 'data', 'profile', 'date_begin', 'date_end', 'transport_id', 'driver_id', 'driver', 'transport'));
+    }
+
     public function document(Request $request)
     {
       $validator = Validator::make($request->all(), [
@@ -461,36 +510,7 @@ class RecapitulationController extends Controller
         header('Content-Type: application/pdf');
         header('Content-Disposition: attachment;filename="'. $filename .'.pdf"');
         header('Cache-Control: max-age=0');
-      }elseif($type == 'HTML'){
-        $writer = new Html($spreadsheet);
-        header('Content-Type: text/html; charset=UTF-8');
-        header('Cache-Control: max-age=0');
-        // $hdr = $writer->generateHTMLHeader();
-        // $sty = $writer->generateStyles(false); // do not write <style> and </style>
-        // $newstyle = <<<EOF
-        // <style type='text/css'>
-        // body {
-        //     background-color: yellow;
-        // }
-        // </style>
-        // EOF;
-        // echo preg_replace('@</head>@', "$newstyle\n</head>", $hdr);
-        // echo $writer->generateSheetData();
-        // echo $writer->generateHTMLFooter();
       }
-
-      // $writer     =\PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Tcpdf');
-      // $writer   =\PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Dompdf');
-      // $writer   =\PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Mpdf');
-      // $writer = new \PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf($spreadsheet);
-      // $writer = new \PhpOffice\PhpSpreadsheet\Writer\Html($spreadsheet);
-
-      // $pdf_path   ='tcpdf_output.pdf';
-      // header('Content-Type: application/pdf');
-      // header('Content-Disposition: attachment;filename="'. $filename .'.pdf"');
-      // header('Cache-Control: max-age=0');
-      // $writer->save('php://output');
-      // $writer->save($pdf_path);
       $writer->save('php://output');
       exit();
     }

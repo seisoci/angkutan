@@ -35,12 +35,6 @@
                 2000kB</small></p>
           </div>
           <div class="form-group">
-            <label>Nama Supplier<span class="text-danger">*</span></label>
-            <select class="form-control" id="select2Suppliers" name="supplier_sparepart_id">
-              <option value="{{ $data->supplier->id }}" selected>{{ $data->supplier->name }}</option>
-            </select>
-          </div>
-          <div class="form-group">
             <label>Nama Spare Part</label>
             <input type="text" name="name" class="form-control" placeholder="Input Nama Spare Spart"
               value="{{ $data->name ?? '' }}" />

@@ -123,7 +123,7 @@
     <table class="table table-bordered table-hover" id="Datatable">
       <thead>
         <tr>
-          <th>Nama</th>
+          <th>Prefix</th>
           <th>No. Job Order</th>
           <th>LDO</th>
           <th>Supir</th>

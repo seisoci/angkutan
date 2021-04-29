@@ -75,8 +75,7 @@ class JobOrderController extends Controller
         })
         ->when($status_salary, function ($query, $status_salary) {
           return $query->where('status_salary', $status_salary);
-        })
-        ;
+        });
         return DataTables::of($data)
           ->addIndexColumn()
           ->addColumn('action', function($row){

@@ -40,7 +40,7 @@ class InvoiceUsageItemController extends Controller
                       <i class="fas fa-eye"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a href="invoiceusageitems/'.$row->id.'" class="dropdown-item">Retur Detail</a>
+                    <a href="invoiceusageitems/'.$row->id.'" class="dropdown-item">Detail Pemakaian</a>
                   </div>
               </div>
             ';

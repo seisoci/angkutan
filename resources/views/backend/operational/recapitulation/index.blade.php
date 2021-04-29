@@ -320,20 +320,20 @@
         href="{{ route('backend.recapitulation.document', ['transport_id='.$transport_id.'', 'driver_id='.$driver_id.'', 'date_begin='.$date_begin.'', 'date_end='.$date_end.'', 'type=PDF']) }}"><i
           class="fas fa-file-pdf"></i>
         Export
-        Excel</a>
+        PDF</a>
       <a class="btn btn-success btn-sm mr-4"
         href="{{ route('backend.recapitulation.document', ['transport_id='.$transport_id.'', 'driver_id='.$driver_id.'', 'date_begin='.$date_begin.'', 'date_end='.$date_end.'', 'type=EXCEL']) }}"><i
           class="far fa-file-excel"></i>
         Export
         Excel</a>
-      <button target="_blank" name="" class="btn btn-primary btn-sm" onclick="openNewWindow()"><i
+      <a target="_blank" name="" class="btn btn-primary btn-sm"
+        href="{{ route('backend.recapitulation.print', ['transport_id='.$transport_id.'', 'driver_id='.$driver_id.'', 'date_begin='.$date_begin.'', 'date_end='.$date_end.'', 'type=EXCEL']) }}"><i
           class="fas fa-print"></i>
-        Print</button>
+        Print</a>
     </div>
     @endif
   </div>
 </div>
-
 @endsection
 
 {{-- Styles Section --}}
@@ -348,14 +348,6 @@
 <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
 {{-- page scripts --}}
 <script type="text/javascript">
-  function openNewWindow(){
-  var newWindow = window.open('http://angkutan.test/backend/recapitulation/document?transport_id=1&driver_id=&date_begin=2021-03-01&date_end=2021-03-31&type=HTML');
-    newWindow.addEventListener('load', true);
-    newWindow.focus();
-    newWindow.print();
-    newWindow.close();
-  }
-
   $(document).ready(function(){
 
     $('.datepicker').datepicker({

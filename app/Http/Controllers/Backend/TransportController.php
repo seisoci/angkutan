@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transport;
 use Illuminate\Http\Request;
 use DataTables;
+use DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -276,6 +277,39 @@ class TransportController extends Controller
         ->where('another_expedition_id', NULL)
         ->get()
         ->count();
+    $endCount = $offset + $resultCount;
+    $morePages = $count > $endCount;
+
+    $results = array(
+      "results" => $data,
+      "pagination" => array(
+          "more" => $morePages
+      )
+    );
+
+    return response()->json($results);
+  }
+
+  public function select2joborder(Request $request){
+    $page = $request->page;
+    $type = !empty($request->type) || isset($request->type) ? $request->type : NULL;
+    $resultCount = 10;
+    $offset = ($page - 1) * $resultCount;
+    $data = Transport::where('num_pol', 'LIKE', '%' . $request->q. '%')
+        ->where('another_expedition_id', $type)
+        ->whereNotIn('id', [DB::raw('SELECT transport_id FROM job_orders WHERE `status_cargo`= "mulai"')])
+        ->orderBy('num_pol')
+        ->skip($offset)
+        ->take($resultCount)
+        ->selectRaw('id, CONCAT(`num_pol`," (", UPPER(`type_car`), ")") as text')
+        ->get();
+
+    $count = Transport::where('num_pol', 'LIKE', '%' . $request->q. '%')
+        ->where('another_expedition_id', $type)
+        ->whereNotIn('id', [DB::raw('SELECT transport_id FROM job_orders WHERE `status_cargo`= "mulai"')])
+        ->get()
+        ->count();
+
     $endCount = $offset + $resultCount;
     $morePages = $count > $endCount;
 

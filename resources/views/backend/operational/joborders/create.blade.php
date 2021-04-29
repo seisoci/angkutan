@@ -328,7 +328,7 @@
       placeholder: "Search No. Pol",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.transports.select2tonase') }}",
+          url: "{{ route('backend.transports.select2joborder') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -347,7 +347,7 @@
       placeholder: "Search Supir",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.drivers.select2') }}",
+          url: "{{ route('backend.drivers.select2joborder') }}",
           dataType: "json",
           delay: 250,
           cache: true,
