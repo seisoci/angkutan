@@ -15,11 +15,7 @@ use Validator;
 
 class InvoiceReturPurchaseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
       $config['page_title']       = "List Invoice Retur Pembelian";
@@ -35,12 +31,12 @@ class InvoiceReturPurchaseController extends Controller
             $restPayment = $row->rest_payment != 0 ? '<a href="invoicepurchases/'.$row->id.'/edit" class="dropdown-item">Bayar Sisa</a>' : NULL;
             $actionBtn = '
               <div class="dropdown">
-                  <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-eye"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     '.$restPayment.'
-                    <a href="invoicereturpurchases/'.$row->id.'" class="dropdown-item">Retur Detail</a>
+                    <a href="invoicereturpurchases/'.$row->id.'" class="dropdown-item">Detail Retur</a>
                   </div>
               </div>
             ';
@@ -51,11 +47,6 @@ class InvoiceReturPurchaseController extends Controller
       return view('backend.sparepart.invoicereturpurchases.index', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
       $config['page_title']       ="Invoice Retur Pembelian";
@@ -65,12 +56,6 @@ class InvoiceReturPurchaseController extends Controller
       return view('backend.sparepart.invoicereturpurchases.create', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
@@ -138,15 +123,10 @@ class InvoiceReturPurchaseController extends Controller
       return $response;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\ReturPurchase  $returPurchase
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
       $config['page_title'] = "Detail Invoice Retur Pembelian";
+      $config['print_url']  = "/backend/invoicereturpurchases/$id/print";
       $page_breadcrumbs = [
         ['page' => '/backend/invoicereturpurchases','title' => "List Invoice Retur Pembelian"],
         ['page' => '#','title' => "Detail Invoice Retur Pembelian"],
@@ -156,41 +136,22 @@ class InvoiceReturPurchaseController extends Controller
           return [$item['name'] => $item['value']];
       });
       $data = InvoiceReturPurchase::with(['returpurchases.sparepart', 'supplier'])->findOrFail($id);
-      // dd($data->toArray());
       return view('backend.sparepart.invoicereturpurchases.show',compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\ReturPurchase  $returPurchase
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(ReturPurchase $returPurchase)
-    {
-        //
+    public function print($id){
+      $config['page_title'] = "Detail Invoice Retur Pembelian";
+      $config['print_url']  = "/backend/invoicereturpurchases/$id/print";
+      $page_breadcrumbs = [
+        ['page' => '/backend/invoicereturpurchases','title' => "List Invoice Retur Pembelian"],
+        ['page' => '#','title' => "Detail Invoice Retur Pembelian"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+          return [$item['name'] => $item['value']];
+      });
+      $data = InvoiceReturPurchase::with(['returpurchases.sparepart', 'supplier'])->findOrFail($id);
+      return view('backend.sparepart.invoicereturpurchases.print',compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ReturPurchase  $returPurchase
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, ReturPurchase $returPurchase)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\ReturPurchase  $returPurchase
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(ReturPurchase $returPurchase)
-    {
-        //
-    }
 }

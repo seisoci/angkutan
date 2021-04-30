@@ -18,60 +18,72 @@
   </div>
   {{-- Body --}}
   <div class="card-body p-0">
-    <!-- begin: Invoice header-->
     <div class="row justify-content-center py-8 px-8 px-md-0">
       <div class="col-md-11">
-        <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Detail Pemakaian Barang</u></h2>
+        <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>SLIP GAJI</u></h2>
         <table class="table table-borderless table-title">
           <tbody>
             <tr>
               <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
               </td>
               <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" colspan="2" class="text-left" style="width:15%">Tanggal</td>
+              <td scope="col" class="text-left pl-20" style="width:20%">Tanggal</td>
               <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-              <td scope="col" class="text-left" style="width:23%"> {{ $data->created_at }}</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
             </tr>
             <tr>
               <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
               <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" colspan="2" class="text-left" style="width:15%">No. Referensi</td>
+              <td scope="col" class="text-left pl-20" style="width:20%">No. Referensi</td>
               <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-              <td scope="col" class="text-left" style="width:23%"> {{ $data->num_invoice }}</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
             </tr>
             <tr>
               <td scope="col">{{ $profile['telp'] ?? ''}}</td>
               <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" colspan="2" class="text-left" style="width:15%">Nama Supir</td>
+              <td scope="col" class="text-left pl-20" style="width:20%">Nama Supir</td>
               <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-              <td scope="col" class="text-left" style="width:23%"> {{ $data->driver->name }}</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->driver->name }}</td>
             </tr>
             <tr>
               <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
               <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" colspan="2" class="text-left" style="width:15%">No. Polisi</td>
+              <td scope="col" class="text-left pl-20" style="width:20%">No. Polisi</td>
               <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-              <td scope="col" class="text-left" style="width:23%"> {{ $data->transport->num_pol }}</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->transport->num_pol }}</td>
             </tr>
           </tbody>
         </table>
         <div class="separator separator-solid separator-border-1"></div>
-        <table class="table" style="font-size: 11px !important">
+        <table class="table">
           <thead>
             <tr>
               <th scope="col" style="width:5%">#</th>
-              <th scope="col">Produk</th>
-              <th scope="col" class="text-center" style="width:5%">Jumlah</th>
+              <th scope="col" style="width:15%">No. Job Order</th>
+              <th scope="col" style="width:5%">KETERANGAN</th>
+              <th scope="col" style="width:30%">PELANGGAN</th>
+              <th scope="col" style="width:30%">RUTE</th>
+              <th scope="col" class="text-right" style="width:15%">JUMLAH</th>
             </tr>
           </thead>
           <tbody>
-            @foreach ($data->usageitem as $item)
+            @foreach ($data->joborders as $item)
             <tr>
               <td>{{ $loop->iteration }}</td>
-              <td>{{ $item->sparepart->name }}</td>
-              <td class="text-center">{{ $item->qty }}</td>
+              <td>{{ $item->num_prefix }}</td>
+              <td>Gaji</td>
+              <td>{{ $item->costumer->name }}</td>
+              <td>{{ $item->routefrom->name }} -> {{ $item->routeto->name }}</td>
+              <td class="text-right">{{ number_format($item->total_salary ?? 0, 2, ',', '.') }}</td>
             </tr>
             @endforeach
+            <tr>
+              <td colspan="4" class="text-left font-weight-bolder">
+                {{ ucwords(Terbilang::terbilang($data->grandtotal)) }}
+              </td>
+              <td class="text-right font-weight-bolder text-uppercase">TOTAL DITERIMA:</td>
+              <td class="text-right font-weight-bolder">{{ number_format($data->grandtotal ?? 0, 2, '.', '.') }}</td>
+            </tr>
           </tbody>
         </table>
       </div>

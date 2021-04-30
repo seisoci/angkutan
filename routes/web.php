@@ -88,6 +88,13 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('expenses/select2', [BackendExpenseController::class, 'select2'])->name('expenses.select2');
     Route::get('stocks/select2', [BackendStockController::class, 'select2'])->name('stocks.select2');
 
+    //Print
+    Route::get('invoicesalaries/{id}/print', [BackendInvoiceSalaryController::class, 'print']);
+    Route::get('invoiceldo/{id}/print', [BackendInvoiceLdoController::class, 'print']);
+    Route::get('invoiceusageitems/{id}/print', [BackendInvoiceUsageItemController::class, 'print']);
+    Route::get('invoiceusageitemsoutside/{id}/print', [BackendInvoiceUsageItemOutsideController::class, 'print']);
+    Route::get('opnames/{id}/print', [BackendOpnameController::class, 'print']);
+    Route::get('invoicereturpurchases/{id}/print', [BackendInvoiceReturPurchaseController::class, 'print']);
     //Datatables Details
     Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
     Route::get('invoicecostumers/datatabledetail/{id}', [BackendInvoiceCostumerController::class, 'datatabledetail'])->name('invoicecostumers.datatabledetail');

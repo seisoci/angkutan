@@ -35,4 +35,9 @@ class InvoiceUsageItem extends Model
   public function transport(){
     return $this->belongsTo(Transport::class);
   }
+
+  public function getNumInvoiceAttribute()
+  {
+    return ($this->prefix ."-". $this->num_bill);
+  }
 }

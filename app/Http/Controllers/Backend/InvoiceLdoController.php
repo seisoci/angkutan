@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InvoiceLdo;
 use App\Models\JobOrder;
 use App\Models\Prefix;
+use App\Models\Setting;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -31,6 +32,19 @@ class InvoiceLdoController extends Controller
         ->addIndexColumn()
         ->addColumn('details_url', function(InvoiceLdo $invoiceLdo) {
           return route('backend.invoiceldo.datatabledetail', $invoiceLdo->id);
+        })
+        ->addColumn('action', function($row){
+          $actionBtn = '
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a href="invoiceldo/'.$row->id.'" class="dropdown-item">Invoice Detail</a>
+                </div>
+            </div>
+          ';
+          return $actionBtn;
         })
         ->make(true);
 
@@ -77,8 +91,8 @@ class InvoiceLdoController extends Controller
           return $query->where('cargo_id', $cargo_id);
         });
         return DataTables::of($data)
-          ->addIndexColumn()
-          ->make(true);
+        ->addIndexColumn()
+        ->make(true);
       }
       return view('backend.invoice.invoiceldo.create', compact('config', 'page_breadcrumbs'));
     }
@@ -136,9 +150,37 @@ class InvoiceLdoController extends Controller
      * @param  \App\Models\InvoiceLdo  $invoiceLdo
      * @return \Illuminate\Http\Response
      */
-    public function show(InvoiceLdo $invoiceLdo)
+    public function show($id)
     {
-        //
+      $config['page_title'] = "Invoice Tagihan LDO";
+      $config['print_url']  = "/backend/invoiceldo/$id/print";
+      $page_breadcrumbs = [
+        ['page' => '/backend/invoiceldo','title' => "List Invoice Gaji"],
+        ['page' => '#','title' => "Invoice Tagihan LDO"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+        return [$item['name'] => $item['value']];
+      });
+      $data = InvoiceLdo::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])->findOrFail($id);
+
+      return view('backend.invoice.invoiceldo.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    }
+
+    public function print($id)
+    {
+      $config['page_title'] = "Invoice Tagihan LDO";
+      $page_breadcrumbs = [
+        ['page' => '/backend/invoiceldo','title' => "List Invoice Gaji"],
+        ['page' => '#','title' => "Invoice Tagihan LDO"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+        return [$item['name'] => $item['value']];
+      });
+      $data = InvoiceLdo::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])->findOrFail($id);
+
+      return view('backend.invoice.invoiceldo.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
     /**

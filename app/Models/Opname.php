@@ -22,4 +22,5 @@ class Opname extends Model
   public function opnamedetail(){
     return $this->hasMany(OpnameDetail::class);
   }
+
 }

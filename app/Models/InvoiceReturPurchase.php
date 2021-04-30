@@ -30,4 +30,9 @@ class InvoiceReturPurchase extends Model
   public function returpurchases(){
     return $this->hasMany(ReturPurchase::class);
   }
+
+  public function getNumInvoiceAttribute()
+  {
+    return ($this->prefix ."-". $this->num_bill);
+  }
 }

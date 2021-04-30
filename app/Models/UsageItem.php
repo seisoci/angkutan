@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class UsageItem extends Model
 {
-    use HasFactory;
+  use HasFactory;
+  protected $appends = ['num_invoice', 'total_price'];
 
   protected $fillable = [
     'invoice_usage_item_id',
@@ -29,5 +30,10 @@ class UsageItem extends Model
 
   public function invoiceusage(){
     return $this->belongsTo(InvoiceUsageItem::class);
+  }
+
+  public function getTotalPriceAttribute()
+  {
+    return ($this->price * $this->qty);
   }
 }

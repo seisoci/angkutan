@@ -35,11 +35,11 @@ class OpnameController extends Controller
           ->addColumn('action', function($row){
             $actionBtn = '
               <div class="dropdown">
-                  <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-eye"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a href="opnames/'.$row->id.'" class="dropdown-item">Retur Detail</a>
+                    <a href="opnames/'.$row->id.'" class="dropdown-item">Detail Opname</a>
                   </div>
               </div>
             ';
@@ -126,6 +126,7 @@ class OpnameController extends Controller
     public function show($id)
     {
       $config['page_title'] = "Detail Opname";
+      $config['print_url'] = "/backend/opnames/$id/print";
       $page_breadcrumbs = [
         ['page' => '/backend/opnames','title' => "List Opname"],
         ['page' => '#','title' => "Detail Opname"],
@@ -136,6 +137,21 @@ class OpnameController extends Controller
       });
       $data = Opname::with(['opnamedetail.sparepart:id,name'])->findOrFail($id);
       return view('backend.sparepart.opnames.show',compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    }
+
+    public function print($id)
+    {
+      $config['page_title'] = "Detail Opname";
+      $page_breadcrumbs = [
+        ['page' => '/backend/opnames','title' => "List Opname"],
+        ['page' => '#','title' => "Detail Opname"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+        return [$item['name'] => $item['value']];
+      });
+      $data = Opname::with(['opnamedetail.sparepart:id,name'])->findOrFail($id);
+      return view('backend.sparepart.opnames.print',compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
 }

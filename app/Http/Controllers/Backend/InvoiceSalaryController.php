@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InvoiceSalary;
 use App\Models\JobOrder;
 use App\Models\Prefix;
+use App\Models\Setting;
 use App\Models\Transport;
 use Illuminate\Http\Request;
 use DataTables;
@@ -32,6 +33,19 @@ class InvoiceSalaryController extends Controller
         ->addIndexColumn()
         ->addColumn('details_url', function(InvoiceSalary $invoiceSalary) {
           return route('backend.invoicesalaries.datatabledetail', $invoiceSalary->id);
+        })
+        ->addColumn('action', function($row){
+          $actionBtn = '
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a href="invoicesalaries/'.$row->id.'" class="dropdown-item">Invoice Detail</a>
+                </div>
+            </div>
+          ';
+          return $actionBtn;
         })
         ->make(true);
 
@@ -125,9 +139,38 @@ class InvoiceSalaryController extends Controller
      * @param  \App\Models\InvoiceSalary  $invoiceSalary
      * @return \Illuminate\Http\Response
      */
-    public function show(InvoiceSalary $invoiceSalary)
+    public function show($id)
     {
-        //
+      $config['page_title'] = "Invoice Gaji Supir";
+      $config['print_url']  = "/backend/invoicesalaries/$id/print";
+      $page_breadcrumbs = [
+        ['page' => '/backend/invoicesalaries','title' => "List Invoice Gaji"],
+        ['page' => '#','title' => "Invoice Gaji Supir"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+        return [$item['name'] => $item['value']];
+      });
+      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name'])->findOrFail($id);
+
+      return view('backend.invoice.invoicesalaries.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    }
+
+    public function print($id)
+    {
+      $config['page_title'] = "Invoice Gaji Supir";
+      $config['print_url']  = "/backend/invoicesalaries/$id/print";
+      $page_breadcrumbs = [
+        ['page' => '/backend/invoicesalaries','title' => "List Invoice Gaji"],
+        ['page' => '#','title' => "Invoice Gaji Supir"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+        return [$item['name'] => $item['value']];
+      });
+      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name'])->findOrFail($id);
+
+      return view('backend.invoice.invoicesalaries.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
     /**

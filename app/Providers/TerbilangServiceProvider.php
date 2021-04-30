@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App;
+use Illuminate\Support\ServiceProvider;
+use App\Helpers\Terbilang;
 
-class FileuploadProvider extends ServiceProvider
+class TerbilangServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -24,8 +25,8 @@ class FileuploadProvider extends ServiceProvider
      */
     public function boot()
     {
-      App::bind('Fileupload',function() {
-        return new \App\Helpers\Fileupload;
+      App::singleton('Terbilang',function() {
+        return new Terbilang;
       });
     }
 }

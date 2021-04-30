@@ -32,6 +32,19 @@ class InvoiceCostumerController extends Controller
         ->addColumn('details_url', function(InvoiceCostumer $invoiceCostumer) {
           return route('backend.invoicecostumers.datatabledetail', $invoiceCostumer->id);
         })
+        ->addColumn('action', function($row){
+          $actionBtn = '
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a href="invoicecostumers/'.$row->id.'" class="dropdown-item">Invoice Detail</a>
+                </div>
+            </div>
+          ';
+          return $actionBtn;
+        })
         ->make(true);
 
       }

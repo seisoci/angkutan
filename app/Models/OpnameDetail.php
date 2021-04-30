@@ -25,4 +25,5 @@ class OpnameDetail extends Model
   public function sparepart(){
     return $this->belongsTo(Sparepart::class);
   }
+
 }

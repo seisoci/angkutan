@@ -42,6 +42,7 @@
           <th>Nama Pelanggan</th>
           <th>Grand Total</th>
           <th>Created At</th>
+          <th>Action</th>
         </tr>
       </thead>
     </table>
@@ -95,6 +96,7 @@
             {data: 'costumer.name', name: 'costumer.name'},
             {data: 'grandtotal', name: 'grandtotal' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
             {data: 'created_at', name: 'created_at'},
+            {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
     });
 

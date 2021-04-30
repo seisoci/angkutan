@@ -29,8 +29,12 @@ class InvoiceLdo extends Model
     return $this->belongsTo(AnotherExpedition::class, 'another_expedition_id');
   }
 
+  public function joborders(){
+    return $this->hasMany(JobOrder::class);
+  }
+
   public function getNumInvoiceAttribute()
   {
-      return ($this->prefix ."-". $this->num_bill);
+    return ($this->prefix ."-". $this->num_bill);
   }
 }

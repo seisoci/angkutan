@@ -102,8 +102,10 @@
                 <td width="30%" class="pr-7">{{ $item->expense->name }}</td>
                 <td width="45%" class="pr-7">{{ $item->description  }}</td>
                 <td width="100%" class="currency pr-7 text-right">{{ $item->amount }}</td>
+                @if ($data->status_cargo != 'selesai' && $data->status_cargo != 'batal')
                 <td width="20%"><button href="#" data-toggle="modal" data-target="#modalDelete"
                     data-id="{{ $item->id }}" class="delete btn btn-danger btn-sm d-print-none">X</button></td>
+                @endif
               </tr>
               @endforeach
               @if ($data->status_cargo != 'selesai' && $data->status_cargo != 'batal')

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class ReturPurchase extends Model
 {
     use HasFactory;
+    protected $appends = ['total_price'];
 
     protected $fillable = [
       'invoice_retur_purchase_id',
@@ -28,5 +29,10 @@ class ReturPurchase extends Model
 
     public function invoiceretur(){
       return $this->belongsTo(InvoiceReturPurchase::class);
+    }
+
+    public function getTotalPriceAttribute()
+    {
+      return ($this->price * $this->qty);
     }
 }

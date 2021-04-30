@@ -42,6 +42,7 @@
           <th>Nama LDO</th>
           <th>Grand Total</th>
           <th>Created At</th>
+          <th>Action</th>
         </tr>
       </thead>
     </table>
@@ -97,6 +98,7 @@
             {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},
             {data: 'grandtotal', name: 'grandtotal' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
             {data: 'created_at', name: 'created_at'},
+            {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
     });
 

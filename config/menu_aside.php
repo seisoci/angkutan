@@ -217,7 +217,7 @@ return [
           'section' => 'Laporan',
         ],
         [
-          'title' => 'Laporan',
+          'title' => 'Report',
           'desc' => '',
           'icon' => 'media/svg/icons/Communication/Clipboard-list.svg',
           'bullet' => 'dot',

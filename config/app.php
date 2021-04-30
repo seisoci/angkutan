@@ -167,6 +167,7 @@ return [
          */
         App\Providers\MetronicServiceProvider::class,
         App\Providers\FileuploadProvider::class,
+        App\Providers\TerbilangServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Yajra\DataTables\ButtonsServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
@@ -240,6 +241,7 @@ return [
         'Metronic' => App\Classes\Theme\Metronic::class,
         'Menu' => App\Classes\Theme\Menu::class,
         'Fileupload' => App\Facades\Fileupload::class,
+        'Terbilang' => App\Facades\Terbilang::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
 
     ],

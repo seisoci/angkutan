@@ -47,4 +47,9 @@ class InvoicePurchase extends Model
   {
       return $this->total_bill - $this->discount;
   }
+
+  public function getNumInvoiceAttribute()
+  {
+    return ($this->prefix ."-". $this->num_bill);
+  }
 }

@@ -36,7 +36,7 @@ class InvoiceUsageItemOutsideController extends Controller
           ->addColumn('action', function($row){
             $actionBtn = '
               <div class="dropdown">
-                  <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-eye"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -131,6 +131,7 @@ class InvoiceUsageItemOutsideController extends Controller
     public function show($id)
     {
       $config['page_title'] = "Detail Pemakaian Barang";
+      $config['print_url'] = "/backend/invoiceusageitemsoutside/$id/print";
       $page_breadcrumbs = [
         ['page' => '/backend/invoiceusageitemsoutside','title' => "List Pemakaian Barang"],
         ['page' => '#','title' => "Detail Pemakaian Barang"],
@@ -139,9 +140,22 @@ class InvoiceUsageItemOutsideController extends Controller
       $profile = collect($collection)->mapWithKeys(function ($item) {
         return [$item['name'] => $item['value']];
       });
-      $data = InvoiceUsageItem::with(['driver', 'transport','usageitem.sparepart:id,name'])->findOrFail($id);
+      $data = InvoiceUsageItem::where('type', 'outside')->with(['driver', 'transport','usageitem.sparepart:id,name'])->findOrFail($id);
       return view('backend.invoice.invoiceusageitemsoutside.show', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+    }
 
+    public function print($id){
+      $config['page_title'] = "Detail Pemakaian Barang";
+      $page_breadcrumbs = [
+        ['page' => '/backend/invoiceusageitemsoutside','title' => "List Pemakaian Barang"],
+        ['page' => '#','title' => "Detail Pemakaian Barang"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+        return [$item['name'] => $item['value']];
+      });
+      $data = InvoiceUsageItem::where('type', 'outside')->with(['driver', 'transport','usageitem.sparepart:id,name'])->findOrFail($id);
+      return view('backend.invoice.invoiceusageitemsoutside.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
     }
 
     /**
