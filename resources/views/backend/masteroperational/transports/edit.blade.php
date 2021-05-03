@@ -52,19 +52,10 @@
           </div>
           <div class="form-group">
             <label class="d-block">Jenis Mobil</label>
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-              <label class="btn btn-sm btn-info active">
-                <input type="radio" name="type_car" value="engkel" {{ $data->type_car == 'engkel' ? 'checked' : NULL }}>
-                Engkel
-                (Kecil)
-              </label>
-              <label class="btn btn-sm btn-info">
-                <input type="radio" name="type_car" value="tronton"
-                  {{ $data->type_car == 'tronton' ? 'checked' : NULL }}>
-                Tronton
-                (Besar)
-              </label>
-            </div>
+            <select class="form-control" name="type_car">
+              <option value="engkel" {{ $data->type_car == 'engkel' ? 'selected' : NULL }}>Engkel (Kecil)</option>
+              <option value="tronton" {{ $data->type_car == 'tronton' ? 'selected' : NULL }}>Tronton (Besar)</option>
+            </select>
           </div>
           <div class="row">
             <div class="col-md-6">

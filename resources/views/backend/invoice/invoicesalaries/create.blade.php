@@ -14,7 +14,9 @@
   </div>
   <form id="formStore" action="{{ route('backend.invoicesalaries.store') }}">
     @csrf
-    <div id="TampungId">
+    <div id="JobOrderId">
+    </div>
+    <div id="KasbonId">
     </div>
     <div class="card-body">
       <div class="mb-10">
@@ -55,14 +57,16 @@
                 </div>
               </div>
             </div>
+            <h4 class="mt-10"><u>Gaji</u></h4>
+            <div class="separator separator-solid separator-border-1"></div>
             <table id="table_invoice" class="table table-striped">
               <thead>
                 <tr>
-                  <th scope="col" class="text-center">#</th>
-                  <th scope="col">Tanggal</th>
-                  <th scope="col">S. Jalan</th>
-                  <th scope="col">No. Polisi</th>
-                  <th scope="col" class="text-right">Jumlah</th>
+                  <th scope="col" class="text-center" style="width: 5%">#</th>
+                  <th scope="col" style="width: 20%">Tanggal</th>
+                  <th scope="col" style="width: 20%">S. Jalan</th>
+                  <th scope="col" style="width: 20%">No. Polisi</th>
+                  <th scope="col" class="text-right" style="width: 15%">Jumlah</th>
                 </tr>
               </thead>
               <tbody>
@@ -70,6 +74,28 @@
               <tfoot>
               </tfoot>
             </table>
+            <h4 class="mt-10"><u>Kasbon</u></h4>
+            <div class="separator separator-solid separator-border-1"></div>
+            <table id="table_Kasbon" class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col" class="text-center" style="width: 5%">#</th>
+                  <th scope="col" style="width: 20%">Tanggal</th>
+                  <th scope="col" style="width: 20%">Keterangan</th>
+                  <th style="width: 20%"></th>
+                  <th scope="col" class="text-right" style="width: 15%">Jumlah</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+              <tfoot>
+              </tfoot>
+            </table>
+            <div class="float-right">
+              <label for="" class="font-weight-bolder">Grand Total Net: </label>
+              <input type="text" class="form-control form-control-solid grandtotalnetto money" disabled>
+              <input type="hidden" name="grandtotalnetto" class="form-control form-control-solid grandtotalnetto money">
+            </div>
           </div>
         </div>
       </div>
@@ -80,12 +106,12 @@
   </form>
 </div>
 
-{{-- DataTables --}}
+{{-- DataTables Gaji --}}
 <div class="card card-custom mt-10">
   <div class="card-header flex-wrap py-3">
     <div class="card-title">
-      <h3 class="card-label">{{ $config['page_title'] }}
-        <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
+      <h3 class="card-label">Gaji Supir
+        <span class="d-block text-muted pt-2 font-size-sm">List Gaji Supir</span></h3>
     </div>
     <div class="card-toolbar">
       <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -105,6 +131,33 @@
           <th>No. Pol</th>
           <th>Gaji</th>
           <th>Created At</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+
+{{-- DataTables Kasbon --}}
+<div class="card card-custom mt-10">
+  <div class="card-header flex-wrap py-3">
+    <div class="card-title">
+      <h3 class="card-label">Kasbon Supir
+        <span class="d-block text-muted pt-2 font-size-sm">Kasbon Supir</span></h3>
+    </div>
+    <div class="card-toolbar">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
+      <button id="submitKasbonAppend" class="btn btn-primary">Masukan Ke Form Gaji</button>
+    </div>
+  </div>
+  <div class="card-body">
+    <!--begin: Datatable-->
+    <table class="table table-bordered table-hover" id="DatatableKasbon">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Tanggal Kasbon</th>
+          <th>Nama Supir</th>
+          <th>Jumlah</th>
         </tr>
       </thead>
     </table>
@@ -154,7 +207,7 @@
             {data: 'num_bill', name: 'num_bill'},
             {data: 'driver.name', name: 'driver.name'},
             {data: 'transport.num_pol', name: 'transport.num_pol'},
-            {data: 'total_salary', name: 'total_salary', render: $.fn.dataTable.render.number( '.', '.', 2), orderable:false, searchable: false},
+            {data: 'total_salary', name: 'total_salary', render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right', orderable:false, searchable: false},
             {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [
@@ -169,6 +222,46 @@
           style: 'multi'
         },
     });
+
+    var dataTableKasbon = $('#DatatableKasbon').DataTable({
+      responsive: false,
+      scrollX: true,
+      processing: true,
+      serverSide: true,
+      order: [[1, 'desc']],
+      lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+      pageLength: 10,
+      ajax: {
+        url: "{{ route('backend.invoicesalaries.datatablekasbon') }}",
+        data: function(d){
+          d.driver_id = $('#select2Driver').find(':selected').val();
+        }
+      },
+      columns: [
+          {data: 'id', name: 'id'},
+          {data: 'created_at', name: 'created_at'},
+          {data: 'driver.name', name: 'driver.name'},
+          {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
+      ],
+      columnDefs: [
+        {
+          targets: 0,
+          checkboxes: {
+            selectRow: true
+          }
+        },
+      ],
+      select: {
+        style: 'multi'
+      },
+    });
+
+    function calculateGrandTotal(){
+      let total_gaji = parseInt($('input[name=grand_total_gaji]').val()) || 0;
+      let total_kasbon = parseInt($('input[name=grand_total_kasbon]').val()) || 0;
+      let grantotal_netto = total_gaji - total_kasbon;
+      return grantotal_netto;
+    }
 
     $('#submitAppend').on('click', function(e){
         e.preventDefault();
@@ -189,11 +282,11 @@
           if(response.data){
             $('#table_invoice tbody').empty();
             $('#table_invoice tfoot').empty();
-            $('#TampungId').empty();
+            $('#JobOrderId').empty();
             var total = 0;
             $.each(response.data, function(index, data){
               total += data.total_salary;
-              $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="'+data.id+'">');
+              $('#JobOrderId').append('<input type="hidden" name="job_order_id[]" value="'+data.id+'">');
               $('#table_invoice tbody').append('<tr>'+
               ' <td class="text-center">'+(index+1)+'</td>'+
               ' <td>'+data.date_begin+'</td>'+
@@ -202,7 +295,7 @@
               ' <td class="text-right money">'+data.total_salary+'</td>'+
               '</tr>');
             });
-            $('#TampungId').append('<input type="hidden" name="grand_total" value="'+total+'">');
+            $('#JobOrderId').append('<input type="hidden" name="grand_total_gaji" value="'+total+'">');
 
             $('#table_invoice tfoot').append('<tr>'+
               '<td colspan="4" class="text-right">Total</td>'+
@@ -215,7 +308,62 @@
               'autoGroup': true,
               'digits': 2,
               'digitsOptional': false,
+            })
+            $('input[name=grand_total_netto]').val(calculateGrandTotal());
+            $('.grandtotalnetto').val(calculateGrandTotal());
+          }
+        }
+      });
+    });
+
+
+    $('#submitKasbonAppend').on('click', function(e){
+      e.preventDefault();
+      let selected = dataTableKasbon.column(0).checkboxes.selected();
+      var dataSelected = [];
+      $.each(selected, function(index, data){
+        dataSelected.push(data);
+      });
+      $.ajax({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type:'POST',
+        url: "{{ route('backend.invoicesalaries.findbypkkasbon') }}",
+        data: {data: JSON.stringify(dataSelected)},
+        success:function(response) {
+          if(response.data){
+            $('#table_Kasbon tbody').empty();
+            $('#table_Kasbon tfoot').empty();
+            $('#KasbonId').empty();
+            var total_kasbon = 0;
+            $.each(response.data, function(index, data){
+              console.log(total_kasbon);
+              total_kasbon += parseInt(data.amount);
+              $('#KasbonId').append('<input type="hidden" name="kasbon_id[]" value="'+data.id+'">');
+              $('#table_Kasbon tbody').append('<tr>'+
+              ' <td class="text-center">'+(index+1)+'</td>'+
+              ' <td>'+data.created_at+'</td>'+
+              ' <td colspan="2">Kasbon</td>'+
+              ' <td class="text-right money text-danger">'+data.amount+'</td>'+
+              '</tr>');
             });
+            $('#KasbonId').append('<input type="hidden" name="grand_total_kasbon" value="'+total_kasbon+'">');
+
+            $('#table_Kasbon tfoot').append('<tr>'+
+              '<td colspan="4" class="text-right">Total</td>'+
+              '<td class="text-right money">'+total_kasbon+'</td>'+
+              '</tr>');
+
+            $(".money").inputmask({
+              'alias': 'decimal',
+              'groupSeparator': ',',
+              'autoGroup': true,
+              'digits': 2,
+              'digitsOptional': false,
+            });
+            $('input[name=grand_total_netto]').val(calculateGrandTotal());
+            $('.grandtotalnetto').val(calculateGrandTotal());
           }
         }
       });
@@ -253,7 +401,7 @@
       placeholder: "Search Supir",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.drivers.select2') }}",
+          url: "{{ route('backend.drivers.select2self') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -266,9 +414,14 @@
       },
     }).on('change', function (e){
       dataTable.draw();
+      dataTableKasbon.draw();
       $('#table_invoice tbody').empty();
       $('#table_invoice tfoot').empty();
-      $('#TampungId').empty();
+      $('#JobOrderId').empty();
+      $('#table_Kasbon tbody').empty();
+      $('#table_Kasbon tfoot').empty();
+      $('#KasbonId').empty();
+      $('.grandtotalnetto').val('');
     });
 
     $("#select2Transport").select2({
@@ -288,9 +441,14 @@
       },
     }).on('change', function (e){
       dataTable.draw();
+      dataTableKasbon.draw();
       $('#table_invoice tbody').empty();
       $('#table_invoice tfoot').empty();
-      $('#TampungId').empty();
+      $('#JobOrderId').empty();
+      $('#table_Kasbon tbody').empty();
+      $('#table_Kasbon tfoot').empty();
+      $('#KasbonId').empty();
+      $('.grandtotalnetto').val('');
     });
 
     $("#formStore").submit(function(e) {
@@ -327,7 +485,7 @@
             $.each(response.error, function(key, value) {
               $(".alert-text").append('<span style="display: block">'+value+'</span>');
             });
-            toastr.error("Please complete your form", 'Failed !');
+            toastr.error(response.message || "Please complete your form", 'Failed !');
           }
         },
         error: function(response) {

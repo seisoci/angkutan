@@ -5,174 +5,146 @@
 @section('content')
 <!-- begin::Card-->
 <div class="card card-custom overflow-hidden">
+  {{-- Header --}}
+  <div class="card-header d-flex justify-content-end align-items-center">
+    <div class="">
+      <div class="btn-group btn-group-md" role="group" aria-label="Large button group">
+        <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
+            class="fa fa-arrow-left"></i> Back</button>
+        <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i
+            class="fa fa-print"></i> Print</a>
+      </div>
+    </div>
+  </div>
+  {{-- Body --}}
   <div class="card-body p-0">
-    <!-- begin: Invoice-->
     <!-- begin: Invoice header-->
-    <div class="row justify-content-center py-8 px-8 py-md-27 px-md-0">
-      <div class="col-md-9">
-        <div class="d-flex justify-content-between pb-10 pb-md-20 flex-column flex-md-row">
-          <h1 class="display-4 font-weight-boldest mb-10">INVOICE <br>PURCHASE ORDER</h1>
-          <div class="d-flex flex-column align-items-md-end px-0">
-            <!--begin::Logo-->
-            <a href="#" class="mb-5">
-              <img
-                src="{{ $profile['logo_url'] != NULL ? asset("/images/thumbnail/".$profile['logo_url']) : asset('media/bg/no-content.svg') }}"
-                width="75px" height="75px" />
-            </a>
-            <!--end::Logo-->
-            <span class="d-flex flex-column align-items-md-end opacity-70">
-              <span>{{ $profile['name'] ?? '' }}</span>
-              <span>{{ $profile['telp'] ?? ''}}</span>
-              <span>{{ $profile['email'] ?? '' }}</span>
-              <span>{{ $profile['address'] ?? '' }}</span>
-            </span>
-          </div>
-        </div>
-        <div class="border-bottom w-100"></div>
-        <div class="d-flex justify-content-between pt-6">
-          <div class="d-flex flex-column flex-root">
-            <span class="font-weight-bolder mb-2">Tanggal Note</span>
-            <span class="opacity-70">{{ $data->invoice_date ?? '' }}</span>
-          </div>
-          <div class="d-flex flex-column flex-root">
-            <span class="font-weight-bolder mb-2">Tanggal Jatuh Tempo</span>
-            <span class="opacity-70">{{ $data->due_date ?? '' }}</span>
-          </div>
-          <div class="d-flex flex-column flex-root">
-            <span class="font-weight-bolder mb-2">NO. INVOICE</span>
-            <span class="opacity-70">{{ $data->prefix_invoice ?? '' }}</span>
-          </div>
-          <div class="d-flex flex-column flex-root">
-            <span class="font-weight-bolder mb-2">METODE</span>
-            <span class="opacity-70">{{ $data->method_payment ?? '' }}</span>
-          </div>
-          <div class="d-flex flex-column flex-root">
-            <span class="font-weight-bolder mb-2">INVOICE PEMBELIAN KE.</span>
-            <span class="opacity-70">{{ $data->supplier->name ?? '' }}
-              <br />{{ $data->supplier->phone }} <br />{{ $data->supplier->address }}</span>
-          </div>
-        </div>
+    <div class="row justify-content-center py-8 px-8 px-md-0">
+      <div class="col-md-11">
+        <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Purchase Order</u></h2>
+        <table class="table table-borderless table-title">
+          <tbody>
+            <tr>
+              <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+              </td>
+              <td scope="col" class="text-left" style="width:10%"></td>
+              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">No. Invoice</td>
+              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
+            </tr>
+            <tr>
+              <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
+              <td scope="col" class="text-left" style="width:10%"></td>
+              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Supplier</td>
+              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->supplier->name }}</td>
+            </tr>
+            <tr>
+              <td scope="col">{{ $profile['telp'] ?? ''}}</td>
+              <td scope="col" class="text-left" style="width:10%"></td>
+              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
+              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
+            </tr>
+            <tr>
+              <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
+              <td scope="col" class="text-left" style="width:10%"></td>
+              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Metode Pembayaran</td>
+              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ ucwords($data->method_payment) }}</td>
+            </tr>
+            <tr>
+              <td scope="col">Deskripsi : {{ $data->description ?? ''}}</td>
+              <td scope="col" class="text-left" style="width:10%"></td>
+              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal Jth Tempo</td>
+              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->due_date }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="separator separator-solid separator-border-1"></div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col" style="width:5%">#</th>
+              <th scope="col" style="width:65%">Produk</th>
+              <th scope="col" class="text-center" style="width:10%">Unit</th>
+              <th scope="col" class="text-right" style="width:10%">Harga</th>
+              <th scope="col" class="text-center" style="width:10%">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($data->purchases as $item)
+            <tr>
+              <td>{{ $loop->iteration }}</td>
+              <td>{{ $item->sparepart->name }}</td>
+              <td class="text-center">{{ $item->qty }}</td>
+              <td class="text-right">{{ number_format($item->price,0, ',', '.') }}</td>
+              <td class="text-right">{{ number_format($item->qty * $item->price,0, ',', '.') }}</td>
+            </tr>
+            @endforeach
+            <tr>
+              <td colspan="4" class="text-right font-weight-bold">Diskon</td>
+              <td class="text-right">{{ number_format($data->discount ?? 0,2, ',', '.') }}</td>
+            </tr>
+            <tr>
+              <td colspan="4" class="text-right font-weight-bold">Total Tagihan</td>
+              <td class="text-right">{{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <h4>Pembayaran</h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col" style="width:5%">#</th>
+              <th scope="col" style="width:65%">Tanggal</th>
+              <th scope="col" class="text-right" style="width:10%">Nominal</th>
+              <th scope="col" class="text-right" style="width:10%">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($data->purchasepayments as $item)
+            <tr>
+              <td>{{ $loop->iteration }}</td>
+              <td>{{ $item->date_payment }}</td>
+              <td class="text-right">{{ number_format($item->payment, 2, ',', '.') }}</td>
+              <td class="text-right">{{ number_format($item->payment, 2, ',', '.') }}</td>
+            </tr>
+            @endforeach
+            <tr>
+              <td colspan="3" class="text-right font-weight-bold">Total Tagihan</td>
+              <td class="text-right">{{ number_format($data->total_net ?? 0,2, ',', '.') }}</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-right font-weight-bold">Total Pembayaran</td>
+              <td class="text-right">{{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-right font-weight-bold">Sisa Tagihan</td>
+              <td class="text-right">{{ number_format($data->rest_payment ?? 0,2, ',', '.') }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-    <!-- end: Invoice header-->
-    <!-- begin: Invoice body-->
-    <div class="row justify-content-center py-8 px-8 py-md-10 px-md-0">
-      <div class="col-md-9">
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th class="pl-0 font-weight-bold text-muted text-uppercase">Barang</th>
-                <th class="text-right font-weight-bold text-muted text-uppercase">Unit</th>
-                <th class="text-right font-weight-bold text-muted text-uppercase">Harga</th>
-                <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach ($data->purchases as $item)
-              <tr class="font-weight-boldest">
-                <td class="pl-0 pt-7">{{ $item->sparepart->name }}</td>
-                <td class="text-right pt-7">{{ $item->qty }}</td>
-                <td class="text-right pt-7">{{ number_format($item->price,0, ',', '.') }}</td>
-                <td class="text-danger pr-0 pt-7 text-right">{{ number_format($item->qty * $item->price,0, ',', '.') }}
-                </td>
-              </tr>
-              @endforeach
-            </tbody>
-            <tfoot>
-              <tr>
-                <td></td>
-                <td></td>
-                <td class="text-right pr-0 font-weight-bold text-uppercase">Diskon</td>
-                <td class="text-success text-right pr-0 font-weight-bold text-uppercase">
-                  {{ number_format($data->discount ?? 0,2, ',', '.') }}</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td class="text-right pr-0 font-weight-bold text-muted text-uppercase">Total Tagihan</td>
-                <td class="text-danger text-right pr-0 font-weight-bold text-uppercase">
-                  {{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-    <!-- end: Invoice body-->
-    <!-- begin: Invoice footer-->
-    <div class="row justify-content-center bg-gray-100 py-8 px-8 py-md-10 px-md-0">
-      <div class="col-md-9">
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th class="font-weight-bold text-muted text-uppercase"></th>
-                <th class="font-weight-bold text-muted text-uppercase"></th>
-                <th class="font-weight-bold text-muted text-uppercase"></th>
-                <th class="font-weight-bold text-muted text-uppercase text-right">Grand Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="font-weight-bolder">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="text-danger font-size-h3 font-weight-boldest text-right">
-                  {{ number_format($data->total_net ?? 0,0, ',', '.') }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    @if (!empty($data->memo))
-    <div class="row justify-content-center py-2 px-8 py-md-2 px-md-0">
-      <div class="col-md-9">
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th class="font-weight-bold text-muted text-uppercase">Memo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="font-weight-bolder">
-                <td>{{ $data->memo }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    @endif
-    <!-- end: Invoice footer-->
-    <!-- begin: Invoice action-->
-    <div class="row justify-content-center py-8 px-8 py-md-10 px-md-0 d-print-none">
-      <div class="col-md-9">
-        <div class="d-flex justify-content-end">
-          <button type="button" class="btn btn-primary font-weight-bold" onclick="window.print();">Print
-            Invoice</button>
-        </div>
-      </div>
-    </div>
-    <!-- end: Invoice action-->
-    <!-- end: Invoice-->
   </div>
 </div>
 @endsection
 
 {{-- Styles Section --}}
 @section('styles')
+<style>
+  .table-title td,
+  th {
+    padding: 0;
+  }
+</style>
 @endsection
 
 {{-- Scripts Section --}}
 @section('scripts')
 {{-- vendors --}}
-<script>
-  $(document).ready(function(){
-    $('body').addClass('print-content-only');
-  });
-</script>
+
 {{-- page scripts --}}
 @endsection

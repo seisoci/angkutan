@@ -34,6 +34,10 @@ class InvoiceSalary extends Model
     return $this->hasMany(JobOrder::class, 'invoice_salary_id');
   }
 
+  public function kasbon(){
+    return $this->hasMany(Kasbon::class);
+  }
+
   public function driver(){
     return $this->belongsTo(Driver::class, 'driver_id');
   }

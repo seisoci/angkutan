@@ -49,14 +49,10 @@
           </div>
           <div class="form-group">
             <label class="d-block">Jenis Mobil</label>
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-              <label class="btn btn-sm btn-info active">
-                <input type="radio" name="type_car" value="engkel" checked> Engkel (Kecil)
-              </label>
-              <label class="btn btn-sm btn-info">
-                <input type="radio" name="type_car" value="tronton"> Tronton (Besar)
-              </label>
-            </div>
+            <select class="form-control" name="type_car">
+              <option value="engkel">Engkel (Kecil)</option>
+              <option value="tronton">Tronton (Besar)</option>
+            </select>
           </div>
           <div class="row">
             <div class="col-md-6">

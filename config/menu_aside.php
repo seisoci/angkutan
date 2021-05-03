@@ -200,6 +200,10 @@ return [
           'arrow' => true,
           'submenu' => [
             [
+              'title' => 'Kasbon',
+              'page'  => 'backend/kasbon'
+            ],
+            [
               'title' => 'Invoice Gaji',
               'page'  => 'backend/invoicesalaries'
             ],

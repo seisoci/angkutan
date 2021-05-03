@@ -22,10 +22,10 @@ class InvoicePurchaseController extends Controller
      */
     public function index(Request $request)
     {
-      $config['page_title']       = "List Invoice Purchase Order";
-      $config['page_description'] = "Daftar List Invoice Purchase Order";
+      $config['page_title']       = "List Purchase Order";
+      $config['page_description'] = "Daftar List Purchase Order";
       $page_breadcrumbs = [
-        ['page' => '#','title' => "List Invoice Purchase Order"],
+        ['page' => '#','title' => "List Purchase Order"],
       ];
       if ($request->ajax()) {
         $data = InvoicePurchase::query()
@@ -42,7 +42,6 @@ class InvoicePurchaseController extends Controller
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     '.$restPayment.'
                     <a href="invoicepurchases/'.$row->id.'" class="dropdown-item">Invoice Detail</a>
-                    <a href="invoicepurchases/'.$row->id.'/showpayment" class="dropdown-item">Invoice Pembayaran</a>
                   </div>
               </div>
             ';
@@ -163,10 +162,11 @@ class InvoicePurchaseController extends Controller
 
     public function show($id)
     {
-      $config['page_title'] = "Detail Invoice Purchase";
+      $config['page_title'] = "Detail Purchase Order";
+      $config['print_url']  = "/backend/invoicepurchases/$id/print";
       $page_breadcrumbs = [
-        ['page' => '/backend/drivers','title' => "List Invoice Purchase Order"],
-        ['page' => '#','title' => "Detail Invoice Purchase Order"],
+        ['page' => '/backend/invoicepurchases','title' => "List Purchase Order"],
+        ['page' => '#','title' => "Detail Purchase Order"],
       ];
       $collection = Setting::all();
       $profile = collect($collection)->mapWithKeys(function ($item) {
@@ -176,12 +176,28 @@ class InvoicePurchaseController extends Controller
       return view('backend.sparepart.invoicepurchases.show',compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
+    public function print($id)
+    {
+      $config['page_title'] = "Detail Purchase Order";
+      $config['print_url']  = "/backend/invoicepurchases/$id/print";
+      $page_breadcrumbs = [
+        ['page' => '/backend/invoicepurchases','title' => "List Purchase Order"],
+        ['page' => '#','title' => "Detail Purchase Order"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+          return [$item['name'] => $item['value']];
+      });
+      $data = InvoicePurchase::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['purchases', 'supplier'])->firstOrFail();
+      return view('backend.sparepart.invoicepurchases.print',compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    }
+
     public function showpayment($id)
     {
-      $config['page_title'] = "Detail Invoice Purchase Payment";
+      $config['page_title'] = "Detail Purchase Payment";
       $page_breadcrumbs = [
-        ['page' => '/backend/drivers','title' => "List Invoice Purchase Order Payment"],
-        ['page' => '#','title' => "Detail Invoice Purchase Order Payment"],
+        ['page' => '/backend/drivers','title' => "List Purchase Order Payment"],
+        ['page' => '#','title' => "Detail Purchase Order Payment"],
       ];
       $collection = Setting::all();
       $profile = collect($collection)->mapWithKeys(function ($item) {
@@ -192,10 +208,10 @@ class InvoicePurchaseController extends Controller
     }
 
     public function edit($id){
-      $config['page_title'] = "Detail Invoice Purchase Payment";
+      $config['page_title'] = "Detail Purchase Payment";
       $page_breadcrumbs = [
-        ['page' => '/backend/drivers','title' => "List Invoice Purchase Order Payment"],
-        ['page' => '#','title' => "Detail Invoice Purchase Order Payment"],
+        ['page' => '/backend/drivers','title' => "List Purchase Order Payment"],
+        ['page' => '#','title' => "Detail Purchase Order Payment"],
       ];
       $data = InvoicePurchase::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['purchases.sparepart:id,name', 'supplier', 'purchasepayments'])->firstOrFail();
       return view('backend.sparepart.invoicepurchases.edit',compact('config', 'page_breadcrumbs', 'data'));

@@ -243,6 +243,7 @@ class JobOrderController extends Controller
     public function show($id)
     {
       $config['page_title'] = "Detail Job Order";
+      $config['print_url']  = "/backend/joborders/$id/print";
       $page_breadcrumbs = [
         ['page' => '/backend/drivers','title' => "List Job Order"],
         ['page' => '#','title' => "Detail Job Order"],
@@ -254,6 +255,23 @@ class JobOrderController extends Controller
       $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
       // dd($data->toArray());
       return view('backend.operational.joborders.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    }
+
+       public function print($id)
+    {
+      $config['page_title'] = "Detail Job Order";
+      $config['print_url']  = "/backend/joborders/$id/print";
+      $page_breadcrumbs = [
+        ['page' => '/backend/drivers','title' => "List Job Order"],
+        ['page' => '#','title' => "Detail Job Order"],
+      ];
+      $collection = Setting::all();
+      $profile = collect($collection)->mapWithKeys(function ($item) {
+        return [$item['name'] => $item['value']];
+      });
+      $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
+      // dd($data->toArray());
+      return view('backend.operational.joborders.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
     /**
