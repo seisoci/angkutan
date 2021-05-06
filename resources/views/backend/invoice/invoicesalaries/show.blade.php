@@ -55,8 +55,6 @@
           </tbody>
         </table>
         <div class="separator separator-solid separator-border-1"></div>
-        <h3 class="my-4"><u>Gaji</u></h3>
-        <div class="separator separator-solid separator-border-1"></div>
         <table class="table">
           <thead>
             <tr>
@@ -80,46 +78,11 @@
             </tr>
             @endforeach
             <tr>
-              <td colspan="5" class="text-right font-weight-bolder text-uppercase">TOTAL GAJI:</td>
-              <td class="text-right font-weight-bolder">
-                {{ number_format($data->joborders->sum('total_salary') ?? 0, 2, '.', '.') }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <h3 class="my-4"><u>Kasbon</u></h3>
-        <div class="separator separator-solid separator-border-1"></div>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col" style="width:5%">#</th>
-              <th scope="col" style="width:15%">Tanggal</th>
-              <th scope="col" style="width:5%"></th>
-              <th scope="col" style="width:30%"></th>
-              <th scope="col" style="width:30%"></th>
-              <th scope="col" class="text-right" style="width:15%">JUMLAH</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach ($data->kasbon as $item)
-            <tr>
-              <td>{{ $loop->iteration }}</td>
-              <td colspan="4">{{ $item->created_at }}</td>
-              <td class="text-right">{{ number_format($item->amount ?? 0, 2, ',', '.') }}</td>
-            </tr>
-            @endforeach
-            <tr>
-              <td colspan="5" class="text-right font-weight-bolder text-uppercase">TOTAL KASBON:</td>
-              <td class="text-right font-weight-bolder">
-                {{ number_format($data->kasbon->sum('amount') ?? 0, 2, '.', '.') }}</td>
-            </tr>
-            <tr>
               <td colspan="4" class="text-left font-weight-bolder">
                 {{ ucwords(Terbilang::terbilang($data->grandtotal)) }}
               </td>
               <td class="text-right font-weight-bolder text-uppercase">TOTAL DITERIMA:</td>
-              <td class="text-right font-weight-bolder">
-                {{ number_format($data->grandtotal?? 0, 2, '.', '.') }}</td>
+              <td class="text-right font-weight-bolder">{{ number_format($data->grandtotal ?? 0, 2, '.', '.') }}</td>
             </tr>
           </tbody>
         </table>

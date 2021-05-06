@@ -27,7 +27,7 @@ class SparepartController extends Controller
         ['page' => '#','title' => "List Spare Part"],
       ];
 
-      if ($request->ajax()) {
+      if($request->ajax()) {
         $categories_id = $request->category_id;
         $brand_id = $request->brand_id;
         $data = Sparepart::with(['supplier', 'brand', 'categories'])

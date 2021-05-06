@@ -35,11 +35,11 @@
       }
 
       thead {
-        display: table-header-group;
+        display: table-row-group;
       }
 
       tfoot {
-        display: table-footer-group;
+        display: table-row-group;
       }
 
       body {

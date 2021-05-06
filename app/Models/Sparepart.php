@@ -5,10 +5,14 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 class Sparepart extends Model
 {
-    use HasFactory;
+  use HasFactory, Notifiable, LogsActivity;
+  protected static $logName = 'Master Spare part';
+  protected static $logFillable = true;
+
   protected $fillable = [
     'supplier_sparepart_id',
     'brand_id',

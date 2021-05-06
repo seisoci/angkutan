@@ -84,8 +84,6 @@ class DriverController extends Controller
         'profile_avatar_remove'  => 'between:0,1,NULL'
       ]);
 
-      // var_dump($request->input('another_expedition_id'));
-
       if($validator->passes()){
         $dimensions = [array('1280', '720', 'thumbnail')];
         $dimensions_profile = [array('300', '300', 'thumbnail')];

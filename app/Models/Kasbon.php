@@ -5,24 +5,26 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 class Kasbon extends Model
 {
   use HasFactory;
 
   protected $fillable = [
-    'invoice_salary_id',
+    'invoice_kasbon_id',
     'driver_id',
     'amount',
-    'status'
+    'status',
+    'memo'
   ];
 
   public function driver(){
-    return $this->belongsTo(Driver::class);
+    return $this->belongsTo(Driver::class, 'driver_id');
   }
 
-  public function invoicesalary(){
-    return $this->belongsTo(invoicesalary::class, 'invoice_salary_id');
+  public function invoicekasbon(){
+    return $this->belongsTo(InvoiceKasbon::class, 'invoice_kasbon_id');
   }
 
   public function getCreatedAtAttribute($value){

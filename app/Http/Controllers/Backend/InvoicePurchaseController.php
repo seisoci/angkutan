@@ -117,13 +117,13 @@ class InvoicePurchaseController extends Controller
           ]);
 
           foreach($items['sparepart_id'] as $key => $item):
-            $data[] = [
+            Purchase::create([
                 'invoice_purchase_id'   => $invoice->id,
                 'supplier_sparepart_id' => $request->supplier_sparepart_id,
                 'sparepart_id'          => $items['sparepart_id'][$key],
                 'qty'                   => $items['qty'][$key],
                 'price'                 => $items['price'][$key],
-            ];
+            ]);
             $stockSummary = Stock::firstOrCreate(
                 ['sparepart_id' => $items['sparepart_id'][$key] ],
                 ['qty' => $items['qty'][$key],]
@@ -134,15 +134,13 @@ class InvoicePurchaseController extends Controller
           endforeach;
 
           foreach($payments['date'] as $key => $item):
-            $dataPayment[] = [
+            PurchasePayment::create([
               'invoice_purchase_id' => $invoice->id,
               'date_payment'        => $payments['date'][$key],
               'payment'             => $payments['payment'][$key],
-            ];
+            ]);
           endforeach;
 
-          Purchase::insert($data);
-          count($dataPayment) > 0 ? PurchasePayment::insert($dataPayment) : NULL;
           DB::commit();
 
           $response = response()->json([
@@ -249,7 +247,7 @@ class InvoicePurchaseController extends Controller
           endforeach;
 
           $restPayment = $data->rest_payment - $totalPayment;
-          if($restPayment < -1){
+          if($restPayment <= -1){
             return response()->json([
               'status'    => 'error',
               'message'   => 'Pastikan sisa tagihan tidak negative',

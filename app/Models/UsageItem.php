@@ -5,11 +5,14 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 class UsageItem extends Model
 {
-  use HasFactory;
-  protected $appends = ['num_invoice', 'total_price'];
+  use HasFactory, Notifiable, LogsActivity;
+  protected static $logName = 'Pengambilan Barang';
+  protected static $logFillable = true;
+  protected $appends = ['total_price'];
 
   protected $fillable = [
     'invoice_usage_item_id',
@@ -29,7 +32,7 @@ class UsageItem extends Model
   }
 
   public function invoiceusage(){
-    return $this->belongsTo(InvoiceUsageItem::class);
+    return $this->belongsTo(InvoiceUsageItem::class, 'invoice_usage_item_id');
   }
 
   public function getTotalPriceAttribute()

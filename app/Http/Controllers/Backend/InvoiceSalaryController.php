@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\InvoiceSalary;
 use App\Models\JobOrder;
-use App\Models\Kasbon;
 use App\Models\Prefix;
 use App\Models\Setting;
 use App\Models\Transport;
@@ -30,7 +29,7 @@ class InvoiceSalaryController extends Controller
       ];
       if ($request->ajax()) {
         $data = InvoiceSalary::with(['transport:id,num_pol', 'driver:id,name']);
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('details_url', function(InvoiceSalary $invoiceSalary) {
           return route('backend.invoicesalaries.datatabledetail', $invoiceSalary->id);
@@ -100,16 +99,8 @@ class InvoiceSalaryController extends Controller
         'num_bill'      => 'required|integer',
         'driver_id'     => 'required|integer',
         'transport_id'  => 'required|integer',
-        'kasbon_id'      => 'array',
-        'kasbon_id.*'      => 'integer',
       ]);
 
-      if($request->grandtotalnetto <= 0){
-        $response = response()->json([
-          'status'  => 'error',
-          'message' => 'Gaji tidak boleh minus',
-        ]);
-      }
       if($validator->passes()){
         try {
           DB::beginTransaction();
@@ -119,15 +110,12 @@ class InvoiceSalaryController extends Controller
             'num_bill'     => $request->input('num_bill'),
             'driver_id'    => $request->input('driver_id'),
             'transport_id' => $request->input('transport_id'),
-            'grandtotal'   => $request->input('grandtotalnetto'),
+            'grandtotal'   => $request->input('grand_total'),
             'description'  => $request->input('description'),
             'memo'         => $request->input('memo'),
           ]);
           foreach($request->job_order_id as $item):
             JobOrder::where('id', $item)->update(['invoice_salary_id' => $data->id, 'status_salary' => '1']);
-          endforeach;
-        foreach($request->kasbon_id as $item):
-            Kasbon::where('id', $item)->update(['invoice_salary_id' => $data->id, 'status' => '1']);
           endforeach;
           DB::commit();
           $response = response()->json([
@@ -163,7 +151,8 @@ class InvoiceSalaryController extends Controller
       $profile = collect($collection)->mapWithKeys(function ($item) {
         return [$item['name'] => $item['value']];
       });
-      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name', 'kasbon'])->findOrFail($id);
+      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name'])->findOrFail($id);
+
       return view('backend.invoice.invoicesalaries.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
@@ -179,7 +168,7 @@ class InvoiceSalaryController extends Controller
       $profile = collect($collection)->mapWithKeys(function ($item) {
         return [$item['name'] => $item['value']];
       });
-      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name', 'kasbon'])->findOrFail($id);
+      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name'])->findOrFail($id);
 
       return view('backend.invoice.invoicesalaries.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
@@ -220,37 +209,9 @@ class InvoiceSalaryController extends Controller
       return $response;
     }
 
-    public function findbypkkasbon(Request $request){
-      $data = json_decode($request->data);
-      $response = NULL;
-      if($request->data){
-        $result = Kasbon::with(['driver:id,name'])->whereIn('id', $data)->get();
-
-        $response = response()->json([
-          'data'    => $result,
-        ]);
-      }
-      return $response;
-    }
-
     public function datatabledetail($id)
     {
         $data = JobOrder::where('invoice_salary_id', $id);
-
-        return Datatables::of($data)->make(true);
-    }
-
-    public function datatablekasbon(Request $request)
-    {
-        $driver_id = $request->driver_id;
-        $data = Kasbon::with(['driver:id,name'])
-        ->where('kasbons.status', '0')
-        ->when($driver_id, function ($query, $driver_id) {
-          return $query->where('driver_id', $driver_id);
-        });
-        return DataTables::of($data)
-          ->addIndexColumn()
-          ->make(true);
 
         return Datatables::of($data)->make(true);
     }

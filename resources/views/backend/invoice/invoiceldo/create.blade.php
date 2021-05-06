@@ -160,7 +160,7 @@
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
-          url: "{{ route('backend.invoicecostumers.create') }}",
+          url: "{{ route('backend.invoiceldo.create') }}",
           data: function(d){
             d.costumer_id           = $('#select2Costumer').find(':selected').val();
             d.another_expedition_id = $('#select2AnotherExpedition').find(':selected').val();

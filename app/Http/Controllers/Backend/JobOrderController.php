@@ -17,11 +17,6 @@ use Validator;
 
 class JobOrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
       $config['page_title']       = "Job Order";
@@ -41,6 +36,7 @@ class JobOrderController extends Controller
       $date_end     = $request->date_end;
       $status_cargo = $request->status_cargo;
       $status_salary = $request->status_salary;
+      $status_document = $request->status_document;
       if ($request->ajax()) {
         $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
         ->when($another_expedition_id, function ($query, $another_expedition_id) {
@@ -72,6 +68,13 @@ class JobOrderController extends Controller
         })
         ->when($status_cargo, function ($query, $status_cargo) {
           return $query->where('status_cargo', $status_cargo);
+        })
+        ->when($status_document, function ($query, $status_document) {
+          if($status_document == "zero"){
+            return $query->where('status_document', "0");
+          }else{
+            return $query->where('status_document', $status_document);
+          }
         })
         ->when($status_salary, function ($query, $status_salary) {
           return $query->where('status_salary', $status_salary);

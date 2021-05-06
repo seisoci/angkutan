@@ -40,6 +40,8 @@ use App\Http\Controllers\Backend\InvoiceReturPurchaseController as BackendInvoic
 use App\Http\Controllers\Backend\ReportCostumerController as BackendReportCostumerController;
 use App\Http\Controllers\Backend\DashboardController as BackendDashboardController;
 use App\Http\Controllers\Backend\KasbonController as BackendKasbonController;
+use App\Http\Controllers\Backend\ReportSparepartController as BackendReportSparepartController;
+use App\Http\Controllers\Backend\InvoiceKasbonController as BackendInvoiceKasbonController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -98,11 +100,15 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('invoicereturpurchases/{id}/print', [BackendInvoiceReturPurchaseController::class, 'print']);
     Route::get('invoicepurchases/{id}/print', [BackendInvoicePurchaseController::class, 'print']);
     Route::get('joborders/{id}/print', [BackendJobOrderController::class, 'print']);
+    Route::get('reportsparepart/print', [BackendSparepartController::class, 'print']);
+    Route::get('reportsparepart/document', [BackendSparepartController::class, 'document']);
+    Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
+
     //Datatables Details
     Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
     Route::get('invoicecostumers/datatabledetail/{id}', [BackendInvoiceCostumerController::class, 'datatabledetail'])->name('invoicecostumers.datatabledetail');
     Route::get('invoiceldo/datatabledetail/{id}', [BackendInvoiceLdoController::class, 'datatabledetail'])->name('invoiceldo.datatabledetail');
-    Route::get('invoicesalaries/datatablekasbon', [BackendInvoiceSalaryController::class, 'datatablekasbon'])->name('invoicesalaries.datatablekasbon');
+    Route::get('invoicekasbons/datatabledetail/{id}', [BackendInvoiceKasbonController::class, 'datatabledetail'])->name('invoicekasbons.datatabledetail');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
@@ -117,7 +123,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('invoicepurchases/{id}/cetakpdf', [BackendInvoicePurchaseController::class, 'cetakPdfInvoice'])->name('invoicepurchases.cetakpdf');
     Route::post('joborders/storeexpense', [BackendJobOrderController::class, 'storeexpense'])->name('joborders.storeexpense');
     Route::post('invoicesalaries/findbypk', [BackendInvoiceSalaryController::class, 'findbypk'])->name('invoicesalaries.findbypk');
-    Route::post('invoicesalaries/findbypkkasbon', [BackendInvoiceSalaryController::class, 'findbypkkasbon'])->name('invoicesalaries.findbypkkasbon');
+    Route::post('invoicekasbons/findbypk', [BackendInvoiceKasbonController::class, 'findbypk'])->name('invoicekasbons.findbypk');
     Route::post('invoicecostumers/findbypk', [BackendInvoiceCostumerController::class, 'findbypk'])->name('invoicecostumers.findbypk');
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
     Route::get('recapitulation/document', [BackendRecapitulationController::class, 'document'])->name('recapitulation.document');
@@ -164,12 +170,15 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('invoiceldo', BackendInvoiceLdoController::class);
     Route::resource('invoiceusageitems', BackendInvoiceUsageItemController::class);
     Route::resource('invoiceusageitemsoutside', BackendInvoiceUsageItemOutsideController::class);
+    Route::resource('invoiceusageitems', BackendInvoiceUsageItemController::class);
+    Route::resource('invoicekasbons', BackendInvoiceKasbonController::class);
     Route::resource('paymentldo', BackendPaymentLdoController::class);
     Route::resource('opnames', BackendOpnameController::class);
 
     Route::get('dashboard', BackendDashboardController::class);
     //Report
     Route::resource('reportcostumers', BackendReportCostumerController::class);
+    Route::resource('reportsparepart', BackendReportSparepartController::class);
     Route::resource('kasbon', BackendKasbonController::class);
 
   });

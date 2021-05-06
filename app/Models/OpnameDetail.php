@@ -5,10 +5,14 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 class OpnameDetail extends Model
 {
-    use HasFactory;
+  use HasFactory, Notifiable, LogsActivity;
+  protected static $logName = 'Opname Detail';
+  protected static $logFillable = true;
+
   protected $fillable = [
     'opname_id',
     'sparepart_id',

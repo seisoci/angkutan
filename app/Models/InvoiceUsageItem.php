@@ -5,10 +5,12 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 class InvoiceUsageItem extends Model
 {
     use HasFactory;
+  protected $appends = ['num_invoice'];
 
   protected $fillable = [
     'num_bill',
@@ -40,4 +42,5 @@ class InvoiceUsageItem extends Model
   {
     return ($this->prefix ."-". $this->num_bill);
   }
+
 }

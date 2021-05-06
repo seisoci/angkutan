@@ -7,11 +7,12 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Spatie\Activitylog\Traits\LogsActivity;
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
-
+    use HasFactory, Notifiable, HasRoles, LogsActivity;
+    protected static $logName = 'Master Users';
+    protected static $logFillable = true;
     /**
      * The attributes that are mass assignable.
      *

@@ -4,8 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 class Setting extends Model
 {
-    use HasFactory;
+  use HasFactory, Notifiable, LogsActivity;
+  protected static $logName = 'Settings';
+  protected static $logFillable = true;
 }

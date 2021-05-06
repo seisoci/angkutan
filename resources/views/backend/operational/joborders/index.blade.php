@@ -115,6 +115,16 @@
                 </select>
               </div>
             </div>
+            <div class="col-md-3 my-md-0">
+              <div class="form-group">
+                <label>Status Dokumen:</label>
+                <select class="form-control" id="selectDocument">
+                  <option value="">Pilih Status</option>
+                  <option value="zero">Belum</option>
+                  <option value="1">Selesai</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -268,6 +278,7 @@
             d.date_begin = $('#dateBegin').val();
             d.date_end = $('#dateEnd').val();
             d.status_cargo = $('#selectStatus').find(':selected').val();
+            d.status_document = $('#selectDocument').find(':selected').val();
           }
         },
         columns: [
@@ -474,9 +485,14 @@
     }).on('change', function (e){
       dataTable.draw();
     });
+
     $('#selectStatus').on('change', function(){
       dataTable.draw();
-    })
+    });
+
+    $('#selectDocument').on('change', function(){
+      dataTable.draw();
+    });
 
     $('#modalDelete').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');

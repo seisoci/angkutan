@@ -204,6 +204,10 @@ return [
               'page'  => 'backend/kasbon'
             ],
             [
+              'title' => 'Invoice Kasbon',
+              'page'  => 'backend/invoicekasbons'
+            ],
+            [
               'title' => 'Invoice Gaji',
               'page'  => 'backend/invoicesalaries'
             ],
@@ -231,6 +235,10 @@ return [
             [
               'title' => 'Laporan Rekapitulasi',
               'page'  => 'backend/recapitulation'
+            ],
+            [
+              'title' => 'Laporan Pemakaian Sparepart',
+              'page'  => 'backend/reportsparepart'
             ],
             [
               'title' => 'Laporan Pelanggan',

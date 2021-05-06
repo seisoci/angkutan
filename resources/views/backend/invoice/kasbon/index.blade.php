@@ -40,6 +40,7 @@
           <th>Nama</th>
           <th>Nominal</th>
           <th>Status</th>
+          <th>Keterangan</th>
           <th>Created At</th>
         </tr>
       </thead>
@@ -73,8 +74,11 @@
           </div>
           <div class="form-group">
             <label>Nominal</label>
-            <input type="text" name="amount" class="form-control form-control-solid currency"
-              placeholder="Nominal Kasbon" />
+            <input type="text" name="amount" class="form-control currency" placeholder="Nominal Kasbon" />
+          </div>
+          <div class="form-group">
+            <label>Keterangan</label>
+            <textarea type="text" name="memo" class="form-control" rows="5" placeholder="Keterangan"></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -175,7 +179,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[3, 'desc']],
+        order: [[4, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.kasbon.index') }}",
@@ -183,6 +187,7 @@
             {data: 'driver.name', name: 'driver.name'},
             {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
             {data: 'status', name: 'status'},
+            {data: 'memo', name: 'memo'},
             {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [
@@ -214,15 +219,16 @@
     $('#modalCreate').on('show.bs.modal', function (event) {
     });
     $('#modalCreate').on('hidden.bs.modal', function (event) {
-      $(this).find('.modal-body').find('select[name="driver_id"]').val('');
+      $("#select2Driver").val('').trigger('change');
       $(this).find('.modal-body').find('input[name="amount"]').val('');
+      $(this).find('.modal-body').find('textarea[name="memo"]').val('');
     });
     $('#modalEdit').on('show.bs.modal', function (event) {
       var id = $(event.relatedTarget).data('id');
       var name = $(event.relatedTarget).data('name');
       var amount = $(event.relatedTarget).data('amount');
       $(this).find('#formUpdate').attr('action', '{{ route("backend.prefixes.index") }}/'+id)
-      $(this).find('.modal-body').find('select[name="driver_id"]').val(name);
+      $(this).find('.modal-body').find('select[name="driver_id"]').val(x);
       $(this).find('.modal-body').find('input[name="amount"]').val(amount);
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {

@@ -127,7 +127,6 @@ class InvoiceUsageItemOutsideController extends Controller
       return $response;
     }
 
-
     public function show($id)
     {
       $config['page_title'] = "Detail Pemakaian Barang";

@@ -5,10 +5,13 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 class ReturPurchase extends Model
 {
-    use HasFactory;
+  use HasFactory, Notifiable, LogsActivity;
+  protected static $logName = 'Pengembalian Barang';
+  protected static $logFillable = true;
     protected $appends = ['total_price'];
 
     protected $fillable = [

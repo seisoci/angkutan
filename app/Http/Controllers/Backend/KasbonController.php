@@ -51,9 +51,24 @@ class KasbonController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+      $config['page_title']       ="Create Invoice Kasbon Supir";
+      $config['page_description'] = "Create Invoice Kasbon Supir";
+      $page_breadcrumbs = [
+        ['page' => '#','title' => "Create Invoice Kasbon Supir"],
+      ];
+      $driver_id    = $request->driver_id;
+      if ($request->ajax()) {
+        $data = Kasbon::with(['driver:id,name'])
+        ->when($driver_id, function ($query, $driver_id) {
+          return $query->where('driver_id', $driver_id);
+        });
+        return DataTables::of($data)
+          ->addIndexColumn()
+          ->make(true);
+      }
+      return view('backend.invoice.invoicekasbons.create', compact('config', 'page_breadcrumbs'));
     }
 
     /**
@@ -65,14 +80,16 @@ class KasbonController extends Controller
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
-        'driver_id'  => 'required|integer',
-        'amount'     => 'required|integer',
+        'driver_id'   => 'required|integer',
+        'amount'      => 'required|integer',
+        'memo'        => 'required|string',
       ]);
 
       if($validator->passes()){
         Kasbon::create([
           'driver_id'   => $request->input('driver_id'),
           'amount'      => $request->input('amount'),
+          'memo'      => $request->input('memo'),
         ]);
         $response = response()->json([
           'status'  => 'success',
@@ -84,48 +101,4 @@ class KasbonController extends Controller
       return $response;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Kasbon  $kasbon
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Kasbon $kasbon)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Kasbon  $kasbon
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Kasbon $kasbon)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Kasbon  $kasbon
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Kasbon $kasbon)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Kasbon  $kasbon
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Kasbon $kasbon)
-    {
-        //
-    }
 }
