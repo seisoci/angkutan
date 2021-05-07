@@ -19,6 +19,13 @@ return [
           'new-tab' => false,
         ],
         [
+          'title' => 'Activity Log',
+          'root' => true,
+          'icon' => 'media/svg/icons/Home/Timer.svg', // or can be 'flaticon-home' or any flaticon-*
+          'page' => 'backend/activitylog',
+          'new-tab' => false,
+        ],
+        [
           'title' => 'Roles',
           'root' => true,
           'icon' => 'media/svg/icons/General/Clipboard.svg', // or can be 'flaticon-home' or any flaticon-*

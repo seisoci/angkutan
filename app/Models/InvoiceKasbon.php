@@ -10,8 +10,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class InvoiceKasbon extends Model
 {
-  use HasFactory;
+  use HasFactory, Notifiable, LogsActivity;
   protected $appends = ['num_invoice'];
+  protected static $logName = 'Invoice Kasbon Supir';
+  protected static $logFillable = true;
+  protected static $logAttributes = ['driver.name'];
+  protected static $logAttributesToIgnore = ['driver_id'];
 
   protected $fillable = [
     'num_bill',
@@ -20,16 +24,11 @@ class InvoiceKasbon extends Model
     'total_kasbon',
     'total_payment',
     'rest_payment',
-    'method_payment',
     'memo',
   ];
 
   public function driver(){
     return $this->belongsTo(Driver::class, 'driver_id');
-  }
-
-  public function invoicekasbon(){
-    return $this->belongsTo(InvoiceKasbon::class, 'invoice_kasbon_id');
   }
 
   public function paymentkasbons(){

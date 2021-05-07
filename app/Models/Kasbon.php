@@ -9,7 +9,11 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 class Kasbon extends Model
 {
-  use HasFactory;
+  use HasFactory, Notifiable, LogsActivity;
+  protected static $logName = 'Data Kasbon';
+  protected static $logFillable = true;
+  protected static $logAttributes = ['driver.name', 'invoicekasbon'];
+  protected static $logAttributesToIgnore = ['driver_id', 'invoice_kasbon_id'];
 
   protected $fillable = [
     'invoice_kasbon_id',

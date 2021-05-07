@@ -10,8 +10,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class InvoicePurchase extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+  protected $appends = ['total_net', 'num_invoice'];
   protected static $logName = 'Invoice Pembelian Barang';
   protected static $logFillable = true;
+  protected static $logAttributes = ['supplier.name'];
+  protected static $logAttributesToIgnore = ['supplier_sparepart_id'];
+
   protected $fillable = [
     'supplier_sparepart_id',
     'prefix',
@@ -24,9 +28,6 @@ class InvoicePurchase extends Model
     'rest_payment',
     'method_payment',
   ];
-
-  protected $appends = ['total_net'];
-
 
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');

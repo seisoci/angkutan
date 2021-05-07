@@ -77,25 +77,43 @@ class RoadMoneyController extends Controller
       'route_from'    => 'string|nullable',
       'route_to'      => 'string|nullable',
       'cargo_id'      => 'string|nullable',
+      'fee_thanks'    => 'nullable',
+      'tax_pph'       => 'nullable',
       'amount'        => 'integer|nullable',
     ]);
 
     if($validator->passes()){
-      $data = RoadMoney::create([
-        'costumer_id'   => $request->input('costumer_id'),
-        'route_from'    => $request->input('route_from'),
-        'route_to'      => $request->input('route_to'),
-        'cargo_id'      => $request->input('cargo_id'),
-        'amount'        => $request->input('amount')
-      ]);
-      $type_capacities = TypeCapacity::all();
-      $data->typecapacities()->attach($type_capacities);
+      $check = RoadMoney::where([
+        ['costumer_id', '=', $request->costumer_id],
+        ['route_from', '=', $request->route_from],
+        ['route_to', '=', $request->route_to],
+        ['cargo_id', '=', $request->cargo_id]
+      ])->count();
+      if($check <= 0){
+        $data = RoadMoney::create([
+          'costumer_id'   => $request->input('costumer_id'),
+          'route_from'    => $request->input('route_from'),
+          'route_to'      => $request->input('route_to'),
+          'cargo_id'      => $request->input('cargo_id'),
+          'fee_thanks'    => $request->input('fee_thanks') ?? 0,
+          'tax_pph'       => $request->input('tax_pph') ?? 0,
+          'amount'        => $request->input('amount')
+        ]);
+        $type_capacities = TypeCapacity::all();
+        $data->typecapacities()->attach($type_capacities);
 
-      $response = response()->json([
-        'status' => 'success',
-        'message' => 'Data has been saved',
-        'redirect' => '/backend/roadmonies/'.$data->id.'/edit'
-      ]);
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been saved',
+          'redirect' => '/backend/roadmonies/'.$data->id.'/edit'
+        ]);
+      }else{
+          $response = response()->json([
+          'status' => 'error',
+          'message' => 'Data Already Exist',
+        ]);
+      }
+
 
     }else{
       $response = response()->json(['error'=>$validator->errors()->all()]);
@@ -135,6 +153,8 @@ class RoadMoneyController extends Controller
       'route_from'    => 'string|nullable',
       'route_to'      => 'string|nullable',
       'cargo_id'      => 'string|nullable',
+      'fee_thanks'    => 'nullable',
+      'tax_pph'       => 'nullable',
       'road_engkel'   => 'integer|nullable',
       'road_tronton'  => 'integer|nullable',
       'amount'        => 'integer|nullable',
@@ -147,6 +167,8 @@ class RoadMoneyController extends Controller
         'route_from'    => $request->input('route_from'),
         'route_to'      => $request->input('route_to'),
         'cargo_id'      => $request->input('cargo_id'),
+        'fee_thanks'    => $request->input('fee_thanks') ?? 0,
+        'tax_pph'       => $request->input('tax_pph') ?? 0,
         'road_engkel'   => $request->input('road_engkel'),
         'road_tronton'  => $request->input('road_tronton'),
         'amount'        => $request->input('amount')

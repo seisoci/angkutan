@@ -53,6 +53,23 @@
               <option value="{{ $data->cargo_id }}">{{ $data->cargo->name }}</option>
             </select>
           </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Fee Pemberian<span class="text-danger">*</span></label>
+                <input type="text" class="form-control currency" name="fee_thanks" value="{{ $data->fee_thanks ?? 0 }}">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tax PPH<span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control currency" name="tax_pph" value="{{ $data->tax_pph ?? 0 }}" />
+                  <div class="input-group-append"><span class="input-group-text">%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="card-footer d-flex justify-content-end">
             <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
             <button type="submit" class="btn btn-primary">Submit</button>

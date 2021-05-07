@@ -24,7 +24,7 @@ class BrandController extends Controller
       ];
       if ($request->ajax()) {
         $data = Brand::query();
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '

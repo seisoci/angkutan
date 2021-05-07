@@ -58,15 +58,13 @@ class SettingController extends Controller
 
         foreach($request->id as $key => $id){
           $data          = Setting::find($id);
-          $data->value   = $request->value[$key];
-          if($data->save()){
-            $response = response()->json([
-                'status' => 'success',
-                'message' => 'Data has been saved',
-                'redirect'  => "/backend/settings"
-            ]);
-          }
+          $data->update(['value' => $request->value[$key]]);
         }
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been saved',
+          'redirect'  => "/backend/settings"
+        ]);
       }else{
         $response = response()->json(['error'=>$validator->errors()->all()]);
       }

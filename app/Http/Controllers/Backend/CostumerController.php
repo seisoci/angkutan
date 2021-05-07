@@ -24,7 +24,7 @@ class CostumerController extends Controller
       ];
       if ($request->ajax()) {
         $data = Costumer::query();
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '

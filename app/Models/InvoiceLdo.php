@@ -9,8 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 class InvoiceLdo extends Model
 {
-    use HasFactory;
-    protected $appends = ['num_invoice'];
+  use HasFactory, Notifiable, LogsActivity;
+  protected $appends = ['num_invoice'];
+  protected static $logName = 'Invoice LDO';
+  protected static $logFillable = true;
+  protected static $logAttributes = ['anotherexpedition.name'];
+  protected static $logAttributesToIgnore = ['another_expedition_id'];
 
   protected $fillable = [
     'prefix',

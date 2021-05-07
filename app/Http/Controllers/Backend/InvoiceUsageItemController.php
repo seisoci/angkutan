@@ -100,17 +100,16 @@ class InvoiceUsageItemController extends Controller
         ]);
         foreach($items['sparepart_id'] as $key => $item):
           $stock = Stock::where('sparepart_id', $items['sparepart_id'][$key])->firstOrFail();
-          $data[] = [
+          UsageItem::create([
             'invoice_usage_item_id'  => $invoiceUsageItem->id,
             'sparepart_id'    => $items['sparepart_id'][$key] ?? NULL,
             'name'            => $items['name'][$key] ?? NULL,
             'qty'             => $items['qty'][$key],
             'price'           => $items['price'][$key] ?? NULL,
-          ];
+          ]);
           $stock->qty = $stock->qty - $items['qty'][$key];
           $stock->save();
         endforeach;
-        UsageItem::insert($data);
         DB::commit();
         $response = response()->json([
           'status'    => 'success',

@@ -24,7 +24,7 @@ class ExpenseController extends Controller
       ];
       if ($request->ajax()) {
         $data = Expense::query();
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '

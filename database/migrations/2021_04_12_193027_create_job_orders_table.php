@@ -37,6 +37,8 @@ class CreateJobOrdersTable extends Migration
             $table->decimal('road_money',15,2);
             $table->integer('cut_sparepart_percent')->nullable();;
             $table->integer('salary_percent')->nullable();
+            $table->decimal('tax_percent', 15, 2)->nullable();
+            $table->decimal('fee_thanks', 15, 2)->nullable();
             $table->decimal('invoice_bill',15,0);
             $table->string('description')->nullable();
             $table->enum('status_salary', [1, 0])->default(0);
@@ -44,6 +46,7 @@ class CreateJobOrdersTable extends Migration
             $table->enum('status_payment_ldo', [1, 0])->default(0);
             $table->enum('status_payment', [1, 0])->default(0);
             $table->enum('status_document', [1, 0])->default(0);
+            $table->enum('status_tax', [1, 0])->default(0);
             $table->string('type');
             $table->timestamps();
         });

@@ -50,6 +50,23 @@
             <select class="form-control" id="select2Cargos" name="cargo_id">
             </select>
           </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Fee Pemberian<span class="text-danger">*</span></label>
+                <input type="text" class="form-control currency" name="fee_thanks">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tax PPH<span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control currency" name="tax_pph" />
+                  <div class="input-group-append"><span class="input-group-text">%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="card-footer d-flex justify-content-end">
             <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -76,9 +93,10 @@
     new KTImageInput('kt_image_2');
     $(".currency").inputmask('decimal', {
       groupSeparator: '.',
-      digits:0,
+      digits: 2,
       rightAlign: true,
-      removeMaskOnSubmit: true
+      removeMaskOnSubmit: true,
+      allowMinus: false
     });
 
     $("#select2").select2({
@@ -166,7 +184,7 @@
             $.each(response.error, function(key, value) {
               $(".alert-text").append('<span style="display: block">'+value+'</span>');
             });
-            toastr.error("Please complete your form", 'Failed !');
+            toastr.error(response.message || "Please complete your form", 'Failed !');
           }
         },
         error: function(response) {

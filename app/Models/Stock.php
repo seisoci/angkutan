@@ -12,6 +12,8 @@ class Stock extends Model
   use HasFactory, Notifiable, LogsActivity;
   protected static $logName = 'Stok Sparepart';
   protected static $logFillable = true;
+  protected static $logAttributes = ['sparepart.name'];
+  protected static $logAttributesToIgnore = ['sparepart_id'];
 
   protected $fillable = [
     'sparepart_id',

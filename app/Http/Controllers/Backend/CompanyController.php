@@ -23,7 +23,7 @@ class CompanyController extends Controller
       ];
       if ($request->ajax()) {
         $data = Company::query();
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '

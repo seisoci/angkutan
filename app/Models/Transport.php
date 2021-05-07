@@ -12,6 +12,7 @@ class Transport extends Model
   use HasFactory, Notifiable, LogsActivity;
   protected static $logName = 'Master Kendaraan';
   protected static $logFillable = true;
+  protected static $logAttributes = ['anotherexpedition.name'];
 
   protected $fillable = [
     'another_expedition_id',
@@ -30,5 +31,9 @@ class Transport extends Model
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('Y-m-d H:i:s');
+  }
+
+  public function anotherexpedition(){
+    return $this->hasMany(AnotherExpedition::class, 'another_expedition_id');
   }
 }

@@ -447,12 +447,12 @@ class JobOrderController extends Controller
 
     public function select2cargos(Request $request){
       $page         = $request->page;
-      $resultCount = 10;
-      $offset   = ($page - 1) * $resultCount;
-      $q        = $request->q;
+      $resultCount  = 10;
+      $offset       = ($page - 1) * $resultCount;
+      $q            = $request->q;
       $costumer_id  = !empty($request->costumer_id) || isset($request->costumer_id) ? $request->costumer_id : 0;
-      $route_from  = !empty($request->route_from) || isset($request->route_from) ? $request->route_from : 0;
-      $route_to  = !empty($request->route_to) || isset($request->route_to) ? $request->route_to : 0;
+      $route_from   = !empty($request->route_from) || isset($request->route_from) ? $request->route_from : 0;
+      $route_to     = !empty($request->route_to) || isset($request->route_to) ? $request->route_to : 0;
       $data = DB::table('road_money')
           ->rightJoin('cargos', 'cargos.id', '=', 'road_money.cargo_id')
           ->where('cargos.name', 'LIKE', '%'.$q.'%')
@@ -462,7 +462,7 @@ class JobOrderController extends Controller
           ->orderBy('cargos.name')
           ->skip($offset)
           ->take($resultCount)
-          ->selectRaw('cargos.id AS id, cargos.name as text')
+          ->selectRaw('cargos.id AS id, cargos.name as text, fee_thanks, tax_pph')
           ->groupBy('road_money.cargo_id')
           ->get();
 

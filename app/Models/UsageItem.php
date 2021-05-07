@@ -10,9 +10,11 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class UsageItem extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+  protected $appends = ['total_price'];
   protected static $logName = 'Pengambilan Barang';
   protected static $logFillable = true;
-  protected $appends = ['total_price'];
+  protected static $logAttributes = ['sparepart.name', 'invoiceusage'];
+  protected static $logAttributesToIgnore = ['invoice_usage_item_id', 'sparepart_id'];
 
   protected $fillable = [
     'invoice_usage_item_id',

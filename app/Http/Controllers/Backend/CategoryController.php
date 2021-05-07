@@ -24,7 +24,7 @@ class CategoryController extends Controller
       ];
       if ($request->ajax()) {
         $data = Category::query();
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '

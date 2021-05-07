@@ -18,8 +18,10 @@ class RoadMoney extends Model
     'route_from',
     'route_to',
     'cargo_id',
-    'expense',
-    'weight',
+    'fee_thanks',
+    'tax_pph',
+    'road_engkel',
+    'road_tronton',
   ];
 
   public function getCreatedAtAttribute($value){

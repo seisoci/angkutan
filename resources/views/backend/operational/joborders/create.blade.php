@@ -133,6 +133,41 @@
             <label>Total Ongkosan Dasar</label>
             <input id="totalPayload" name="basic_price" type="text" class="form-control currency" disabled />
           </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tax PPH %</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="taxPercent" disabled />
+                  <input type="hidden" class="form-control" name="tax_percent" />
+                  <div class="input-group-append"><span class="input-group-text">%</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Pajak PPH</label>
+                <div class="input-group">
+                  <input type="text" class="form-control currency" id="taxFee" disabled />
+                  <div class="input-group-append"><span class="input-group-text">Rp.</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Total Ongkosan Dasar (Setelah Pajak)</label>
+            <input type="text" id="totalPayloadAfterTax" class="form-control currency" disabled />
+          </div>
+
+          <div class="form-group">
+            <label>Fee Pemberian</label>
+            <input type="text" id="fee_thanks" class="form-control currency" disabled />
+            <input type="hidden" class="form-control" name="fee_thanks" class="currency" />
+          </div>
+          <div class="form-group">
+            <label>Total Ongkosan Dasar (Setelah Pemberian)</label>
+            <input type="text" id="totalPayloadAfterThanks" class="form-control currency" disabled />
+          </div>
           @endhasanyrole
           <div class="form-group">
             <label>Uang Jalan</label>
@@ -179,13 +214,13 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group" style="display: none">
-                <label>Potongan SparePart (Estimasi)</label>
+                <label>Potongan SparePart (Est)</label>
                 <input name="cut_sparepart" type="text" class="form-control currency" disabled>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group" style="display: none">
-                <label>Gaji Supir (Estimasi)</label>
+                <label>Gaji Supir (Est)</label>
                 <input name="salary" type="text" class="form-control currency" disabled>
               </div>
             </div>
@@ -454,6 +489,9 @@
             return query
           },
       },
+    }).on('select2:select', function(evt){
+      $('input[name=tax_percent],#taxPercent').val(evt.params.data.tax_pph);
+      $('input[name=fee_thanks],#fee_thanks').val(evt.params.data.fee_thanks);
     });
 
     $("#select2TypeCapacity").select2({
@@ -507,19 +545,27 @@
     });
 
     function callBorongan(){
-      let payload = 1;
-      let basicPrice = parseInt($('input[name="basic_price"]').val());
-      let roadMoney = parseInt($('input[name="road_money"]').val());
-      let sumPayload = basicPrice * payload;
-      let convertTo = (payload / 1000);
-      let totalGross = sumPayload - roadMoney;
+      let payload     = 1;
+      let basicPrice  = parseInt($('input[name="basic_price"]').val());
+      let roadMoney   = parseInt($('input[name="road_money"]').val());
+      let fee_thanks  = parseFloat($('#fee_thanks').val());
+      let tax_pph     = parseFloat($('#taxPercent').val()) / 100;
+      let sumPayload  = basicPrice * payload;
+      let taxPPH      = sumPayload * tax_pph;
+      let sumPayloadAfterTax = sumPayload - taxPPH;
+      let sumPayloadAfterThanks = sumPayloadAfterTax - fee_thanks;
+      let convertTo   = (payload / 1000);
+      let totalGross  = sumPayload - roadMoney;
       let pecentSparePart = parseFloat('{{ $sparepart->value }}') / 100;
       let pecentSalary = parseFloat('{{ $gaji->value }}') / 100;
-      let sparepart = totalGross * pecentSparePart;
-      let salary = (totalGross - sparepart) * pecentSalary;
-      let totalNetto = totalGross - sparepart - salary;
+      let sparepart   = totalGross * pecentSparePart;
+      let salary      = (totalGross - sparepart) * pecentSalary;
+      let totalNetto  = totalGross - sparepart - salary;
       $('#convertToTon').val(convertTo);
       $('#totalPayload').val(sumPayload);
+      $('#taxFee').val(taxPPH);
+      $('#totalPayloadAfterTax').val(sumPayloadAfterTax);
+      $('#totalPayloadAfterThanks').val(sumPayloadAfterThanks);
       $('input[name="grandtotalgross"]').val(totalGross);
       $('input[name="cut_sparepart"]').val(sparepart);
       $('input[name="salary"]').val(salary);

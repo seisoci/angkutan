@@ -12,9 +12,9 @@ class Sparepart extends Model
   use HasFactory, Notifiable, LogsActivity;
   protected static $logName = 'Master Spare part';
   protected static $logFillable = true;
+  protected static $logAttributes = ['brand.name'];
 
   protected $fillable = [
-    'supplier_sparepart_id',
     'brand_id',
     'name',
     'photo',

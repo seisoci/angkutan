@@ -9,9 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 class InvoiceCostumer extends Model
 {
-  use HasFactory;
+  use HasFactory, Notifiable, LogsActivity;
 
   protected $appends = ['num_invoice'];
+  protected static $logName = 'Invoice Pelanggan';
+  protected static $logFillable = true;
+  protected static $logAttributes = ['costumer.name'];
+  protected static $logAttributesToIgnore = ['costumer_id'];
 
   protected $fillable = [
     'prefix',

@@ -14,10 +14,11 @@ class CreatePaymentKasbonsTable extends Migration
     public function up()
     {
         Schema::create('payment_kasbons', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('invoice_kasbon_id')->references('id')->on('invoice_kasbons');
-            $table->date('date_payment');
-            $table->decimal('payment', 15, 2);
+          $table->id();
+          $table->foreignId('invoice_kasbon_id')->references('id')->on('invoice_kasbons');
+          $table->date('date_payment');
+          $table->decimal('payment', 15, 2);
+          $table->timestamps();
         });
     }
 

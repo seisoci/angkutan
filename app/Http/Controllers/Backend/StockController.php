@@ -18,7 +18,7 @@ class StockController extends Controller
 
     if ($request->ajax()) {
       $data = Stock::with(['sparepart']);
-      return Datatables::of($data)
+      return DataTables::of($data)
         ->addIndexColumn()
         ->make(true);
     }

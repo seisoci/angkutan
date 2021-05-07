@@ -9,8 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 class InvoiceUsageItem extends Model
 {
-    use HasFactory;
   protected $appends = ['num_invoice'];
+  use HasFactory, Notifiable, LogsActivity;
+  protected static $logName = 'Invoice Pemakaian Barang';
+  protected static $logFillable = true;
+  protected static $logAttributes = ['driver.name', 'transport.num_pol'];
+  protected static $logAttributesToIgnore = ['driver_id', 'transport_id'];
 
   protected $fillable = [
     'num_bill',

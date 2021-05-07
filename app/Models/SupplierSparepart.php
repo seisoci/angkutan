@@ -12,6 +12,7 @@ class SupplierSparepart extends Model
   use HasFactory, Notifiable, LogsActivity;
   protected static $logName = 'Supplier Spare Part';
   protected static $logFillable = true;
+
   protected $fillable = [
     'name',
     'address',

@@ -30,7 +30,7 @@ class InvoicePurchaseController extends Controller
       if ($request->ajax()) {
         $data = InvoicePurchase::query()
         ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'));
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $restPayment = $row->rest_payment != 0 ? '<a href="invoicepurchases/'.$row->id.'/edit" class="dropdown-item">Bayar Sisa</a>' : NULL;

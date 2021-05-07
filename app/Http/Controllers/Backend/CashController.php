@@ -23,7 +23,7 @@ class CashController extends Controller
       ];
       if ($request->ajax()) {
         $data = Cash::query();
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '

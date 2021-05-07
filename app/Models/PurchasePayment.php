@@ -12,14 +12,14 @@ class PurchasePayment extends Model
   use HasFactory, Notifiable, LogsActivity;
   protected static $logName = 'Pembayaran Pembelian Barang';
   protected static $logFillable = true;
+  protected static $logAttributes = ['invoicepurchase'];
+  protected static $logAttributesToIgnore = ['invoice_purchase_id'];
 
   protected $fillable = [
     'invoice_purchase_id',
     'date_payment',
     'payment',
   ];
-
-
 
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');

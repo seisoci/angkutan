@@ -24,7 +24,7 @@ class RouteController extends Controller
       ];
       if ($request->ajax()) {
         $data = Route::query();
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '

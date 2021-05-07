@@ -29,7 +29,7 @@ class RolesController extends Controller
       ];
       if ($request->ajax()) {
         $data = Role::where('name', '!=', 'super-admin');
-        return Datatables::eloquent($data)
+        return DataTables::eloquent($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '<a href="roles/'.$row->id.'/edit" class="edit btn btn-success btn-sm">Edit</a>';

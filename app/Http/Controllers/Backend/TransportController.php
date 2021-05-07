@@ -28,7 +28,7 @@ class TransportController extends Controller
 
     if ($request->ajax()) {
       $data = Transport::where('another_expedition_id', NULL);
-      return Datatables::of($data)
+      return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '

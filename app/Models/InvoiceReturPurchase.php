@@ -9,7 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 class InvoiceReturPurchase extends Model
 {
-    use HasFactory;
+  use HasFactory, Notifiable, LogsActivity;
+  protected $appends = ['num_invoice'];
+  protected static $logName = 'Invoice Pembelian Barang';
+  protected static $logFillable = true;
+  protected static $logAttributes = ['supplier.name'];
+  protected static $logAttributesToIgnore = ['supplier_sparepart_id'];
 
   protected $fillable = [
     'prefix',

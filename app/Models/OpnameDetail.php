@@ -12,6 +12,8 @@ class OpnameDetail extends Model
   use HasFactory, Notifiable, LogsActivity;
   protected static $logName = 'Opname Detail';
   protected static $logFillable = true;
+  protected static $logAttributes = ['sparepart.name', 'opname'];
+  protected static $logAttributesToIgnore = ['opname_id', 'sparepart_id'];
 
   protected $fillable = [
     'opname_id',
@@ -28,6 +30,10 @@ class OpnameDetail extends Model
 
   public function sparepart(){
     return $this->belongsTo(Sparepart::class);
+  }
+
+  public function opname(){
+    return $this->belongsTo(Opname::class, 'opname_id');
   }
 
 }

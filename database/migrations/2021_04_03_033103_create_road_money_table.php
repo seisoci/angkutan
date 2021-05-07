@@ -19,7 +19,8 @@ class CreateRoadMoneyTable extends Migration
             $table->foreignId('route_from')->constrained('routes');
             $table->foreignId('route_to')->constrained('routes');
             $table->foreignId('cargo_id')->constrained('cargos');
-            $table->decimal('fee_thanks', 15, 2)->nullable();
+            $table->decimal('fee_thanks', 15, 2)->default(0);
+            $table->decimal('tax_pph', 15, 2)->default(0);
             $table->decimal('road_engkel', 15, 2)->nullable();
             $table->decimal('road_tronton', 15, 2)->nullable();
             $table->decimal('amount', 15, 2)->nullable();

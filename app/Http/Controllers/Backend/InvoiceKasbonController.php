@@ -117,11 +117,11 @@ class InvoiceKasbonController extends Controller
             Kasbon::where('id', $item)->update(['invoice_kasbon_id' => $data->id, 'status' => '1']);
           endforeach;
           foreach($payments['date'] as $key => $item):
-            $dataPayment[] = [
+            PaymentKasbon::create([
               'invoice_kasbon_id'   => $data->id,
               'date_payment'        => $payments['date'][$key],
               'payment'             => $payments['payment'][$key],
-            ];
+            ]);
           endforeach;
 
           if($restPayment <= -1){
@@ -132,8 +132,6 @@ class InvoiceKasbonController extends Controller
             ]);
             DB::rollBack();
           }
-
-          PaymentKasbon::insert($dataPayment);
 
           DB::commit();
           $response = response()->json([

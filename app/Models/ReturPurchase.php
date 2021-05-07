@@ -9,10 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 class ReturPurchase extends Model
 {
+  protected $appends = ['total_price'];
   use HasFactory, Notifiable, LogsActivity;
   protected static $logName = 'Pengembalian Barang';
   protected static $logFillable = true;
-    protected $appends = ['total_price'];
+  protected static $logAttributes = ['sparepart.name', 'invoiceretur'];
+  protected static $logAttributesToIgnore = ['invoice_retur_purchase_id', 'sparepart_id'];
 
     protected $fillable = [
       'invoice_retur_purchase_id',

@@ -27,7 +27,7 @@ class InvoiceCostumerController extends Controller
       ];
       if ($request->ajax()) {
         $data = InvoiceCostumer::with(['costumer:id,name']);
-        return Datatables::of($data)
+        return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('details_url', function(InvoiceCostumer $invoiceCostumer) {
           return route('backend.invoicecostumers.datatabledetail', $invoiceCostumer->id);
