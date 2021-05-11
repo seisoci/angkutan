@@ -17,7 +17,7 @@
 
   <div class="card-body">
     <!--begin: Datatable-->
-    <table class="table table-bordered table-hover" id="Datatable">
+    <table class="table table-hover" id="Datatable">
       <thead>
         <tr>
           <th>Nama Spare part</th>

@@ -15,11 +15,6 @@ use Validator;
 
 class InvoiceSalaryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
       $config['page_title']       = "List Invoice Gaji Supir";
@@ -53,11 +48,6 @@ class InvoiceSalaryController extends Controller
       return view('backend.invoice.invoicesalaries.index', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create(Request $request)
     {
       $config['page_title']       ="Create Invoice Gaji Supir";
@@ -68,9 +58,10 @@ class InvoiceSalaryController extends Controller
       $driver_id    = $request->driver_id;
       $transport_id = $request->transport_id;
       if ($request->ajax()) {
-        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->withSum('operationalexpense','amount')
         ->where('type', 'self')
         ->where('status_salary', '0')
+        ->where('status_cargo', 'selesai')
         ->when($driver_id, function ($query, $driver_id) {
           return $query->where('driver_id', $driver_id);
         })
@@ -84,12 +75,6 @@ class InvoiceSalaryController extends Controller
       return view('backend.invoice.invoicesalaries.create', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
@@ -133,12 +118,6 @@ class InvoiceSalaryController extends Controller
       return $response;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\InvoiceSalary  $invoiceSalary
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
       $config['page_title'] = "Invoice Gaji Supir";
@@ -151,7 +130,9 @@ class InvoiceSalaryController extends Controller
       $profile = collect($collection)->mapWithKeys(function ($item) {
         return [$item['name'] => $item['value']];
       });
-      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name'])->findOrFail($id);
+      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name', 'joborders' => function($q) {
+        $q->withSum('operationalexpense','amount');
+      }])->findOrFail($id);
 
       return view('backend.invoice.invoicesalaries.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
@@ -168,39 +149,18 @@ class InvoiceSalaryController extends Controller
       $profile = collect($collection)->mapWithKeys(function ($item) {
         return [$item['name'] => $item['value']];
       });
-      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name'])->findOrFail($id);
+      $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name', 'joborders' => function($q) {
+        $q->withSum('operationalexpense','amount');
+      }])->findOrFail($id);
 
       return view('backend.invoice.invoicesalaries.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\InvoiceSalary  $invoiceSalary
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(InvoiceSalary $invoiceSalary)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\InvoiceSalary  $invoiceSalary
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, InvoiceSalary $invoiceSalary)
-    {
-        //
     }
 
     public function findbypk(Request $request){
       $data = json_decode($request->data);
       $response = NULL;
       if($request->data){
-        $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->whereIn('id', $data)->get();
+        $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->withSum('operationalexpense','amount')->whereIn('id', $data)->get();
 
         $response = response()->json([
           'data'    => $result,
@@ -211,7 +171,7 @@ class InvoiceSalaryController extends Controller
 
     public function datatabledetail($id)
     {
-        $data = JobOrder::where('invoice_salary_id', $id);
+        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->withSum('operationalexpense','amount')->where('invoice_salary_id', $id);
 
         return Datatables::of($data)->make(true);
     }

@@ -39,6 +39,7 @@
         <tr>
           <th>Image</th>
           <th>Name</th>
+          <th>Role</th>
           <th>Email</th>
           <th>Active</th>
           <th>Actions</th>
@@ -123,6 +124,7 @@
         columns: [
             {data: 'image', name: 'image'},
             {data: 'name', name: 'name'},
+            {data: 'roles', name: 'roles', className: 'dt-center'},
             {data: 'email', name: 'email'},
             {data: 'active', name: 'active'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
@@ -142,7 +144,7 @@
         },
         {
           className: 'dt-center',
-          targets: 3,
+          targets: 4,
           width: '75px',
           render: function(data, type, full, meta) {
             var status = {

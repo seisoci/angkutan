@@ -123,7 +123,6 @@
 </style>
 @endsection
 
-
 {{-- Scripts Section --}}
 @section('scripts')
 {{-- vendors --}}

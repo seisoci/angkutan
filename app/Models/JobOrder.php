@@ -18,7 +18,7 @@ class JobOrder extends Model
     'status_payment',
     'status_payment_ldo',
   ];
-  protected $appends = ['num_prefix', 'total_basic_price','total_operational', 'total_sparepart', 'total_salary', 'total_netto_ldo'];
+  protected $appends = ['num_prefix', 'total_basic_price', 'total_basic_price_ldo', 'total_basic_price_after_tax', 'total_basic_price_after_thanks', 'total_operational', 'total_sparepart', 'total_salary', 'total_netto_ldo', 'tax_amount'];
 
 
   public function getCreatedAtAttribute($value){
@@ -71,6 +71,21 @@ class JobOrder extends Model
       return $this->basic_price * $this->payload;
   }
 
+  public function getTotalBasicPriceLdoAttribute()
+  {
+      return $this->basic_price_ldo * $this->payload;
+  }
+
+  public function getTotalBasicPriceAfterTaxAttribute()
+  {
+      return $this->total_basic_price - ($this->total_basic_price * ($this->tax_percent / 100));
+  }
+
+  public function getTotalBasicPriceAfterThanksAttribute()
+  {
+      return $this->total_basic_price_after_tax - $this->fee_thanks;
+  }
+
   public function getTotalOperationalAttribute()
   {
       return $this->operationalexpense_sum_amount + $this->road_money;
@@ -78,21 +93,29 @@ class JobOrder extends Model
 
   public function getTotalSparepartAttribute()
   {
-      return ($this->total_basic_price - $this->total_operational) * ($this->cut_sparepart_percent /100);
+      return ($this->total_basic_price_after_thanks - $this->total_operational) * ($this->cut_sparepart_percent /100);
   }
 
   public function getTotalSalaryAttribute()
   {
-      return ($this->total_basic_price - $this->total_operational - $this->total_sparepart) * ($this->salary_percent /100);
+      return ($this->total_basic_price_after_thanks - $this->total_operational - $this->total_sparepart) * ($this->salary_percent /100);
   }
 
   public function getTotalNettoLdoAttribute()
   {
-      return ($this->basic_price_ldo * $this->payload) - ($this->operationalexpense_sum_amount + $this->road_money);
+      return (($this->basic_price_ldo * $this->payload) - ($this->total_basic_price * ($this->tax_percent / 100)) - $this->fee_thanks) - ($this->operationalexpense_sum_amount + $this->road_money);
   }
 
   public function getNumPrefixAttribute()
   {
       return ($this->prefix ."-". $this->num_bill);
+  }
+
+  public function getTaxAmountAttribute()
+  {
+    if($this->basic_price_ldo){
+      return $this->tax_percent."\n(".number_format(($this->total_basic_price_ldo * ($this->tax_percent / 100)), 2, '.', ' ,').")";
+    }
+    return $this->tax_percent."\n(".number_format(($this->total_basic_price * ($this->tax_percent / 100)), 2, '.', ' ,').")";
   }
 }

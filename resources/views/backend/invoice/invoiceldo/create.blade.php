@@ -123,6 +123,10 @@
           <th>Tarif LDO (Rp.)</th>
           <th>Qty (Unit)</th>
           <th>Tagihan LDO</th>
+          <th>Pajak (%)</th>
+          <th>Potongan</th>
+          <th>Biaya Operasional</th>
+          <th>Tagihan LDO (Inc. Tax & Pot. & Opr)</th>
           <th>Created At</th>
         </tr>
       </thead>
@@ -156,7 +160,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[11, 'desc']],
+        order: [[17, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
@@ -176,10 +180,14 @@
             {data: 'routefrom.name', name: 'routefrom.name'},
             {data: 'routeto.name', name: 'routeto.name'},
             {data: 'cargo.name', name: 'cargo.name'},
-            {data: 'basic_price', name: 'basic_price', render: $.fn.dataTable.render.number( '.', '.', 2)},
-            {data: 'basic_price_ldo', name: 'basic_price_ldo', render: $.fn.dataTable.render.number( '.', '.', 2)},
-            {data: 'payload', name: 'payload'},
-            {data: 'total_netto_ldo', name: 'total_netto_ldo', render: $.fn.dataTable.render.number( '.', '.', 2)},
+            {data: 'basic_price', name: 'basic_price', render: $.fn.dataTable.render.number( ',', '.', 2), className:'dt-right'},
+            {data: 'basic_price_ldo', name: 'basic_price_ldo', render: $.fn.dataTable.render.number( ',', '.', 2), className:'dt-right'},
+            {data: 'payload', name: 'payload', className:'dt-center'},
+            {data: 'total_basic_price_ldo', name: 'total_basic_price_ldo', render: $.fn.dataTable.render.number( ',', '.', 2), className:'dt-right', orderable: false, searchable: false},
+            {data: 'tax_amount', name: 'tax_amount', className:'dt-center'},
+            {data: 'fee_thanks', name: 'fee_thanks', render: $.fn.dataTable.render.number( ',', '.', 2), className:'dt-right'},
+            {data: 'total_operational', name: 'total_operational', render: $.fn.dataTable.render.number( ',', '.', 2), className:'dt-right', orderable: false, searchable: false},
+            {data: 'total_netto_ldo', name: 'total_netto_ldo', render: $.fn.dataTable.render.number( ',', '.', 2), className:'dt-right', orderable: false, searchable: false},
             {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [

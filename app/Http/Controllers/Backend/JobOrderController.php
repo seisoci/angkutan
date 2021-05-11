@@ -152,14 +152,7 @@ class JobOrderController extends Controller
           //CALCULATE
           $basicPrice = $request->basic_price;
           $payload    = $request->payload ?? 1;
-          $roadMoney  = $request->road_money;
           $sumPayload = $basicPrice * $payload;
-          $totalGross = $sumPayload - $roadMoney;
-          $pecentSparePart = $qsparepart->value / 100;
-          $pecentSalary = $qsalary->value / 100;
-          $sparepart  = $totalGross * $pecentSparePart;
-          $salary     = ($totalGross - $sparepart) * $pecentSalary;
-          $totalNetto = $totalGross - $sparepart - $salary;
           //MODEL DB
           $data->date_begin             = $request->date_begin;
           $data->type                   = $request->type;
@@ -178,11 +171,9 @@ class JobOrderController extends Controller
           $data->basic_price            = $request->basic_price;
           $data->road_money             = $request->road_money;
           $data->cut_sparepart_percent  = $qsparepart->value;
-          // $data->cut_sparepart          = $sparepart;
-          // $data->salary                 = $salary;
           $data->salary_percent         = $qsalary->value;
-          // $data->grandtotalgross        = $totalGross;
-          // $data->grandtotalnetto        = $totalNetto;
+          $data->tax_percent            = $request->tax_percent ?? 0;
+          $data->fee_thanks             = $request->fee_thanks ?? 0;
           $data->invoice_bill           = $sumPayload;
           if($data->save()){
             $response = response()->json([
@@ -199,8 +190,6 @@ class JobOrderController extends Controller
           $roadMoney  = $request->road_money;
           $sumPayload = $basicPrice * $payload;
           $sumPayloadLDO = $basicPriceLDO * $payload;
-          $totalNettoLDO = $sumPayloadLDO - $roadMoney;
-          $totalNetto = $sumPayload - $sumPayloadLDO;
           //MODEL DB
           $data->date_begin             = $request->date_begin;
           $data->type                   = $request->type;
@@ -219,9 +208,8 @@ class JobOrderController extends Controller
           $data->basic_price            = $request->basic_price;
           $data->basic_price_ldo        = $request->basic_price_ldo;
           $data->road_money             = $request->road_money;
-          // $data->grandtotalgross        = $sumPayloadLDO;
-          // $data->grandtotalnetto        = $totalNetto;
-          // $data->grandtotalnettoldo     = $totalNettoLDO;
+          $data->tax_percent            = $request->tax_percent ?? 0;
+          $data->fee_thanks             = $request->fee_thanks ?? 0;
           $data->invoice_bill           = $sumPayload;
           if($data->save()){
             $response = response()->json([

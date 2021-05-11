@@ -106,11 +106,9 @@
       var tableId = 'posts-' + row.data().id;
 
       if (row.child.isShown()) {
-        // This row is already open - close it
         row.child.hide();
         tr.removeClass('shown');
       } else {
-        // Open this row
         row.child(template(row.data())).show();
         initTable(tableId, row.data());
         tr.addClass('shown');

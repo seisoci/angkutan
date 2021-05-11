@@ -39,7 +39,6 @@
         <tr>
           <th>Nama</th>
           <th>Kerjasama</th>
-          <th>Pajak</th>
           <th>Telp</th>
           <th>Alamat</th>
           <th>Created At</th>
@@ -94,10 +93,6 @@
                 <label>No. Telp/HP Pelanggan</label>
                 <input type="text" name="phone" class="phone form-control form-control-solid"
                   placeholder="Input No. Telp/HP Pelanggan" />
-              </div>
-              <div class="form-group">
-                <label>Pajak</label>
-                <input type="text" name="tax" class="form-control form-control-solid unit" placeholder="Input Tax" />
               </div>
               <div class="form-group">
                 <label>No. Telp/HP Emergency</label>
@@ -170,10 +165,6 @@
                 <label>No. Telp/HP Pelanggan</label>
                 <input type="text" name="phone" class="phone form-control form-control-solid"
                   placeholder="Input No. Telp/HP Pelanggan" />
-              </div>
-              <div class="form-group">
-                <label>Pajak</label>
-                <input type="text" name="tax" class="form-control form-control-solid unit" placeholder="Input Tax" />
               </div>
               <div class="form-group">
                 <label>No. Telp/HP Emergency</label>
@@ -250,11 +241,6 @@
             placeholder="Input Nama Kerjasama" disabled />
         </div>
         <div class="form-group row">
-          <label class="col-md-3">Pajak</label>
-          <input type="text" name="tax" class="form-control form-control-solid col-md-9" placeholder="Input Nama Pajak"
-            disabled />
-        </div>
-        <div class="form-group row">
           <label class="col-md-3">No. Telp/HP Pelanggan</label>
           <input type="text" name="phone" class="phone form-control form-control-solid col-md-9"
             placeholder="Input No. Telp/HP Pelanggan" disabled />
@@ -306,14 +292,13 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[5, 'desc']],
+        order: [[4, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.costumers.index') }}",
         columns: [
             {data: 'name', name: 'name'},
             {data: 'cooperation', name: 'cooperation'},
-            {data: 'tax', name: 'tax'},
             {data: 'phone', name: 'phone'},
             {data: 'address', name: 'address'},
             {data: 'created_at', name: 'created_at'},
@@ -347,7 +332,6 @@
       $(this).find('.modal-body').find('input[name="emergency_name"]').val('');
       $(this).find('.modal-body').find('input[name="emergency_phone"]').val('');
       $(this).find('.modal-body').find('input[name="phone"]').val('');
-      $(this).find('.modal-body').find('input[name="tax"]').val('');
       $(this).find('.modal-body').find('textarea[name="address"]').val('');
       $(this).find('.modal-body').find('textarea[name="description"]').val('');
     });
@@ -360,7 +344,6 @@
       var address = $(event.relatedTarget).data('address');
       var description = $(event.relatedTarget).data('description');
       var cooperation = $(event.relatedTarget).data('cooperation');
-      var tax = $(event.relatedTarget).data('tax');
       $(this).find('#formUpdate').attr('action', '{{ route("backend.costumers.index") }}/'+id)
       $(this).find('.modal-body').find('input[name="name"]').val(name);
       $(this).find('.modal-body').find('input[name="emergency_name"]').val(emergency_name);
@@ -369,7 +352,6 @@
       $(this).find('.modal-body').find('textarea[name="address"]').val(address);
       $(this).find('.modal-body').find('textarea[name="description"]').val(description);
       $(this).find('.modal-body').find('select[name="cooperation"]').val(cooperation);
-      $(this).find('.modal-body').find('input[name="tax"]').val(tax);
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');
@@ -379,7 +361,6 @@
       $(this).find('.modal-body').find('textarea[name="address"]').val('');
       $(this).find('.modal-body').find('textarea[name="description"]').val('');
       $(this).find('.modal-body').find('select[name="cooperation"]').val('alusindo');
-      $(this).find('.modal-body').find('input[name="tax"]').val('');
       $(this).find('#formUpdate').attr('action', '#')
     });
     $('#modalShow').on('show.bs.modal', function (event) {
@@ -390,7 +371,6 @@
       var address = $(event.relatedTarget).data('address');
       var description = $(event.relatedTarget).data('description');
       var cooperation = $(event.relatedTarget).data('cooperation');
-      var tax = $(event.relatedTarget).data('tax');
       $(this).find('.modal-body').find('input[name="name"]').val(name);
       $(this).find('.modal-body').find('input[name="emergency_name"]').val(emergency_name);
       $(this).find('.modal-body').find('input[name="emergency_phone"]').val(emergency_phone);
@@ -398,7 +378,6 @@
       $(this).find('.modal-body').find('textarea[name="address"]').val(address);
       $(this).find('.modal-body').find('textarea[name="description"]').val(description);
       $(this).find('.modal-body').find('input[name="cooperation"]').val(description);
-      $(this).find('.modal-body').find('input[name="tax"]').val(tax);
     });
     $('#modalShow').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');
@@ -408,7 +387,6 @@
       $(this).find('.modal-body').find('textarea[name="address"]').val('');
       $(this).find('.modal-body').find('textarea[name="description"]').val('');
       $(this).find('.modal-body').find('input[name="cooperation"]').val('');
-      $(this).find('.modal-body').find('input[name="tax"]').val('');
     });
 
     $("#formStore").submit(function(e) {

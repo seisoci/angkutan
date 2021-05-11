@@ -91,6 +91,14 @@
             <label>Total Ongkosan Dasar LDO</label>
             <input id="totalpayloadldo" type="text" class="form-control currency" disabled />
           </div>
+          <div class="form-group" style="display: none">
+            <label>Total Ongkosan Dasar (Setelah Pajak LDO)</label>
+            <input id="totalpayloadldoaftertax" type="text" class="form-control currency" disabled />
+          </div>
+          <div class="form-group" style="display: none">
+            <label>Total Ongkosan Dasar (Setelah Pemberian)</label>
+            <input id="totalpayloadldoafterthanks" type="text" class="form-control currency" disabled />
+          </div>
           @endhasanyrole
         </div>
         <div class="col-md-4">
@@ -107,17 +115,16 @@
               <option value="fix">FIX</option>
             </select>
           </div>
-          <input type="hidden" name="basic_price" class="form-control currency" />
           @hasanyrole('super-admin|admin|akunting')
           <div class="form-group">
             <label>Harga Dasar</label>
-            <input type="hidden" name="basic_price" class="form-control currency" />
-            <input type="text" name="basic_price" class="form-control currency" disabled />
+            <input type="hidden" name="basic_price" class="form-control currency basicprice" />
+            <input type="text" class="form-control currency basicprice" disabled />
           </div>
           @endhasanyrole
           <div class="form-group" style="display: none">
             <label>Harga Dasar LDO</label>
-            <input type="text" name="basic_price_ldo" class="form-control currency" style="width:100% !important" />
+            <input type="text" name="basic_price_ldo" class="form-control currencyldo" />
           </div>
           <div class="form-group">
             <label>Muatan</label>
@@ -131,7 +138,7 @@
           @hasanyrole('super-admin|admin|akunting')
           <div class="form-group">
             <label>Total Ongkosan Dasar</label>
-            <input id="totalPayload" name="basic_price" type="text" class="form-control currency" disabled />
+            <input id="totalPayload" type="text" class="form-control currency" disabled />
           </div>
           <div class="row">
             <div class="col-md-6">
@@ -261,7 +268,14 @@
   $(document).ready(function(){
     $(".currency").inputmask('decimal', {
       groupSeparator: '.',
-      digits: 2,
+      digits: 0,
+      rightAlign: true,
+      autoUnmask: true,
+      removeMaskOnSubmit: true
+    });
+    $(".currencyldo").inputmask('decimal', {
+      groupSeparator: '.',
+      digits: 0,
       rightAlign: true,
       autoUnmask: true,
       removeMaskOnSubmit: true
@@ -317,7 +331,11 @@
         $('input[name="grandtotalnettoldo"]').parent().find('label').css("display", "none");
         $('#totalpayloadldo').parent().css("display", "none");
         $('#totalpayloadldo').parent().find('label').css("display", "none");
-
+        $('#totalpayloadldoaftertax').parent().css("display", "none");
+        $('#totalpayloadldoaftertax').parent().find('label').css("display", "none");
+        $('#totalpayloadldoafterthanks').parent().css("display", "none");
+        $('#totalpayloadldoafterthanks').parent().find('label').css("display", "none");
+        callSelf();
       }else{
         $("#select2AnotherExpedition").parent().css("display", "block");
         $("#select2AnotherExpedition").parent().find('label').css("display", "block");
@@ -329,10 +347,15 @@
         $('input[name="grandtotalgross"]').parent().find('label').css("display", "none");
         $('#totalpayloadldo').parent().css("display", "block");
         $('#totalpayloadldo').parent().find('label').css("display", "block");
+        $('#totalpayloadldoaftertax').parent().css("display", "block");
+        $('#totalpayloadldoaftertax').parent().find('label').css("display", "block");
+        $('#totalpayloadldoafterthanks').parent().css("display", "block");
+        $('#totalpayloadldoafterthanks').parent().find('label').css("display", "block");
         $("#percentSparepart").parent().parent().css("display", "none");
         $("#percentSalary").parent().parent().css("display", "none");
         $('input[name="cut_sparepart"]').parent().css("display", "none");
         $('input[name="salary"]').parent().css("display", "none");
+        callLdo();
       }
     });
 
@@ -468,7 +491,7 @@
     }).on('change', function(){
       $("#select2Cargo").val("");
       $("#select2Cargo").trigger("change");
-    });;
+    });
 
     $("#select2Cargo").select2({
       placeholder: "Search Muatan",
@@ -540,22 +563,22 @@
       if(this.value == 'fix'){
         $('input[name="payload"]').prop('disabled', true).val(1);
       }else{
-        $('input[name="payload"]').prop('disabled', false).val('');
+        $('input[name="payload"]').prop('disabled', false).val(0);
       }
     });
 
     function callBorongan(){
       let payload     = 1;
-      let basicPrice  = parseInt($('input[name="basic_price"]').val());
-      let roadMoney   = parseInt($('input[name="road_money"]').val());
-      let fee_thanks  = parseFloat($('#fee_thanks').val());
-      let tax_pph     = parseFloat($('#taxPercent').val()) / 100;
+      let basicPrice  = parseFloat($('.basicprice').val()) || 0;
+      let roadMoney   = parseFloat($('input[name=road_money]').val()) || 0;
+      let fee_thanks  = parseFloat($('#fee_thanks').val()) || 0;
+      let tax_pph     = (parseFloat($('#taxPercent').val()) || 0) / 100;
       let sumPayload  = basicPrice * payload;
       let taxPPH      = sumPayload * tax_pph;
       let sumPayloadAfterTax = sumPayload - taxPPH;
       let sumPayloadAfterThanks = sumPayloadAfterTax - fee_thanks;
       let convertTo   = (payload / 1000);
-      let totalGross  = sumPayload - roadMoney;
+      let totalGross  = sumPayloadAfterThanks - roadMoney;
       let pecentSparePart = parseFloat('{{ $sparepart->value }}') / 100;
       let pecentSalary = parseFloat('{{ $gaji->value }}') / 100;
       let sparepart   = totalGross * pecentSparePart;
@@ -572,41 +595,74 @@
       $('input[name="grandtotalnetto"]').val(totalNetto);
     }
 
+    function callSelf(){
+      let basicPrice = parseFloat($('.basicprice').val()) || 0;
+      let payload = parseFloat($('input[name=payload]').val()) || 0;
+      let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
+      let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
+      let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
+      let sumPayload = basicPrice * payload;
+      let taxPPH = sumPayload * tax_pph;
+      let sumPayloadAfterTax = sumPayload - taxPPH;
+      let sumPayloadAfterThanks = sumPayloadAfterTax - fee_thanks;
+      let convertTo = (payload / 1000);
+      let totalGross = sumPayloadAfterThanks - roadMoney;
+      let pecentSparePart = parseFloat('{{ $sparepart->value }}') / 100;
+      let pecentSalary = parseFloat('{{ $gaji->value }}') / 100;
+      let sparepart = totalGross * pecentSparePart;
+      let salary = (totalGross - sparepart) * pecentSalary;
+      let totalNetto = totalGross - sparepart - salary;
+      $('#convertToTon').val(convertTo);
+      $('#totalPayload').val(sumPayload);
+      $('#taxFee').val(taxPPH);
+      $('#totalPayloadAfterTax').val(sumPayloadAfterTax);
+      $('#totalPayloadAfterThanks').val(sumPayloadAfterThanks);
+      $('input[name="grandtotalgross"]').val(totalGross);
+      $('input[name="cut_sparepart"]').val(sparepart);
+      $('input[name="salary"]').val(salary);
+      $('input[name="grandtotalnetto"]').val(totalNetto);
+    }
+
+    function callLdo(){
+      let basicPrice = parseFloat($('.basicprice').val()) || 0;
+      let basicPriceLDO = parseFloat($('input[name="basic_price_ldo"]').val()) || 0;
+      let payload = parseFloat($('input[name=payload]').val()) || 0;
+      let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
+      let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
+      let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
+
+      //self
+      let sumPayload = basicPrice * payload;
+      let taxPPH = sumPayload * tax_pph;
+      let sumPayloadAfterTax = sumPayload - taxPPH;
+      let sumPayloadAfterThanks = sumPayloadAfterTax - fee_thanks;
+      //ldo
+      let sumPayloadLDO = basicPriceLDO * payload;
+      let taxPPHLDO = basicPriceLDO * tax_pph;
+      let sumPayloadAfterTaxLDO = sumPayloadLDO - taxPPH;
+      let sumPayloadAfterThanksLDO = sumPayloadAfterTaxLDO - fee_thanks;
+
+      let convertTo = (payload / 1000);
+      let totalGrossLDO = sumPayloadAfterThanksLDO - roadMoney;
+      let totalNetto = sumPayloadAfterThanks - sumPayloadAfterThanksLDO;
+      $('#convertToTon').val(convertTo);
+      $('#totalPayload').val(sumPayload);
+      $('#totalpayloadldo').val(sumPayloadLDO);
+      $('#totalpayloadldoaftertax').val(sumPayloadAfterTaxLDO);
+      $('#totalpayloadldoafterthanks').val(sumPayloadAfterThanksLDO);
+      $('#taxFee').val(taxPPH);
+      $('#totalPayloadAfterTax').val(sumPayloadAfterTax);
+      $('#totalPayloadAfterThanks').val(sumPayloadAfterThanks);
+      $('input[name="grandtotalnettoldo"]').val(totalGrossLDO);
+      $('input[name="grandtotalnetto"]').val(totalNetto);
+    }
+
     $('input[name=payload],input[name=basic_price_ldo]').on('keyup', function(){
       var select = $('#selectExpedition').find(":selected").val();
       if(select == 'self'){
-        let basicPrice    = parseInt($('input[name="basic_price"]').val());
-        let payload       = parseFloat($('input[name="payload"]').val());
-        let roadMoney     = parseInt($('input[name="road_money"]').val());
-        let sumPayload    = basicPrice * payload;
-        let convertTo     = (payload / 1000);
-        let totalGross    = sumPayload - roadMoney;
-        let pecentSparePart = parseFloat('{{ $sparepart->value }}') / 100;
-        let pecentSalary  = parseFloat('{{ $gaji->value }}') / 100;
-        let sparepart     = totalGross * pecentSparePart;
-        let salary        = (totalGross - sparepart) * pecentSalary;
-        let totalNetto    = totalGross - sparepart - salary;
-        $('#convertToTon').val(convertTo);
-        $('#totalPayload').val(sumPayload);
-        $('input[name="grandtotalgross"]').val(totalGross);
-        $('input[name="cut_sparepart"]').val(sparepart);
-        $('input[name="salary"]').val(salary);
-        $('input[name="grandtotalnetto"]').val(totalNetto);
-      }else{
-        let basicPrice    = parseInt($('input[name="basic_price"]').val());
-        let basicPriceLDO = parseInt($('input[name="basic_price_ldo"]').val());
-        let payload       = parseFloat($('input[name="payload"]').val());
-        let roadMoney     = parseInt($('input[name="road_money"]').val());
-        let sumPayload    = basicPrice * payload;
-        let sumPayloadLDO = basicPriceLDO * payload;
-        let convertTo     = (payload / 1000);
-        let totalGrossLDO = sumPayloadLDO - roadMoney;
-        let totalNetto    = sumPayload - sumPayloadLDO;
-        $('#convertToTon').val(convertTo);
-        $('#totalPayload').val(sumPayload);
-        $('#totalpayloadldo').val(sumPayloadLDO);
-        $('input[name="grandtotalnettoldo"]').val(totalGrossLDO);
-        $('input[name="grandtotalnetto"]').val(totalNetto);
+        callSelf();
+      }else if('ldo'){
+        callLdo()
       }
     });
 
@@ -631,15 +687,21 @@
             if(response.data){
               let data = response.data.pivot;
               let transport = response.type.type_car;
+              let type = response.data.pivot.type;
               if(transport == 'engkel'){
                 $('input[name=road_money]').val(data.road_engkel);
-                $('input[name=basic_price]').val(data.expense);
+                $('.basicprice').val(data.expense);
+                if(type == 'fix'){
+                  callBorongan();
+                }
               }else if(transport == 'tronton'){
                 $('input[name=road_money]').val(data.road_tronton);
-                $('input[name=basic_price]').val(data.expense);
+                $('.basicprice').val(data.expense);
+                if(type == 'fix'){
+                  callBorongan();
+                }
               }
 
-              callBorongan();
             }else{
               $('input[name=road_money]').val('');
             }

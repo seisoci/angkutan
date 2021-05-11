@@ -71,7 +71,7 @@ class InvoiceLdoController extends Controller
       $route_from   = $request->route_from;
       $cargo_id     = $request->cargo_id;
       if ($request->ajax()) {
-        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->withSum('operationalexpense','amount')
         ->where('status_payment', '0')
         ->where('status_cargo', 'selesai')
         ->where('another_expedition_id', '!=', 'NULL')
@@ -183,43 +183,9 @@ class InvoiceLdoController extends Controller
       return view('backend.invoice.invoiceldo.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\InvoiceLdo  $invoiceLdo
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(InvoiceLdo $invoiceLdo)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\InvoiceLdo  $invoiceLdo
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, InvoiceLdo $invoiceLdo)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\InvoiceLdo  $invoiceLdo
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(InvoiceLdo $invoiceLdo)
-    {
-        //
-    }
-
     public function datatabledetail($id)
     {
-        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->where('invoice_ldo_id', $id);
+        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->withSum('operationalexpense','amount')->where('invoice_ldo_id', $id);
         return Datatables::of($data)->make(true);
     }
 }

@@ -126,7 +126,31 @@ return [
             [
               'title' => 'Master Perusahaan',
               'page'  => 'backend/companies'
-            ]
+            ],
+            [
+              'title' => 'Karyawan',
+              'bullet' => 'dot',
+              'root' => true,
+              'arrow' => true,
+              'submenu' => [
+                [
+                  'title' => 'Master Karyawan',
+                  'page'  => 'backend/cashes'
+                ],
+                [
+                  'title' => 'Master Jenis Gaji',
+                  'page'  => 'backend/banks'
+                ],
+                [
+                  'title' => 'Master Gaji Bulanan',
+                  'page'  => 'backend/banks'
+                ],
+                [
+                  'title' => 'Master Pembayaran Gaji',
+                  'page'  => 'backend/companies'
+                ]
+              ]
+            ],
           ]
         ],
         [

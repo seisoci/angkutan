@@ -64,7 +64,7 @@
 
 <script id="details-template" type="text/x-handlebars-template">
   @verbatim
-  <table class="table table-bordered " id="posts-{{id}}">
+  <table class="table table-hover" id="posts-{{id}}">
       <thead>
       <tr>
         <th>No. Surat Jalan</th>

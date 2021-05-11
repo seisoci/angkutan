@@ -34,15 +34,21 @@ class UsersController extends Controller
     ];
 
     if ($request->ajax()) {
-      $data = User::query();
-      return DataTables::eloquent($data)
+      $data = User::whereHas('roles', function ($query) {
+          return $query->where('name', '<>','super-admin');
+      });
+      return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $actionBtn = '<a href="users/'.$row->id.'/edit" class="edit btn btn-success btn-sm">Edit</a>
             <a href="#" data-toggle="modal" data-target="#modalReset" data-id="'. $row->id.'" class="btn btn-info btn-sm">Reset Password</a>
             <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
             return $actionBtn;
-        })->editColumn('image', function(User $user){
+        })
+        ->addColumn('roles', function($row){
+            return $row->getRoleNames()[0];
+        })
+        ->editColumn('image', function(User $user){
             return !empty($user->image) ? asset("/images/thumbnail/$user->image") : asset('media/users/blank.png');
         })->make(true);
     }

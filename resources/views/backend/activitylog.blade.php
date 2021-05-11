@@ -42,14 +42,32 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-md-6">
-            <h2>Old</h2>
-            <div class="alert alert-danger" role="alert" id="old">
-            </div>
+            <h4>Old</h4>
+            <table class="table-old table table-bordered">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
           </div>
           <div class="col-md-6">
-            <h2>New</h2>
-            <div class="alert alert-primary" role="alert" id="attributes">
-            </div>
+            <h4>New</h4>
+            <table class="table-new table table-bordered">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
           </div>
         </div>
         <div class="modal-footer">
@@ -59,6 +77,7 @@
     </div>
   </div>
 </div>
+
 @endsection
 {{-- Styles Section --}}
 @section('styles')
@@ -119,28 +138,22 @@
         type: "GET",
         url: '{{ route('backend.activitylog.index') }}'+'/'+id,
         success: function(response) {
-          console.log(response);
           let attributes = response.attributes;
+          let old = response.old;
           for(var i in attributes){
-          // // result.push([i, properties [i]]);
-          // console.log(properties[i]);
-          //
-            $('#old').append(attributes[i]);
+            $('.table-new').find("tbody").append('<tr><td>'+i+'</td><td>'+attributes[i]+'</td></tr>');
+          }
+          for(var a in old){
+            $('.table-old').find("tbody").append('<tr><td>'+a+'</td><td>'+old[a]+'</td></tr>');
           }
         },
         error: function(response) {
 
         }
       });
-      // for(var i in properties){
-      //   // result.push([i, properties [i]]);
-      // console.log(properties[i]);
-      // }
-
-      // $(this).find('.modal-body').find('input[name="num_pol"]').val(num_pol);
     });
     $('#modalShow').on('hidden.bs.modal', function (event) {
-      // $(this).find('.modal-body').find('input[name="num_pol"]').val('');
+      $('.table-new, .table-old').find('tbody').empty();
     });
   });
 </script>

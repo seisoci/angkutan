@@ -66,7 +66,8 @@
                   <th scope="col">Jenis Barang</th>
                   <th scope="col" class="text-right">Tarif (Rp.)</th>
                   <th scope="col">Qty (Unit)</th>
-                  <th scope="col" class="text-right">Total (Rp.)</th>
+                  <th scope="col">Pajak (%)</th>
+                  <th scope="col" class="text-right">Total (Inc. Tax)</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,7 +99,7 @@
   </div>
   <div class="card-body">
     <!--begin: Datatable-->
-    <table class="table table-bordered table-hover" id="Datatable">
+    <table class="table table-hover" id="Datatable">
       <thead>
         <tr>
           <th></th>
@@ -109,9 +110,12 @@
           <th>Rute Dari</th>
           <th>Rute Ke</th>
           <th>Jenis Barang</th>
-          <th>Ongkosan Dasar</th>
+          <th>Tarif (Rp.)</th>
           <th>Qty (Unit)</th>
           <th>Tagihan</th>
+          <th>Pajak (%)</th>
+          <th>Potongan</th>
+          <th>Tagihan (Inc. Tax & Pot.)</th>
           <th>Created At</th>
         </tr>
       </thead>
@@ -145,7 +149,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[11, 'desc']],
+        order: [[14, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
@@ -163,9 +167,12 @@
             {data: 'routefrom.name', name: 'routefrom.name'},
             {data: 'routeto.name', name: 'routeto.name'},
             {data: 'cargo.name', name: 'cargo.name'},
-            {data: 'basic_price', name: 'basic_price', render: $.fn.dataTable.render.number( '.', '.', 2)},
-            {data: 'payload', name: 'payload'},
-            {data: 'invoice_bill', name: 'invoice_bill', render: $.fn.dataTable.render.number( '.', '.', 2)},
+            {data: 'basic_price', name: 'basic_price', render: $.fn.dataTable.render.number( ',', '.', 2), className:'dt-right'},
+            {data: 'payload', name: 'payload', className: 'dt-center'},
+            {data: 'invoice_bill', name: 'invoice_bill', render: $.fn.dataTable.render.number( ',', '.', 2),className:'dt-right'},
+            {data: 'tax_percent', name: 'tax_percent', className: 'dt-center'},
+            {data: 'fee_thanks', name: 'fee_thanks', render: $.fn.dataTable.render.number( ',', '.', 2), className:'dt-right'},
+            {data: 'total_basic_price_after_thanks', name: 'total_basic_price_after_thanks', render: $.fn.dataTable.render.number( ',', '.', 2), className:'dt-right', orderable: false, searchable: false},
             {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [
@@ -203,7 +210,7 @@
             $('#TampungId').empty();
             var total = 0;
             $.each(response.data, function(index, data){
-              total += parseFloat(data.invoice_bill);
+              total += parseFloat(data.total_basic_price_after_tax);
               $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="'+data.id+'">');
               $('#table_invoice tbody').append('<tr>'+
               ' <td class="text-center">'+(index+1)+'</td>'+
@@ -214,14 +221,15 @@
               ' <td>'+data.routeto.name+'</td>'+
               ' <td>'+data.cargo.name+'</td>'+
               ' <td class="text-right money">'+data.basic_price+'</td>'+
-              ' <td>'+data.payload+'</td>'+
-              ' <td class="text-right money">'+data.invoice_bill+'</td>'+
+              ' <td class="text-center">'+data.payload+'</td>'+
+              ' <td class="text-center">'+(data.tax_percent ? data.tax_percent : 0)+'</td>'+
+              ' <td class="text-right money">'+data.total_basic_price_after_tax+'</td>'+
               '</tr>');
             });
             $('#TampungId').append('<input type="hidden" name="grand_total" value="'+total+'">');
 
             $('#table_invoice tfoot').append('<tr>'+
-              '<td colspan="9" class="text-right">Total</td>'+
+              '<td colspan="10" class="text-right">Total</td>'+
               '<td class="text-right money">'+total+'</td>'+
               '</tr>');
 
