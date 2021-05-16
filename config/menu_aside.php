@@ -135,19 +135,19 @@ return [
               'submenu' => [
                 [
                   'title' => 'Master Karyawan',
-                  'page'  => 'backend/cashes'
+                  'page'  => 'backend/employees'
                 ],
                 [
                   'title' => 'Master Jenis Gaji',
-                  'page'  => 'backend/banks'
+                  'page'  => 'backend/employeesmaster'
                 ],
                 [
                   'title' => 'Master Gaji Bulanan',
-                  'page'  => 'backend/banks'
+                  'page'  => 'backend/employeessalary'
                 ],
                 [
-                  'title' => 'Master Pembayaran Gaji',
-                  'page'  => 'backend/companies'
+                  'title' => 'Pembayaran Gaji Bulanan',
+                  'page'  => 'backend'
                 ]
               ]
             ],

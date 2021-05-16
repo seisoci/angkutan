@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+/**
+ * @mixin IdeHelperPaymentKasbon
+ */
 class PaymentKasbon extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
-  protected static $logName = 'Pembayaran Kasbon Supir Detail';
+  protected static $logName = 'Rincian Pembayaran Kasbon Supir Detail';
   protected static $logFillable = true;
   protected static $logAttributes = ['invoicekasbon'];
   protected static $logAttributesToIgnore = ['invoice_kasbon_id'];

@@ -16,10 +16,11 @@ class CreateEmployeesTable extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('no_card');
-            $table->string('photo');
-            $table->string('photo_ktp');
-            $table->enum('status', ['active', 'inactive']);
+            $table->string('position')->nullable();
+            $table->string('no_card')->nullable();
+            $table->string('photo')->nullable();
+            $table->string('photo_ktp')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->timestamps();
         });
     }

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+/**
+ * @mixin IdeHelperInvoiceKasbon
+ */
 class InvoiceKasbon extends Model
 {
   use HasFactory, Notifiable, LogsActivity;

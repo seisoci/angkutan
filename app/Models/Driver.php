@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+/**
+ * @mixin IdeHelperDriver
+ */
 class Driver extends Model
 {
   use HasFactory, Notifiable, LogsActivity;

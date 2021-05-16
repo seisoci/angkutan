@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+/**
+ * @mixin IdeHelperJobOrder
+ */
 class JobOrder extends Model
 {
   use HasFactory;
@@ -18,7 +21,7 @@ class JobOrder extends Model
     'status_payment',
     'status_payment_ldo',
   ];
-  protected $appends = ['num_prefix', 'total_basic_price', 'total_basic_price_ldo', 'total_basic_price_after_tax', 'total_basic_price_after_thanks', 'total_operational', 'total_sparepart', 'total_salary', 'total_netto_ldo', 'tax_amount'];
+  protected $appends = ['num_prefix', 'total_basic_price', 'total_basic_price_after_tax', 'total_basic_price_after_thanks','total_basic_price_ldo', 'total_operational', 'total_sparepart', 'total_salary', 'total_netto_ldo', 'tax_amount'];
 
 
   public function getCreatedAtAttribute($value){
@@ -103,7 +106,7 @@ class JobOrder extends Model
 
   public function getTotalNettoLdoAttribute()
   {
-      return (($this->basic_price_ldo * $this->payload) - ($this->total_basic_price * ($this->tax_percent / 100)) - $this->fee_thanks) - ($this->operationalexpense_sum_amount + $this->road_money);
+      return $this->total_basic_price_ldo - ($this->operationalexpense_sum_amount + $this->road_money);
   }
 
   public function getNumPrefixAttribute()

@@ -106,7 +106,7 @@ class InvoiceReturPurchaseController extends Controller
           endforeach;
 
           ReturPurchase::insert($data);
-          DB::commit();
+//          DB::commit();
 
           $response = response()->json([
             'status'    => 'success',

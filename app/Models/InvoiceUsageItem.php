@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+/**
+ * @mixin IdeHelperInvoiceUsageItem
+ */
 class InvoiceUsageItem extends Model
 {
   protected $appends = ['num_invoice'];

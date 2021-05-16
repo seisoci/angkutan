@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+/**
+ * @mixin IdeHelperBank
+ */
 class Bank extends Model
 {
   use HasFactory, Notifiable, LogsActivity;

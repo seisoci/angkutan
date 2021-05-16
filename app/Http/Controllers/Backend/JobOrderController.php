@@ -70,7 +70,7 @@ class JobOrderController extends Controller
           return $query->where('status_cargo', $status_cargo);
         })
         ->when($status_document, function ($query, $status_document) {
-          if($status_document == "zero"){
+          if($status_document === "zero"){
             return $query->where('status_document', "0");
           }else{
             return $query->where('status_document', $status_document);
@@ -111,11 +111,6 @@ class JobOrderController extends Controller
       return view('backend.operational.joborders.index', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
       $config['page_title'] = "Create Job Order";
@@ -128,12 +123,6 @@ class JobOrderController extends Controller
       return view('backend.operational.joborders.create', compact('config', 'page_breadcrumbs','sparepart', 'gaji'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
@@ -148,7 +137,7 @@ class JobOrderController extends Controller
         $qsalary    = Setting::where('name', 'gaji supir')->first();
         $prefix     = Prefix::findOrFail($request->prefix);
         $data       = new JobOrder();
-        if($request->type == 'self'){
+        if($request->type === 'self'){
           //CALCULATE
           $basicPrice = $request->basic_price;
           $payload    = $request->payload ?? 1;
@@ -185,11 +174,8 @@ class JobOrderController extends Controller
         }elseif($request->type == 'ldo'){
           //CALCULATE
           $basicPrice = $request->basic_price;
-          $basicPriceLDO = $request->basic_price_ldo;
           $payload    = $request->payload ?? 1;
-          $roadMoney  = $request->road_money;
           $sumPayload = $basicPrice * $payload;
-          $sumPayloadLDO = $basicPriceLDO * $payload;
           //MODEL DB
           $data->date_begin             = $request->date_begin;
           $data->type                   = $request->type;
@@ -208,8 +194,6 @@ class JobOrderController extends Controller
           $data->basic_price            = $request->basic_price;
           $data->basic_price_ldo        = $request->basic_price_ldo;
           $data->road_money             = $request->road_money;
-          $data->tax_percent            = $request->tax_percent ?? 0;
-          $data->fee_thanks             = $request->fee_thanks ?? 0;
           $data->invoice_bill           = $sumPayload;
           if($data->save()){
             $response = response()->json([

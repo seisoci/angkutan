@@ -64,7 +64,7 @@
     <!-- begin: Invoice body-->
     <div class="row justify-content-center py-8 px-8 py-md-10 px-md-0">
       <div class="col-md-9">
-        <div class="table-responsive">
+        <div class="table">
           <table class="table">
             <thead>
               <tr>
@@ -92,7 +92,7 @@
         </div>
         <h4 class="display-7 font-weight-boldest mt-15">Tambahan Operasional</h4>
         <div class="border-bottom w-100"></div>
-        <div class="table-responsive">
+        <div class="table">
           <table class="table-borderless d-print-table">
             <thead>
             </thead>

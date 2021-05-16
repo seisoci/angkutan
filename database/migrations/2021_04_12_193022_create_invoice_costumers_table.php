@@ -18,8 +18,12 @@ class CreateInvoiceCostumersTable extends Migration
             $table->string('num_bill')->unique();
             $table->string('prefix');
             $table->foreignId('costumer_id')->constrained('costumers');
-            $table->decimal('grandtotal',15, 2);
-            $table->text('description')->nullable();
+            $table->date('invoice_date');
+            $table->date('due_date');
+            $table->decimal('total_bill',15, 2);
+            $table->decimal('total_cut',15, 2)->default(0);
+            $table->decimal('total_payment',15, 2)->default(0);
+            $table->decimal('rest_payment',15, 2);
             $table->string('memo')->nullable();
             $table->timestamps();
         });

@@ -106,6 +106,8 @@
           <th class="text-center">Jenis Barang</th>
           <th class="text-center">Tarif(Rp.)</th>
           <th class="text-center">Qty(Unit)</th>
+          <th class="text-center">Pajak (%)</th>
+          <th class="text-center">Fee Pemberian</th>
           <th class="text-center">Total(Rp.)</th>
         </tr>
       </thead>
@@ -120,15 +122,17 @@
           <td>{{ $item->routeto->name }}</td>
           <td>{{ $item->cargo->name }}</td>
           <td class="text-right">{{ number_format($item->basic_price, 2,'.', ',') }}</td>
-          <td class="text-right">{{ $item->payload }}</td>
-          <td class="text-right">{{ number_format($item->total_basic_price, 2, '.', ',') }}</td>
+          <td class="text-center">{{ $item->payload }}</td>
+          <td class="text-right">{{ $item->tax_percent ?? 0}} %</td>
+          <td class="text-right">{{ number_format($item->fee_thanks, 2, '.', ',') }}</td>
+          <td class="text-right">{{ number_format($item->total_basic_price_after_thanks, 2, '.', ',') }}</td>
         </tr>
         @endforeach
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="9" class="text-right">Total Rp. </td>
-          <td class="text-right">{{ number_format($data->sum('total_basic_price'), 2, '.', ',') }}</td>
+          <td colspan="11" class="text-right">Total Rp. </td>
+          <td class="text-right">{{ number_format($data->sum('total_basic_price_after_thanks'), 2, '.', ',') }}</td>
         </tr>
       </tfoot>
     </table>
@@ -297,7 +301,7 @@
       <tbody>
         <tr>
           <td>Total Pendapatan</td>
-          <td class="text-right">{{ number_format($data->sum('total_basic_price'), 2, '.', ',') }}</td>
+          <td class="text-right">{{ number_format($data->sum('total_basic_price_after_thanks'), 2, '.', ',') }}</td>
         </tr>
         <tr>
           <td>Total Biaya</td>
@@ -308,7 +312,7 @@
         <tr>
           <td>Total Bersih</td>
           <td class="text-right">
-            {{ number_format($data->sum('total_basic_price') - ($data->sum('total_operational') + $data->sum('total_sparepart') + $data->sum('total_salary')), 2, '.', ',') }}
+            {{ number_format($data->sum('total_basic_price_after_thanks') - ($data->sum('total_operational') + $data->sum('total_sparepart') + $data->sum('total_salary')), 2, '.', ',') }}
           </td>
         </tr>
       </tbody>
@@ -339,6 +343,11 @@
 {{-- Styles Section --}}
 @section('styles')
 <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
+<style>
+  .datepicker{
+    z-index: 999 !important;
+  }
+</style>
 @endsection
 
 

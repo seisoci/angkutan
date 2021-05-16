@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperMonthlySalary
+ */
 class MonthlySalary extends Model
 {
     use HasFactory;

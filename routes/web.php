@@ -43,6 +43,9 @@ use App\Http\Controllers\Backend\KasbonController as BackendKasbonController;
 use App\Http\Controllers\Backend\ReportSparepartController as BackendReportSparepartController;
 use App\Http\Controllers\Backend\InvoiceKasbonController as BackendInvoiceKasbonController;
 use App\Http\Controllers\Backend\ActivityLogController as BackendActivityLogController;
+use App\Http\Controllers\Backend\EmployeeMasterController as BackendEmployeeMasterController;
+use App\Http\Controllers\Backend\EmployeeController as BackendEmployeeController;
+use App\Http\Controllers\Backend\EmployessSalaryController as BackendEmployeeSalaryController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -74,6 +77,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('brands/select2', [BackendBrandController::class, 'select2'])->name('brands.select2');
     Route::get('drivers/select2', [BackendDriverController::class, 'select2'])->name('drivers.select2');
     Route::get('drivers/select2self', [BackendDriverController::class, 'select2self'])->name('drivers.select2self');
+    Route::get('drivers/select2ldo', [BackendDriverController::class, 'select2ldo'])->name('drivers.select2ldo');
     Route::get('drivers/select2joborder', [BackendDriverController::class, 'select2joborder'])->name('drivers.select2joborder');
     Route::get('joborders/select2costumers', [BackendJobOrderController::class, 'select2costumers'])->name('joborders.select2costumers');
     Route::get('joborders/select2routefrom', [BackendJobOrderController::class, 'select2routefrom'])->name('joborders.select2routefrom');
@@ -83,6 +87,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('transports/select2', [BackendTransportController::class, 'select2'])->name('transports.select2');
     Route::get('transports/select2tonase', [BackendTransportController::class, 'select2tonase'])->name('transports.select2tonase');
     Route::get('transports/select2self', [BackendTransportController::class, 'select2self'])->name('transports.select2self');
+    Route::get('transports/select2ldo', [BackendTransportController::class, 'select2ldo'])->name('transports.select2ldo');
     Route::get('transports/select2joborder', [BackendTransportController::class, 'select2joborder'])->name('transports.select2joborder');
     Route::get('typecapacities/select2', [BackendTypeCapacityController::class, 'select2'])->name('typecapacities.select2');
     Route::get('categories/select2', [BackendCategoryController::class, 'select2'])->name('categories.select2');
@@ -91,6 +96,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('prefixes/select2', [BackendPrefixController::class, 'select2'])->name('prefixes.select2');
     Route::get('expenses/select2', [BackendExpenseController::class, 'select2'])->name('expenses.select2');
     Route::get('stocks/select2', [BackendStockController::class, 'select2'])->name('stocks.select2');
+    Route::get('employeesmaster/select2', [BackendEmployeeMasterController::class, 'select2'])->name('employeesmaster.select2');
 
     //Print
     Route::get('invoicesalaries/{id}/print', [BackendInvoiceSalaryController::class, 'print']);
@@ -104,12 +110,14 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportsparepart/print', [BackendSparepartController::class, 'print']);
     Route::get('reportsparepart/document', [BackendSparepartController::class, 'document']);
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
+    Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
 
     //Datatables Details
     Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
     Route::get('invoicecostumers/datatabledetail/{id}', [BackendInvoiceCostumerController::class, 'datatabledetail'])->name('invoicecostumers.datatabledetail');
     Route::get('invoiceldo/datatabledetail/{id}', [BackendInvoiceLdoController::class, 'datatabledetail'])->name('invoiceldo.datatabledetail');
     Route::get('invoicekasbons/datatabledetail/{id}', [BackendInvoiceKasbonController::class, 'datatabledetail'])->name('invoicekasbons.datatabledetail');
+    Route::get('employeessalary/datatabledetail/{id}', [BackendEmployeeSalaryController::class, 'datatabledetail'])->name('employeessalary.datatabledetail');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
@@ -152,6 +160,16 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('cashes', BackendCashController::class)->except(['create', 'edit', 'show']);
     Route::resource('banks', BackendBankController::class)->except(['create', 'edit', 'show']);
     Route::resource('companies', BackendCompanyController::class)->except(['create', 'edit', 'show']);
+    Route::resource('employeesmaster', BackendEmployeeMasterController::class)->except(['create', 'edit', 'show']);
+    Route::resource('employees', BackendEmployeeController::class);
+    Route::resource('employeessalary', BackendEmployeeSalaryController::class);
+    Route::prefix('employeessalary')->name('employeessalary.')->group(function() {
+      Route::get('/', [BackendEmployeeSalaryController::class, 'index'])->name('index');
+      Route::get('{id}/edit/', [BackendEmployeeSalaryController::class, 'edit'])->name('edit');
+      Route::put('{id}', [BackendEmployeeSalaryController::class, 'put'])->name('put');
+      Route::get('{id}/{employee_master_id}/destroy/', [BackendEmployeeSalaryController::class, 'destroy'])->name('destroy');
+      Route::get('{id}/fetchdata/', [BackendEmployeeSalaryController::class, 'fetchdata'])->name('fetchdata');
+    });
 
     //Purchase
     Route::resource('invoicepurchases', BackendInvoicePurchaseController::class);
@@ -178,6 +196,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
 
     Route::get('dashboard', BackendDashboardController::class);
     Route::resource('activitylog', BackendActivityLogController::class);
+
     //Report
     Route::resource('reportcostumers', BackendReportCostumerController::class);
     Route::resource('reportsparepart', BackendReportSparepartController::class);

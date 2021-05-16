@@ -63,7 +63,6 @@ class RecapitulationController extends Controller
       }else{
         return redirect()->back()->withErrors($validator->errors());
       }
-
       return view('backend.operational.recapitulation.index', compact('config', 'page_breadcrumbs', 'data', 'profile', 'date_begin', 'date_end', 'transport_id', 'driver_id', 'driver', 'transport'));
     }
 
@@ -238,7 +237,9 @@ class RecapitulationController extends Controller
       $sheet->getColumnDimension('G')->setWidth(12);
       $sheet->getColumnDimension('H')->setWidth(14);
       $sheet->getColumnDimension('I')->setWidth(8);
-      $sheet->getColumnDimension('J')->setWidth(14);
+      $sheet->getColumnDimension('J')->setWidth(8);
+      $sheet->getColumnDimension('K')->setWidth(8);
+      $sheet->getColumnDimension('L')->setWidth(14);
 
       $sheet->mergeCells('A1:C1');
       $sheet->setCellValue('A1', 'Laporan Pendapatan Mobil');
@@ -263,7 +264,9 @@ class RecapitulationController extends Controller
       $sheet->setCellValue('G6', 'Jenis Barang');
       $sheet->setCellValue('H6', 'Tarif(Rp.)');
       $sheet->setCellValue('I6', 'Qty(Unit)');
-      $sheet->setCellValue('J6', 'Total(Rp.)');
+      $sheet->setCellValue('J6', 'Pajak (%)');
+      $sheet->setCellValue('K6', 'Fee Pemberian');
+      $sheet->setCellValue('L6', 'Total(Rp.)');
 
       $cellBasicPrice = NULL;
       $arrayBasicPrice = [];
@@ -271,13 +274,13 @@ class RecapitulationController extends Controller
       $startForSum = 7;
       $endForSum = 6;
       $no = 1;
-      $sheet->getStyle('A'.$startCell.':J'.$startCell.'')->applyFromArray($borderTopBottom)->applyFromArray($borderLeftRight);
+      $sheet->getStyle('A'.$startCell.':L'.$startCell.'')->applyFromArray($borderTopBottom)->applyFromArray($borderLeftRight);
       foreach($data as $item):
         $startCell++;
-        $sheet->getStyle('A'.$startCell.':J'.$startCell.'')->applyFromArray($borderLeftRight);
+        $sheet->getStyle('A'.$startCell.':L'.$startCell.'')->applyFromArray($borderLeftRight);
         $sheet->getStyle('H'.$startCell)->getNumberFormat()->setFormatCode('#,##0.00');
         $sheet->getStyle('I'.$startCell)->getNumberFormat()->setFormatCode('0.00');
-        $sheet->getStyle('J'.$startCell)->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('J'.$startCell.':L'.$startCell.'')->getNumberFormat()->setFormatCode('#,##0.00');
         $sheet->getStyle('B'.$startCell)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
         $sheet->getStyle('A'.$startCell.'')->getAlignment()->setHorizontal('center');
         $sheet->setCellValue('A'.$startCell, $no++);
@@ -289,21 +292,23 @@ class RecapitulationController extends Controller
         $sheet->setCellValue('G'.$startCell, $item->cargo->name);
         $sheet->setCellValue('H'.$startCell, $item->basic_price);
         $sheet->setCellValue('I'.$startCell, $item->payload);
-        $sheet->setCellValue('J'.$startCell, $item->total_basic_price);
-        array_push($arrayBasicPrice, 'J'.$startCell);
+        $sheet->setCellValue('J'.$startCell, $item->tax_percent);
+        $sheet->setCellValue('K'.$startCell, $item->fee_thanks);
+        $sheet->setCellValue('L'.$startCell, $item->total_basic_price_after_thanks);
+        $arrayBasicPrice[] = 'L' . $startCell;
       endforeach;
-      $sheet->getStyle('A'.$startCell.':J'.$startCell.'')->applyFromArray($borderBottom);
+      $sheet->getStyle('A'.$startCell.':L'.$startCell.'')->applyFromArray($borderBottom);
       //Total Pendapatan Gross Mobil
       $endForSum = $startCell;
       $startCell++;
-      $sheet->getStyle('H'.$startCell.':J'.$startCell.'')->applyFromArray($borderAll);
-      $sheet->getStyle('J'.$startCell)->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('H'.$startCell.':L'.$startCell.'')->applyFromArray($borderAll);
+      $sheet->getStyle('K'.$startCell.':L'.$startCell.'')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->getStyle('H'.$startCell.'')->getAlignment()->setHorizontal('right');
       $sheet->setCellValue('H'.$startCell, 'Total Rp.');
-      $sheet->mergeCells('H'.$startCell.':I'.$startCell.'');
-      $sheet->getStyle('H'.$startCell.':J'.$startCell)->getFont()->setBold(true);
-      $sheet->setCellValue('J'.$startCell, '=SUM(J'.$startForSum.':J'.$endForSum.')');
-      $cellBasicPrice = "J".$startCell;
+      $sheet->mergeCells('H'.$startCell.':K'.$startCell.'');
+      $sheet->getStyle('H'.$startCell.':L'.$startCell)->getFont()->setBold(true);
+      $sheet->setCellValue('L'.$startCell, '=SUM(L'.$startForSum.':L'.$endForSum.')');
+      $cellBasicPrice = "L".$startCell;
 
       //Laporan Biaya Operasional
       $cellOperational = NULL;

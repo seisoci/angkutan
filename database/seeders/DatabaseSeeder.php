@@ -61,14 +61,7 @@ class DatabaseSeeder extends Seeder
           'name'  => 'gaji supir',
           'value' => '15',
           'type'  => 'settings'
-        ],
-        [
-          'name'  => 'pajak pelanggan',
-          'value' => '10',
-          'type'  => 'settings'
-        ],
-
-
+        ]
       ];
       Setting::insert($settings);
     }

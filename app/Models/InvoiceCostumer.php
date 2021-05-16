@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+/**
+ * @mixin IdeHelperInvoiceCostumer
+ */
 class InvoiceCostumer extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
@@ -21,8 +24,12 @@ class InvoiceCostumer extends Model
     'prefix',
     'num_bill',
     'costumer_id',
-    'grandtotal',
-    'description',
+    'invoice_date',
+    'due_date',
+    'total_bill',
+    'total_cut',
+    'total_payment',
+    'rest_payment',
     'memo',
   ];
 
@@ -33,6 +40,14 @@ class InvoiceCostumer extends Model
 
   public function costumer(){
     return $this->belongsTo(Costumer::class);
+  }
+
+  public function joborders(){
+    return $this->hasMany(JobOrder::class);
+  }
+
+  public function paymentcostumers(){
+    return $this->hasMany(PaymentCostumer::class);
   }
 
   public function getNumInvoiceAttribute()

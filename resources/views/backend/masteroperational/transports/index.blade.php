@@ -284,7 +284,6 @@
       $(this).find('.modal-body').find('textarea[name="description"]').val('');
       $(this).find('.modal-body').find('img[name="photo"]').attr('src', '');
     });
-
     $("#formDelete").click(function(e){
       e.preventDefault();
       var form 	    = $(this);

@@ -29,6 +29,7 @@ class PaymentLdoController extends Controller
       $date_end     = $request->date_end;
       $status_cargo = $request->status_cargo;
       $type         = $request->type;
+      $status_ldo         = $request->status_ldo;
       if ($request->ajax()) {
         $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
         ->withSum('operationalexpense','amount')
@@ -56,6 +57,14 @@ class PaymentLdoController extends Controller
         })
         ->when($status_cargo, function ($query, $status_cargo) {
           return $query->where('status_cargo', $status_cargo);
+        })
+        ->when($status_ldo, function ($query, $status_ldo) {
+          if ($status_ldo === 'sudah') {
+            return $query->where('invoice_ldo_id', '<>', NULL);
+          } elseif ($status_ldo ==='belum') {
+            return $query->where('invoice_ldo_id', NULL);
+          }
+          return $query;
         });
         return DataTables::of($data)
           ->editColumn('num_bill', function(JobOrder $jobOrder){

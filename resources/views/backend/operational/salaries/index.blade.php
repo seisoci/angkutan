@@ -69,8 +69,8 @@
                 <label>Status Gaji Supir:</label>
                 <select class="form-control" id="selectStatusSalary">
                   <option value="">Pilih Status</option>
-                  <option value="0">Belum dibayar</option>
-                  <option value="1">Sudah Dibayar</option>
+                  <option value="belum">Belum dibayar</option>
+                  <option value="sudah">Sudah Dibayar</option>
                 </select>
               </div>
             </div>
@@ -256,6 +256,7 @@
     }).on('change', function (e){
       dataTable.draw();
     });
+
     $("#select2Driver").select2({
       placeholder: "Search Supir",
       allowClear: true,
@@ -365,6 +366,9 @@
       dataTable.draw();
     });
     $('#selectStatus').on('change', function(){
+      dataTable.draw();
+    });
+    $('#selectStatusSalary').on('change', function(){
       dataTable.draw();
     })
 

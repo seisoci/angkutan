@@ -40,7 +40,10 @@
           <th></th>
           <th>Invoice Number</th>
           <th>Nama Pelanggan</th>
-          <th>Grand Total</th>
+          <th>Total Tagihan</th>
+          <th>Total Pembayaran</th>
+          <th>Potongan</th>
+          <th>Sisa Tagihan</th>
           <th>Created At</th>
           <th>Action</th>
         </tr>
@@ -74,13 +77,13 @@
 </script>
 <script type="text/javascript">
   $(function () {
-    var template = Handlebars.compile($("#details-template").html());
-    var dataTable = $('#Datatable').DataTable({
+    let template = Handlebars.compile($("#details-template").html());
+    let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[4, 'desc']],
+        order: [[7, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.invoicecostumers.index') }}",
@@ -94,16 +97,19 @@
             },
             {data: 'num_invoice', name: 'num_invoice', orderable:false},
             {data: 'costumer.name', name: 'costumer.name'},
-            {data: 'grandtotal', name: 'grandtotal' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
+            {data: 'total_bill', name: 'total_bill' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
+            {data: 'total_payment', name: 'total_payment' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
+            {data: 'total_cut', name: 'total_cut' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
+            {data: 'rest_payment', name: 'rest_payment' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
     });
 
     $('#Datatable tbody').on('click', 'td.details-control', function () {
-      var tr = $(this).closest('tr');
-      var row = dataTable.row(tr);
-      var tableId = 'posts-' + row.data().id;
+      let tr = $(this).closest('tr');
+      let row = dataTable.row(tr);
+      let tableId = 'posts-' + row.data().id;
 
       if (row.child.isShown()) {
         row.child.hide();
@@ -123,7 +129,7 @@
         ajax: data.details_url,
         columns: [
             { data: 'num_prefix', name: 'num_bill', orderable: false },
-            { data: 'invoice_bill', name: 'invoice_bill', render: $.fn.dataTable.render.number( '.', '.', 2), orderable: false, searchable:false, className: 'dt-right' }
+            { data: 'total_basic_price_after_tax', name: 'total_basic_price_after_tax', render: $.fn.dataTable.render.number( '.', '.', 2), orderable: false, searchable:false, className: 'dt-right' }
         ]
       })
     }

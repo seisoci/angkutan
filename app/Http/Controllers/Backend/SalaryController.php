@@ -9,32 +9,33 @@ use DataTables;
 
 class SalaryController extends Controller
 {
-        /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
-      $config['page_title']       = "Gaji Supir";
-      $config['page_description'] = "Daftar Gaji Supir";
-      $page_breadcrumbs = [
-        ['page' => '#','title' => "List Gaji Supir"],
-      ];
+  /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function index(Request $request)
+  {
+    $config['page_title'] = "Gaji Supir";
+    $config['page_description'] = "Daftar Gaji Supir";
+    $page_breadcrumbs = [
+      ['page' => '#', 'title' => "List Gaji Supir"],
+    ];
 
-      $another_expedition_id = $request->another_expedition_id;
-      $driver_id    = $request->driver_id;
-      $transport_id = $request->transport_id;
-      $costumer_id  = $request->costumer_id;
-      $cargo_id     = $request->cargo_id;
-      $route_from   = $request->route_from;
-      $route_to     = $request->route_to;
-      $date_begin   = $request->date_begin;
-      $date_end     = $request->date_end;
-      $status_cargo = $request->status_cargo;
-      if ($request->ajax()) {
-        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
-        ->withSum('operationalexpense','amount')
+    $another_expedition_id = $request->another_expedition_id;
+    $driver_id = $request->driver_id;
+    $transport_id = $request->transport_id;
+    $costumer_id = $request->costumer_id;
+    $cargo_id = $request->cargo_id;
+    $route_from = $request->route_from;
+    $route_to = $request->route_to;
+    $date_begin = $request->date_begin;
+    $date_end = $request->date_end;
+    $status_cargo = $request->status_cargo;
+    $status_salary = $request->status_salary;
+    if ($request->ajax()) {
+      $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        ->withSum('operationalexpense', 'amount')
         ->where('type', 'self')
         ->when($driver_id, function ($query, $driver_id) {
           return $query->where('driver_id', $driver_id);
@@ -56,16 +57,24 @@ class SalaryController extends Controller
         })
         ->when($status_cargo, function ($query, $status_cargo) {
           return $query->where('status_cargo', $status_cargo);
+        })
+        ->when($status_salary, function ($query, $status_salary) {
+          if ($status_salary === 'sudah') {
+            return $query->where('invoice_salary_id', '<>', NULL);
+          } elseif ($status_salary === 'belum') {
+            return $query->where('invoice_salary_id', NULL);
+          }
+          return $query;
         });
-        return DataTables::of($data)
-          ->editColumn('num_bill', function(JobOrder $jobOrder){
-            return '<a target="_blank" href="/backend/joborders/'.$jobOrder->id.'">'.$jobOrder->num_bill.'</a>';
-          })
-          ->rawColumns(['num_bill'])
-          ->make(true);
-      }
-      return view('backend.operational.salaries.index', compact('config', 'page_breadcrumbs'));
+      return DataTables::of($data)
+        ->editColumn('num_bill', function (JobOrder $jobOrder) {
+          return '<a target="_blank" href="/backend/joborders/' . $jobOrder->id . '">' . $jobOrder->num_bill . '</a>';
+        })
+        ->rawColumns(['num_bill'])
+        ->make(true);
     }
+    return view('backend.operational.salaries.index', compact('config', 'page_breadcrumbs'));
+  }
 
 
 }

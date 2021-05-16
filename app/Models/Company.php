@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperCompany
+ */
 class Company extends Model
 {
   use HasFactory;
