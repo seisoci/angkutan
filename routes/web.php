@@ -46,6 +46,7 @@ use App\Http\Controllers\Backend\ActivityLogController as BackendActivityLogCont
 use App\Http\Controllers\Backend\EmployeeMasterController as BackendEmployeeMasterController;
 use App\Http\Controllers\Backend\EmployeeController as BackendEmployeeController;
 use App\Http\Controllers\Backend\EmployessSalaryController as BackendEmployeeSalaryController;
+use App\Http\Controllers\Backend\MonthlySalaryController as BackendMonthlySalaryController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -170,6 +171,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
       Route::get('{id}/{employee_master_id}/destroy/', [BackendEmployeeSalaryController::class, 'destroy'])->name('destroy');
       Route::get('{id}/fetchdata/', [BackendEmployeeSalaryController::class, 'fetchdata'])->name('fetchdata');
     });
+    Route::resource('monthlymaster', BackendMonthlySalaryController::class);
 
     //Purchase
     Route::resource('invoicepurchases', BackendInvoicePurchaseController::class);

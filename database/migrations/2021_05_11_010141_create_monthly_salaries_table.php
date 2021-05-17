@@ -15,7 +15,7 @@ class CreateMonthlySalariesTable extends Migration
     {
         Schema::create('monthly_salaries', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->date('name')->unique();
             $table->timestamps();
         });
     }

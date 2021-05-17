@@ -158,7 +158,7 @@
         });
       });
 
-      $(".table").on('click' , '.destroy', function (e) {
+      $(".table").on('click', '.destroy', function (e) {
         e.preventDefault();
         let btnSubmit = $(this);
         let btnSubmitHtml = btnSubmit.html();
@@ -206,11 +206,11 @@
               let data = response.data;
               table.empty();
               data.forEach(function (item, i) {
-                table.append('<tr>'+
-                  '<td>'+ (i+1) +'</td>' +
-                  '<td>'+ item['name'] +'</td>' +
-                  '<td class="font-weight-boldest currency">'+ item['pivot']['amount'] +'</td>' +
-                  '<td><a href="/backend/employeessalary/{{ Request::segment(3) }}/{{  $item->id }}/destroy" class="btn btn-sm btn-danger destroy">X</a></td>' +
+                table.append('<tr>' +
+                  '<td>' + (i + 1) + '</td>' +
+                  '<td>' + item['name'] + '</td>' +
+                  '<td class="font-weight-boldest currency">' + item['pivot']['amount'] + '</td>' +
+                  '<td><a href="/backend/employeessalary/{{ Request::segment(3) }}/' + item['id'] + '/destroy" class="btn btn-sm btn-danger destroy">X</a></td>' +
                   '</tr>');
                 initCurrency();
               });

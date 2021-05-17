@@ -23,8 +23,12 @@ class InvoiceLdo extends Model
     'prefix',
     'num_bill',
     'another_expedition_id',
-    'grandtotal',
-    'description',
+    'invoice_date',
+    'due_date',
+    'total_bill',
+    'total_cut',
+    'total_payment',
+    'rest_payment',
     'memo',
   ];
 
@@ -44,5 +48,10 @@ class InvoiceLdo extends Model
   public function getNumInvoiceAttribute()
   {
     return ($this->prefix ."-". $this->num_bill);
+  }
+
+  public function paymentldos()
+  {
+    return $this->hasMany(PaymentLdo::class);
   }
 }

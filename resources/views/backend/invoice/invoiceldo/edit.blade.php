@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="card-body">
-      <form id="formUpdate" action="{{ route('backend.invoicecostumers.update', Request::segment(3)) }}">
+      <form id="formUpdate" action="{{ route('backend.invoiceldo.update', Request::segment(3)) }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         @method('PUT')
         <div class="row align-items-center border border-dark py-10 px-4">
@@ -45,20 +45,20 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-lg-4 offset-md-2 col-form-label">Supplier:</label>
+                  <label class="col-lg-4 offset-md-2 col-form-label">LDO:</label>
                   <div class="col-lg-6">
-                    <input class="form-control rounded-0" value="{{ $data->costumer->name }}" disabled>
+                    <input class="form-control rounded-0" value="{{ $data->anotherexpedition->name }}" disabled>
                   </div>
                 </div>
                 <div class="form-group row">
                   <label class="col-lg-4 offset-md-2 col-form-label">Phone:</label>
                   <div class="col-lg-6">
-                    <input class="form-control rounded-0" value="{{ $data->costumer->phone }}" disabled></div>
+                    <input class="form-control rounded-0" value="{{ $data->anotherexpedition->phone }}" disabled></div>
                 </div>
                 <div class="form-group row">
                   <label class="col-lg-4 offset-md-2 col-form-label">Alamat:</label>
                   <div class="col-lg-6">
-                    <input class="form-control rounded-0" value="{{ $data->costumer->address }}" disabled>
+                    <input class="form-control rounded-0" value="{{ $data->anotherexpedition->address }}" disabled>
                   </div>
                 </div>
                 <div class="form-group row">
@@ -80,10 +80,11 @@
               <th scope="col">Rute Dari</th>
               <th scope="col">Rute Ke</th>
               <th scope="col">Jenis Barang</th>
-              <th scope="col" class="text-right">Tarif (Rp.)</th>
+              <th scope="col">Tarif LDO (Rp.)</th>
               <th scope="col">Qty (Unit)</th>
-              <th scope="col">Pajak (%)</th>
-              <th scope="col" class="text-right">Total (Inc. Tax)</th>
+              <th scope="col">Total Harga Dasar</th>
+              <th scope="col">Total Operasional</th>
+              <th scope="col">Tagihan Bersih</th>
             </tr>
             </thead>
             <tbody>
@@ -96,10 +97,11 @@
                 <td>{{ $item->routefrom->name }}</td>
                 <td>{{ $item->routeto->name }}</td>
                 <td>{{ $item->cargo->name }}</td>
-                <td class="text-right currency">{{ $item->basic_price }}</td>
-                <td class="text-center">{{ $item->payload }}</td>
-                <td class="text-center">{{ $item->tax_percent ?? 0 }}</td>
-                <td class="text-right currency">{{ $item->total_basic_price_after_tax }}</td>
+                <td class="text-right currency">{{ $item->basic_price_ldo }}</td>
+                <td class="text-right">{{ $item->payload }}</td>
+                <td class="text-center">{{ $item->total_basic_price_ldo }}</td>
+                <td class="text-center">{{ $item->total_operational }}</td>
+                <td class="text-right currency">{{ $item->total_netto_ldo }}</td>
               </tr>
             @endforeach
             </tbody>
@@ -117,7 +119,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($data->paymentcostumers as $item)
+            @foreach($data->paymentldos as $item)
               <tr>
                 <td><input type="text" class="form-control rounded-0 datepicker w-100" name="payment[date_payment]"
                            placeholder="Tanggal Invoice" disabled value="{{ $item->date_payment }}"></td>

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEmployeeMastersTable extends Migration
+class CreatePaymentLdosTable extends Migration
 {
   /**
    * Run the migrations.
@@ -13,9 +13,12 @@ class CreateEmployeeMastersTable extends Migration
    */
   public function up()
   {
-    Schema::create('employee_masters', function (Blueprint $table) {
+    Schema::create('payment_ldos', function (Blueprint $table) {
       $table->id();
-      $table->string('name');
+      $table->foreignId('invoice_ldo_id')->references('id')->on('invoice_ldos');
+      $table->date('date_payment');
+      $table->decimal('payment', 15, 2);
+      $table->string('description')->nullable();
       $table->timestamps();
     });
   }
@@ -27,6 +30,6 @@ class CreateEmployeeMastersTable extends Migration
    */
   public function down()
   {
-    Schema::dropIfExists('employee_masters');
+    Schema::dropIfExists('payment_ldos');
   }
 }

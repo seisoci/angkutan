@@ -146,8 +146,8 @@ return [
                   'page'  => 'backend/employeessalary'
                 ],
                 [
-                  'title' => 'Pembayaran Gaji Bulanan',
-                  'page'  => 'backend'
+                  'title' => 'Menu Gaji Bulanan',
+                  'page'  => 'backend/monthlymaster'
                 ]
               ]
             ],
@@ -239,7 +239,7 @@ return [
               'page'  => 'backend/invoicekasbons'
             ],
             [
-              'title' => 'Invoice Gaji',
+              'title' => 'Invoice Gaji Supir',
               'page'  => 'backend/invoicesalaries'
             ],
             [

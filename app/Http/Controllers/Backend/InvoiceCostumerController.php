@@ -124,6 +124,14 @@ class InvoiceCostumerController extends Controller
             'description' => $request->input('payment.description'),
           ]);
         }
+        if($request->rest_payment <= -1){
+          return response()->json([
+            'status'    => 'error',
+            'message'   => 'Pastikan sisa tagihan tidak negative',
+            'redirect'  => '/backend/invoicecostumers',
+          ]);
+          DB::rollBack();
+        }
 
         DB::commit();
         $response = response()->json([
@@ -193,9 +201,6 @@ class InvoiceCostumerController extends Controller
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
-      'payment.date_payment' => 'required|string',
-      'payment.description' => 'nullable|string',
-      'payment.payment' => 'required|regex:/^\d+(\.\d{1,2})?$/',
       'total_cut' => 'required|regex:/^\d+(\.\d{1,2})?$/',
     ]);
     if ($validator->passes()) {
@@ -210,12 +215,23 @@ class InvoiceCostumerController extends Controller
           'total_payment' => $payment,
         ]);
 
-        PaymentCostumer::create([
-          'invoice_costumer_id' => $data->id,
-          'date_payment' => $request->input('payment.date_payment'),
-          'payment' => $request->input('payment.payment'),
-          'description' => $request->input('payment.description'),
-        ]);
+        if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
+          PaymentCostumer::create([
+            'invoice_costumer_id' => $data->id,
+            'date_payment' => $request->input('payment.date_payment'),
+            'payment' => $request->input('payment.payment'),
+            'description' => $request->input('payment.description'),
+          ]);
+        }
+
+        if($request->rest_payment <= -1){
+          return response()->json([
+            'status'    => 'error',
+            'message'   => 'Pastikan sisa tagihan tidak negative',
+            'redirect'  => '/backend/invoicecostumers',
+          ]);
+          DB::rollBack();
+        }
 
         DB::commit();
         $response = response()->json([

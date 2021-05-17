@@ -81,7 +81,6 @@
                   <th scope="col" class="text-center">#</th>
                   <th scope="col">Tanggal</th>
                   <th scope="col">S. Jalan</th>
-                  <th scope="col">LDO</th>
                   <th scope="col">Pelanggan</th>
                   <th scope="col">Rute Dari</th>
                   <th scope="col">Rute Ke</th>
@@ -174,7 +173,7 @@
           <th>Tanggal Mulai</th>
           <th>Prefix</th>
           <th>No. Job Order</th>
-          <th>Costumer</th>
+          <th>LDO</th>
           <th>Pelanggan</th>
           <th>Rute Dari</th>
           <th>Rute Ke</th>
@@ -220,7 +219,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[15, 'desc']],
+        order: [[14, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
@@ -319,7 +318,6 @@
                   ' <td class="text-center">' + (index + 1) + '</td>' +
                   ' <td>' + data.date_begin + '</td>' +
                   ' <td>' + data.prefix + '-' + data.num_bill + '</td>' +
-                  ' <td>' + data.anotherexpedition.name + '</td>' +
                   ' <td>' + data.costumer.name + '</td>' +
                   ' <td>' + data.routefrom.name + '</td>' +
                   ' <td>' + data.routeto.name + '</td>' +
@@ -334,7 +332,7 @@
               $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '">');
 
               $('#table_invoice tfoot').append('<tr>' +
-                '<td colspan="12" class="text-right">Total</td>' +
+                '<td colspan="11" class="text-right">Total</td>' +
                 '<td class="text-right money">' + total + '</td>' +
                 '</tr>');
 
@@ -345,6 +343,7 @@
                 'digits': 2,
                 'digitsOptional': false,
               });
+              initCalculate();
             }
           }
         });
@@ -481,7 +480,7 @@
               $.each(response.error, function (key, value) {
                 $(".alert-text").append('<span style="display: block">' + value + '</span>');
               });
-              toastr.error("Please complete your form", 'Failed !');
+              toastr.error((response.message || "Please complete your form"), 'Failed !');
             }
           },
           error: function (response) {

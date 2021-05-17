@@ -10,11 +10,7 @@ use Validator;
 
 class PrefixController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
       $config['page_title']       = "List Prefix";

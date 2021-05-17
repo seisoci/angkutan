@@ -39,6 +39,8 @@
         <tr>
           <th></th>
           <th>Invoice Number</th>
+          <th>Tgl Invoice</th>
+          <th>Tgl Jth. Tempo Invoice</th>
           <th>Nama Pelanggan</th>
           <th>Total Tagihan</th>
           <th>Total Pembayaran</th>
@@ -83,7 +85,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[7, 'desc']],
+        order: [[9, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.invoicecostumers.index') }}",
@@ -96,6 +98,8 @@
                 "defaultContent": ''
             },
             {data: 'num_invoice', name: 'num_invoice', orderable:false},
+            {data: 'invoice_date', name: 'invoice_date'},
+            {data: 'due_date', name: 'due_date'},
             {data: 'costumer.name', name: 'costumer.name'},
             {data: 'total_bill', name: 'total_bill' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
             {data: 'total_payment', name: 'total_payment' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},

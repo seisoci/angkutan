@@ -3,21 +3,21 @@
 
 {{-- Content --}}
 @section('content')
-{{-- Dashboard 1 --}}
-<!--begin::Card-->
-<div class="card card-custom">
-  <div class="card-header flex-wrap py-3">
-    <div class="card-title">
-      <h3 class="card-label">{{ $config['page_title'] }}
-        <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
-    </div>
-    <div class="card-toolbar">
-      <!--begin::Button-->
-      <a href="{{ route('backend.invoiceldo.create') }}" class="btn btn-primary font-weight-bolder">
+  {{-- Dashboard 1 --}}
+  <!--begin::Card-->
+  <div class="card card-custom">
+    <div class="card-header flex-wrap py-3">
+      <div class="card-title">
+        <h3 class="card-label">{{ $config['page_title'] }}
+          <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
+      </div>
+      <div class="card-toolbar">
+        <!--begin::Button-->
+        <a href="{{ route('backend.invoiceldo.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
           <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
-            viewBox="0 0 24 24" version="1.1">
+               viewBox="0 0 24 24" version="1.1">
             <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
               <rect x="0" y="0" width="24" height="24"></rect>
               <circle fill="#000000" cx="9" cy="15" r="6"></circle>
@@ -28,41 +28,46 @@
           </svg>
           <!--end::Svg Icon-->
         </span>New Record</a>
-      <!--end::Button-->
+        <!--end::Button-->
+      </div>
     </div>
-  </div>
 
-  <div class="card-body">
-    <!--begin: Datatable-->
-    <table class="table table-bordered table-hover" id="Datatable">
-      <thead>
+    <div class="card-body">
+      <!--begin: Datatable-->
+      <table class="table table-bordered table-hover" id="Datatable">
+        <thead>
         <tr>
           <th></th>
           <th>Invoice Number</th>
+          <th>Tgl Invoice</th>
+          <th>Tgl Jth. Tempo Invoice</th>
           <th>Nama LDO</th>
-          <th>Grand Total</th>
+          <th>Total Tagihan</th>
+          <th>Total Pembayaran</th>
+          <th>Potongan</th>
+          <th>Sisa Tagihan</th>
           <th>Created At</th>
           <th>Action</th>
         </tr>
-      </thead>
-    </table>
+        </thead>
+      </table>
+    </div>
   </div>
-</div>
 @endsection
 
 {{-- Styles Section --}}
 @section('styles')
-<link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
+  <link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css"/>
+  <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
 
 {{-- Scripts Section --}}
 @section('scripts')
-{{-- vendors --}}
-<script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
-<script id="details-template" type="text/x-handlebars-template">
-  @verbatim
-  <table class="table table-bordered " id="posts-{{id}}">
+  {{-- vendors --}}
+  <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
+  <script id="details-template" type="text/x-handlebars-template">
+    @verbatim
+    <table class="table table-bordered " id="posts-{{id}}">
       <thead>
       <tr>
         <th>No. Surat Jalan</th>
@@ -71,68 +76,100 @@
         <th>Total Tagihan</th>
       </tr>
       </thead>
-  </table>
-  @endverbatim
-</script>
-<script type="text/javascript">
-  $(function () {
-    var template = Handlebars.compile($("#details-template").html());
-    var dataTable = $('#Datatable').DataTable({
+    </table>
+    @endverbatim
+  </script>
+  <script type="text/javascript">
+    $(function () {
+      let template = Handlebars.compile($("#details-template").html());
+      let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[4, 'desc']],
+        order: [[9, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.invoiceldo.index') }}",
         columns: [
-            {
-                "className": 'details-control',
-                "orderable": false,
-                "searchable":false,
-                "data": null,
-                "defaultContent": ''
-            },
-            {data: 'num_invoice', name: 'num_invoice', orderable:false},
-            {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},
-            {data: 'grandtotal', name: 'grandtotal' , render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
-            {data: 'created_at', name: 'created_at'},
-            {data: 'action', name: 'action', orderable: false, searchable: false},
+          {
+            "className": 'details-control',
+            "orderable": false,
+            "searchable": false,
+            "data": null,
+            "defaultContent": ''
+          },
+          {data: 'invoice_date', name: 'invoice_date', orderable: false},
+          {data: 'due_date', name: 'due_date'},
+          {data: 'num_invoice', name: 'num_invoice'},
+          {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},
+          {
+            data: 'total_bill',
+            name: 'total_bill',
+            render: $.fn.dataTable.render.number('.', '.', 2),
+            className: 'dt-right'
+          },
+          {
+            data: 'total_payment',
+            name: 'total_payment',
+            render: $.fn.dataTable.render.number('.', '.', 2),
+            className: 'dt-right'
+          },
+          {
+            data: 'total_cut',
+            name: 'total_cut',
+            render: $.fn.dataTable.render.number('.', '.', 2),
+            className: 'dt-right'
+          },
+          {
+            data: 'rest_payment',
+            name: 'rest_payment',
+            render: $.fn.dataTable.render.number('.', '.', 2),
+            className: 'dt-right'
+          },
+          {data: 'created_at', name: 'created_at'},
+          {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
-    });
+      });
 
-    $('#Datatable tbody').on('click', 'td.details-control', function () {
-      var tr = $(this).closest('tr');
-      var row = dataTable.row(tr);
-      var tableId = 'posts-' + row.data().id;
+      $('#Datatable tbody').on('click', 'td.details-control', function () {
+        let tr = $(this).closest('tr');
+        let row = dataTable.row(tr);
+        let tableId = 'posts-' + row.data().id;
 
-      if (row.child.isShown()) {
-        // This row is already open - close it
-        row.child.hide();
-        tr.removeClass('shown');
-      } else {
-        // Open this row
-        row.child(template(row.data())).show();
-        initTable(tableId, row.data());
-        tr.addClass('shown');
-        tr.next().find('td').addClass('no-padding bg-gray');
+        if (row.child.isShown()) {
+          // This row is already open - close it
+          row.child.hide();
+          tr.removeClass('shown');
+        } else {
+          // Open this row
+          row.child(template(row.data())).show();
+          initTable(tableId, row.data());
+          tr.addClass('shown');
+          tr.next().find('td').addClass('no-padding bg-gray');
+        }
+      });
+
+      function initTable(tableId, data) {
+        $('#' + tableId).DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: data.details_url,
+          columns: [
+            {data: 'num_prefix', name: 'num_bill', orderable: false},
+            {data: 'driver.name', name: 'driver.name', orderable: false},
+            {data: 'transport.num_pol', name: 'transport.num_pol', orderable: false},
+            {
+              data: 'total_netto_ldo',
+              name: 'total_netto_ldo',
+              render: $.fn.dataTable.render.number('.', '.', 2),
+              orderable: false,
+              searchable: false,
+              className: 'dt-right'
+            }
+          ]
+        })
       }
     });
-
-    function initTable(tableId, data) {
-      $('#' + tableId).DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: data.details_url,
-        columns: [
-            { data: 'num_prefix', name: 'num_bill', orderable: false },
-            { data: 'driver.name', name: 'driver.name', orderable: false },
-            { data: 'transport.num_pol', name: 'transport.num_pol', orderable: false },
-            { data: 'total_netto_ldo', name: 'total_netto_ldo', render: $.fn.dataTable.render.number( '.', '.', 2), orderable: false, searchable:false, className: 'dt-right' }
-        ]
-      })
-    }
-  });
-</script>
+  </script>
 @endsection

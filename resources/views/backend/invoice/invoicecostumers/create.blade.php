@@ -428,10 +428,10 @@
           data: data,
           success: function (response) {
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-            if (response.status == "success") {
+            if (response.status === "success") {
               toastr.success(response.message, 'Success !');
               setTimeout(function () {
-                if (response.redirect == "" || response.redirect == "reload") {
+                if (response.redirect === "" || response.redirect === "reload") {
                   location.reload();
                 } else {
                   location.href = response.redirect;
@@ -443,7 +443,7 @@
               $.each(response.error, function (key, value) {
                 $(".alert-text").append('<span style="display: block">' + value + '</span>');
               });
-              toastr.error("Please complete your form", 'Failed !');
+              toastr.error((response.message || "Please complete your form"), 'Failed !');
             }
           },
           error: function (response) {
