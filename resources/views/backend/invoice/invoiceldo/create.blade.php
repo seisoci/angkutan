@@ -75,7 +75,7 @@
                   </div>
                 </div>
               </div>
-              <table id="table_invoice" class="table table-striped">
+              <table id="table_invoice" class="table table-responsive table-striped">
                 <thead>
                 <tr>
                   <th scope="col" class="text-center">#</th>
@@ -86,15 +86,61 @@
                   <th scope="col">Rute Dari</th>
                   <th scope="col">Rute Ke</th>
                   <th scope="col">Jenis Barang</th>
-                  <th scope="col" class="text-right">Tarif (Rp.)</th>
-                  <th scope="col" class="text-right">Tarif LDO (Rp.)</th>
+                  <th scope="col">Tarif LDO (Rp.)</th>
                   <th scope="col">Qty (Unit)</th>
-                  <th scope="col" class="text-right">Total (Rp.)</th>
+                  <th scope="col">Total Harga Dasar</th>
+                  <th scope="col">Total Operasional</th>
+                  <th scope="col">Tagihan Bersih</th>
                 </tr>
                 </thead>
                 <tbody>
                 </tbody>
                 <tfoot>
+                </tfoot>
+              </table>
+              <h2 class="pt-10"><u>Pembayaran</u></h2>
+              <table class="table table-borderless">
+                <thead>
+                <tr>
+                  <th scope="col" width="20%">Tanggal Pembayaran</th>
+                  <th scope="col" width="30%">Keterangan</th>
+                  <th scope="col" width="25%">Nominal</th>
+                  <th scope="col" width="25%">Total Dibayar</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td><input type="text" class="form-control rounded-0 datepicker w-100" name="payment[date_payment]"
+                             placeholder="Tanggal Invoice" readonly></td>
+                  <td><textarea name="payment[description]" rows="3" class="form-control rounded-0"></textarea></td>
+                  <td><input type="text" name="payment[payment]" class="currency rounded-0 form-control"></td>
+                  <td><input type="text" class="currency rounded-0 form-control total_payment" disabled></td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                  <td colspan="3" class="text-right">Total Tagihan</td>
+                  <td class="text-right"><input type="text" name="total_bill" class="currency rounded-0 form-control"
+                                                disabled></td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="text-right">Total Pemotongan</td>
+                  <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="text-right">Total Pembayaran</td>
+                  <td class="text-right"><input type="text" class="currency rounded-0 form-control total_payment"
+                                                disabled>
+                  </td>
+                </tr>
+                <tr>
+                  <input type="hidden" name="rest_payment" class="currency rounded-0 form-control rest_payment">
+                  <td colspan="3" class="text-right">Sisa Pembayaran</td>
+                  <td class="text-right"><input type="text" class="currency rounded-0 form-control rest_payment"
+                                                disabled>
+                  </td>
+                </tr>
                 </tfoot>
               </table>
             </div>
@@ -167,7 +213,9 @@
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
-      var dataTable = $('#Datatable').DataTable({
+      initDate();
+      initCurrency();
+      let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
@@ -247,11 +295,10 @@
       $('#submitAppend').on('click', function (e) {
         e.preventDefault();
         let selected = dataTable.column(0).checkboxes.selected();
-        var dataSelected = [];
+        let dataSelected = [];
         $.each(selected, function (index, data) {
           dataSelected.push(data);
         });
-
         $.ajax({
           headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -264,7 +311,7 @@
               $('#table_invoice tbody').empty();
               $('#table_invoice tfoot').empty();
               $('#TampungId').empty();
-              var total = 0;
+              let total = 0;
               $.each(response.data, function (index, data) {
                 total += parseFloat(data.total_netto_ldo);
                 $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="' + data.id + '">');
@@ -277,16 +324,17 @@
                   ' <td>' + data.routefrom.name + '</td>' +
                   ' <td>' + data.routeto.name + '</td>' +
                   ' <td>' + data.cargo.name + '</td>' +
-                  ' <td class="text-right money">' + data.basic_price + '</td>' +
                   ' <td class="text-right money">' + data.basic_price_ldo + '</td>' +
                   ' <td>' + data.payload + '</td>' +
+                  ' <td class="text-right money">' + data.total_basic_price_ldo + '</td>' +
+                  ' <td class="text-right money">' + data.total_operational + '</td>' +
                   ' <td class="text-right money">' + data.total_netto_ldo + '</td>' +
                   '</tr>');
               });
-              $('#TampungId').append('<input type="hidden" name="grand_total" value="' + total + '">');
+              $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '">');
 
               $('#table_invoice tfoot').append('<tr>' +
-                '<td colspan="9" class="text-right">Total</td>' +
+                '<td colspan="12" class="text-right">Total</td>' +
                 '<td class="text-right money">' + total + '</td>' +
                 '</tr>');
 
@@ -302,15 +350,6 @@
         });
       });
 
-      $('#statusCargoModal').on('change', function () {
-        if (this.value == 'selesai') {
-          $("#dateEndModal").parent().css("display", "block");
-          $("#dateEndModal").parent().find('label').css("display", "block");
-        } else {
-          $("#dateEndModal").parent().css("display", "none");
-          $("#dateEndModal").parent().find('label').css("display", "none");
-        }
-      });
 
       $("#select2Prefix").select2({
         placeholder: "Choose Prefix",
@@ -361,7 +400,7 @@
           delay: 250,
           cache: true,
           data: function (e) {
-            var query = {
+            let query = {
               q: e.term || '',
               page: e.page || 1
             }
@@ -375,13 +414,46 @@
         $('#TampungId').empty();
       });
 
+      function initDate() {
+        $('.datepicker').datepicker({
+          format: 'yyyy-mm-dd',
+          todayBtn: "linked",
+          clearBtn: true,
+          todayHighlight: true,
+        });
+      }
+
+      function initCurrency() {
+        $(".currency").inputmask('decimal', {
+          groupSeparator: '.',
+          digits: 2,
+          rightAlign: true,
+          removeMaskOnSubmit: true,
+          autoUnmask: true,
+        });
+      }
+
+      function initCalculate() {
+        let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
+        let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
+        let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
+        let rest_payment = total_bill - total_cut - total_payment;
+        $('.total_payment').val(total_payment);
+        $('.rest_payment').val(rest_payment);
+        $('input[name=total_bill]').val(total_bill);
+      }
+
+      $('input[name="payment[payment]"],input[name="total_cut"],#diskon').on('keyup', function () {
+        initCalculate();
+      });
+
       $("#formStore").submit(function (e) {
         e.preventDefault();
-        var form = $(this);
-        var btnSubmit = form.find("[type='submit']");
-        var btnSubmitHtml = btnSubmit.html();
-        var url = form.attr("action");
-        var data = new FormData(this);
+        let form = $(this);
+        let btnSubmit = form.find("[type='submit']");
+        let btnSubmitHtml = btnSubmit.html();
+        let url = form.attr("action");
+        let data = new FormData(this);
         $.ajax({
           beforeSend: function () {
             btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled", "disabled");
@@ -394,10 +466,10 @@
           data: data,
           success: function (response) {
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-            if (response.status == "success") {
+            if (response.status === "success") {
               toastr.success(response.message, 'Success !');
               setTimeout(function () {
-                if (response.redirect == "" || response.redirect == "reload") {
+                if (response.redirect === "" || response.redirect === "reload") {
                   location.reload();
                 } else {
                   location.href = response.redirect;
