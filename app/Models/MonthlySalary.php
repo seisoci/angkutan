@@ -31,4 +31,5 @@ class MonthlySalary extends Model
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('F Y');
   }
+
 }

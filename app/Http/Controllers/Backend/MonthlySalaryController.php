@@ -17,10 +17,10 @@ class MonthlySalaryController extends Controller
 {
   public function index(Request $request)
   {
-    $config['page_title'] = "List Prefix";
-    $config['page_description'] = "Daftar List Prefix";
+    $config['page_title'] = "List Gaji Bulanan";
+    $config['page_description'] = "Daftar List Gaji Bulanan";
     $page_breadcrumbs = [
-      ['page' => '#', 'title' => "List Prefix"],
+      ['page' => '#', 'title' => "List Gaji Bulanan"],
     ];
     if ($request->ajax()) {
       $data = MonthlySalary::query();
@@ -28,21 +28,21 @@ class MonthlySalaryController extends Controller
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
           $actionBtn = '
-            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" data-name="' .
-            $row->name . '" data-type="' . $row->type . '" class="edit btn btn-warning btn-sm">Update Data</a>
-            <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete btn btn-danger btn-sm">Delete</a>';
+             <div class="dropdown">
+                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                     <i class="fas fa-eye"></i>
+                 </button>
+                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                   <a href="monthlysalarydetail/' . $row->id . '" class="dropdown-item">Show List Karyawaan</a>
+                 </div>
+             </div>
+           ';
           return $actionBtn;
-        })->make(true);
+        })
+        ->make(true);
     }
     return view('backend.accounting.monthlymaster.index', compact('config', 'page_breadcrumbs'));
   }
-
-
-  public function create()
-  {
-
-  }
-
 
   public function store(Request $request)
   {
@@ -50,7 +50,7 @@ class MonthlySalaryController extends Controller
       'monthyear' => 'required|date_format:M Y',
     ]);
 
-    $date_format = Carbon::createFromFormat('d M Y', '2 ' . $request->monthyear, 'UTC')
+    $date_format = Carbon::createFromFormat('d M Y H:i:s', '2 ' . $request->monthyear . '23:59:59', 'UTC')
       ->setTimezone('America/Los_Angeles')->format('Y-m-d');
 
     if ($validator->passes()) {
@@ -90,10 +90,60 @@ class MonthlySalaryController extends Controller
           $response = $throw;
         }
       } else {
-        $response = response()->json([
-          'status' => 'error',
-          'message' => 'Data already exist',
-        ]);
+        try {
+          DB::beginTransaction();
+          $monthsalary = MonthlySalary::where('name', $date_format)->firstOrFail();
+
+          $employee = Employee::where('status', 'active')->get();
+          foreach ($employee as $item):
+//            dd($item);
+            $monthsalarydetail = NULL;
+            $deleted = MonthlySalaryDetail::where([
+              ['monthly_salary_id', $monthsalary->id],
+              ['employee_id', $item->id],
+            ]);
+
+            if ($deleted->count() < 1) {
+              $monthsalarydetail = MonthlySalaryDetail::create([
+                'monthly_salary_id' => $monthsalary->id,
+                'employee_id' => $item->id
+              ]);
+            }
+            if ($deleted->where('status', '0')->count() >= 1) {
+              $deleted->where('status', '0')->delete();
+              $monthsalarydetail = MonthlySalaryDetail::create([
+                'monthly_salary_id' => $monthsalary->id,
+                'employee_id' => $item->id
+              ]);
+            }
+
+
+            $employeesalary = DB::table('employee_employee_master')
+              ->where('employee_id', $item->id)->get();
+            foreach ($employeesalary as $itemdetail):
+              if ($monthsalarydetail) {
+                MonthlySalaryDetailEmployee::where([
+                  ['monthly_salary_detail_id', $monthsalarydetail->id],
+                  ['employee_master_id', $itemdetail->employee_master_id]
+                ]);
+                MonthlySalaryDetailEmployee::create([
+                  'monthly_salary_detail_id' => $monthsalarydetail->id,
+                  'employee_master_id' => $itemdetail->employee_master_id,
+                  'amount' => $itemdetail->amount
+                ]);
+              }
+            endforeach;
+          endforeach;
+
+          DB::commit();
+          $response = response()->json([
+            'status' => 'success',
+            'message' => 'Data has been saved',
+          ]);
+        } catch (\Throwable $throw) {
+          DB::rollBack();
+          $response = $throw;
+        }
       }
 
     } else {
@@ -103,26 +153,4 @@ class MonthlySalaryController extends Controller
   }
 
 
-  public function show(MonthlySalary $monthlySalary)
-  {
-    //
-  }
-
-
-  public function edit(MonthlySalary $monthlySalary)
-  {
-    //
-  }
-
-
-  public function update(Request $request, MonthlySalary $monthlySalary)
-  {
-    //
-  }
-
-
-  public function destroy(MonthlySalary $monthlySalary)
-  {
-    //
-  }
 }

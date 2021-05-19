@@ -47,6 +47,7 @@ use App\Http\Controllers\Backend\EmployeeMasterController as BackendEmployeeMast
 use App\Http\Controllers\Backend\EmployeeController as BackendEmployeeController;
 use App\Http\Controllers\Backend\EmployessSalaryController as BackendEmployeeSalaryController;
 use App\Http\Controllers\Backend\MonthlySalaryController as BackendMonthlySalaryController;
+use App\Http\Controllers\Backend\MonthlySalaryDetailController as BackendMonthlySalaryDetailController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -112,6 +113,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportsparepart/document', [BackendSparepartController::class, 'document']);
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
+    Route::get('monthlysalarydetail/{id}/print', [BackendMonthlySalaryDetailController::class, 'print']);
 
     //Datatables Details
     Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
@@ -119,6 +121,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('invoiceldo/datatabledetail/{id}', [BackendInvoiceLdoController::class, 'datatabledetail'])->name('invoiceldo.datatabledetail');
     Route::get('invoicekasbons/datatabledetail/{id}', [BackendInvoiceKasbonController::class, 'datatabledetail'])->name('invoicekasbons.datatabledetail');
     Route::get('employeessalary/datatabledetail/{id}', [BackendEmployeeSalaryController::class, 'datatabledetail'])->name('employeessalary.datatabledetail');
+    Route::get('monthlysalarydetail/datatabledetail/{id}', [BackendMonthlySalaryDetailController::class, 'datatabledetail'])->name('monthlysalarydetail.datatabledetail');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
@@ -172,6 +175,11 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
       Route::get('{id}/fetchdata/', [BackendEmployeeSalaryController::class, 'fetchdata'])->name('fetchdata');
     });
     Route::resource('monthlymaster', BackendMonthlySalaryController::class);
+    Route::prefix('monthlysalarydetail')->name('monthlysalarydetail.')->group(function() {
+      Route::get('{id}', [BackendMonthlySalaryDetailController::class, 'index'])->name('index');
+      Route::get('{id}/detail', [BackendMonthlySalaryDetailController::class, 'show'])->name('show');
+      Route::put('{id}', [BackendMonthlySalaryDetailController::class, 'update'])->name('update');
+    });
 
     //Purchase
     Route::resource('invoicepurchases', BackendInvoicePurchaseController::class);

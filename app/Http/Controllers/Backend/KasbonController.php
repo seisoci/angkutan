@@ -11,11 +11,7 @@ use Validator;
 
 class KasbonController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
       $config['page_title']       = "List Kasbon";
@@ -46,11 +42,6 @@ class KasbonController extends Controller
       return view('backend.invoice.kasbon.index', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create(Request $request)
     {
       $config['page_title']       ="Create Invoice Kasbon Supir";
@@ -71,12 +62,6 @@ class KasbonController extends Controller
       return view('backend.invoice.invoicekasbons.create', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [

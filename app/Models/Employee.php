@@ -37,4 +37,10 @@ class Employee extends Model
   {
     return $this->belongsToMany(EmployeeMaster::class)->withPivot('amount');
   }
+
+  public function monthlysalarydetail(){
+    return $this->hasOne(MonthlySalaryDetail::class);
+  }
+
+
 }

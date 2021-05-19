@@ -146,7 +146,7 @@ return [
                   'page'  => 'backend/employeessalary'
                 ],
                 [
-                  'title' => 'Menu Gaji Bulanan',
+                  'title' => 'Gaji Bulanan',
                   'page'  => 'backend/monthlymaster'
                 ]
               ]

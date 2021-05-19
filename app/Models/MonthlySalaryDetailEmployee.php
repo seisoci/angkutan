@@ -28,4 +28,9 @@ class MonthlySalaryDetailEmployee extends Model
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('Y-m-d H:i:s');
   }
+
+  public function employeemaster(){
+    return $this->belongsTo(EmployeeMaster::class, 'employee_master_id');
+  }
+
 }
