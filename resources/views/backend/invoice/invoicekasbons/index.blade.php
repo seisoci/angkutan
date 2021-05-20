@@ -99,7 +99,7 @@
             "defaultContent": ''
           },
           {data: 'num_invoice', name: 'num_bill', orderable: false},
-          {data: 'employee.name', name: 'employee.name'},
+          {data: 'driver.name', name: 'driver.name'},
           {
             data: 'total_kasbon',
             name: 'total_kasbon',
@@ -149,7 +149,7 @@
           order: [3, 'desc'],
           ajax: data.details_url,
           columns: [
-            {data: 'employee.name', name: 'employee.name'},
+            {data: 'driver.name', name: 'driver.name'},
             {
               data: 'amount',
               name: 'amount',
@@ -166,7 +166,7 @@
 
       $('#modalDelete').on('show.bs.modal', function (event) {
         var id = $(event.relatedTarget).data('id');
-        $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.employee.index") }}/' + id);
+        $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.drivers.index") }}/' + id);
       });
 
       $('#modalDelete').on('hidden.bs.modal', function (event) {
