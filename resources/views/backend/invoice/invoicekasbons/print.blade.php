@@ -77,7 +77,7 @@
             <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
             </td>
             <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" class="text-left" style="padding-left:4rem;width:20%">No. Invoice</td>
+            <td scope="col" class="text-left" style="padding-left:4rem;width:20%">No. Kasbon</td>
             <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
             <td scope="col" class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
           </tr>

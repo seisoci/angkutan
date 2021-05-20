@@ -10,28 +10,28 @@ use Spatie\Activitylog\Traits\LogsActivity;
 /**
  * @mixin IdeHelperKasbon
  */
-class Kasbon extends Model
+class KasbonEmployee extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
-  protected static $logName = 'Data Kasbon Supir';
+  protected static $logName = 'Data Kasbon Karyawaan';
   protected static $logFillable = true;
-  protected static $logAttributes = ['driver.name', 'invoicekasbon'];
-  protected static $logAttributesToIgnore = ['driver_id', 'invoice_kasbon_id'];
+  protected static $logAttributes = ['employee.name', 'invoicekasbonemployee'];
+  protected static $logAttributesToIgnore = ['emplyee_id', 'invoice_kasbon_employee_id'];
 
   protected $fillable = [
-    'invoice_kasbon_id',
-    'driver_id',
+    'invoice_kasbon_employee_id',
+    'employee_id',
     'amount',
     'status',
     'memo'
   ];
 
-  public function driver(){
-    return $this->belongsTo(Driver::class, 'driver_id');
+  public function employee(){
+    return $this->belongsTo(Employee::class, 'employee_id');
   }
 
-  public function invoicekasbon(){
-    return $this->belongsTo(InvoiceKasbon::class, 'invoice_kasbon_id');
+  public function invoicekasbonemployee(){
+    return $this->belongsTo(InvoiceKasbonEmployee::class, 'invoice_kasbon_employee_id');
   }
 
   public function getCreatedAtAttribute($value){

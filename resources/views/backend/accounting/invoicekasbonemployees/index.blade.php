@@ -13,7 +13,7 @@
       </div>
       <div class="card-toolbar">
         <!--begin::Button-->
-        <a href="{{ route('backend.invoicekasbons.create') }}" class="btn btn-primary font-weight-bolder">
+        <a href="{{ route('backend.invoicekasbonemployees.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
           <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
@@ -39,7 +39,7 @@
         <tr>
           <th></th>
           <th>No. Kasbon</th>
-          <th>Nama Supir</th>
+          <th>Nama Karyawaan</th>
           <th>Total Kasbon</th>
           <th>Total Dibayar</th>
           <th>Total Sisa</th>
@@ -80,8 +80,8 @@
   </script>
   <script type="text/javascript">
     $(function () {
-      var template = Handlebars.compile($("#details-template").html());
-      var dataTable = $('#Datatable').DataTable({
+      let template = Handlebars.compile($("#details-template").html());
+      let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
@@ -89,7 +89,7 @@
         order: [7, 'desc'],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.invoicekasbons.index') }}",
+        ajax: "{{ route('backend.invoicekasbonemployees.index') }}",
         columns: [
           {
             "className": 'details-control',
@@ -125,9 +125,9 @@
       });
 
       $('#Datatable tbody').on('click', 'td.details-control', function () {
-        var tr = $(this).closest('tr');
-        var row = dataTable.row(tr);
-        var tableId = 'posts-' + row.data().id;
+        let tr = $(this).closest('tr');
+        let row = dataTable.row(tr);
+        let tableId = 'posts-' + row.data().id;
 
         if (row.child.isShown()) {
           // This row is already open - close it
@@ -165,8 +165,8 @@
       }
 
       $('#modalDelete').on('show.bs.modal', function (event) {
-        var id = $(event.relatedTarget).data('id');
-        $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.employee.index") }}/' + id);
+        let id = $(event.relatedTarget).data('id');
+        $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.employees.index") }}/' + id);
       });
 
       $('#modalDelete').on('hidden.bs.modal', function (event) {
@@ -175,10 +175,10 @@
 
       $("#formDelete").click(function (e) {
         e.preventDefault();
-        var form = $(this);
-        var url = $('#modalDelete').find('a[name="id"]').attr('href');
-        var btnHtml = form.html();
-        var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+        let form = $(this);
+        let url = $('#modalDelete').find('a[name="id"]').attr('href');
+        let btnHtml = form.html();
+        let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
         $.ajax({
           beforeSend: function () {
             form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");

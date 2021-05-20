@@ -48,6 +48,8 @@ use App\Http\Controllers\Backend\EmployeeController as BackendEmployeeController
 use App\Http\Controllers\Backend\EmployessSalaryController as BackendEmployeeSalaryController;
 use App\Http\Controllers\Backend\MonthlySalaryController as BackendMonthlySalaryController;
 use App\Http\Controllers\Backend\MonthlySalaryDetailController as BackendMonthlySalaryDetailController;
+use App\Http\Controllers\Backend\InvoiceKasbonEmployeeController as BackendInvoiceKasbonEmployeeController;
+use App\Http\Controllers\Backend\KasbonEmployeeController as BackendKasbonEmployeeController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -99,6 +101,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('expenses/select2', [BackendExpenseController::class, 'select2'])->name('expenses.select2');
     Route::get('stocks/select2', [BackendStockController::class, 'select2'])->name('stocks.select2');
     Route::get('employeesmaster/select2', [BackendEmployeeMasterController::class, 'select2'])->name('employeesmaster.select2');
+    Route::get('employee/select2', [BackendEmployeeController::class, 'select2'])->name('employee.select2');
 
     //Print
     Route::get('invoicesalaries/{id}/print', [BackendInvoiceSalaryController::class, 'print']);
@@ -114,6 +117,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
     Route::get('monthlysalarydetail/{id}/print', [BackendMonthlySalaryDetailController::class, 'print']);
+    Route::get('invoicekasbonemployees/{id}/print', [BackendInvoiceKasbonEmployeeController::class, 'print']);
 
     //Datatables Details
     Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
@@ -122,6 +126,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('invoicekasbons/datatabledetail/{id}', [BackendInvoiceKasbonController::class, 'datatabledetail'])->name('invoicekasbons.datatabledetail');
     Route::get('employeessalary/datatabledetail/{id}', [BackendEmployeeSalaryController::class, 'datatabledetail'])->name('employeessalary.datatabledetail');
     Route::get('monthlysalarydetail/datatabledetail/{id}', [BackendMonthlySalaryDetailController::class, 'datatabledetail'])->name('monthlysalarydetail.datatabledetail');
+    Route::get('invoicekasbonemployees/datatabledetail/{id}', [BackendInvoiceKasbonEmployeeController::class, 'datatabledetail'])->name('invoicekasbonemployees.datatabledetail');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
@@ -141,6 +146,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
     Route::get('recapitulation/document', [BackendRecapitulationController::class, 'document'])->name('recapitulation.document');
     Route::get('recapitulation/print', [BackendRecapitulationController::class, 'print'])->name('recapitulation.print');
+    Route::post('invoicekasbonemployees/findbypk', [BackendInvoiceKasbonEmployeeController::class, 'findbypk'])->name('invoicekasbonemployees.findbypk');
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -180,6 +186,9 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
       Route::get('{id}/detail', [BackendMonthlySalaryDetailController::class, 'show'])->name('show');
       Route::put('{id}', [BackendMonthlySalaryDetailController::class, 'update'])->name('update');
     });
+    Route::resource('kasbonemployees', BackendKasbonEmployeeController::class);
+    Route::resource('invoicekasbonemployees', BackendInvoiceKasbonEmployeeController::class);
+
 
     //Purchase
     Route::resource('invoicepurchases', BackendInvoicePurchaseController::class);

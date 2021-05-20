@@ -12,7 +12,7 @@
         <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
     </div>
   </div>
-  <form id="formUpdate" action="{{ route('backend.invoicekasbons.update', Request::segment(3)) }}">
+  <form id="formUpdate" action="{{ route('backend.invoicekasbonemployees.update', Request::segment(3)) }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @method('PUT')
     <div id="TampungId">
@@ -40,9 +40,9 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-lg-3 col-form-label">Supir:</label>
+                  <label class="col-lg-3 col-form-label">Karyawaan:</label>
                   <div class="col-lg-9">
-                    <input type="text" class="form-control rounded-0" value="{{ $data->driver->name }}" disabled>
+                    <input type="text" class="form-control rounded-0" value="{{ $data->employee->name }}" disabled>
                   </div>
                 </div>
                 <div class="form-group row">
@@ -58,17 +58,17 @@
                 <tr>
                   <th scope="col" class="text-center">#</th>
                   <th scope="col">Tanggal</th>
-                  <th scope="col">Nama Supir</th>
+                  <th scope="col">Nama Karyawaan</th>
                   <th scope="col">Keterangan</th>
                   <th scope="col" class="text-right">Nominal</th>
                 </tr>
               </thead>
               <tbody>
-                @foreach ($data->kasbons as $item)
+                @foreach ($data->kasbonemployees as $item)
                 <tr>
                   <td class="text-center">{{ $loop->iteration }}</td>
                   <td>{{ $item->created_at }}</td>
-                  <td>{{ $item->driver->name }}</td>
+                  <td>{{ $item->employee->name }}</td>
                   <td>{{ $item->memo }}</td>
                   <td class="text-right currency">{{ $item->amount }}</td>
                 </tr>
@@ -93,7 +93,7 @@
                 </tr>
               </thead>
               <tbody>
-                @foreach ($data->paymentkasbons as $item)
+                @foreach ($data->paymentkasbonemployes as $item)
                 <tr>
                   <td></td>
                   <td><input type="text" class="rounded-0 form-control" value="{{ $item->date_payment }}" disabled />

@@ -21,7 +21,7 @@
     <!-- begin: Invoice header-->
     <div class="row justify-content-center py-8 px-8 px-md-0">
       <div class="col-md-11">
-        <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Kasbon Supir</u></h2>
+        <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Kasbon Karyawaan</u></h2>
         <table class="table table-borderless table-title">
           <tbody>
             <tr>
@@ -35,9 +35,9 @@
             <tr>
               <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
               <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Supir</td>
+              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Nama Karyawaan</td>
               <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ $data->driver->name }}</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->employee->name }}</td>
             </tr>
             <tr>
               <td scope="col">{{ $profile['telp'] ?? ''}}</td>
@@ -66,11 +66,11 @@
             </tr>
           </thead>
           <tbody>
-            @foreach ($data->kasbons as $item)
+            @foreach ($data->kasbonemployees as $item)
             <tr>
               <td>{{ $loop->iteration }}</td>
               <td class="text-left">{{ $item->created_at }}</td>
-              <td class="text-left">{{ $item->driver->name }}</td>
+              <td class="text-left">{{ $item->employee->name }}</td>
               <td class="text-right">{{ $item->memo }}</td>
               <td class="text-right">{{ number_format($item->amount,0, ',', '.') }}</td>
             </tr>
@@ -92,7 +92,7 @@
             </tr>
           </thead>
           <tbody>
-            @foreach ($data->paymentkasbons as $item)
+            @foreach ($data->paymentkasbonemployes as $item)
             <tr>
               <td>{{ $loop->iteration }}</td>
               <td>{{ $item->date_payment }}</td>

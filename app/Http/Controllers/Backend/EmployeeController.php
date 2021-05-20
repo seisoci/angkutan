@@ -158,4 +158,39 @@ class EmployeeController extends Controller
     }
     return $response;
   }
+
+  public function select2(Request $request)
+  {
+    $page = $request->page;
+    $resultCount = 10;
+    $offset = ($page - 1) * $resultCount;
+    $type = !empty($request->type) || isset($request->type) ? $request->type : NULL;
+    $status = $request->status ?? NULL;
+    $data = Employee::where('name', 'LIKE', '%' . $request->q . '%')
+      ->when($status, function ($q, $status) {
+        return $q->where('status', $status);
+      })
+      ->orderBy('name')
+      ->skip($offset)
+      ->take($resultCount)
+      ->selectRaw('id, name as text')
+      ->get();
+
+    $count = Employee::where('name', 'LIKE', '%' . $request->q . '%')
+      ->get()
+      ->count();
+
+    $endCount = $offset + $resultCount;
+    $morePages = $count > $endCount;
+
+    $results = array(
+      "results" => $data,
+      "pagination" => array(
+        "more" => $morePages
+      )
+    );
+
+    return response()->json($results);
+  }
+
 }

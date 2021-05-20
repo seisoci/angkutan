@@ -15,7 +15,7 @@ class CreateMonthlySalaryDetailEmployeesTable extends Migration
     {
         Schema::create('monthly_salary_detail_employees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('monthly_salary_detail_id')->references('id')->on('monthly_salary_details')->onDelete('cascade');;
+            $table->foreignId('monthly_salary_detail_id')->references('id')->on('monthly_salary_details')->onDelete('cascade');
             $table->foreignId('employee_master_id')->references('id')->on('employee_masters');
             $table->decimal('amount',15,2);
           $table->timestamps();

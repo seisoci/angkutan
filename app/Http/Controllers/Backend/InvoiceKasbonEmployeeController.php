@@ -3,34 +3,35 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\InvoiceKasbon;
+use App\Models\InvoiceKasbonEmployee;
 use App\Models\Kasbon;
-use App\Models\PaymentKasbon;
+use App\Models\KasbonEmployee;
+use App\Models\PaymentKasbonEmployee;
 use App\Models\Prefix;
 use App\Models\Setting;
-use DataTables;
-use DB;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
-class InvoiceKasbonController extends Controller
+class InvoiceKasbonEmployeeController extends Controller
 {
   public function index(Request $request)
   {
-    $config['page_title'] = "List Invoice Kasbon Supir";
-    $config['page_description'] = "Daftar List Invoice Kasbon Supir";
+    $config['page_title'] = "List Invoice Kasbon Karyawaan";
+    $config['page_description'] = "Daftar List Invoice Kasbon Karyawaan";
     $page_breadcrumbs = [
-      ['page' => '#', 'title' => "List Invoice Kasbon Supir"],
+      ['page' => '#', 'title' => "List Invoice Kasbon Karyawaan"],
     ];
     if ($request->ajax()) {
-      $data = InvoiceKasbon::with(['driver:id,name']);
+      $data = InvoiceKasbonEmployee::with(['employee:id,name']);
       return DataTables::of($data)
         ->addIndexColumn()
-        ->addColumn('details_url', function (InvoiceKasbon $invoiceKasbon) {
-          return route('backend.invoicekasbons.datatabledetail', $invoiceKasbon->id);
+        ->addColumn('details_url', function (InvoiceKasbonEmployee $invoiceKasbonEmployee) {
+          return route('backend.invoicekasbonemployees.datatabledetail', $invoiceKasbonEmployee->id);
         })
         ->addColumn('action', function ($row) {
-          $restPayment = $row->rest_payment != 0 ? '<a href="invoicekasbons/' . $row->id . '/edit" class="dropdown-item">Bayar Sisa</a>' : NULL;
+          $restPayment = $row->rest_payment != 0 ? '<a href="invoicekasbonemployees/' . $row->id . '/edit" class="dropdown-item">Bayar Sisa</a>' : NULL;
           $actionBtn = '
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -38,7 +39,7 @@ class InvoiceKasbonController extends Controller
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   ' . $restPayment . '
-                  <a href="invoicekasbons/' . $row->id . '" class="dropdown-item">Invoice Detail</a>
+                  <a href="invoicekasbonemployees/' . $row->id . '" class="dropdown-item">Invoice Detail</a>
                 </div>
             </div>
           ';
@@ -47,40 +48,39 @@ class InvoiceKasbonController extends Controller
         ->make(true);
 
     }
-    return view('backend.invoice.invoicekasbons.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.accounting.invoicekasbonemployees.index', compact('config', 'page_breadcrumbs'));
   }
 
   public function create(Request $request)
   {
-    $config['page_title'] = "Create Invoice Kasbon Supir";
-    $config['page_description'] = "Create Invoice Kasbon Supir";
+    $config['page_title'] = "Create Invoice Kasbon Karyawaan";
+    $config['page_description'] = "Create Invoice Kasbon Karyawaan";
     $page_breadcrumbs = [
-      ['page' => '#', 'title' => "Create Invoice Kasbon Supir"],
+      ['page' => '#', 'title' => "Create Invoice Kasbon Karyawaan"],
     ];
-    $driver_id = $request->driver_id;
-    $transport_id = $request->transport_id;
+    $employee_id = $request->employee_id;
     if ($request->ajax()) {
-      $data = Kasbon::with(['driver:id,name'])
-        ->where('invoice_kasbon_id', '=', NULL)
-        ->where('kasbons.status', '0')
-        ->when($driver_id, function ($query, $driver_id) {
-          return $query->where('driver_id', $driver_id);
+      $data = KasbonEmployee::with(['employee:id,name'])
+        ->where('invoice_kasbon_employee_id', '=', NULL)
+        ->where('kasbon_employees.status', '0')
+        ->when($employee_id, function ($query, $employee_id) {
+          return $query->where('employee_id', $employee_id);
         });
       return DataTables::of($data)
         ->addIndexColumn()
         ->make(true);
     }
-    return view('backend.invoice.invoicekasbons.create', compact('config', 'page_breadcrumbs'));
+    return view('backend.accounting.invoicekasbonemployees.create', compact('config', 'page_breadcrumbs'));
   }
 
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'job_order_id' => 'required|array',
-      'job_order_id.*' => 'required|integer',
+      'kasbon_id' => 'required|array',
+      'kasbon_id.*' => 'required|integer',
       'prefix' => 'required|integer',
       'num_bill' => 'required|integer',
-      'driver_id' => 'required|integer',
+      'employee_id' => 'required|integer',
       'total_kasbon' => 'required|integer',
       'memo' => 'string',
       'payment.date' => 'required|array',
@@ -92,9 +92,7 @@ class InvoiceKasbonController extends Controller
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
-        $prefix = Prefix::findOrFail($request->prefix);
         $totalPayment = 0;
-        $restPayment = 0;
         $payments = $request->payment;
         $prefix = Prefix::find($request->prefix);
 
@@ -102,22 +100,22 @@ class InvoiceKasbonController extends Controller
           $totalPayment += $payments['payment'][$key];
         endforeach;
         $restPayment = $request->total_kasbon - $totalPayment;
-        $data = InvoiceKasbon::create([
+        $data = InvoiceKasbonEmployee::create([
           'prefix' => $prefix->name,
           'num_bill' => $request->input('num_bill'),
-          'driver_id' => $request->input('driver_id'),
+          'employee_id' => $request->input('employee_id'),
           'total_kasbon' => $request->input('total_kasbon'),
           'total_payment' => $totalPayment,
           'rest_payment' => $restPayment,
           'memo' => $request->input('memo'),
         ]);
 
-        foreach ($request->job_order_id as $item):
-          Kasbon::where('id', $item)->update(['invoice_kasbon_id' => $data->id, 'status' => '1']);
+        foreach ($request->kasbon_id as $item):
+          KasbonEmployee::where('id', $item)->update(['invoice_kasbon_employee_id' => $data->id, 'status' => '1']);
         endforeach;
         foreach ($payments['date'] as $key => $item):
-          PaymentKasbon::create([
-            'invoice_kasbon_id' => $data->id,
+          PaymentKasbonEmployee::create([
+            'invoice_kasbon_employee_id' => $data->id,
             'date_payment' => $payments['date'][$key],
             'payment' => $payments['payment'][$key],
           ]);
@@ -127,7 +125,7 @@ class InvoiceKasbonController extends Controller
           return response()->json([
             'status' => 'error',
             'message' => 'Pastikan sisa tagihan tidak negative',
-            'redirect' => '/backend/invoicekasbons',
+            'redirect' => '/backend/invoicekasbonemployees',
           ]);
           DB::rollBack();
         }
@@ -136,7 +134,7 @@ class InvoiceKasbonController extends Controller
         $response = response()->json([
           'status' => 'success',
           'message' => 'Data has been saved',
-          'redirect' => '/backend/invoicekasbons',
+          'redirect' => '/backend/invoicekasbonemployees',
         ]);
       } catch (\Throwable $throw) {
         DB::rollBack();
@@ -150,48 +148,47 @@ class InvoiceKasbonController extends Controller
 
   public function show($id)
   {
-    $config['page_title'] = "Invoice Kasbon Supir";
-    $config['print_url'] = "/backend/invoicekasbons/$id/print";
+    $config['page_title'] = "Invoice Kasbon Karyawaan";
+    $config['print_url'] = "/backend/invoicekasbonemployees/$id/print";
     $page_breadcrumbs = [
-      ['page' => '/backend/invoicekasbons', 'title' => "List Invoice Kasbon Supir"],
-      ['page' => '#', 'title' => "Invoice Kasbon Supir"],
+      ['page' => '/backend/invoicekasbonemployees', 'title' => "List Invoice Kasbon Karyawaan"],
+      ['page' => '#', 'title' => "Invoice Kasbon Karyawaan"],
     ];
     $collection = Setting::all();
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = InvoiceKasbon::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['driver:id,name', 'kasbons', 'paymentkasbons'])->firstOrFail();
-    return view('backend.invoice.invoicekasbons.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    $data = InvoiceKasbonEmployee::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['employee:id,name', 'kasbonemployees', 'paymentkasbonemployes'])->firstOrFail();
+    return view('backend.accounting.invoicekasbonemployees.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
   public function print($id)
   {
-    $config['page_title'] = "Invoice Kasbon Supir";
+    $config['page_title'] = "Invoice Kasbon Karyawaan";
     $page_breadcrumbs = [
-      ['page' => '/backend/invoicekasbons', 'title' => "List Invoice Kasbon Supir"],
-      ['page' => '#', 'title' => "Invoice Kasbon Supir"],
+      ['page' => '/backend/invoicekasbonemployees', 'title' => "List Invoice Kasbon Karyawaan"],
+      ['page' => '#', 'title' => "Invoice Kasbon Karyawaan"],
     ];
     $collection = Setting::all();
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = InvoiceKasbon::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['driver:id,name', 'kasbons', 'paymentkasbons'])->firstOrFail();
-    return view('backend.invoice.invoicekasbons.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    $data = InvoiceKasbonEmployee::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['employee:id,name', 'kasbonemployees', 'paymentkasbonemployes'])->firstOrFail();
+    return view('backend.accounting.invoicekasbonemployees.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
   public function edit($id)
   {
-    $config['page_title'] = "Edit Invoice Kasbon Supir";
-    $config['page_description'] = "Edit Invoice Kasbon Supir";
+    $config['page_title'] = "Edit Invoice Kasbon Karyawaan";
+    $config['page_description'] = "Edit Invoice Kasbon Karyawaan";
     $page_breadcrumbs = [
-      ['page' => '/backend/invoicekasbons', 'title' => "List Invoice Kasbon Supir"],
-      ['page' => '#', 'title' => "Edit Invoice Kasbon Supir"],
+      ['page' => '/backend/invoicekasbonemployees', 'title' => "List Invoice Kasbon Karyawaan"],
+      ['page' => '#', 'title' => "Edit Invoice Kasbon Karyawaan"],
 
     ];
-    $data = InvoiceKasbon::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['driver:id,name', 'kasbons', 'paymentkasbons'])->firstOrFail();
-    return view('backend.invoice.invoicekasbons.edit', compact('config', 'page_breadcrumbs', 'data'));
+    $data = InvoiceKasbonEmployee::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['employee:id,name', 'kasbonemployees', 'paymentkasbonemployes'])->firstOrFail();
+    return view('backend.accounting.invoicekasbonemployees.edit', compact('config', 'page_breadcrumbs', 'data'));
   }
-
 
   public function update(Request $request, $id)
   {
@@ -211,7 +208,7 @@ class InvoiceKasbonController extends Controller
         foreach ($payments['date'] as $key => $item):
           $totalPayment += $payments['payment'][$key];
         endforeach;
-        $data = InvoiceKasbon::findOrFail($id);
+        $data = InvoiceKasbonEmployee::findOrFail($id);
         $restPayment = $data->rest_payment;
         $restPayment -= $totalPayment;
         $totalPayment += $data->total_payment;
@@ -221,7 +218,7 @@ class InvoiceKasbonController extends Controller
         ]);
         foreach ($payments['date'] as $key => $item):
           $dataPayment[] = [
-            'invoice_kasbon_id' => $data->id,
+            'invoice_kasbon_employee_id' => $data->id,
             'date_payment' => $payments['date'][$key],
             'payment' => $payments['payment'][$key],
           ];
@@ -231,18 +228,18 @@ class InvoiceKasbonController extends Controller
           return response()->json([
             'status' => 'error',
             'message' => 'Pastikan sisa tagihan tidak negative',
-            'redirect' => '/backend/invoicekasbons',
+            'redirect' => '/backend/invoicekasbonemployees',
           ]);
           DB::rollBack();
         }
 
-        PaymentKasbon::insert($dataPayment);
+        PaymentKasbonEmployee::insert($dataPayment);
 
         DB::commit();
         $response = response()->json([
           'status' => 'success',
           'message' => 'Data has been saved',
-          'redirect' => '/backend/invoicekasbons',
+          'redirect' => '/backend/invoicekasbonemployees',
         ]);
       } catch (\Throwable $throw) {
         DB::rollBack();
@@ -259,7 +256,7 @@ class InvoiceKasbonController extends Controller
     $data = json_decode($request->data);
     $response = NULL;
     if ($request->data) {
-      $result = Kasbon::with('driver:id,name')->whereIn('id', $data)->get();
+      $result = KasbonEmployee::with('employee:id,name')->whereIn('id', $data)->get();
 
       $response = response()->json([
         'data' => $result,
@@ -270,7 +267,7 @@ class InvoiceKasbonController extends Controller
 
   public function datatabledetail($id)
   {
-    $data = Kasbon::with(['driver:id,name'])->where('invoice_kasbon_id', $id);
+    $data = KasbonEmployee::with(['employee:id,name'])->where('invoice_kasbon_employee_id', $id);
     return Datatables::of($data)->make(true);
   }
 }
