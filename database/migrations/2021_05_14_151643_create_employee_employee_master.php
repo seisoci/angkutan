@@ -16,7 +16,7 @@ class CreateEmployeeEmployeeMaster extends Migration
     Schema::create('employee_employee_master', function (Blueprint $table) {
       $table->id();
       $table->foreignId('employee_id')->references('id')->on('employees');
-      $table->foreignId('employee_master_id')->references('id')->on('employee_masters');
+      $table->foreignId('employee_master_id')->references('id')->on('employee_masters')->onDelete('cascade');;
       $table->decimal('amount', 15, 2);
       $table->timestamps();
     });

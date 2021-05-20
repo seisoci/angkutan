@@ -15,7 +15,7 @@ class CreatePaymentKasbonsTable extends Migration
     {
         Schema::create('payment_kasbons', function (Blueprint $table) {
           $table->id();
-          $table->foreignId('invoice_kasbon_id')->references('id')->on('invoice_kasbons');
+          $table->foreignId('invoice_kasbon_id')->references('id')->on('invoice_kasbons')->onDelete('cascade');
           $table->date('date_payment');
           $table->decimal('payment', 15, 2);
           $table->timestamps();

@@ -15,7 +15,7 @@ class CreateKasbonsTable extends Migration
     {
         Schema::create('kasbons', function (Blueprint $table) {
           $table->id();
-          $table->foreignId('invoice_kasbon_id')->nullable()->references('id')->on('invoice_kasbons');
+          $table->foreignId('invoice_kasbon_id')->nullable()->references('id')->on('invoice_kasbons')->onDelete('cascade');
           $table->foreignId('driver_id')->references('id')->on('drivers');
           $table->decimal('amount', 15, 2);
           $table->enum('status', [0,1])->default(0);
