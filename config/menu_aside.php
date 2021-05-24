@@ -290,6 +290,18 @@ return [
           'title' => 'Laporan Pelanggan',
           'page' => 'backend/reportcostumers'
         ],
+        [
+          'title' => 'Laporan Data Supir',
+          'page' => 'backend/reportdrivers'
+        ],
+        [
+          'title' => 'Laporan Hutang Supir',
+          'page' => 'backend/reportkasbondrivers'
+        ],
+        [
+          'title' => 'Laporan Data Mobil',
+          'page' => 'backend/reporttransports'
+        ],
       ]
     ],
     [

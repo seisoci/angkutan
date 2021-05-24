@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 /**
- * @mixin IdeHelperKasbon
+ * @mixin IdeHelperKasbonEmployee
  */
 class KasbonEmployee extends Model
 {

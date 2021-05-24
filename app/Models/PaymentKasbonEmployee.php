@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
- * @mixin IdeHelperPaymentKasbon
+ * @mixin IdeHelperPaymentKasbonEmployee
  */
 class PaymentKasbonEmployee extends Model
 {

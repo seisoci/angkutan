@@ -234,6 +234,10 @@
               <label>Grand Total Bersih</label>
               <input name="grandtotalnetto" type="text" class="form-control currency" disabled>
             </div>
+            <div class="form-group">
+              <label>Keterangan</label>
+              <textarea class="form-control" name="description" rows="5"></textarea>
+            </div>
           </div>
           @endhasanyrole
         </div>

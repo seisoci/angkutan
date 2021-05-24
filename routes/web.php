@@ -37,7 +37,7 @@ use App\Http\Controllers\Backend\InvoiceUsageItemController as BackendInvoiceUsa
 use App\Http\Controllers\Backend\InvoiceUsageItemOutsideController as BackendInvoiceUsageItemOutsideController;
 use App\Http\Controllers\Backend\OpnameController as BackendOpnameController;
 use App\Http\Controllers\Backend\InvoiceReturPurchaseController as BackendInvoiceReturPurchaseController;
-use App\Http\Controllers\Backend\ReportCostumerController as BackendReportCostumerController;
+use App\Http\Controllers\Backend\ReportCostumerLdoController as BackendReportCostumerLdoController;
 use App\Http\Controllers\Backend\DashboardController as BackendDashboardController;
 use App\Http\Controllers\Backend\KasbonController as BackendKasbonController;
 use App\Http\Controllers\Backend\ReportSparepartController as BackendReportSparepartController;
@@ -50,6 +50,10 @@ use App\Http\Controllers\Backend\MonthlySalaryController as BackendMonthlySalary
 use App\Http\Controllers\Backend\MonthlySalaryDetailController as BackendMonthlySalaryDetailController;
 use App\Http\Controllers\Backend\InvoiceKasbonEmployeeController as BackendInvoiceKasbonEmployeeController;
 use App\Http\Controllers\Backend\KasbonEmployeeController as BackendKasbonEmployeeController;
+use App\Http\Controllers\Backend\ReportCostumerController as BackendReportCostumerController;
+use App\Http\Controllers\Backend\ReportDriverController as BackendReportDriverController;
+use App\Http\Controllers\Backend\ReportKasbonDriverController as BackendReportKasbonDriverController;
+use App\Http\Controllers\Backend\ReportTransportController as BackendReportTransportController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 /*
@@ -114,6 +118,15 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('joborders/{id}/print', [BackendJobOrderController::class, 'print']);
     Route::get('reportsparepart/print', [BackendSparepartController::class, 'print']);
     Route::get('reportsparepart/document', [BackendSparepartController::class, 'document']);
+    Route::get('reportcostumers/document', [BackendReportCostumerController::class, 'document']);
+    Route::get('reportcostumers/print', [BackendReportCostumerController::class, 'print']);    Route::get('reportcostumers/document', [BackendReportCostumerController::class, 'document']);
+    Route::get('reportdrivers/document', [BackendReportDriverController::class, 'document']);
+    Route::get('reportdrivers/print', [BackendReportDriverController::class, 'print']);
+    Route::get('reportkasbondrivers/print', [BackendReportKasbonDriverController::class, 'print']);
+    Route::get('reportkasbondrivers/document', [BackendReportKasbonDriverController::class, 'document']);
+    Route::get('reporttransports/print', [BackendReportTransportController::class, 'print']);
+    Route::get('reporttransports/document', [BackendReportTransportController::class, 'document']);
+
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
     Route::get('monthlysalarydetail/{id}/print', [BackendMonthlySalaryDetailController::class, 'print']);
@@ -145,7 +158,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::post('invoicecostumers/findbypk', [BackendInvoiceCostumerController::class, 'findbypk'])->name('invoicecostumers.findbypk');
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
     Route::get('recapitulation/document', [BackendRecapitulationController::class, 'document'])->name('recapitulation.document');
-    Route::get('recapitulation/print', [BackendRecapitulationController::class, 'print'])->name('recapitulation.print');
+      Route::get('recapitulation/print', [BackendRecapitulationController::class, 'print'])->name('recapitulation.print');
     Route::post('invoicekasbonemployees/findbypk', [BackendInvoiceKasbonEmployeeController::class, 'findbypk'])->name('invoicekasbonemployees.findbypk');
 
     //Master Operationals
@@ -217,9 +230,14 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('activitylog', BackendActivityLogController::class);
 
     //Report
-    Route::resource('reportcostumers', BackendReportCostumerController::class);
+    Route::resource('reportcostumersldo', BackendReportCostumerLdoController::class);
     Route::resource('reportsparepart', BackendReportSparepartController::class);
     Route::resource('kasbon', BackendKasbonController::class);
+    Route::get('reportcostumers', [BackendReportCostumerController::class, 'index'])->name('reportcostumers.index');
+    Route::get('reportdrivers', [BackendReportDriverController::class, 'index'])->name('reportdrivers.index');
+    Route::get('reportkasbondrivers', [BackendReportKasbonDriverController::class, 'index'])->name('reportkasbondrivers.index');
+    Route::get('reporttransports', [BackendReportTransportController::class, 'index'])->name('reportransports.index');
+
 
   });
 });

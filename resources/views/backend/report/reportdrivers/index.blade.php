@@ -76,12 +76,12 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>Nama Pelanggan</th>
+          <th>Nama Supir</th>
           <th>Alamat</th>
           <th>No. Telp</th>
-          <th>Nama Pelanggan Darurat</th>
-          <th>No. Telp Darurat</th>
-          <th>Kerjasama</th>
+          <th>Expired SIM</th>
+          <th>Status</th>
+          <th>Foto</th>
         </tr>
         </thead>
       </table>
@@ -109,14 +109,44 @@
         order: [[0, 'asc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
-        ajax: "{{ route('backend.reportcostumers.index') }}",
+        ajax: "{{ route('backend.reportdrivers.index') }}",
         columns: [
           {data: 'name', name: 'name'},
           {data: 'address', name: 'address'},
           {data: 'phone', name: 'phone'},
-          {data: 'emergency_name', name: 'emergency_name'},
-          {data: 'emergency_phone', name: 'emergency_phone'},
-          {data: 'cooperation', name: 'cooperation'},
+          {data: 'expired_sim', name: 'expired_sim'},
+          {data: 'status', name: 'status'},
+          {data: 'image', name: 'image', orderable: false, searchable: false},
+        ],
+        columnDefs: [
+          {
+            className: 'dt-center',
+            orderable: false,
+            targets: 5,
+            render: function(data, type, full, meta) {
+              let output = `
+              <div class="symbol symbol-80">
+                <img src="` + data + `" alt="photo">
+              </div>`
+              return output;
+            }
+          },
+          {
+            className: 'dt-center',
+            targets: 4,
+            width: '75px',
+            render: function(data, type, full, meta) {
+              var status = {
+                'active': {'title': 'Active', 'class': ' label-light-success'},
+                'inactive': {'title': 'Inactive', 'class': ' label-light-danger'},
+              };
+              if (typeof status[data] === 'undefined') {
+                return data;
+              }
+              return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
+                '</span>';
+            },
+          },
         ],
       });
     });

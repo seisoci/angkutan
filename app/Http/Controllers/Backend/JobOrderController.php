@@ -164,6 +164,7 @@ class JobOrderController extends Controller
           $data->tax_percent            = $request->tax_percent ?? 0;
           $data->fee_thanks             = $request->fee_thanks ?? 0;
           $data->invoice_bill           = $sumPayload;
+          $data->description            = $request->description;
           if($data->save()){
             $response = response()->json([
               'status'    => 'success',
@@ -195,6 +196,7 @@ class JobOrderController extends Controller
           $data->basic_price_ldo        = $request->basic_price_ldo;
           $data->road_money             = $request->road_money;
           $data->invoice_bill           = $sumPayload;
+          $data->description            = $request->description;
           if($data->save()){
             $response = response()->json([
               'status'    => 'success',

@@ -40,7 +40,7 @@
                 option:
               </li>
               <li class="navi-item">
-                <a href="{{ $config['print_url']  }}" class="navi-link" target="_blank">
+                <a href="#" id="btn_print" class="navi-link" target="_blank">
                   <span class="navi-icon">
                     <i class="la la-print"></i>
                   </span>
@@ -48,7 +48,7 @@
                 </a>
               </li>
               <li class="navi-item">
-                <a href="{{ $config['excel_url'] }}" class="navi-link">
+                <a href="#" id="btn_excel" class="navi-link">
                   <span class="navi-icon">
                     <i class="la la-file-excel-o"></i>
                   </span>
@@ -56,7 +56,7 @@
                 </a>
               </li>
               <li class="navi-item">
-                <a href="{{ $config['pdf_url'] }}" class="navi-link">
+                <a href="#" id="btn_pdf" class="navi-link">
                   <span class="navi-icon">
                     <i class="la la-file-pdf-o"></i>
                   </span>
@@ -70,18 +70,35 @@
         </div>
       </div>
     </div>
-
     <div class="card-body">
+      <div class="mb-10">
+        <div class="row align-items-center">
+          <div class="col-12">
+            <div class="row align-items-center">
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Status:</label>
+                  <select class="form-control" id="selectStatus">
+                    <option value="">All</option>
+                    <option value="none">Belum Lunas</option>
+                    <option value="1">Lunas</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!--begin: Datatable-->
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>Nama Pelanggan</th>
-          <th>Alamat</th>
-          <th>No. Telp</th>
-          <th>Nama Pelanggan Darurat</th>
-          <th>No. Telp Darurat</th>
-          <th>Kerjasama</th>
+          <th>No. Polisi</th>
+          <th>Tahun</th>
+          <th>STNK</th>
+          <th>KIR</th>
+          <th>Jenis Mobil</th>
         </tr>
         </thead>
       </table>
@@ -101,6 +118,36 @@
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
+      $('#btn_excel').on('click', function (e) {
+        e.preventDefault();
+        let params = new URLSearchParams({
+          driver_id: $('#select2Driver').find(':selected').val() || '',
+          status: $('#selectStatus').val(),
+          date: $("input[name=date]").val(),
+        });
+        window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
+      });
+
+      $('#btn_pdf').on('click', function (e) {
+        e.preventDefault();
+        let params = new URLSearchParams({
+          driver_id: $('#select2Driver').find(':selected').val() || '',
+          status: $('#selectStatus').val(),
+          date: $("input[name=date]").val(),
+        });
+        location.href = '{{ $config['pdf_url'] }}?' + params.toString();
+      });
+
+      $('#btn_print').on('click', function (e) {
+        e.preventDefault();
+        let params = new URLSearchParams({
+          driver_id: $('#select2Driver').find(':selected').val() || '',
+          status: $('#selectStatus').val(),
+          date: $("input[name=date]").val(),
+        });
+        window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
+      });
+
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
@@ -109,16 +156,57 @@
         order: [[0, 'asc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
-        ajax: "{{ route('backend.reportcostumers.index') }}",
+        ajax: {
+          url: "{{ route('backend.reportransports.index') }}",
+          data: function (d) {
+            d.driver_id = $('#select2Driver').find(':selected').val();
+            d.status = $('#selectStatus').val();
+            d.date = $("input[name=date]").val();
+          }
+        },
         columns: [
-          {data: 'name', name: 'name'},
-          {data: 'address', name: 'address'},
-          {data: 'phone', name: 'phone'},
-          {data: 'emergency_name', name: 'emergency_name'},
-          {data: 'emergency_phone', name: 'emergency_phone'},
-          {data: 'cooperation', name: 'cooperation'},
+          {data: 'num_pol', name: 'num_pol'},
+          {data: 'year', name: 'year'},
+          {data: 'expired_stnk', name: 'expired_stnk'},
+          {data: 'expired_kir', name: 'expired_kir'},
+          {data: 'type_car', name: 'type_car'},
         ],
       });
+
+      $("#select2Driver").select2({
+        placeholder: "Search Supir",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.drivers.select2self') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
+      $('#dateRangePicker').daterangepicker({
+        buttonClasses: ' btn',
+        applyClass: 'btn-primary',
+        cancelClass: 'btn-secondary'
+      }, function (start, end, label) {
+        $('#dateRangePicker .form-control').val(start.format('YYYY-MM-DD') + ' / ' + end.format('YYYY-MM-DD'));
+        dataTable.draw();
+      }).on('cancel.daterangepicker', function(ev, picker) {
+        $('#dateRangePicker .form-control').val('');
+      });
+
+      $('#selectStatus').on('change', function () {
+        dataTable.draw();
+      });
+
     });
   </script>
 @endsection

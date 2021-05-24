@@ -13,11 +13,7 @@ use Illuminate\Support\Facades\File;
 
 class DriverController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
+
   public function index(Request $request)
   {
     $config['page_title'] = "Supir";
