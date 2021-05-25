@@ -4,7 +4,7 @@
 <head>
   @foreach(config('layout.resources.css') as $style)
     <link href="{{ config('layout.self.rtl') ? asset(Metronic::rtlCssPath($style)) : asset($style) }}" rel="stylesheet"
-          type="text/css" />
+          type="text/css"/>
   @endforeach
 
   <style type="text/css">
@@ -60,7 +60,7 @@
 <body>
 <div class="row justify-content-center py-8 px-8 px-md-0">
   <div class="col-md-11">
-    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN KASBON SUPIR</u></h2>
+    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN REKAP GAJI SUPIR</u></h2>
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
@@ -70,20 +70,19 @@
         <td scope="col" class="text-left" style="width:20%">{{ $profile['name'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Priode: {{ (!empty($date) ? $date : 'All Date') }}
+        <td scope="col" class="font-weight-normal" style="width:50%">Priode: {{ $date ?? 'All' }}
         </td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="width:18%">{{ $profile['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Filter Nama Supir:  {{ $driver }}
+        <td scope="col" class="font-weight-normal" style="width:50%">Supir: {{ $driver->name ?? 'All' }}
         </td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Status:  {{ $statusPembayaran }}
-        </td>
+        <td></td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="width:18%">FAX {{ $profile['fax'] ?? ''}}</td>
       </tr>
@@ -94,25 +93,37 @@
       <thead>
       <tr>
         <th scope="col">#</th>
-        <th scope="col">Nama Supir</th>
-        <th scope="col">Nominal</th>
-        <th scope="col">Status</th>
-        <th scope="col">Keterangan</th>
-        <th scope="col">Tanggal Pinjaman</th>
+        <th>Nama Pelanggan</th>
+        <th>T. Muat</th>
+        <th>Sub Total</th>
+        <th>Biaya Operasional</th>
+        <th>Spare Part</th>
+        <th>Gaji Supir</th>
+        <th>Sisa Bersih</th>
       </tr>
       </thead>
       <tbody>
       @foreach ($data as $item)
         <tr>
           <td>{{ $loop->iteration }}</td>
-          <td>{{ $item->name }}</td>
-          <td class="text-right">{{ number_format($item->amount, '2', ',', '.') }}</td>
-          <td>{{ $item->status == "1" ? "Paid" : "Unpaid" }}</td>
-          <td>{{ $item->memo }}</td>
-          <td>{{ $item->created_at }}</td>
+          <td>{{ $item->costumer->name }}</td>
+          <td>{{ $item->date_begin }}</td>
+          <td class="text-right">{{ number_format($item->total_basic_price_after_thanks, 2, ',', '.') }}</td>
+          <td class="text-right">{{ number_format($item->total_operational, 2, ',', '.') }}</td>
+          <td class="text-right">{{ number_format($item->total_sparepart, 2, ',', '.') }}</td>
+          <td class="text-right">{{ number_format($item->total_salary, 2, ',', '.') }}</td>
+          <td class="text-right">{{ number_format($item->total_clean_summary, 2, ',', '.') }}</td>
         </tr>
       @endforeach
       </tbody>
+      <tfoot>
+      <td colspan="3" class="text-right">Total:</td>
+      <td class="text-right">{{ number_format($data->sum('total_basic_price_after_thanks'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_operational'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_sparepart'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_salary'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_clean_summary'), 2, ',', '.') }}</td>
+      </tfoot>
     </table>
   </div>
 </div>
@@ -120,10 +131,10 @@
 @foreach(config('layout.resources.js') as $script)
   <script src="{{ asset($script) }}" type="text/javascript"></script>
   <script>
-    window.onload = function(e){
+    window.onload = function (e) {
       window.print();
     }
-    window.setTimeout(function(){
+    window.setTimeout(function () {
       window.close();
     }, 2000);
   </script>

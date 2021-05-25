@@ -60,7 +60,7 @@
 <body>
 <div class="row justify-content-center py-8 px-8 px-md-0">
   <div class="col-md-11">
-    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN KASBON SUPIR</u></h2>
+    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN KENDARAAN</u></h2>
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
@@ -70,20 +70,17 @@
         <td scope="col" class="text-left" style="width:20%">{{ $profile['name'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Priode: {{ (!empty($date) ? $date : 'All Date') }}
-        </td>
+        <td></td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="width:18%">{{ $profile['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Filter Nama Supir:  {{ $driver }}
-        </td>
+        <td></td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Status:  {{ $statusPembayaran }}
-        </td>
+        <td></td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="width:18%">FAX {{ $profile['fax'] ?? ''}}</td>
       </tr>
@@ -94,22 +91,22 @@
       <thead>
       <tr>
         <th scope="col">#</th>
-        <th scope="col">Nama Supir</th>
-        <th scope="col">Nominal</th>
-        <th scope="col">Status</th>
-        <th scope="col">Keterangan</th>
-        <th scope="col">Tanggal Pinjaman</th>
+        <th scope="col">No. Polisi</th>
+        <th scope="col">Tahun</th>
+        <th scope="col">STNK</th>
+        <th scope="col">KIR</th>
+        <th scope="col">Jenis Kendaraan</th>
       </tr>
       </thead>
       <tbody>
       @foreach ($data as $item)
         <tr>
           <td>{{ $loop->iteration }}</td>
-          <td>{{ $item->name }}</td>
-          <td class="text-right">{{ number_format($item->amount, '2', ',', '.') }}</td>
-          <td>{{ $item->status == "1" ? "Paid" : "Unpaid" }}</td>
-          <td>{{ $item->memo }}</td>
-          <td>{{ $item->created_at }}</td>
+          <td>{{ $item->num_pol }}</td>
+          <td>{{ $item->year }}</td>
+          <td>{{ $item->expired_stnk }}</td>
+          <td>{{ $item->expired_kir }}</td>
+          <td>{{ ucwords($item->type_car) }}</td>
         </tr>
       @endforeach
       </tbody>

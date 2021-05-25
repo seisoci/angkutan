@@ -3,6 +3,7 @@
 
 {{-- Content --}}
 @section('content')
+
   <!--begin::Card-->
   <div class="card card-custom">
     <div class="card-header flex-wrap py-3">
@@ -69,18 +70,46 @@
         </div>
       </div>
     </div>
+
     <div class="card-body">
+      <div class="mb-10">
+        <div class="row align-items-center">
+          <div class="col-12">
+            <div class="row align-items-center">
+              <div class="col-md-4 my-md-0 offset-md-8">
+                <div class="form-group">
+                  <label>Priode:</label>
+                  <div class="input-group" id="dateRangePicker">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="la la-calendar-check-o"></i></span>
+                    </div>
+                    <input type="text" class="form-control" name="date" placeholder="Choose Date">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!--begin: Datatable-->
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>No. Polisi</th>
-          <th>Tahun</th>
-          <th>STNK</th>
-          <th>KIR</th>
-          <th>Jenis Kendaraan</th>
+          <th>Nama Pelanggan</th>
+          <th>Alamat</th>
+          <th>Jumlah JO</th>
+          <th>Total (Ex. Tax)</th>
+          <th>Total (Inc. Tax)</th>
         </tr>
         </thead>
+        <tfoot>
+        <th></th>
+        <th></th>
+        <th class="text-right"></th>
+        <th></th>
+        <th></th>
+        </tfoot>
       </table>
     </div>
   </div>
@@ -100,17 +129,26 @@
     $(document).ready(function () {
       $('#btn_excel').on('click', function (e) {
         e.preventDefault();
-        window.location.href = '{{ $config['excel_url'] }}';
+        let params = new URLSearchParams({
+          date: $("input[name=date]").val(),
+        });
+        window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
 
       $('#btn_pdf').on('click', function (e) {
         e.preventDefault();
-        location.href = '{{ $config['pdf_url'] }}';
+        let params = new URLSearchParams({
+          date: $("input[name=date]").val(),
+        });
+        location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
 
       $('#btn_print').on('click', function (e) {
         e.preventDefault();
-        window.open('{{ $config['print_url'] }}');
+        let params = new URLSearchParams({
+          date: $("input[name=date]").val(),
+        });
+        window.open('{{ $config['print_url'] }}?' + params.toString());
       });
 
       let dataTable = $('#Datatable').DataTable({
@@ -122,18 +160,92 @@
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
-          url: "{{ route('backend.reportransports.index') }}",
+          url: "{{ route('backend.reportrecapjoborder.index') }}",
           data: function (d) {
+            d.date = $("input[name=date]").val();
           }
         },
         columns: [
-          {data: 'num_pol', name: 'num_pol'},
-          {data: 'year', name: 'year'},
-          {data: 'expired_stnk', name: 'expired_stnk'},
-          {data: 'expired_kir', name: 'expired_kir'},
-          {data: 'type_car', name: 'type_car'},
+          {data: 'costumer.name', name: 'costumer.name'},
+          {data: 'costumer.address', name: 'costumer.address'},
+          {data: 'report_qty', name: 'report_qty'},
+          {
+            data: 'report_total_basic_price',
+            name: 'report_total_basic_price',
+            defaultContent: '',
+            className: 'dt-right',
+            render: $.fn.dataTable.render.number(',', '.', 2)
+          },
+          {
+            data: 'report_total_tax',
+            name: 'report_total_tax',
+            defaultContent: '',
+            className: 'dt-right',
+            render: $.fn.dataTable.render.number(',', '.', 2)
+          },
         ],
+        footerCallback: function (row, data, start, end, display) {
+          let api = this.api();
+          let intVal = function (i) {
+            return typeof i === 'string' ?
+              i.replace(/[\$,]/g, '') * 1 :
+              typeof i === 'number' ?
+                i : 0;
+          };
+
+          let totalNoTax = api
+            .column(3)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          let totalWithTax = api
+            .column(4)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          $(api.column(2).footer()).html('Total');
+          $(api.column(3).footer()).html(format(totalNoTax));
+          $(api.column(4).footer()).html(format(totalWithTax));
+
+        },
       });
-    });
+
+      let format = function(num){
+        let str = num.toString().replace("", ""), parts = false, output = [], i = 1, formatted = null;
+        if(str.indexOf(".") > 0) {
+          parts = str.split(".");
+          str = parts[0];
+        }
+        str = str.split("").reverse();
+        for(let j = 0, len = str.length; j < len; j++) {
+          if(str[j] !== ",") {
+            output.push(str[j]);
+            if(i%3 === 0 && j < (len - 1)) {
+              output.push(",");
+            }
+            i++;
+          }
+        }
+        formatted = output.reverse().join("");
+        return("" + formatted + ((parts) ? "." + parts[1].substr(0, 2) : ".00"));
+      };
+
+      $('#dateRangePicker').daterangepicker({
+        buttonClasses: ' btn',
+        applyClass: 'btn-primary',
+        cancelClass: 'btn-secondary'
+      }, function (start, end, label) {
+        $('#dateRangePicker .form-control').val(start.format('YYYY-MM-DD') + ' / ' + end.format('YYYY-MM-DD'));
+        dataTable.draw();
+      }).on('cancel.daterangepicker', function (ev, picker) {
+        $('#dateRangePicker .form-control').val('');
+        dataTable.draw();
+      });
+    })
+    ;
   </script>
 @endsection

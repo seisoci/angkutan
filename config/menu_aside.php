@@ -135,11 +135,11 @@ return [
           'submenu' => [
             [
               'title' => 'Kasbon Karyawaan',
-              'page'  => 'backend/kasbonemployees'
+              'page' => 'backend/kasbonemployees'
             ],
             [
               'title' => 'Invoice Kasbon Karyawaan',
-              'page'  => 'backend/invoicekasbonemployees'
+              'page' => 'backend/invoicekasbonemployees'
             ],
           ]
         ], [
@@ -299,9 +299,18 @@ return [
           'page' => 'backend/reportkasbondrivers'
         ],
         [
-          'title' => 'Laporan Data Mobil',
+          'title' => 'Laporan Rekap Gaji Supir',
+          'page' => 'backend/reportrecapsalaries'
+        ],
+        [
+          'title' => 'Laporan Data Kendaraan',
           'page' => 'backend/reporttransports'
         ],
+        [
+          'title' => 'Laporan Rekap Job Order',
+          'page' => 'backend/reportrecapjoborder'
+        ],
+
       ]
     ],
     [

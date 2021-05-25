@@ -113,7 +113,6 @@
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
 
-
 {{-- Scripts Section --}}
 @section('scripts')
   {{-- vendors --}}

@@ -13,11 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class TransportController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
+
   public function index(Request $request)
   {
     $config['page_title'] = "Kendaraan";
@@ -43,11 +39,6 @@ class TransportController extends Controller
     return view('backend.masteroperational.transports.index', compact('config', 'page_breadcrumbs'));
   }
 
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
   public function create()
   {
     $config['page_title'] = "Create Kendaraan";
@@ -58,12 +49,6 @@ class TransportController extends Controller
     return view('backend.masteroperational.transports.create', compact('config', 'page_breadcrumbs'));
   }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @return \Illuminate\Http\Response
-   */
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
@@ -110,12 +95,6 @@ class TransportController extends Controller
     return $response;
   }
 
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param \App\Models\Transport $transport
-   * @return \Illuminate\Http\Response
-   */
   public function edit(Transport $transport)
   {
     $config['page_title'] = "Edit Kendaraan";
@@ -129,13 +108,6 @@ class TransportController extends Controller
     return view('backend.masteroperational.transports.edit', compact('config', 'page_breadcrumbs', 'data'));
   }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @param \App\Models\Transport $transport
-   * @return \Illuminate\Http\Response
-   */
   public function update(Request $request, Transport $transport)
   {
     $validator = Validator::make($request->all(), [
@@ -180,12 +152,6 @@ class TransportController extends Controller
     return $response;
   }
 
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param \App\Models\Transport $transport
-   * @return \Illuminate\Http\Response
-   */
   public function destroy(Transport $transport)
   {
     $response = response()->json([
@@ -298,7 +264,7 @@ class TransportController extends Controller
     $resultCount = 10;
     $offset = ($page - 1) * $resultCount;
     $data = Transport::where('num_pol', 'LIKE', '%' . $request->q . '%')
-      ->where('another_expedition_id', '<>',NULL)
+      ->where('another_expedition_id', '<>', NULL)
       ->orderBy('num_pol')
       ->skip($offset)
       ->take($resultCount)
@@ -306,7 +272,7 @@ class TransportController extends Controller
       ->get();
 
     $count = Transport::where('num_pol', 'LIKE', '%' . $request->q . '%')
-      ->where('another_expedition_id', '<>',NULL)
+      ->where('another_expedition_id', '<>', NULL)
       ->get()
       ->count();
     $endCount = $offset + $resultCount;

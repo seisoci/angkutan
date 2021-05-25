@@ -48,7 +48,9 @@ class ReportDriverController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = Driver::orderBy('name', 'asc')->get();
+    $data = Driver::where('another_expedition_id', NULL)
+      ->orderBy('name', 'asc')
+      ->get();
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->getPageSetup()
@@ -169,7 +171,7 @@ class ReportDriverController extends Controller
 
 
       $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTopBottom);
-      $sheet->getStyle('A' . $startCell .':'. 'F'. $startCell)->getAlignment()->setVertical('top');
+      $sheet->getStyle('A' . $startCell . ':' . 'F' . $startCell)->getAlignment()->setVertical('top');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->name);
       $sheet->setCellValue('C' . $startCell, $item->address);
@@ -183,13 +185,13 @@ class ReportDriverController extends Controller
     $filename = 'Laporan Data Supir ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
       $writer = new Xlsx($spreadsheet);
-      header( 'Cache-Control: no-store, no-cache, must-revalidate' );
+      header('Cache-Control: no-store, no-cache, must-revalidate');
       header('Content-Type: application/vnd.ms-excel');
       header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
       header('Cache-Control: max-age=0');
     } elseif ($type == 'PDF') {
       $writer = new Mpdf($spreadsheet);
-      header( 'Cache-Control: no-store, no-cache, must-revalidate' );
+      header('Cache-Control: no-store, no-cache, must-revalidate');
       header('Content-Type: application/pdf');
       header('Content-Disposition: attachment;filename="' . $filename . '.pdf"');
       header('Cache-Control: max-age=0');
@@ -198,7 +200,8 @@ class ReportDriverController extends Controller
     exit();
   }
 
-  public function print(Request $request){
+  public function print(Request $request)
+  {
     $config['page_title'] = "Laporan Data Supir";
     $config['page_description'] = "Data Supir";
     $config['current_time'] = $this->dateTimeNow();
@@ -211,7 +214,9 @@ class ReportDriverController extends Controller
       return [$item['name'] => $item['value']];
     });
 
-    $data = Driver::orderBy('name', 'asc')->get();
-    return view('backend.report.reportdrivers.print', compact('config', 'page_breadcrumbs', 'profile', 'data' ));
+    $data = Driver::where('another_expedition_id', NULL)
+      ->orderBy('name', 'asc')
+      ->get();
+    return view('backend.report.reportdrivers.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
   }
 }
