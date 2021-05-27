@@ -282,7 +282,7 @@
           delay: 250,
           cache: true,
           data: function(e) {
-            var arrayUsed = [];
+            let arrayUsed = [];
             $('select[name^="items[sparepart_id]"]').each(function() {
               if($(this).val()){
                 arrayUsed.push($(this).val());
@@ -302,10 +302,10 @@
       $('.datepicker').datepicker({
         format: 'yyyy-mm-dd',
         todayBtn: "linked",
-        clearBtn: true,
-        todayHighlight: true,
+        clearBtn: true,ue,
         });
     }
+    todayHighlight: tr
 
     function initCurrency(){
       $(".currency").inputmask('decimal', {

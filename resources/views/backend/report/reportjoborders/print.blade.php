@@ -51,7 +51,7 @@
       }
 
       @page {
-        size: A4 potrait;
+        size: A4 landscape;
       }
     }
   </style>
@@ -60,7 +60,7 @@
 <body>
 <div class="row justify-content-center py-8 px-8 px-md-0">
   <div class="col-md-11">
-    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN REKAP JOB ORDER</u></h2>
+    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN TAGIHAN JOB ORDER</u></h2>
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
@@ -76,7 +76,8 @@
         <td scope="col" class="text-left" style="width:18%">{{ $profile['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td></td>
+        <td scope="col" class="font-weight-normal" style="width:50%">Costumer: {{ !empty($costumer) ? $costumer->name : 'All' }}
+        </td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
       </tr>
@@ -92,29 +93,53 @@
       <thead>
       <tr>
         <th scope="col">#</th>
+        <th>Tanggal</th>
+        <th>No. Polisi</th>
+        <th>No. Prefix</th>
         <th>Nama Pelanggan</th>
-        <th>Alamat</th>
-        <th>Jumlah JO</th>
-        <th>Total (Ex. Tax)</th>
-        <th>Total (Inc. Tax)</th>
+        <th>Rute Dari</th>
+        <th>Rute Tujuan</th>
+        <th>Jenis Barang</th>
+        <th class="text-right">Tarif (Rp.)</th>
+        <th class="center">Qty</th>
+        <th class="text-right">Total</th>
+        <th class="text-right">Tax (%)</th>
+        <th class="text-right">Total (Inc. Tax)</th>
+        <th class="text-right">Fee Thanks</th>
+        <th class="text-right">Total (Inc. Tax, Thaks)</th>
+      </tr>
       </tr>
       </thead>
       <tbody>
       @foreach ($data as $item)
         <tr>
           <td>{{ $loop->iteration }}</td>
+          <td>{{ $item->date_begin }}</td>
+          <td>{{ $item->transport->num_pol }}</td>
+          <td>{{ $item->num_prefix }}</td>
           <td>{{ $item->costumer->name }}</td>
-          <td>{{ $item->costumer->address }}</td>
-          <td colspan="text-center">{{ $item->report_qty }}</td>
-          <td>{{ number_format($item->report_total_basic_price, 2, ',', '.') }}</td>
-          <td>{{ number_format($item->report_total_tax, 2, ',', '.') }}</td>
+          <td>{{ $item->routefrom->name }}</td>
+          <td>{{ $item->routeto->name }}</td>
+          <td>{{ $item->cargo->name }}</td>
+          <td class="text-right">{{ number_format($item->basic_price, 2, ',', '.') }}</td>
+          <td class="text-center">{{ number_format($item->payload, 2, ',', '.') }}</td>
+          <td class="text-center">{{ number_format($item->total_basic_price, 2, ',', '.') }}</td>
+          <td class="text-center">{{ number_format($item->tax_percent, 2, ',', '.') }}</td>
+          <td class="text-center">{{ number_format($item->total_basic_price_after_tax, 2, ',', '.') }}</td>
+          <td class="text-center">{{ number_format($item->fee_thanks, 2, ',', '.') }}</td>
+          <td class="text-center">{{ number_format($item->total_basic_price_after_thanks, 2, ',', '.') }}</td>
         </tr>
       @endforeach
       </tbody>
       <tfoot>
-      <td colspan="4" class="text-right">Total</td>
-      <td>{{ number_format($data->sum('report_total_basic_price'), 2, ',', '.') }}</td>
-      <td>{{ number_format($data->sum('report_total_tax'), 2, ',', '.') }}</td>
+      <td colspan="8" class="text-right">Total Rp.</td>
+      <td class="text-right">{{ number_format($data->sum('basic_price'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('payload'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_basic_price'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('tax_percent'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_basic_price_after_tax'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('fee_thanks'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_basic_price_after_thanks'), 2, ',', '.') }}</td>
       </tfoot>
     </table>
   </div>

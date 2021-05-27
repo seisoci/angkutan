@@ -37,6 +37,7 @@ class SalaryController extends Controller
       $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
         ->withSum('operationalexpense', 'amount')
         ->where('type', 'self')
+        ->where('status_cargo', '=', 'selesai')
         ->when($driver_id, function ($query, $driver_id) {
           return $query->where('driver_id', $driver_id);
         })

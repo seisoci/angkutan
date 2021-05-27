@@ -70,6 +70,7 @@
         </div>
       </div>
     </div>
+
     <div class="card-body">
       <div class="mb-10">
         <div class="row align-items-center">
@@ -77,8 +78,8 @@
             <div class="row align-items-center">
               <div class="col-md-3 my-md-0">
                 <div class="form-group">
-                  <label>Nama Supir:</label>
-                  <select class="form-control" id="select2Driver">
+                  <label>Nama Costumer:</label>
+                  <select class="form-control" id="select2Costumer">
                   </select>
                 </div>
               </div>
@@ -102,21 +103,26 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
+          <th>Tanggal</th>
+          <th>No. Polisi</th>
+          <th>No. Prefix</th>
           <th>Nama Pelanggan</th>
-          <th>T. Muat</th>
-          <th>Sub Total</th>
-          <th>Biaya Operasional</th>
-          <th>Spare Part</th>
-          <th>Gaji Supir</th>
-          <th>Sisa Bersih</th>
+          <th>Rute Dari</th>
+          <th>Rute Tujuan</th>
+          <th>Jenis Barang</th>
+          <th>Tarif (Rp.)</th>
+          <th>Qty</th>
+          <th>Total</th>
+          <th>Tax (%)</th>
+          <th>Total (Inc. Tax)</th>
+          <th>Fee Thanks</th>
+          <th>Total (Inc. Tax, Thaks)</th>
         </tr>
         </thead>
         <tfoot>
         <th></th>
         <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
+        <th class="text-right"></th>
         <th></th>
         <th></th>
         </tfoot>
@@ -140,8 +146,8 @@
       $('#btn_excel').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
           date: $("input[name=date]").val(),
+          costumer_id: $('#select2Costumer').find(':selected').val() || '',
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
@@ -149,8 +155,8 @@
       $('#btn_pdf').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
           date: $("input[name=date]").val(),
+          costumer_id: $('#select2Costumer').find(':selected').val() || '',
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
@@ -158,10 +164,10 @@
       $('#btn_print').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
           date: $("input[name=date]").val(),
+          costumer_id: $('#select2Costumer').find(':selected').val() || '',
         });
-        window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
+        window.open('{{ $config['print_url'] }}?' + params.toString());
       });
 
       let dataTable = $('#Datatable').DataTable({
@@ -173,103 +179,71 @@
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
-          url: "{{ route('backend.reportrecapsalaries.index') }}",
+          url: "{{ route('backend.reportjoborders.index') }}",
           data: function (d) {
-            d.driver_id = $('#select2Driver').find(':selected').val();
             d.date = $("input[name=date]").val();
+            d.costumer_id = $('#select2Costumer').find(':selected').val();
           }
         },
         columns: [
-          {data: 'costumer.name', name: 'costumer.name'},
           {data: 'date_begin', name: 'date_begin'},
+          {data: 'transport.num_pol', name: 'transport.num_pol', orderable: false, searchable: false},
+          {data: 'num_prefix', name: 'num_prefix', orderable: false, searchable: false},
+          {data: 'costumer.name', name: 'costumer.name', orderable: false, searchable: false},
+          {data: 'routefrom.name', name: 'routefrom.name', orderable: false, searchable: false},
+          {data: 'routeto.name', name: 'routeto.name', orderable: false, searchable: false},
+          {data: 'cargo.name', name: 'cargo.name', orderable: false, searchable: false},
+          {
+            data: 'basic_price', name: 'basic_price',
+            defaultContent: 0,
+            className: 'dt-right',
+            orderable: false,
+            searchable: false,
+            render: $.fn.dataTable.render.number(',', '.', 2)
+          },
+          {
+            data: 'payload', name: 'payload',
+            orderable: false,
+            searchable: false,
+          },
+          {
+            data: 'total_basic_price', name: 'total_basic_price',
+            defaultContent: 0,
+            className: 'dt-right',
+            orderable: false,
+            searchable: false,
+            render: $.fn.dataTable.render.number(',', '.', 2)
+          },
+          {
+            data: 'tax_percent', name: 'tax_percent',
+            orderable: false,
+            searchable: false,
+          },
+          {
+            data: 'total_basic_price_after_tax', name: 'total_basic_price_after_tax',
+            defaultContent: 0,
+            className: 'dt-right',
+            orderable: false,
+            searchable: false,
+            render: $.fn.dataTable.render.number(',', '.', 2)
+          },
+          {
+            data: 'fee_thanks', name: 'fee_thanks',
+            defaultContent: 0,
+            className: 'dt-right',
+            orderable: false,
+            searchable: false,
+            render: $.fn.dataTable.render.number(',', '.', 2)
+          },
           {
             data: 'total_basic_price_after_thanks', name: 'total_basic_price_after_thanks',
+            defaultContent: 0,
+            className: 'dt-right',
             orderable: false,
             searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_operational', name: 'total_operational',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_sparepart', name: 'total_sparepart',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_salary', name: 'total_salary',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_clean_summary', name: 'total_clean_summary',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
+            render: $.fn.dataTable.render.number(',', '.', 2)
           },
         ],
-        footerCallback: function (row, data, start, end, display) {
-          let api = this.api();
-          let intVal = function (i) {
-            return typeof i === 'string' ?
-              i.replace(/[\$,]/g, '') * 1 :
-              typeof i === 'number' ?
-                i : 0;
-          };
-
-          let totalBasic = api
-            .column(2)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalOperatinal = api
-            .column(3)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalSparepart = api
-            .column(4)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalSalary = api
-            .column(5)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalClean = api
-            .column(6)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          $(api.column(1).footer()).html('Total');
-          $(api.column(2).footer()).html(format(totalBasic));
-          $(api.column(3).footer()).html(format(totalOperatinal));
-          $(api.column(4).footer()).html(format(totalSparepart));
-          $(api.column(5).footer()).html(format(totalSalary));
-          $(api.column(6).footer()).html(format(totalClean));
-
-        },
       });
 
       let format = function (num) {
@@ -292,11 +266,11 @@
         return ("" + formatted + ((parts) ? "." + parts[1].substr(0, 2) : ".00"));
       };
 
-      $("#select2Driver").select2({
+      $("#select2Costumer").select2({
         placeholder: "Search Supir",
         allowClear: true,
         ajax: {
-          url: "{{ route('backend.drivers.select2self') }}",
+          url: "{{ route('backend.costumers.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -322,7 +296,7 @@
         $('#dateRangePicker .form-control').val('');
         dataTable.draw();
       });
-
-    });
+    })
+    ;
   </script>
 @endsection

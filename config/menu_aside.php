@@ -299,16 +299,20 @@ return [
           'page' => 'backend/reportkasbondrivers'
         ],
         [
-          'title' => 'Laporan Rekap Gaji Supir',
-          'page' => 'backend/reportrecapsalaries'
+          'title' => 'Laporan Gaji Supir',
+          'page' => 'backend/reportsalaries'
         ],
         [
           'title' => 'Laporan Data Kendaraan',
           'page' => 'backend/reporttransports'
         ],
         [
-          'title' => 'Laporan Rekap Job Order',
-          'page' => 'backend/reportrecapjoborder'
+          'title' => 'Laporan Tagihan Job Order',
+          'page' => 'backend/reportrecapjoborders'
+        ],
+        [
+          'title' => 'Laporan Rekap Tagihan Job Order',
+          'page' => 'backend/reportrecapjoborders'
         ],
 
       ]
