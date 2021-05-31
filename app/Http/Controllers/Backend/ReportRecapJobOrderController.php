@@ -245,7 +245,7 @@ class ReportRecapJobOrderController extends Controller
     } elseif ($type == 'PDF') {
       $writer = new Mpdf($spreadsheet);
       header('Content-Type: application/pdf');
-      header('Content-Disposition: attachment;filename="' . $filename . '.pdf"');
+      header('Content-Disposition: inline;filename="' . $filename . '.pdf"');
       header('Cache-Control: max-age=0');
     }
     $writer->save('php://output');

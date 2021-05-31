@@ -17,12 +17,12 @@
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.2",
-        "mpdf/mpdf": "^8.0",
+        "mpdf/mpdf": "8.0.4",
         "spatie/laravel-activitylog": "^3.17",
         "spatie/laravel-permission": "^4.0",
         "yajra/laravel-datatables-buttons": "^4.0",
-        "yajra/laravel-datatables-oracle": "~9.0"
-
+        "yajra/laravel-datatables-oracle": "~9.0",
+      "ext-gd": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.5",

@@ -99,9 +99,9 @@
             "data": null,
             "defaultContent": ''
           },
+          {data: 'num_invoice', name: 'num_invoice'},
           {data: 'invoice_date', name: 'invoice_date', orderable: false},
           {data: 'due_date', name: 'due_date'},
-          {data: 'num_invoice', name: 'num_invoice'},
           {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},
           {
             data: 'total_bill',

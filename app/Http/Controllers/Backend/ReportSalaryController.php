@@ -8,6 +8,7 @@ use App\Models\JobOrder;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
@@ -17,7 +18,6 @@ use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 
 class ReportSalaryController extends Controller
 {
-
   use CarbonTrait;
 
   public function index(Request $request)
@@ -27,9 +27,9 @@ class ReportSalaryController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "Laporan Gaji Supir"],
     ];
-    $config['excel_url'] = 'reportsalaries/document?type=EXCEL';
-    $config['pdf_url'] = 'reportsalaries/document?type=PDF';
-    $config['print_url'] = 'reportsalaries/print';
+    $config['excel_url'] = 'reportsalarydrivers/document?type=EXCEL';
+    $config['pdf_url'] = 'reportsalarydrivers/document?type=PDF';
+    $config['print_url'] = 'reportsalarydrivers/print';
 
     if ($request->ajax()) {
       $date = $request->date;
@@ -53,7 +53,7 @@ class ReportSalaryController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
-    return view('backend.report.reportsalaries.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.report.reportsalarydrivers.index', compact('config', 'page_breadcrumbs'));
   }
 
   public function document(Request $request)
@@ -217,7 +217,7 @@ class ReportSalaryController extends Controller
       $writer = new Mpdf($spreadsheet);
       header('Content-Type: application/pdf');
       header('Content-Disposition: attachment;filename="' . $filename . '.pdf"');
-      header('Cache-Control: max-age=0');
+      header('Cache-Control: private');
     }
     $writer->save('php://output');
     exit();
@@ -256,6 +256,6 @@ class ReportSalaryController extends Controller
       return [$item['name'] => $item['value']];
     });
 
-    return view('backend.report.reportsalaries.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'driver'));
+    return view('backend.report.reportsalarydrivers.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'driver'));
   }
 }

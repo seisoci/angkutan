@@ -23,4 +23,16 @@ trait CarbonTrait {
   public function toDateServerEnd($date){
     return Carbon::createFromFormat('Y-m-d H:i:s', $date." 23:59:59", 'UTC')->setTimezone('America/Los_Angeles')->format('Y-m-d H:i:s');
   }
+
+  public function convertToMonthYear($date){
+    return Carbon::parse($date)->timezone('Asia/Jakarta')->format('Y M');
+  }
+
+  public function convertToYear($date){
+    return Carbon::parse($date)->timezone('Asia/Jakarta')->format('Y');
+  }
+
+  public function convertToMonth($date){
+    return Carbon::parse($date)->timezone('Asia/Jakarta')->format('m');
+  }
 }

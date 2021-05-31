@@ -77,19 +77,32 @@
             <div class="row align-items-center">
               <div class="col-md-3 my-md-0">
                 <div class="form-group">
-                  <label>Nama Supir:</label>
-                  <select class="form-control" id="select2Driver">
+                  <label>Nama Karyawaan:</label>
+                  <select class="form-control" id="select2Employee">
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Status Pembayaran:</label>
+                  <select class="form-control" id="statusPayment">
+                    <option value="">Pilih Status</option>
+                    <option value="unpaid">Unpaid</option>
+                    <option value="paid">Paid</option>
                   </select>
                 </div>
               </div>
               <div class="col-md-4 my-md-0">
                 <div class="form-group">
-                  <label>Priode:</label>
-                  <div class="input-group" id="dateRangePicker">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="la la-calendar-check-o"></i></span>
+                  <label>Priode</label>
+                  <div>
+                    <div class="input-daterange input-group">
+                      <input type="text" class="form-control" id="dateBegin" readonly/>
+                      <div class="input-group-append">
+                        <span class="input-group-text">sd</span>
+                      </div>
+                      <input type="text" class="form-control" id="dateEnd" readonly/>
                     </div>
-                    <input type="text" class="form-control" name="date" placeholder="Choose Date">
                   </div>
                 </div>
               </div>
@@ -102,21 +115,13 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>Nama Supir</th>
-          <th>Nama Pelanggan</th>
-          <th>T. Muat</th>
-          <th>Sub Total (Inc. Tax, Fee)</th>
-          <th>Biaya Operasional</th>
-          <th>Spare Part</th>
-          <th>Gaji Supir</th>
-          <th>Sisa Bersih</th>
+          <th>Gaji Bulan</th>
+          <th>Nama Karyawaan</th>
+          <th>Status</th>
+          <th>Total Gaji</th>
         </tr>
         </thead>
         <tfoot>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -142,8 +147,10 @@
       $('#btn_excel').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          date: $("input[name=date]").val(),
+          employee_id: $('#select2Employee').find(':selected').val() || '',
+          status_payment: $('#statusPayment').find(':selected').val() || '',
+          dateBegin: $('#dateBegin').val(),
+          dateEnd: $('#dateEnd').val()
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
@@ -151,8 +158,10 @@
       $('#btn_pdf').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          date: $("input[name=date]").val(),
+          employee_id: $('#select2Employee').find(':selected').val() || '',
+          status_payment: $('#statusPayment').find(':selected').val() || '',
+          dateBegin: $('#dateBegin').val(),
+          dateEnd: $('#dateEnd').val()
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
@@ -160,8 +169,10 @@
       $('#btn_print').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          date: $("input[name=date]").val(),
+          employee_id: $('#select2Employee').find(':selected').val() || '',
+          status_payment: $('#statusPayment').find(':selected').val() || '',
+          dateBegin: $('#dateBegin').val(),
+          dateEnd: $('#dateEnd').val()
         });
         window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
       });
@@ -171,54 +182,46 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[0, 'asc']],
+        orderable: false,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
-          url: "{{ route('backend.reportsalaries.index') }}",
+          url: "{{ route('backend.reportsalaryemployees.index') }}",
           data: function (d) {
-            d.driver_id = $('#select2Driver').find(':selected').val();
-            d.date = $("input[name=date]").val();
+            d.employee_id = $('#select2Employee').find(':selected').val();
+            d.status_payment = $('#statusPayment').find(':selected').val();
+            d.dateBegin = $('#dateBegin').val();
+            d.dateEnd = $('#dateEnd').val();
           }
         },
         columns: [
-          {data: 'driver.name', name: 'driver.name'},
-          {data: 'costumer.name', name: 'costumer.name'},
-          {data: 'date_begin', name: 'date_begin'},
-          {
-            data: 'total_basic_price_after_thanks', name: 'total_basic_price_after_thanks',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_operational', name: 'total_operational',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_sparepart', name: 'total_sparepart',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
+          {data: 'monthly_name', name: 'monthly_name'},
+          {data: 'employee_name', name: 'employee_name'},
+          {data: 'status', name: 'status'},
           {
             data: 'total_salary', name: 'total_salary',
             orderable: false,
             searchable: false,
+            defaultContent: 0,
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
+        ],
+        columnDefs: [
           {
-            data: 'total_clean_summary', name: 'total_clean_summary',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
+            className: 'dt-center',
+            targets: 2,
+            render: function (data, type, full, meta) {
+              let status = {
+                0: {'title': 'Belum Dibayar', 'class': ' label-light-danger'},
+                1: {'title': 'Lunas', 'class': ' label-light-success'},
+              };
+              if (typeof status[data] === 'undefined') {
+                return data;
+              }
+              return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
+                '</span>';
+            },
           },
         ],
         footerCallback: function (row, data, start, end, display) {
@@ -230,47 +233,15 @@
                 i : 0;
           };
 
-          let totalBasic = api
+          let totalSalary = api
             .column(3)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
-          let totalOperatinal = api
-            .column(4)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalSparepart = api
-            .column(5)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalSalary = api
-            .column(6)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalClean = api
-            .column(7)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
           $(api.column(2).footer()).html('Total');
-          $(api.column(3).footer()).html(format(totalBasic));
-          $(api.column(4).footer()).html(format(totalOperatinal));
-          $(api.column(5).footer()).html(format(totalSparepart));
-          $(api.column(6).footer()).html(format(totalSalary));
-          $(api.column(7).footer()).html(format(totalClean));
+          $(api.column(3).footer()).html(format(totalSalary));
 
         },
       });
@@ -295,11 +266,11 @@
         return ("" + formatted + ((parts) ? "." + parts[1].substr(0, 2) : ".00"));
       };
 
-      $("#select2Driver").select2({
-        placeholder: "Search Supir",
+      $("#select2Employee").select2({
+        placeholder: "Search Karyawaan",
         allowClear: true,
         ajax: {
-          url: "{{ route('backend.drivers.select2self') }}",
+          url: "{{ route('backend.employee.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -314,12 +285,20 @@
         dataTable.draw();
       });
 
+      $('#dateBegin, #dateEnd').datepicker({
+        format: 'yyyy-mm',
+        viewMode: 'months',
+        minViewMode: 'months'
+      }).on('change', function () {
+        dataTable.draw();
+      });
+
       $('#dateRangePicker').daterangepicker({
         buttonClasses: ' btn',
         applyClass: 'btn-primary',
         cancelClass: 'btn-secondary'
       }, function (start, end, label) {
-        $('#dateRangePicker .form-control').val(start.format('YYYY-MM-DD') + ' / ' + end.format('YYYY-MM-DD'));
+        $('#dateRangePicker .form-control').val(start.format('YYYY-MM') + ' / ' + end.format('YYYY-MM'));
         dataTable.draw();
       }).on('cancel.daterangepicker', function (ev, picker) {
         $('#dateRangePicker .form-control').val('');

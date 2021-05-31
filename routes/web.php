@@ -61,6 +61,7 @@ use App\Http\Controllers\Backend\ReportSalaryController as BackendReportSalaryCo
 use App\Http\Controllers\Backend\ReportInvoiceCostumerController as BackendReportInvoiceCostumer;
 use App\Http\Controllers\Backend\ReportInvoiceLdoController as BackendReportInvoiceLdoController;
 use App\Http\Controllers\Backend\ReportKasbonEmployeeController as BackendReportKasbonEmployeeController;
+use App\Http\Controllers\Backend\ReportSalaryEmployeesController as BackendReportSalaryEmployeesController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -139,8 +140,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportrecapjoborders/document', [BackendReportRecapJobOrderController::class, 'document']);
     Route::get('reportrecapsalaries/print', [BackendReportRecapSalaryController::class, 'print']);
     Route::get('reportrecapsalaries/document', [BackendReportRecapSalaryController::class, 'document']);
-    Route::get('reportsalaries/print', [BackendReportSalaryController::class, 'print']);
-    Route::get('reportsalaries/document', [BackendReportSalaryController::class, 'document']);
+    Route::get('reportsalarydrivers/print', [BackendReportSalaryController::class, 'print']);
+    Route::get('reportsalarydrivers/document', [BackendReportSalaryController::class, 'document']);
     Route::get('reportjoborders/print', [BackendReportJoborderController::class, 'print']);
     Route::get('reportjoborders/document', [BackendReportJoborderController::class, 'document']);
     Route::get('reportinvoicecostumers/print', [BackendReportInvoiceCostumer::class, 'print']);
@@ -149,6 +150,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportinvoiceldo/document', [BackendReportInvoiceLdoController::class, 'document']);
     Route::get('reportkasbonemployees/print', [BackendReportKasbonEmployeeController::class, 'print']);
     Route::get('reportkasbonemployees/document', [BackendReportKasbonEmployeeController::class, 'document']);
+    Route::get('reportsalaryemployees/print', [BackendReportSalaryEmployeesController::class, 'print']);
+    Route::get('reportsalaryemployees/document', [BackendReportSalaryEmployeesController::class, 'document']);
 
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
@@ -265,10 +268,11 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportjoborders', [BackendReportJoborderController::class, 'index'])->name('reportjoborders.index');
     Route::get('reportrecapjoborders', [BackendReportRecapJobOrderController::class, 'index'])->name('reportrecapjoborders.index');
     Route::get('reportrecapsalaries', [BackendReportRecapSalaryController::class, 'index'])->name('reportrecapsalaries.index');
-    Route::get('reportsalaries', [BackendReportSalaryController::class, 'index'])->name('reportsalaries.index');
+    Route::get('reportsalarydrivers', [BackendReportSalaryController::class, 'index'])->name('reportsalarydrivers.index');
     Route::get('reportinvoicecostumers', [BackendReportInvoiceCostumer::class, 'index'])->name('reportinvoicecostumers.index');
     Route::get('reportinvoiceldo', [BackendReportInvoiceLdoController::class, 'index'])->name('reportinvoiceldo.index');
     Route::get('reportkasbonemployees', [BackendReportKasbonEmployeeController::class, 'index'])->name('reportkasbonemployees.index');
+    Route::get('reportsalaryemployees', [BackendReportSalaryEmployeesController::class, 'index'])->name('reportsalaryemployees.index');
 
 
   });

@@ -11,7 +11,9 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Tcpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -190,10 +192,10 @@ class ReportDriverController extends Controller
       header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
       header('Cache-Control: max-age=0');
     } elseif ($type == 'PDF') {
-      $writer = new Mpdf($spreadsheet);
+      $writer = new Tcpdf($spreadsheet);
       header('Cache-Control: no-store, no-cache, must-revalidate');
       header('Content-Type: application/pdf');
-      header('Content-Disposition: attachment;filename="' . $filename . '.pdf"');
+      header('Content-Disposition: inline;filename="' . $filename . '.pdf"');
       header('Cache-Control: max-age=0');
     }
     $writer->save('php://output');

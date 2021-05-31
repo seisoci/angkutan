@@ -300,7 +300,7 @@ return [
         ],
         [
           'title' => 'Laporan Gaji Supir',
-          'page' => 'backend/reportsalaries'
+          'page' => 'backend/reportsalarydrivers'
         ],
         [
           'title' => 'Laporan Rekap Gaji Supir',
@@ -309,6 +309,10 @@ return [
         [
           'title' => 'Laporan Hutang Karyawaan',
           'page' => 'backend/reportkasbonemployees'
+        ],
+        [
+          'title' => 'Laporan Gaji Karyawaan',
+          'page' => 'backend/reportsalaryemployees'
         ],
         [
           'title' => 'Laporan Data Kendaraan',
