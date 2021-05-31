@@ -8,16 +8,14 @@ use App\Models\JobOrder;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yajra\DataTables\Facades\DataTables;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 
-class ReportJoborderController extends Controller
+class ReportJobOrderController extends Controller
 {
   use CarbonTrait;
 
@@ -46,7 +44,7 @@ class ReportJoborderController extends Controller
         ->when($costumer_id, function ($query, $costumer_id) {
           return $query->where('costumer_id', $costumer_id);
         })
-        ->whereNull('invoice_costumer_id')
+        ->where('status_payment', '0')
         ->where('status_cargo', 'selesai')
         ->orderBy('date_begin', 'asc');
 
@@ -74,7 +72,7 @@ class ReportJoborderController extends Controller
       ->when($costumer_id, function ($query, $costumer_id) {
         return $query->where('costumer_id', $costumer_id);
       })
-      ->whereNull('invoice_costumer_id')
+      ->where('status_payment', '0')
       ->where('status_cargo', 'selesai')
       ->orderBy('date_begin', 'asc')
       ->get();
@@ -264,7 +262,7 @@ class ReportJoborderController extends Controller
       ->when($costumer_id, function ($query, $costumer_id) {
         return $query->where('costumer_id', $costumer_id);
       })
-      ->whereNull('invoice_costumer_id')
+      ->where('status_payment', '0')
       ->where('status_cargo', 'selesai')
       ->orderBy('date_begin', 'asc')
       ->get();

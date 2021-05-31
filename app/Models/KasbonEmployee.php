@@ -36,6 +36,6 @@ class KasbonEmployee extends Model
 
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
-    return $date->format('Y-m-d');
+    return $date->format('Y-m-d H:i:s');
   }
 }

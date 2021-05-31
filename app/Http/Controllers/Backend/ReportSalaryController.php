@@ -22,10 +22,10 @@ class ReportSalaryController extends Controller
 
   public function index(Request $request)
   {
-    $config['page_title'] = "Laporan Rekap Gaji Supir";
-    $config['page_description'] = "Laporan Rekap Gaji Supir";
+    $config['page_title'] = "Laporan Gaji Supir";
+    $config['page_description'] = "Laporan Gaji Supir";
     $page_breadcrumbs = [
-      ['page' => '#', 'title' => "Laporan Rekap Gaji Supir"],
+      ['page' => '#', 'title' => "Laporan Gaji Supir"],
     ];
     $config['excel_url'] = 'reportsalaries/document?type=EXCEL';
     $config['pdf_url'] = 'reportsalaries/document?type=PDF';
@@ -131,60 +131,63 @@ class ReportSalaryController extends Controller
     ];
 
     $sheet->mergeCells('A1:C1');
-    $sheet->setCellValue('A1', 'Laporan Rekap Gaji Supir');
+    $sheet->setCellValue('A1', 'Laporan Gaji Supir');
     $sheet->mergeCells('A2:C2');
     $sheet->setCellValue('A2', 'Printed: ' . $this->dateTimeNow());
     $sheet->mergeCells('A3:C3');
     $sheet->setCellValue('A3', 'Priode: ' . (!empty($date) ? $date : 'All Date'));
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Supir: ' . (!empty($driver) ? $driver->name : 'ALL'));
-    $sheet->mergeCells('F1:H1');
-    $sheet->setCellValue('F1', $profile['name']);
-    $sheet->mergeCells('F2:H2');
-    $sheet->setCellValue('F2', $profile['address']);
-    $sheet->mergeCells('F3:H3');
-    $sheet->setCellValue('F3', 'Telp: ' . $profile['telp']);
-    $sheet->mergeCells('F4:H4');
-    $sheet->setCellValue('F4', 'Fax: ' . $profile['fax']);
+    $sheet->mergeCells('G1:I1');
+    $sheet->setCellValue('G1', $profile['name']);
+    $sheet->mergeCells('G2:I2');
+    $sheet->setCellValue('G2', $profile['address']);
+    $sheet->mergeCells('G3:I3');
+    $sheet->setCellValue('G3', 'Telp: ' . $profile['telp']);
+    $sheet->mergeCells('G4:I4');
+    $sheet->setCellValue('G4', 'Fax: ' . $profile['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
-    $sheet->getColumnDimension('B')->setWidth(40);
-    $sheet->getColumnDimension('C')->setWidth(15);
+    $sheet->getColumnDimension('B')->setWidth(20);
+    $sheet->getColumnDimension('C')->setWidth(40);
     $sheet->getColumnDimension('D')->setWidth(15);
     $sheet->getColumnDimension('E')->setWidth(15);
     $sheet->getColumnDimension('F')->setWidth(15);
     $sheet->getColumnDimension('G')->setWidth(15);
     $sheet->getColumnDimension('H')->setWidth(15);
+    $sheet->getColumnDimension('I')->setWidth(15);
 
     $sheet->getStyle('A6')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A6', 'No.');
-    $sheet->setCellValue('B6', 'Nama Pelanggan');
-    $sheet->setCellValue('C6', 'T. Muat');
-    $sheet->setCellValue('D6', 'Sub Total');
-    $sheet->setCellValue('E6', 'Biaya Operasional');
-    $sheet->setCellValue('F6', 'Spare Part');
-    $sheet->setCellValue('G6', 'Gaji Supir');
-    $sheet->setCellValue('H6', 'Sisa Bersih');
+    $sheet->setCellValue('B6', 'Nama Supir');
+    $sheet->setCellValue('C6', 'Nama Pelanggan');
+    $sheet->setCellValue('D6', 'T. Muat');
+    $sheet->setCellValue('E6', 'Sub Total (Inc. Tax, Fee)');
+    $sheet->setCellValue('F6', 'Biaya Operasional');
+    $sheet->setCellValue('G6', 'Spare Part');
+    $sheet->setCellValue('H6', 'Gaji Supir');
+    $sheet->setCellValue('I6', 'Sisa Bersih');
 
     $startCell = 6;
     $startCellFilter = 6;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')
       ->applyFromArray($borderTopBottom)
       ->applyFromArray($borderLeftRight);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderLeftRight);
+      $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderLeftRight);
       $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('center');
-      $sheet->getStyle('D' . $startCell . ':H' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('D' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->setCellValue('A' . $startCell, $no++);
-      $sheet->setCellValue('B' . $startCell, $item->costumer->name);
-      $sheet->setCellValue('C' . $startCell, $item->date_begin);
-      $sheet->setCellValue('D' . $startCell, $item->total_basic_price_after_thanks);
-      $sheet->setCellValue('E' . $startCell, $item->total_operational);
-      $sheet->setCellValue('F' . $startCell, $item->total_sparepart);
-      $sheet->setCellValue('G' . $startCell, $item->total_salary);
-      $sheet->setCellValue('H' . $startCell, '=D' . $startCell . '-E' . $startCell . '-F' . $startCell . '-G' . $startCell . '');
+      $sheet->setCellValue('B' . $startCell, $item->driver->name);
+      $sheet->setCellValue('C' . $startCell, $item->costumer->name);
+      $sheet->setCellValue('D' . $startCell, $item->date_begin);
+      $sheet->setCellValue('E' . $startCell, $item->total_basic_price_after_thanks);
+      $sheet->setCellValue('F' . $startCell, $item->total_operational);
+      $sheet->setCellValue('G' . $startCell, $item->total_sparepart);
+      $sheet->setCellValue('H' . $startCell, $item->total_salary);
+      $sheet->setCellValue('I' . $startCell, '=E' . $startCell . '-F' . $startCell . '-G' . $startCell . '-H' . $startCell . '');
     endforeach;
     $sheet->setAutoFilter('B' . $startCellFilter . ':F' . $startCell);
     $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderBottom);
@@ -192,19 +195,19 @@ class ReportSalaryController extends Controller
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderAll);
-    $sheet->getStyle('D' . $startCell . ':H' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderAll);
+    $sheet->getStyle('E' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total Rp.');
-    $sheet->mergeCells('A' . $startCell . ':C' . $startCell . '');
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell)->getFont()->setBold(true);
-    $sheet->setCellValue('D' . $startCell, '=SUM(D' . $startCellFilter . ':D' . $endForSum . ')');
+    $sheet->mergeCells('A' . $startCell . ':D' . $startCell . '');
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell)->getFont()->setBold(true);
     $sheet->setCellValue('E' . $startCell, '=SUM(E' . $startCellFilter . ':E' . $endForSum . ')');
     $sheet->setCellValue('F' . $startCell, '=SUM(F' . $startCellFilter . ':F' . $endForSum . ')');
     $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startCellFilter . ':G' . $endForSum . ')');
     $sheet->setCellValue('H' . $startCell, '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
+    $sheet->setCellValue('I' . $startCell, '=SUM(I' . $startCellFilter . ':I' . $endForSum . ')');
 
-    $filename = 'Laporan Rekap Gaji Supir ' . $this->dateTimeNow();
+    $filename = 'Laporan Gaji Supir ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
       $writer = new Xlsx($spreadsheet);
       header('Content-Type: application/vnd.ms-excel');
@@ -241,11 +244,11 @@ class ReportSalaryController extends Controller
       })
       ->get();
 
-    $config['page_title'] = "Laporan Rekap Gaji Supir";
-    $config['page_description'] = "Laporan Rekap Gaji Supir";
+    $config['page_title'] = "Laporan Gaji Supir";
+    $config['page_description'] = "Laporan Gaji Supir";
     $config['current_time'] = $this->dateTimeNow();
     $page_breadcrumbs = [
-      ['page' => '#', 'title' => "Laporan Rekap Gaji Supir"],
+      ['page' => '#', 'title' => "Laporan Gaji Supir"],
     ];
 
     $collection = Setting::all();

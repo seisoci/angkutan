@@ -3,61 +3,61 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Driver;
-use App\Models\Kasbon;
+use App\Models\Employee;
+use App\Models\KasbonEmployee;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yajra\DataTables\Facades\DataTables;
 
-class ReportKasbonDriverController extends Controller
+class ReportKasbonEmployeeController extends Controller
 {
   use CarbonTrait;
 
   public function index(Request $request)
   {
-    $config['page_title'] = "Laporan Data Kasbon Supir";
-    $config['page_description'] = "Laporan Data Kasbon Supir";
+    $config['page_title'] = "Laporan Data Kasbon Karyawaan";
+    $config['page_description'] = "Laporan Data Kasbon Karyawaan";
     $page_breadcrumbs = [
-      ['page' => '#', 'title' => "Laporan Data Kasbon Supir"],
+      ['page' => '#', 'title' => "Laporan Data Kasbon Karyawaan"],
     ];
-    $config['excel_url'] = 'reportkasbondrivers/document?type=EXCEL';
-    $config['pdf_url'] = 'reportkasbondrivers/document?type=PDF';
-    $config['print_url'] = 'reportkasbondrivers/print';
-    $driver_id = $request->driver_id;
+    $config['excel_url'] = 'reportkasbonemployees/document?type=EXCEL';
+    $config['pdf_url'] = 'reportkasbonemployees/document?type=PDF';
+    $config['print_url'] = 'reportkasbonemployees/print';
+    $employee_id = $request->employee_id;
     $status = $request->status;
     $date = $request->date;
 
     if ($request->ajax()) {
-      $data = Kasbon::join('drivers', 'kasbons.driver_id', '=', 'drivers.id')
-        ->select(['kasbons.*', 'drivers.name'])
+      $data = KasbonEmployee::join('employees', 'kasbon_employees.employee_id', '=', 'employees.id')
+        ->select(['kasbon_employees.*', 'employees.name'])
         ->when($status, function ($query, $status) {
           if ($status == 'none') {
-            return $query->where('kasbons.status', '=', '0');
+            return $query->where('kasbon_employees.status', '=', '0');
           } else {
-            return $query->where('kasbons.status', $status);
+            return $query->where('kasbon_employees.status', $status);
           }
         })
-        ->when($driver_id, function ($query, $driver_id) {
-          return $query->where('kasbons.driver_id', $driver_id);
+        ->when($employee_id, function ($query, $employee_id) {
+          return $query->where('kasbon_employees.employee_id', $employee_id);
         })
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $this->toDateServerStart($date_format[0]);
           $date_end = $this->toDateServerEnd($date_format[1]);
-          return $query->whereBetween('kasbons.created_at', [$date_begin, $date_end]);
+          return $query->whereBetween('kasbon_employees.created_at', [$date_begin, $date_end]);
         })
-        ->orderBy('kasbons.created_at', 'asc');
+        ->orderBy('kasbon_employees.created_at', 'asc');
 
       return DataTables::of($data)
         ->make(true);
     }
-    return view('backend.report.reportkasbondrivers.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.report.reportkasbonemployees.index', compact('config', 'page_breadcrumbs'));
   }
 
   public function document(Request $request)
@@ -68,10 +68,10 @@ class ReportKasbonDriverController extends Controller
     });
 
     $type = $request->type;
-    $driver_id = $request->driver_id;
+    $employee_id = $request->employee_id;
     $status = $request->status;
     $date = $request->date;
-    $driver = Driver::find($driver_id)->name ?? "All";
+    $employee = Driver::find($employee_id)->name ?? "All";
 
     if ($status == 'none') {
       $statusPembayaran = 'Unpiad';
@@ -81,25 +81,25 @@ class ReportKasbonDriverController extends Controller
       $statusPembayaran = "All";
     }
 
-    $data = Kasbon::join('drivers', 'kasbons.driver_id', '=', 'drivers.id')
-      ->select(['kasbons.*', 'drivers.id', 'drivers.name'])
+    $data = KasbonEmployee::join('employees', 'kasbon_employees.employee_id', '=', 'employees.id')
+      ->select(['kasbon_employees.*', 'employees.name'])
       ->when($status, function ($query, $status) {
         if ($status == 'none') {
-          return $query->where('kasbons.status', '=', '0');
+          return $query->where('kasbon_employees.status', '=', '0');
         } else {
-          return $query->where('kasbons.status', $status);
+          return $query->where('kasbon_employees.status', $status);
         }
       })
-      ->when($driver_id, function ($query, $driver_id) {
-        return $query->where('kasbons.driver_id', $driver_id);
+      ->when($employee_id, function ($query, $employee_id) {
+        return $query->where('kasbon_employees.employee_id', $employee_id);
       })
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $this->toDateServerStart($date_format[0]);
         $date_end = $this->toDateServerEnd($date_format[1]);
-        return $query->whereBetween('kasbons.created_at', [$date_begin, $date_end]);
+        return $query->whereBetween('kasbon_employees.created_at', [$date_begin, $date_end]);
       })
-      ->orderBy('kasbons.created_at', 'asc')
+      ->orderBy('kasbon_employees.created_at', 'asc')
       ->get();
 
     $spreadsheet = new Spreadsheet();
@@ -169,13 +169,13 @@ class ReportKasbonDriverController extends Controller
     ];
 
     $sheet->mergeCells('A1:C1');
-    $sheet->setCellValue('A1', 'Laporan Data Kasbon Supir');
+    $sheet->setCellValue('A1', 'Laporan Data Kasbon Karyawaan');
     $sheet->mergeCells('A2:C2');
     $sheet->setCellValue('A2', 'Printed: ' . $this->dateTimeNow());
     $sheet->mergeCells('A3:C3');
     $sheet->setCellValue('A3', 'Priode: ' . (!empty($date) ? $date : 'All Date'));
     $sheet->mergeCells('A4:C4');
-    $sheet->setCellValue('A4', 'Filter Nama Supir: ' . $driver);
+    $sheet->setCellValue('A4', 'Filter Nama Supir: ' . $employee);
     $sheet->mergeCells('A5:C5');
     $sheet->setCellValue('A5', 'Status: ' . $statusPembayaran);
     $sheet->mergeCells('E1:F1');
@@ -222,7 +222,7 @@ class ReportKasbonDriverController extends Controller
     $sheet->setAutoFilter('B' . $startCellFilter . ':F' . $startCell);
     $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderBottom);
 
-    $filename = 'Laporan Data Kasbon Supir ' . $this->dateTimeNow();
+    $filename = 'Laporan Data Kasbon Karyawaan ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
       $writer = new Xlsx($spreadsheet);
       header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -242,8 +242,8 @@ class ReportKasbonDriverController extends Controller
 
   public function print(Request $request)
   {
-    $config['page_title'] = "Laporan Data Kasbon Supir";
-    $config['page_description'] = "Laporan Data Kasbon Supir";
+    $config['page_title'] = "Laporan Data Kasbon Karyawaan";
+    $config['page_description'] = "Laporan Data Kasbon Karyawaan";
     $config['current_time'] = $this->dateTimeNow();
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "Laporan Data Pelanggan"],
@@ -254,10 +254,10 @@ class ReportKasbonDriverController extends Controller
       return [$item['name'] => $item['value']];
     });
 
-    $driver_id = $request->driver_id;
+    $employee_id = $request->employee_id;
     $status = $request->status;
     $date = $request->date;
-    $driver = Driver::find($driver_id)->name ?? "All";
+    $employee = Employee::find($employee_id)->name ?? "All";
     if ($status == 'none') {
       $statusPembayaran = 'Unpiad';
     } elseif ($status == "1") {
@@ -266,27 +266,26 @@ class ReportKasbonDriverController extends Controller
       $statusPembayaran = "All";
     }
 
-    $data = Kasbon::join('drivers', 'kasbons.driver_id', '=', 'drivers.id')
-      ->select(['kasbons.*', 'drivers.id', 'drivers.name'])
+    $data = KasbonEmployee::join('employees', 'kasbon_employees.employee_id', '=', 'employees.id')
+      ->select(['kasbon_employees.*', 'employees.name'])
       ->when($status, function ($query, $status) {
         if ($status == 'none') {
-          return $query->where('kasbons.status', '=', '0');
+          return $query->where('kasbon_employees.status', '=', '0');
         } else {
-          return $query->where('kasbons.status', $status);
+          return $query->where('kasbon_employees.status', $status);
         }
       })
-      ->when($driver_id, function ($query, $driver_id) {
-        return $query->where('kasbons.driver_id', $driver_id);
+      ->when($employee_id, function ($query, $employee_id) {
+        return $query->where('kasbon_employees.employee_id', $employee_id);
       })
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $this->toDateServerStart($date_format[0]);
         $date_end = $this->toDateServerEnd($date_format[1]);
-        return $query->whereBetween('kasbons.created_at', [$date_begin, $date_end]);
+        return $query->whereBetween('kasbon_employees.created_at', [$date_begin, $date_end]);
       })
-      ->orderBy('kasbons.created_at', 'asc')
+      ->orderBy('kasbon_employees.created_at', 'asc')
       ->get();
-    return view('backend.report.reportkasbondrivers.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'driver', 'statusPembayaran',));
+    return view('backend.report.reportkasbonemployees.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'employee', 'statusPembayaran',));
   }
-
 }

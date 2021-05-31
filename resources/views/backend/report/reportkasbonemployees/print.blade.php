@@ -60,7 +60,7 @@
 <body>
 <div class="row justify-content-center py-8 px-8 px-md-0">
   <div class="col-md-11">
-    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN KASBON SUPIR</u></h2>
+    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN KASBON KARYAWAAN</u></h2>
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
@@ -76,7 +76,7 @@
         <td scope="col" class="text-left" style="width:18%">{{ $profile['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Filter Nama Supir:  {{ $driver }}
+        <td scope="col" class="font-weight-normal" style="width:50%">Filter Nama Karyawaan:  {{ $employee }}
         </td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
@@ -94,7 +94,7 @@
       <thead>
       <tr>
         <th scope="col">#</th>
-        <th scope="col">Nama Supir</th>
+        <th scope="col">Nama Karyawaan</th>
         <th scope="col" class="text-right">Nominal</th>
         <th scope="col">Status</th>
         <th scope="col">Keterangan</th>

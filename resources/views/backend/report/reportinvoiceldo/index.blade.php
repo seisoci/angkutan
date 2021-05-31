@@ -3,7 +3,7 @@
 
 {{-- Content --}}
 @section('content')
-
+  {{-- Dashboard 1 --}}
   <!--begin::Card-->
   <div class="card card-custom">
     <div class="card-header flex-wrap py-3">
@@ -70,6 +70,7 @@
         </div>
       </div>
     </div>
+
     <div class="card-body">
       <div class="mb-10">
         <div class="row align-items-center">
@@ -77,8 +78,11 @@
             <div class="row align-items-center">
               <div class="col-md-3 my-md-0">
                 <div class="form-group">
-                  <label>Nama Supir:</label>
-                  <select class="form-control" id="select2Driver">
+                  <label>Status Pembayaran:</label>
+                  <select class="form-control" id="statusPayment">
+                    <option value="">Pilih Status</option>
+                    <option value="unpaid">Unpaid</option>
+                    <option value="paid">Paid</option>
                   </select>
                 </div>
               </div>
@@ -99,36 +103,29 @@
       </div>
 
       <!--begin: Datatable-->
-      <table class="table table-hover" id="Datatable">
+      <table class="table table-bordered table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>Nama Supir</th>
-          <th>Nama Pelanggan</th>
-          <th>T. Muat</th>
-          <th>Sub Total (Inc. Tax, Fee)</th>
-          <th>Biaya Operasional</th>
-          <th>Spare Part</th>
-          <th>Gaji Supir</th>
-          <th>Sisa Bersih</th>
+          <th></th>
+          <th>Invoice Number</th>
+          <th>Tgl Invoice</th>
+          <th>Tgl Jth. Tempo Invoice</th>
+          <th>Nama LDO</th>
+          <th>Total Tagihan</th>
+          <th>Total Pembayaran</th>
+          <th>Potongan</th>
+          <th>Sisa Tagihan</th>
+          <th>Created At</th>
         </tr>
         </thead>
-        <tfoot>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        </tfoot>
       </table>
     </div>
   </div>
-  {{-- Modal --}}
 @endsection
+
 {{-- Styles Section --}}
 @section('styles')
+  <link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
 
@@ -136,14 +133,32 @@
 @section('scripts')
   {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
-  {{-- page scripts --}}
+  <script id="details-template" type="text/x-handlebars-template">
+    @verbatim
+    <table class="table table-bordered " id="posts-{{id}}">
+      <thead>
+      <tr>
+        <th>No. Surat Jalan</th>
+        <th>Tgl Muat</th>
+        <th>No. Polisi</th>
+        <th>Nama Supir</th>
+        <th>Rute dari</th>
+        <th>Rute Tujuan</th>
+        <th>Muatan</th>
+        <th>Fee Thanks</th>
+        <th>Total Tagihan (Inc. Tax)</th>
+      </tr>
+      </thead>
+    </table>
+    @endverbatim
+  </script>
   <script type="text/javascript">
-    $(document).ready(function () {
+    $(function () {
       $('#btn_excel').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
           date: $("input[name=date]").val(),
+          status_payment: $('#statusPayment').find(':selected').val() || '',
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
@@ -151,8 +166,8 @@
       $('#btn_pdf').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
           date: $("input[name=date]").val(),
+          status_payment: $('#statusPayment').find(':selected').val() || '',
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
@@ -160,158 +175,66 @@
       $('#btn_print').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
           date: $("input[name=date]").val(),
+          status_payment: $('#statusPayment').find(':selected').val() || '',
         });
-        window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
+        window.open('{{ $config['print_url'] }}?' + params.toString());
       });
 
+      let template = Handlebars.compile($("#details-template").html());
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[0, 'asc']],
+        orderable: false,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        pageLength: 25,
+        pageLength: 10,
         ajax: {
-          url: "{{ route('backend.reportsalaries.index') }}",
+          url: "{{ route('backend.reportinvoiceldo.index') }}",
           data: function (d) {
-            d.driver_id = $('#select2Driver').find(':selected').val();
+            d.status_payment = $('#statusPayment').find(':selected').val();
             d.date = $("input[name=date]").val();
           }
         },
         columns: [
-          {data: 'driver.name', name: 'driver.name'},
-          {data: 'costumer.name', name: 'costumer.name'},
-          {data: 'date_begin', name: 'date_begin'},
           {
-            data: 'total_basic_price_after_thanks', name: 'total_basic_price_after_thanks',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
+            "className": 'details-control',
+            "orderable": false,
+            "searchable": false,
+            "data": null,
+            "defaultContent": ''
+          },
+          {data: 'num_invoice', name: 'num_invoice', orderable: false},
+          {data: 'invoice_date', name: 'invoice_date'},
+          {data: 'due_date', name: 'due_date'},
+          {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},
+          {
+            data: 'total_bill',
+            name: 'total_bill',
+            render: $.fn.dataTable.render.number('.', '.', 2),
             className: 'dt-right'
           },
           {
-            data: 'total_operational', name: 'total_operational',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
+            data: 'total_payment',
+            name: 'total_payment',
+            render: $.fn.dataTable.render.number('.', '.', 2),
             className: 'dt-right'
           },
           {
-            data: 'total_sparepart', name: 'total_sparepart',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
+            data: 'total_cut',
+            name: 'total_cut',
+            render: $.fn.dataTable.render.number('.', '.', 2),
             className: 'dt-right'
           },
           {
-            data: 'total_salary', name: 'total_salary',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
+            data: 'rest_payment',
+            name: 'rest_payment',
+            render: $.fn.dataTable.render.number('.', '.', 2),
             className: 'dt-right'
           },
-          {
-            data: 'total_clean_summary', name: 'total_clean_summary',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
+          {data: 'created_at', name: 'created_at'},
         ],
-        footerCallback: function (row, data, start, end, display) {
-          let api = this.api();
-          let intVal = function (i) {
-            return typeof i === 'string' ?
-              i.replace(/[\$,]/g, '') * 1 :
-              typeof i === 'number' ?
-                i : 0;
-          };
-
-          let totalBasic = api
-            .column(3)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalOperatinal = api
-            .column(4)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalSparepart = api
-            .column(5)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalSalary = api
-            .column(6)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalClean = api
-            .column(7)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          $(api.column(2).footer()).html('Total');
-          $(api.column(3).footer()).html(format(totalBasic));
-          $(api.column(4).footer()).html(format(totalOperatinal));
-          $(api.column(5).footer()).html(format(totalSparepart));
-          $(api.column(6).footer()).html(format(totalSalary));
-          $(api.column(7).footer()).html(format(totalClean));
-
-        },
-      });
-
-      let format = function (num) {
-        let str = num.toString().replace("", ""), parts = false, output = [], i = 1, formatted = null;
-        if (str.indexOf(".") > 0) {
-          parts = str.split(".");
-          str = parts[0];
-        }
-        str = str.split("").reverse();
-        for (let j = 0, len = str.length; j < len; j++) {
-          if (str[j] !== ",") {
-            output.push(str[j]);
-            if (i % 3 === 0 && j < (len - 1)) {
-              output.push(",");
-            }
-            i++;
-          }
-        }
-        formatted = output.reverse().join("");
-        return ("" + formatted + ((parts) ? "." + parts[1].substr(0, 2) : ".00"));
-      };
-
-      $("#select2Driver").select2({
-        placeholder: "Search Supir",
-        allowClear: true,
-        ajax: {
-          url: "{{ route('backend.drivers.select2self') }}",
-          dataType: "json",
-          delay: 250,
-          cache: true,
-          data: function (e) {
-            return {
-              q: e.term || '',
-              page: e.page || 1
-            }
-          },
-        },
-      }).on('change', function (e) {
-        dataTable.draw();
       });
 
       $('#dateRangePicker').daterangepicker({
@@ -326,6 +249,60 @@
         dataTable.draw();
       });
 
+      $('#statusPayment').on('change', function () {
+        dataTable.draw();
+      });
+
+      $('#Datatable tbody').on('click', 'td.details-control', function () {
+        let tr = $(this).closest('tr');
+        let row = dataTable.row(tr);
+        let tableId = 'posts-' + row.data().id;
+
+        if (row.child.isShown()) {
+          row.child.hide();
+          tr.removeClass('shown');
+        } else {
+          row.child(template(row.data())).show();
+          initTable(tableId, row.data());
+          tr.addClass('shown');
+          tr.next().find('td').addClass('no-padding bg-gray');
+        }
+      });
+
+      function initTable(tableId, data) {
+        $('#' + tableId).DataTable({
+          processing: true,
+          serverSide: true,
+          orderable: false,
+          ajax: data.details_url,
+          columns: [
+            {data: 'num_prefix', name: 'num_bill'},
+            {data: 'date_begin', name: 'date_begin'},
+            {data: 'transport.num_pol', name: 'transport.num_pol'},
+            {data: 'driver.name', name: 'driver.name'},
+            {data: 'routefrom.name', name: 'routefrom.name'},
+            {data: 'routeto.name', name: 'routeto.name'},
+            {data: 'cargo.name', name: 'cargo.name'},
+            {
+              data: 'fee_thanks',
+              name: 'fee_thanks',
+              render: $.fn.dataTable.render.number('.', '.', 2),
+              orderable: false,
+              searchable: false,
+              className: 'dt-right',
+              defaultContent: 0
+            },
+            {
+              data: 'total_basic_price_after_tax',
+              name: 'total_basic_price_after_tax',
+              render: $.fn.dataTable.render.number('.', '.', 2),
+              orderable: false,
+              searchable: false,
+              className: 'dt-right'
+            }
+          ]
+        })
+      }
     });
   </script>
 @endsection

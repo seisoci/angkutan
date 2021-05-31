@@ -54,12 +54,16 @@ use App\Http\Controllers\Backend\ReportCostumerController as BackendReportCostum
 use App\Http\Controllers\Backend\ReportDriverController as BackendReportDriverController;
 use App\Http\Controllers\Backend\ReportKasbonDriverController as BackendReportKasbonDriverController;
 use App\Http\Controllers\Backend\ReportTransportController as BackendReportTransportController;
-use App\Http\Controllers\Backend\ReportJoborderController as BackendReportJoborderController;
+use App\Http\Controllers\Backend\ReportJobOrderController as BackendReportJoborderController;
 use App\Http\Controllers\Backend\ReportRecapJobOrderController as BackendReportRecapJobOrderController;
 use App\Http\Controllers\Backend\ReportRecapSalaryController as BackendReportRecapSalaryController;
 use App\Http\Controllers\Backend\ReportSalaryController as BackendReportSalaryController;
+use App\Http\Controllers\Backend\ReportInvoiceCostumerController as BackendReportInvoiceCostumer;
+use App\Http\Controllers\Backend\ReportInvoiceLdoController as BackendReportInvoiceLdoController;
+use App\Http\Controllers\Backend\ReportKasbonEmployeeController as BackendReportKasbonEmployeeController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -77,7 +81,7 @@ Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/quick-search', [PagesController::class, 'quicksearch'])->name('quick-search');
 Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(function () {
   Route::group(['middleware' => ['role:super-admin|admin|operasional|akunting|sparepart']], function () {
-    Route::post('resetpassword', [BackendUsersController::class,'resetpassword'])->name('users.resetpassword');
+    Route::post('resetpassword', [BackendUsersController::class, 'resetpassword'])->name('users.resetpassword');
     Route::post('changepassword', [BackendUsersController::class, 'changepassword'])->name('users.changepassword');
     Route::resource('users', BackendUsersController::class)->except('show');
     Route::resource('roles', BackendRolesController::class)->except(['create', 'show', 'destroy']);
@@ -123,7 +127,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportsparepart/print', [BackendSparepartController::class, 'print']);
     Route::get('reportsparepart/document', [BackendSparepartController::class, 'document']);
     Route::get('reportcostumers/document', [BackendReportCostumerController::class, 'document']);
-    Route::get('reportcostumers/print', [BackendReportCostumerController::class, 'print']);    Route::get('reportcostumers/document', [BackendReportCostumerController::class, 'document']);
+    Route::get('reportcostumers/print', [BackendReportCostumerController::class, 'print']);
+    Route::get('reportcostumers/document', [BackendReportCostumerController::class, 'document']);
     Route::get('reportdrivers/document', [BackendReportDriverController::class, 'document']);
     Route::get('reportdrivers/print', [BackendReportDriverController::class, 'print']);
     Route::get('reportkasbondrivers/print', [BackendReportKasbonDriverController::class, 'print']);
@@ -138,6 +143,12 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportsalaries/document', [BackendReportSalaryController::class, 'document']);
     Route::get('reportjoborders/print', [BackendReportJoborderController::class, 'print']);
     Route::get('reportjoborders/document', [BackendReportJoborderController::class, 'document']);
+    Route::get('reportinvoicecostumers/print', [BackendReportInvoiceCostumer::class, 'print']);
+    Route::get('reportinvoicecostumers/document', [BackendReportInvoiceCostumer::class, 'document']);
+    Route::get('reportinvoiceldo/print', [BackendReportInvoiceLdoController::class, 'print']);
+    Route::get('reportinvoiceldo/document', [BackendReportInvoiceLdoController::class, 'document']);
+    Route::get('reportkasbonemployees/print', [BackendReportKasbonEmployeeController::class, 'print']);
+    Route::get('reportkasbonemployees/document', [BackendReportKasbonEmployeeController::class, 'document']);
 
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
@@ -152,9 +163,11 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('employeessalary/datatabledetail/{id}', [BackendEmployeeSalaryController::class, 'datatabledetail'])->name('employeessalary.datatabledetail');
     Route::get('monthlysalarydetail/datatabledetail/{id}', [BackendMonthlySalaryDetailController::class, 'datatabledetail'])->name('monthlysalarydetail.datatabledetail');
     Route::get('invoicekasbonemployees/datatabledetail/{id}', [BackendInvoiceKasbonEmployeeController::class, 'datatabledetail'])->name('invoicekasbonemployees.datatabledetail');
+    Route::get('reportinvoicecostumers/datatabledetail/{id}', [BackendReportInvoiceCostumer::class, 'datatabledetail'])->name('reportinvoicecostumers.datatabledetail');
+    Route::get('reportinvoiceldo/datatabledetail/{id}', [BackendReportInvoiceLdoController::class, 'datatabledetail'])->name('reportinvoiceldo.datatabledetail');
 
     //Route Free
-    Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function() {
+    Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function () {
       Route::get('{id}/create_driver/', [BackendAnotherExpeditionController::class, 'create_driver'])->name('create_driver');
       Route::get('{id}/create_transport/', [BackendAnotherExpeditionController::class, 'create_transport'])->name('create_transport');
       Route::get('{id}/datatable_transport/', [BackendAnotherExpeditionController::class, 'datatable_transport'])->name('datatable_transport');
@@ -170,7 +183,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::post('invoicecostumers/findbypk', [BackendInvoiceCostumerController::class, 'findbypk'])->name('invoicecostumers.findbypk');
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
     Route::get('recapitulation/document', [BackendRecapitulationController::class, 'document'])->name('recapitulation.document');
-      Route::get('recapitulation/print', [BackendRecapitulationController::class, 'print'])->name('recapitulation.print');
+    Route::get('recapitulation/print', [BackendRecapitulationController::class, 'print'])->name('recapitulation.print');
     Route::post('invoicekasbonemployees/findbypk', [BackendInvoiceKasbonEmployeeController::class, 'findbypk'])->name('invoicekasbonemployees.findbypk');
 
     //Master Operationals
@@ -198,7 +211,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('employeesmaster', BackendEmployeeMasterController::class)->except(['create', 'edit', 'show']);
     Route::resource('employees', BackendEmployeeController::class);
     Route::resource('employeessalary', BackendEmployeeSalaryController::class);
-    Route::prefix('employeessalary')->name('employeessalary.')->group(function() {
+    Route::prefix('employeessalary')->name('employeessalary.')->group(function () {
       Route::get('/', [BackendEmployeeSalaryController::class, 'index'])->name('index');
       Route::get('{id}/edit/', [BackendEmployeeSalaryController::class, 'edit'])->name('edit');
       Route::put('{id}', [BackendEmployeeSalaryController::class, 'put'])->name('put');
@@ -206,7 +219,7 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
       Route::get('{id}/fetchdata/', [BackendEmployeeSalaryController::class, 'fetchdata'])->name('fetchdata');
     });
     Route::resource('monthlymaster', BackendMonthlySalaryController::class);
-    Route::prefix('monthlysalarydetail')->name('monthlysalarydetail.')->group(function() {
+    Route::prefix('monthlysalarydetail')->name('monthlysalarydetail.')->group(function () {
       Route::get('{id}', [BackendMonthlySalaryDetailController::class, 'index'])->name('index');
       Route::get('{id}/detail', [BackendMonthlySalaryDetailController::class, 'show'])->name('show');
       Route::put('{id}', [BackendMonthlySalaryDetailController::class, 'update'])->name('update');
@@ -253,6 +266,9 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportrecapjoborders', [BackendReportRecapJobOrderController::class, 'index'])->name('reportrecapjoborders.index');
     Route::get('reportrecapsalaries', [BackendReportRecapSalaryController::class, 'index'])->name('reportrecapsalaries.index');
     Route::get('reportsalaries', [BackendReportSalaryController::class, 'index'])->name('reportsalaries.index');
+    Route::get('reportinvoicecostumers', [BackendReportInvoiceCostumer::class, 'index'])->name('reportinvoicecostumers.index');
+    Route::get('reportinvoiceldo', [BackendReportInvoiceLdoController::class, 'index'])->name('reportinvoiceldo.index');
+    Route::get('reportkasbonemployees', [BackendReportKasbonEmployeeController::class, 'index'])->name('reportkasbonemployees.index');
 
 
   });

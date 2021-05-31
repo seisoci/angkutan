@@ -93,9 +93,10 @@
       <thead>
       <tr>
         <th scope="col">#</th>
+        <th>Nama Supir</th>
         <th>Nama Pelanggan</th>
         <th>T. Muat</th>
-        <th>Sub Total</th>
+        <th>Sub Total (Inc. Tax, Fee)</th>
         <th>Biaya Operasional</th>
         <th>Spare Part</th>
         <th>Gaji Supir</th>
@@ -106,6 +107,7 @@
       @foreach ($data as $item)
         <tr>
           <td>{{ $loop->iteration }}</td>
+          <td>{{ $item->driver->name }}</td>
           <td>{{ $item->costumer->name }}</td>
           <td>{{ $item->date_begin }}</td>
           <td class="text-right">{{ number_format($item->total_basic_price_after_thanks, 2, ',', '.') }}</td>
@@ -117,7 +119,7 @@
       @endforeach
       </tbody>
       <tfoot>
-      <td colspan="3" class="text-right">Total:</td>
+      <td colspan="4" class="text-right">Total:</td>
       <td class="text-right">{{ number_format($data->sum('total_basic_price_after_thanks'), 2, ',', '.') }}</td>
       <td class="text-right">{{ number_format($data->sum('total_operational'), 2, ',', '.') }}</td>
       <td class="text-right">{{ number_format($data->sum('total_sparepart'), 2, ',', '.') }}</td>

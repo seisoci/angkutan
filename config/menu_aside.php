@@ -303,16 +303,32 @@ return [
           'page' => 'backend/reportsalaries'
         ],
         [
+          'title' => 'Laporan Rekap Gaji Supir',
+          'page' => 'backend/reportrecapsalaries'
+        ],
+        [
+          'title' => 'Laporan Hutang Karyawaan',
+          'page' => 'backend/reportkasbonemployees'
+        ],
+        [
           'title' => 'Laporan Data Kendaraan',
           'page' => 'backend/reporttransports'
         ],
         [
           'title' => 'Laporan Tagihan Job Order',
-          'page' => 'backend/reportrecapjoborders'
+          'page' => 'backend/reportjoborders'
         ],
         [
           'title' => 'Laporan Rekap Tagihan Job Order',
           'page' => 'backend/reportrecapjoborders'
+        ],
+        [
+          'title' => 'Laporan Invoice Costumer & Fee',
+          'page' => 'backend/reportinvoicecostumers'
+        ],
+        [
+          'title' => 'Laporan Invoice LDO',
+          'page' => 'backend/reportinvoiceldo'
         ],
 
       ]

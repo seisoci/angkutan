@@ -22,6 +22,9 @@ class InvoiceCostumerController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "List Invoice Pelanggan"],
     ];
+    $config['excel_url'] = 'reportinvoicecostumers/document?type=EXCEL';
+    $config['pdf_url'] = 'reportinvoicecostumers/document?type=PDF';
+    $config['print_url'] = 'reportinvoicecostumers/print';
     if ($request->ajax()) {
       $data = InvoiceCostumer::with(['costumer:id,name']);
       return DataTables::of($data)

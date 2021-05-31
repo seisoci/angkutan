@@ -102,9 +102,8 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>Nama Supir</th>
           <th>Nama Pelanggan</th>
-          <th>T. Muat</th>
+          <th>Jml</th>
           <th>Sub Total (Inc. Tax, Fee)</th>
           <th>Biaya Operasional</th>
           <th>Spare Part</th>
@@ -113,7 +112,6 @@
         </tr>
         </thead>
         <tfoot>
-        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -147,7 +145,6 @@
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
-
       $('#btn_pdf').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
@@ -156,7 +153,6 @@
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
-
       $('#btn_print').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
@@ -171,52 +167,41 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[0, 'asc']],
+        orderable: false,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
-          url: "{{ route('backend.reportsalaries.index') }}",
+          url: "{{ route('backend.reportrecapsalaries.index') }}",
           data: function (d) {
             d.driver_id = $('#select2Driver').find(':selected').val();
             d.date = $("input[name=date]").val();
           }
         },
         columns: [
-          {data: 'driver.name', name: 'driver.name'},
-          {data: 'costumer.name', name: 'costumer.name'},
-          {data: 'date_begin', name: 'date_begin'},
+          {data: 'costumer_name', name: 'costumer_name'},
+          {data: 'report_qty', name: 'report_qty'},
           {
-            data: 'total_basic_price_after_thanks', name: 'total_basic_price_after_thanks',
-            orderable: false,
-            searchable: false,
+            data: 'report_basic_price_after_tax', name: 'report_basic_price_after_tax',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
-            data: 'total_operational', name: 'total_operational',
-            orderable: false,
-            searchable: false,
+            data: 'report_operational', name: 'report_operational',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
-            data: 'total_sparepart', name: 'total_sparepart',
-            orderable: false,
-            searchable: false,
+            data: 'report_total_sparepart', name: 'report_total_sparepart',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
-            data: 'total_salary', name: 'total_salary',
-            orderable: false,
-            searchable: false,
+            data: 'report_salary', name: 'report_salary',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
-            data: 'total_clean_summary', name: 'total_clean_summary',
-            orderable: false,
-            searchable: false,
+            data: 'total_netto', name: 'total_netto',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
@@ -231,46 +216,46 @@
           };
 
           let totalBasic = api
-            .column(3)
+            .column(2)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
           let totalOperatinal = api
-            .column(4)
+            .column(3)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
           let totalSparepart = api
-            .column(5)
+            .column(4)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
           let totalSalary = api
-            .column(6)
+            .column(5)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
           let totalClean = api
-            .column(7)
+            .column(6)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
-          $(api.column(2).footer()).html('Total');
-          $(api.column(3).footer()).html(format(totalBasic));
-          $(api.column(4).footer()).html(format(totalOperatinal));
-          $(api.column(5).footer()).html(format(totalSparepart));
-          $(api.column(6).footer()).html(format(totalSalary));
-          $(api.column(7).footer()).html(format(totalClean));
+          $(api.column(1).footer()).html('Total');
+          $(api.column(2).footer()).html(format(totalBasic));
+          $(api.column(3).footer()).html(format(totalOperatinal));
+          $(api.column(4).footer()).html(format(totalSparepart));
+          $(api.column(5).footer()).html(format(totalSalary));
+          $(api.column(6).footer()).html(format(totalClean));
 
         },
       });
