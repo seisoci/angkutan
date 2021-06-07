@@ -26,7 +26,7 @@ class Kasbon extends Model
     'memo'
   ];
 
-  public function items(){
+  public function driver(){
     return $this->belongsTo(Driver::class, 'driver_id');
   }
 

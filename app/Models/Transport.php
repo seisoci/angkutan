@@ -37,6 +37,6 @@ class Transport extends Model
   }
 
   public function anotherexpedition(){
-    return $this->hasMany(AnotherExpedition::class, 'another_expedition_id');
+    return $this->belongsTo(AnotherExpedition::class, 'another_expedition_id');
   }
 }

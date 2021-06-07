@@ -111,36 +111,6 @@
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Tgl Berlaku KIR</label>
-                <div class="input-group date">
-                  <input type="text" name="expired_kir" class="form-control" readonly="readonly"
-                         placeholder="Tgl Berlaku KIR" />
-                  <div class="input-group-append">
-                    <span class="input-group-text">
-                      <i class="la la-calendar-check-o"></i>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Tgl Berlaku STNK</label>
-                <div class="input-group date">
-                  <input type="text" name="expired_stnk" class="form-control" readonly="readonly"
-                         placeholder="Tgl Berlaku STNK" />
-                  <div class="input-group-append">
-                    <span class="input-group-text">
-                      <i class="la la-calendar-check-o"></i>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="form-group">
             <label>Keterangan</label>
             <textarea name="description" rows="5" class="form-control form-control"

@@ -59,7 +59,7 @@ class InvoiceReturPurchaseController extends Controller
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
-        'note_date'             => 'required|date_format:Y-m-d',
+        'invoice_date'             => 'required|date_format:Y-m-d',
         'supplier_sparepart_id' => 'required|integer',
         'prefix'                => 'required|integer',
         'items.sparepart_id'    => 'required|array',
@@ -85,7 +85,7 @@ class InvoiceReturPurchaseController extends Controller
             'supplier_sparepart_id'        => $request->input('supplier_sparepart_id'),
             'prefix'        => $prefix->name,
             'num_bill'      => $request->input('num_bill'),
-            'note_date'     => $request->note_date,
+            'invoice_date'     => $request->input('invoice_date'),
             'total_payment' => $totalPayment,
           ]);
 
@@ -93,6 +93,7 @@ class InvoiceReturPurchaseController extends Controller
             $data[] = [
                 'invoice_retur_purchase_id'   => $invoice->id,
                 'sparepart_id'          => $items['sparepart_id'][$key],
+                'supplier_sparepart_id' => $request->input('supplier_sparepart_id'),
                 'qty'                   => $items['qty'][$key],
                 'price'                 => $items['price'][$key],
             ];
@@ -106,7 +107,7 @@ class InvoiceReturPurchaseController extends Controller
           endforeach;
 
           ReturPurchase::insert($data);
-//          DB::commit();
+          DB::commit();
 
           $response = response()->json([
             'status'    => 'success',

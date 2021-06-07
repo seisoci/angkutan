@@ -15,11 +15,6 @@ use Validator;
 
 class PurchaseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
       $config['page_title']       ="Purchase Order";
@@ -29,12 +24,6 @@ class PurchaseController extends Controller
       return view('backend.sparepart.purchases.index', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
@@ -95,13 +84,14 @@ class PurchaseController extends Controller
           ]);
 
           foreach($items['sparepart_id'] as $key => $item):
-            $data[] = [
+            $data= [
                 'invoice_purchase_id'   => $invoice->id,
                 'supplier_sparepart_id' => $request->supplier_sparepart_id,
                 'sparepart_id'          => $items['sparepart_id'][$key],
                 'qty'                   => $items['qty'][$key],
                 'price'                 => $items['price'][$key],
             ];
+            Purchase::create($data);
             $stockSummary = Stock::firstOrCreate(
                 ['sparepart_id' => $items['sparepart_id'][$key] ],
                 ['qty' => $items['qty'][$key],]
@@ -119,7 +109,6 @@ class PurchaseController extends Controller
             ];
           endforeach;
 
-          Purchase::insert($data);
           count($dataPayment) > 0 ? PurchasePayment::insert($dataPayment) : NULL;
           DB::commit();
 

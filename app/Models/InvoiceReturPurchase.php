@@ -23,7 +23,7 @@ class InvoiceReturPurchase extends Model
     'prefix',
     'num_bill',
     'supplier_sparepart_id',
-    'note_date',
+    'invoice_date',
     'total_payment',
   ];
 

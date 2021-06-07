@@ -68,7 +68,7 @@
             <td scope="col" class="text-left" style="width:10%"></td>
             <td scope="col" class="text-right" style="width:30%">Tanggal Nota</td>
             <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:8%"> {{ $data->note_date }}</td>
+            <td scope="col" class="text-left" style="width:8%"> {{ $data->invoice_date }}</td>
           </tr>
           <tr>
             <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>

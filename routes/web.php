@@ -62,6 +62,11 @@ use App\Http\Controllers\Backend\ReportInvoiceCostumerController as BackendRepor
 use App\Http\Controllers\Backend\ReportInvoiceLdoController as BackendReportInvoiceLdoController;
 use App\Http\Controllers\Backend\ReportKasbonEmployeeController as BackendReportKasbonEmployeeController;
 use App\Http\Controllers\Backend\ReportSalaryEmployeesController as BackendReportSalaryEmployeesController;
+use App\Http\Controllers\Backend\ReportPurchaseOrderController as BackendReportPurchaseOrderController;
+use App\Http\Controllers\Backend\ReportRecapPurchaseOrderController as BackendReportRecapPurchaseOrderController;
+use App\Http\Controllers\Backend\ReportReturPurchaseController as BackendReportReturPurchaseController;
+use App\Http\Controllers\Backend\ReportRecapReturPurchaseController as ReportRecapReturPurchaseController;
+use App\Http\Controllers\Backend\ReportUsageItemsController as BackendReportUsageItemsController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -152,6 +157,16 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportkasbonemployees/document', [BackendReportKasbonEmployeeController::class, 'document']);
     Route::get('reportsalaryemployees/print', [BackendReportSalaryEmployeesController::class, 'print']);
     Route::get('reportsalaryemployees/document', [BackendReportSalaryEmployeesController::class, 'document']);
+    Route::get('reportpurchaseorders/print', [BackendReportPurchaseOrderController::class, 'print']);
+    Route::get('reportpurchaseorders/document', [BackendReportPurchaseOrderController::class, 'document']);
+    Route::get('reportrecappurchaseorders/print', [BackendReportRecapPurchaseOrderController::class, 'print']);
+    Route::get('reportrecappurchaseorders/document', [BackendReportRecapPurchaseOrderController::class, 'document']);
+    Route::get('reportreturpurchases/print', [BackendReportReturPurchaseController::class, 'print']);
+    Route::get('reportreturpurchases/document', [BackendReportReturPurchaseController::class, 'document']);
+    Route::get('reportrecapreturpurchases/print', [ReportRecapReturPurchaseController::class, 'print']);
+    Route::get('reportrecapreturpurchases/document', [ReportRecapReturPurchaseController::class, 'document']);
+    Route::get('reportusageitems/print', [ReportRecapReturPurchaseController::class, 'print']);
+    Route::get('reportusageitems/document', [ReportRecapReturPurchaseController::class, 'document']);
 
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
@@ -273,7 +288,11 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportinvoiceldo', [BackendReportInvoiceLdoController::class, 'index'])->name('reportinvoiceldo.index');
     Route::get('reportkasbonemployees', [BackendReportKasbonEmployeeController::class, 'index'])->name('reportkasbonemployees.index');
     Route::get('reportsalaryemployees', [BackendReportSalaryEmployeesController::class, 'index'])->name('reportsalaryemployees.index');
-
+    Route::get('reportpurchaseorders', [BackendReportPurchaseOrderController::class, 'index'])->name('reportpurchaseorders.index');
+    Route::get('reportrecappurchaseorders', [BackendReportRecapPurchaseOrderController::class, 'index'])->name('reportrecappurchaseorders.index');
+    Route::get('reportreturpurchases', [BackendReportReturPurchaseController::class, 'index'])->name('reportreturpurchases.index');
+    Route::get('reportrecapreturpurchases', [ReportRecapReturPurchaseController::class, 'index'])->name('reportrecapreturpurchases.index');
+    Route::get('reportusageitems', [BackendReportUsageItemsController::class, 'index'])->name('reportusageitems.index');
 
   });
 });

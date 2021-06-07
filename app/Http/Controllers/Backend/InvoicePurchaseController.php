@@ -16,11 +16,6 @@ use DataTables;
 
 class InvoicePurchaseController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
   public function index(Request $request)
   {
     $config['page_title'] = "List Purchase Order";

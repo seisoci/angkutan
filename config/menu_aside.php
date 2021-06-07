@@ -287,7 +287,7 @@ return [
           'page' => 'backend/reportsparepart'
         ],
         [
-          'title' => 'Laporan Pelanggan',
+          'title' => 'Laporan Data Pelanggan',
           'page' => 'backend/reportcostumers'
         ],
         [
@@ -334,7 +334,22 @@ return [
           'title' => 'Laporan Invoice LDO',
           'page' => 'backend/reportinvoiceldo'
         ],
-
+        [
+          'title' => 'Laporan Purchase Order',
+          'page' => 'backend/reportpurchaseorders'
+        ],
+        [
+          'title' => 'Laporan Rekap Purchase Order',
+          'page' => 'backend/reportrecappurchaseorders'
+        ],
+        [
+          'title' => 'Laporan Retur Purchase Order',
+          'page' => 'backend/reportreturpurchases'
+        ],
+        [
+          'title' => 'Laporan Retur Rekap Purchase Order',
+          'page' => 'backend/reportrecapreturpurchases'
+        ],
       ]
     ],
     [

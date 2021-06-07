@@ -152,8 +152,9 @@ class TransportController extends Controller
     return $response;
   }
 
-  public function destroy(Transport $transport)
+  public function destroy($id)
   {
+    $transport = Transport::findOrFail($id);
     $response = response()->json([
       'status' => 'error',
       'message' => 'Data cannot be deleted',

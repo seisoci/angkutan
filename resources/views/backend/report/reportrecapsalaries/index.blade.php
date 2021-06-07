@@ -82,6 +82,16 @@
                   </select>
                 </div>
               </div>
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Status:</label>
+                  <select class="form-control" id="selectStatusSalary">
+                    <option value="">All</option>
+                    <option value="none">Belum Lunas</option>
+                    <option value="1">Lunas</option>
+                  </select>
+                </div>
+              </div>
               <div class="col-md-4 my-md-0">
                 <div class="form-group">
                   <label>Priode:</label>
@@ -141,6 +151,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           driver_id: $('#select2Driver').find(':selected').val() || '',
+          status: $('#selectStatusSalary').val() || '',
           date: $("input[name=date]").val(),
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
@@ -149,6 +160,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           driver_id: $('#select2Driver').find(':selected').val() || '',
+          status: $('#selectStatusSalary').val() || '',
           date: $("input[name=date]").val(),
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
@@ -157,6 +169,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           driver_id: $('#select2Driver').find(':selected').val() || '',
+          status: $('#selectStatusSalary').val() || '',
           date: $("input[name=date]").val(),
         });
         window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
@@ -167,13 +180,15 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        orderable: false,
+        bSort: false,
+        searching: false,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
           url: "{{ route('backend.reportrecapsalaries.index') }}",
           data: function (d) {
             d.driver_id = $('#select2Driver').find(':selected').val();
+            d.status = $('#selectStatusSalary').val();
             d.date = $("input[name=date]").val();
           }
         },
@@ -181,7 +196,7 @@
           {data: 'costumer_name', name: 'costumer_name'},
           {data: 'report_qty', name: 'report_qty'},
           {
-            data: 'report_basic_price_after_tax', name: 'report_basic_price_after_tax',
+            data: 'report_basic_price_after_thanks', name: 'report_basic_price_after_thanks',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
@@ -308,6 +323,10 @@
         dataTable.draw();
       }).on('cancel.daterangepicker', function (ev, picker) {
         $('#dateRangePicker .form-control').val('');
+        dataTable.draw();
+      });
+
+      $('#selectStatusSalary').on('change', function () {
         dataTable.draw();
       });
 

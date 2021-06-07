@@ -192,7 +192,7 @@ class ReportDriverController extends Controller
       header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
       header('Cache-Control: max-age=0');
     } elseif ($type == 'PDF') {
-      $writer = new Tcpdf($spreadsheet);
+      $writer = new Mpdf($spreadsheet);
       header('Cache-Control: no-store, no-cache, must-revalidate');
       header('Content-Type: application/pdf');
       header('Content-Disposition: inline;filename="' . $filename . '.pdf"');

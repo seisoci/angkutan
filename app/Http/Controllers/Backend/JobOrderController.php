@@ -88,7 +88,7 @@ class JobOrderController extends Controller
                 $btnEdit = '
                   <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="'. $row->id.'" data-status_cargo="'.$row->status_cargo.'" data-date_end="'.$row->date_end.'" class="edit dropdown-item">Edit</a>';
               }
-              if($row->status_document != 1){
+              if($row->status_document != 1 && $row->status_cargo ==='selesai'){
                 $btnEditDocument = '
                   <a href="#" data-toggle="modal" data-target="#modalEditDocument" data-id="'. $row->id.'" class="edit dropdown-item">Edit Dokumen</a>';
               }

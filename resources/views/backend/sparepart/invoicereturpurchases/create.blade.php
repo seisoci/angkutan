@@ -24,7 +24,7 @@
               <div class="form-group row">
                 <label class="col-lg-4 col-form-label">Tanggal Nota:</label>
                 <div class="col-md-6">
-                  <input type="text" class="form-control rounded-0 datepicker w-100" name="note_date"
+                  <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date"
                     placeholder="Tanggal Invoice" readonly>
                 </div>
               </div>
@@ -201,8 +201,15 @@
           dataType: "json",
           delay: 250,
           cache: true,
-          data: function(e) {
+          data: function (e) {
+            let arrayUsed = [];
+            $('select[name^="items[sparepart_id]"]').each(function () {
+              if ($(this).val()) {
+                arrayUsed.push($(this).val());
+              }
+            });
             return {
+              used: arrayUsed,
               q: e.term || '',
               page: e.page || 1
             }

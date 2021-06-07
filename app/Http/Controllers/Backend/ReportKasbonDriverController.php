@@ -259,7 +259,7 @@ class ReportKasbonDriverController extends Controller
     $date = $request->date;
     $driver = Driver::find($driver_id)->name ?? "All";
     if ($status == 'none') {
-      $statusPembayaran = 'Unpiad';
+      $statusPembayaran = 'Unpaid';
     } elseif ($status == "1") {
       $statusPembayaran = 'Paid';
     } else {

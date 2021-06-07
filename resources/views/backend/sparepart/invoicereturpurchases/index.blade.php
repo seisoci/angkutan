@@ -97,7 +97,7 @@
         columns: [
             {data: 'prefix', name: 'prefix', className: 'dt-center'},
             {data: 'num_bill', name: 'num_bill', },
-            {data: 'note_date', name: 'note_date', },
+            {data: 'invoice_date', name: 'invoice_date', },
             {data: 'supplier.name', name: 'supplier.name', },
             {data: 'total_payment', name: 'total_payment', className: 'dt-right', render: $.fn.dataTable.render.number( '.', ',', 2)},
             {data: 'created_at', name: 'created_at'},

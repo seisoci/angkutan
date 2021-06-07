@@ -34,16 +34,23 @@ class ReportSalaryController extends Controller
     if ($request->ajax()) {
       $date = $request->date;
       $driver_id = $request->driver_id;
+      $status_salary = $request->status;
       $data = JobOrder::with('costumer:id,name', 'driver:id,name')
         ->withSum('operationalexpense', 'amount')
-        ->where('status_cargo', '=', 'selesai')
         ->where('type', 'self')
-        ->whereNull('invoice_salary_id')
+        ->where('status_cargo', 'selesai')
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $date_format[0];
           $date_end = $date_format[1];
           return $query->whereBetween('date_begin', [$date_begin, $date_end]);
+        })
+        ->when($status_salary, function ($query, $status_salary) {
+          if ($status_salary == 'none') {
+            return $query->where('job_orders.status_salary', '=', '0');
+          } else {
+            return $query->where('job_orders.status_salary', $status_salary);
+          }
         })
         ->when($driver_id, function ($query, $driver_id) {
           return $query->where('driver_id', $driver_id);
@@ -62,21 +69,36 @@ class ReportSalaryController extends Controller
     $date = $request->date;
     $driver_id = $request->driver_id;
     $driver = Driver::find($driver_id);
+    $status_salary = $request->status;
     $data = JobOrder::with('costumer:id,name', 'driver:id,name')
       ->withSum('operationalexpense', 'amount')
-      ->where('status_cargo', '=', 'selesai')
       ->where('type', 'self')
-      ->whereNull('invoice_salary_id')
+      ->where('status_cargo', 'selesai')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];
         $date_end = $date_format[1];
         return $query->whereBetween('date_begin', [$date_begin, $date_end]);
       })
+      ->when($status_salary, function ($query, $status_salary) {
+        if ($status_salary == 'none') {
+          return $query->where('job_orders.status_salary', '=', '0');
+        } else {
+          return $query->where('job_orders.status_salary', $status_salary);
+        }
+      })
       ->when($driver_id, function ($query, $driver_id) {
         return $query->where('driver_id', $driver_id);
       })
       ->get();
+
+    if ($status_salary == 'none') {
+      $status_salary = 'Unpaid';
+    } elseif ($status_salary == "1") {
+      $status_salary = 'Paid';
+    } else {
+      $status_salary = "All";
+    }
 
     $collection = Setting::all();
     $profile = collect($collection)->mapWithKeys(function ($item) {
@@ -138,6 +160,8 @@ class ReportSalaryController extends Controller
     $sheet->setCellValue('A3', 'Priode: ' . (!empty($date) ? $date : 'All Date'));
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Supir: ' . (!empty($driver) ? $driver->name : 'ALL'));
+    $sheet->mergeCells('A5:C5');
+    $sheet->setCellValue('A5', 'Status Gaji: ' . $status_salary);
     $sheet->mergeCells('G1:I1');
     $sheet->setCellValue('G1', $profile['name']);
     $sheet->mergeCells('G2:I2');
@@ -157,28 +181,29 @@ class ReportSalaryController extends Controller
     $sheet->getColumnDimension('H')->setWidth(15);
     $sheet->getColumnDimension('I')->setWidth(15);
 
-    $sheet->getStyle('A6')->getAlignment()->setHorizontal('center');
-    $sheet->setCellValue('A6', 'No.');
-    $sheet->setCellValue('B6', 'Nama Supir');
-    $sheet->setCellValue('C6', 'Nama Pelanggan');
-    $sheet->setCellValue('D6', 'T. Muat');
-    $sheet->setCellValue('E6', 'Sub Total (Inc. Tax, Fee)');
-    $sheet->setCellValue('F6', 'Biaya Operasional');
-    $sheet->setCellValue('G6', 'Spare Part');
-    $sheet->setCellValue('H6', 'Gaji Supir');
-    $sheet->setCellValue('I6', 'Sisa Bersih');
+    $sheet->getStyle('A7')->getAlignment()->setHorizontal('center');
+    $sheet->setCellValue('A7', 'No.');
+    $sheet->setCellValue('B7', 'Nama Supir');
+    $sheet->setCellValue('C7', 'Nama Pelanggan');
+    $sheet->setCellValue('D7', 'T. Muat');
+    $sheet->setCellValue('E7', 'Sub Total (Inc. Tax, Fee)');
+    $sheet->setCellValue('F7', 'Biaya Operasional');
+    $sheet->setCellValue('G7', 'Spare Part');
+    $sheet->setCellValue('H7', 'Gaji Supir');
+    $sheet->setCellValue('I7', 'Sisa Bersih');
+    $sheet->setCellValue('J7', 'Status');
 
-    $startCell = 6;
-    $startCellFilter = 6;
+    $startCell = 7;
+    $startCellFilter = 7;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')
       ->applyFromArray($borderTopBottom)
       ->applyFromArray($borderLeftRight);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderLeftRight);
+      $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderLeftRight);
       $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('center');
-      $sheet->getStyle('D' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('D' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->driver->name);
       $sheet->setCellValue('C' . $startCell, $item->costumer->name);
@@ -188,15 +213,16 @@ class ReportSalaryController extends Controller
       $sheet->setCellValue('G' . $startCell, $item->total_sparepart);
       $sheet->setCellValue('H' . $startCell, $item->total_salary);
       $sheet->setCellValue('I' . $startCell, '=E' . $startCell . '-F' . $startCell . '-G' . $startCell . '-H' . $startCell . '');
+      $sheet->setCellValue('J' . $startCell, $item->status_salary == 0 ? 'Unpaid' : 'Paid');
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':F' . $startCell);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':J' . $startCell);
     $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderBottom);
 
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderAll);
-    $sheet->getStyle('E' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderAll);
+    $sheet->getStyle('E' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total Rp.');
     $sheet->mergeCells('A' . $startCell . ':D' . $startCell . '');
@@ -228,21 +254,36 @@ class ReportSalaryController extends Controller
     $date = $request->date;
     $driver_id = $request->driver_id;
     $driver = Driver::find($driver_id);
+    $status_salary = $request->status;
     $data = JobOrder::with('costumer:id,name', 'driver:id,name')
       ->withSum('operationalexpense', 'amount')
-      ->where('status_cargo', '=', 'selesai')
       ->where('type', 'self')
-      ->whereNull('invoice_salary_id')
+      ->where('status_cargo', 'selesai')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];
         $date_end = $date_format[1];
         return $query->whereBetween('date_begin', [$date_begin, $date_end]);
       })
+      ->when($status_salary, function ($query, $status_salary) {
+        if ($status_salary == 'none') {
+          return $query->where('job_orders.status_salary', '=', '0');
+        } else {
+          return $query->where('job_orders.status_salary', $status_salary);
+        }
+      })
       ->when($driver_id, function ($query, $driver_id) {
         return $query->where('driver_id', $driver_id);
       })
       ->get();
+
+    if ($status_salary == 'none') {
+      $status_salary = 'Unpaid';
+    } elseif ($status_salary == "1") {
+      $status_salary = 'Paid';
+    } else {
+      $status_salary = "All";
+    }
 
     $config['page_title'] = "Laporan Gaji Supir";
     $config['page_description'] = "Laporan Gaji Supir";
@@ -256,6 +297,6 @@ class ReportSalaryController extends Controller
       return [$item['name'] => $item['value']];
     });
 
-    return view('backend.report.reportsalarydrivers.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'driver'));
+    return view('backend.report.reportsalarydrivers.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'driver', 'status_salary'));
   }
 }

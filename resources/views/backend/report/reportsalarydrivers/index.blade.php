@@ -82,6 +82,16 @@
                   </select>
                 </div>
               </div>
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Status:</label>
+                  <select class="form-control" id="selectStatusSalary">
+                    <option value="">All</option>
+                    <option value="none">Belum Lunas</option>
+                    <option value="1">Lunas</option>
+                  </select>
+                </div>
+              </div>
               <div class="col-md-4 my-md-0">
                 <div class="form-group">
                   <label>Priode:</label>
@@ -110,9 +120,11 @@
           <th>Spare Part</th>
           <th>Gaji Supir</th>
           <th>Sisa Bersih</th>
+          <th>Status</th>
         </tr>
         </thead>
         <tfoot>
+        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -143,6 +155,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           driver_id: $('#select2Driver').find(':selected').val() || '',
+          status: $('#selectStatusSalary').val() || '',
           date: $("input[name=date]").val(),
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
@@ -152,6 +165,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           driver_id: $('#select2Driver').find(':selected').val() || '',
+          status: $('#selectStatusSalary').val() || '',
           date: $("input[name=date]").val(),
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
@@ -161,6 +175,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           driver_id: $('#select2Driver').find(':selected').val() || '',
+          status: $('#selectStatusSalary').val() || '',
           date: $("input[name=date]").val(),
         });
         window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
@@ -171,6 +186,8 @@
         scrollX: true,
         processing: true,
         serverSide: true,
+        bSort: false,
+        searching: false,
         order: [[0, 'asc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
@@ -178,6 +195,7 @@
           url: "{{ route('backend.reportsalarydrivers.index') }}",
           data: function (d) {
             d.driver_id = $('#select2Driver').find(':selected').val();
+            d.status = $('#selectStatusSalary').val();
             d.date = $("input[name=date]").val();
           }
         },
@@ -219,6 +237,26 @@
             searchable: false,
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
+          },
+          {
+            data: 'status_salary', name: 'status_salary',
+          },
+        ],
+        columnDefs: [
+          {
+            className: 'dt-center',
+            targets: 8,
+            width: '75px',
+            render: function(data, type, full, meta) {
+              var status = {
+                0: {'title': 'Unapid', 'class': ' label-light-danger'},
+                1: {'title': 'Paid', 'class': ' label-light-success'},
+              };
+              if (typeof status[data] === 'undefined') {
+                return data;
+              }
+              return status[data].title;
+            },
           },
         ],
         footerCallback: function (row, data, start, end, display) {
@@ -325,6 +363,11 @@
         $('#dateRangePicker .form-control').val('');
         dataTable.draw();
       });
+
+      $('#selectStatusSalary').on('change', function () {
+        dataTable.draw();
+      });
+
 
     });
   </script>

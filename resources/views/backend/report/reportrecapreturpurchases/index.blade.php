@@ -70,6 +70,7 @@
         </div>
       </div>
     </div>
+
     <div class="card-body">
       <div class="mb-10">
         <div class="row align-items-center">
@@ -77,18 +78,8 @@
             <div class="row align-items-center">
               <div class="col-md-3 my-md-0">
                 <div class="form-group">
-                  <label>Nama Supir:</label>
-                  <select class="form-control" id="select2Driver">
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-3 my-md-0">
-                <div class="form-group">
-                  <label>Status:</label>
-                  <select class="form-control" id="selectStatus">
-                    <option value="">All</option>
-                    <option value="none">Belum Lunas</option>
-                    <option value="1">Lunas</option>
+                  <label>Nama Supplier:</label>
+                  <select class="form-control" id="select2Supplier">
                   </select>
                 </div>
               </div>
@@ -112,13 +103,19 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>Nama Supir</th>
-          <th>Nominal</th>
-          <th>Status</th>
-          <th>Keterangan</th>
-          <th>Tanggal Pinjam</th>
+          <th>No. Invoice</th>
+          <th>Tgl Invoice</th>
+          <th>Nama Supplier</th>
+          <th>Total Retur</th>
         </tr>
         </thead>
+        <tfoot>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
       </table>
     </div>
   </div>
@@ -139,9 +136,8 @@
       $('#btn_excel').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          status: $('#selectStatus').val() || '',
           date: $("input[name=date]").val(),
+          supplier_id: $('#select2Supplier').find(':selected').val() || '',
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
@@ -149,9 +145,8 @@
       $('#btn_pdf').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          status: $('#selectStatus').val() || '',
           date: $("input[name=date]").val(),
+          supplier_id: $('#select2Supplier').find(':selected').val() || '',
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
@@ -159,67 +154,85 @@
       $('#btn_print').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          status: $('#selectStatus').val() || '',
           date: $("input[name=date]").val(),
+          supplier_id: $('#select2Supplier').find(':selected').val() || '',
         });
-        window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
+        window.open('{{ $config['print_url'] }}?' + params.toString());
       });
-
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,
-        orderable: false,
-        bSort: false,
+        ordering: false,
+        searching: false,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
-          url: "{{ route('backend.reportkasbondrivers.index') }}",
+          url: "{{ route('backend.reportrecapreturpurchases.index') }}",
           data: function (d) {
-            d.driver_id = $('#select2Driver').find(':selected').val();
-            d.status = $('#selectStatus').val();
             d.date = $("input[name=date]").val();
+            d.supplier_id = $('#select2Supplier').find(':selected').val();
+
           }
         },
         columns: [
-          {data: 'name', name: 'name'},
+          {data: 'num_invoice', name: 'num_invoice'},
+          {data: 'invoice_date', name: 'invoice_date'},
+          {data: 'supplier.name', name: 'supplier.name'},
           {
-            data: 'amount',
-            name: 'amount',
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {data: 'status', name: 'status'},
-          {data: 'memo', name: 'memo'},
-          {data: 'created_at', name: 'created_at'},
+            data: 'total_payment', name: 'total_payment',
+            defaultContent: 0,
+            className: 'dt-right',
+            render: $.fn.dataTable.render.number(',', '.', 2)
+          }
         ],
-        columnDefs: [
-          {
-            className: 'dt-center',
-            targets: 2,
-            width: '75px',
-            render: function (data, type, full, meta) {
-              let status = {
-                0: {'title': 'Unpaid', 'class': ' label-light-danger'},
-                1: {'title': 'Paid', 'class': ' label-light-success'},
-              };
-              if (typeof status[data] === 'undefined') {
-                return data;
-              }
-              return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
-                '</span>';
-            },
-          },
-        ]
+        footerCallback: function (row, data, start, end, display) {
+          let api = this.api();
+          let intVal = function (i) {
+            return typeof i === 'string' ?
+              i.replace(/[\$,]/g, '') * 1 :
+              typeof i === 'number' ?
+                i : 0;
+          };
+
+          let totalPayment = api
+            .column(3)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          $(api.column(2).footer()).html('Total');
+          $(api.column(3).footer()).html(format(totalPayment));
+        },
       });
 
-      $("#select2Driver").select2({
-        placeholder: "Search Supir",
+      let format = function (num) {
+        let str = num.toString().replace("", ""), parts = false, output = [], i = 1, formatted = null;
+        if (str.indexOf(".") > 0) {
+          parts = str.split(".");
+          str = parts[0];
+        }
+        str = str.split("").reverse();
+        for (let j = 0, len = str.length; j < len; j++) {
+          if (str[j] !== ",") {
+            output.push(str[j]);
+            if (i % 3 === 0 && j < (len - 1)) {
+              output.push(",");
+            }
+            i++;
+          }
+        }
+        formatted = output.reverse().join("");
+        return ("" + formatted + ((parts) ? "." + parts[1].substr(0, 2) : ".00"));
+      };
+
+      $("#select2Supplier").select2({
+        placeholder: "Search Supplier",
         allowClear: true,
         ajax: {
-          url: "{{ route('backend.drivers.select2self') }}",
+          url: "{{ route('backend.supplierspareparts.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -234,6 +247,7 @@
         dataTable.draw();
       });
 
+
       $('#dateRangePicker').daterangepicker({
         buttonClasses: ' btn',
         applyClass: 'btn-primary',
@@ -245,11 +259,7 @@
         $('#dateRangePicker .form-control').val('');
         dataTable.draw();
       });
-
-      $('#selectStatus').on('change', function () {
-        dataTable.draw();
-      });
-
-    });
+    })
+    ;
   </script>
 @endsection

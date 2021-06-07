@@ -82,7 +82,7 @@
         <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
       </tr>
       <tr>
-        <td></td>
+        <td scope="col" class="font-weight-normal" style="width:50%">Supir: {{ $driver->name ?? 'All' }}
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="width:18%">FAX {{ $profile['fax'] ?? ''}}</td>
       </tr>
