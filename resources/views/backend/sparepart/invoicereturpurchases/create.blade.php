@@ -22,7 +22,7 @@
           <div class="row align-items-center">
             <div class="col-md-6">
               <div class="form-group row">
-                <label class="col-lg-4 col-form-label">Tanggal Nota:</label>
+                <label class="col-lg-4 col-form-label">Tanggal Retur:</label>
                 <div class="col-md-6">
                   <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date"
                     placeholder="Tanggal Invoice" readonly>

@@ -60,7 +60,7 @@
 <body>
 <div class="row justify-content-center py-8 px-8 px-md-0">
   <div class="col-md-11">
-    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN PURCHASE ORDER</u>
+    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN RETUR PURCHASE ORDER</u>
     </h2>
     <table class="table table-borderless table-title">
       <tbody>
@@ -93,8 +93,8 @@
       <thead>
       <tr>
         <th scope="col">#</th>
-        <th>No. Invoice</th>
-        <th>Tgl Invoice</th>
+        <th>No. Retur</th>
+        <th>Tgl Retur</th>
         <th>Nama Sparepart</th>
         <th>Nama Supplier</th>
         <th class="text-center">Jumlah</th>
@@ -117,7 +117,7 @@
       @endforeach
       </tbody>
       <tfoot>
-      <td colspan="3" class="text-right">Total</td>
+      <td colspan="5" class="text-right">Total</td>
       <td class="text-center">{{$data->sum('qty')}}</td>
       <td class="text-right">{{ number_format($data->sum('price'), 2, ',', '.') }}</td>
       <td class="text-right">{{ number_format($data->sum('total'), 2, ',', '.') }}</td>

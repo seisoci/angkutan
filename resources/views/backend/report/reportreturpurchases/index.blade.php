@@ -103,8 +103,8 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>No. Invoice</th>
-          <th>Tgl Invoice</th>
+          <th>No. Retur</th>
+          <th>Tgl Retur</th>
           <th>Nama Sparepart</th>
           <th>Nama Supplier</th>
           <th>Jumlah</th>
@@ -174,7 +174,7 @@
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
-          url: "{{ route('backend.reportpurchaseorders.index') }}",
+          url: "{{ route('backend.reportreturpurchases.index') }}",
           data: function (d) {
             d.date = $("input[name=date]").val();
             d.supplier_id = $('#select2Supplier').find(':selected').val();

@@ -15,11 +15,6 @@ use Validator;
 
 class InvoiceUsageItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
       $config['page_title']       = "List Pemakaian Barang";
@@ -51,12 +46,7 @@ class InvoiceUsageItemController extends Controller
       return view('backend.invoice.invoiceusageitems.index', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
+    function create(Request $request)
     {
       $config['page_title'] = "Create Pemakaian Barang";
       $page_breadcrumbs = [
@@ -67,15 +57,10 @@ class InvoiceUsageItemController extends Controller
       return view('backend.invoice.invoiceusageitems.create', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
+        'invoice_date' => 'required|date_format:Y-m-d',
         'items.sparepart_id'      => 'required|array',
         'items.sparepart_id.*'    => 'required|integer',
         'items.qty'               => 'required|array',
@@ -93,6 +78,7 @@ class InvoiceUsageItemController extends Controller
         $invoiceUsageItem  = InvoiceUsageItem::create([
           'num_bill'      => $request->num_bill,
           'prefix'        => $prefix->name,
+          'invoice_date'  => $request->invoice_date,
           'driver_id'     => $request->driver_id,
           'transport_id'  => $request->transport_id,
           'type'          => $request->type,
@@ -157,37 +143,6 @@ class InvoiceUsageItemController extends Controller
       return view('backend.invoice.invoiceusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\InvoiceUsageItem  $invoiceUsageItem
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(InvoiceUsageItem $invoiceUsageItem)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\InvoiceUsageItem  $invoiceUsageItem
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, InvoiceUsageItem $invoiceUsageItem)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\InvoiceUsageItem  $invoiceUsageItem
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(InvoiceUsageItem $invoiceUsageItem)
-    {
-        //
-    }
 }

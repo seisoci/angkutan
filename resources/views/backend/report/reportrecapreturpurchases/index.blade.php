@@ -103,8 +103,8 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>No. Invoice</th>
-          <th>Tgl Invoice</th>
+          <th>No. Retur</th>
+          <th>Tgl Retur</th>
           <th>Nama Supplier</th>
           <th>Total Retur</th>
         </tr>

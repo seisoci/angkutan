@@ -38,10 +38,10 @@
       <thead>
         <tr>
           <th>Prefix</th>
-          <th>No Bill</th>
-          <th>Tanggal Nota</th>
+          <th>No. Retur</th>
+          <th>Tgl Retur</th>
           <th>Supplier</th>
-          <th>Nominal Retur</th>
+          <th>Total Retur</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>

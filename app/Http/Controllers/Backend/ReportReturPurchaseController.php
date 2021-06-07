@@ -57,18 +57,12 @@ class ReportReturPurchaseController extends Controller
         ->when($supplier_id, function ($query, $supplier_id) {
           return $query->where('invoice_retur_purchases.supplier_sparepart_id', $supplier_id);
         })
-        ->when($date, function ($query, $date) {
-          $date_format = explode(" / ", $date);
-          $date_begin = $date_format[0];
-          $date_end = $date_format[1];
-          return $query->whereBetween('invoice_retur_purchases.invoice_date', [$date_begin, $date_end]);
-        })
         ->orderBy('invoice_retur_purchases.invoice_date');
       return DataTables::of($data)
         ->addIndexColumn()
         ->make(true);
     }
-    return view('backend.report.reportpurchaseorders.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.report.reportreturpurchases.index', compact('config', 'page_breadcrumbs'));
   }
 
   public function document(Request $request)
@@ -83,35 +77,29 @@ class ReportReturPurchaseController extends Controller
     $date = $request->date;
     $supplier = SupplierSparepart::find($supplier_id)->name ?? "All";
 
-    $data = DB::table('purchases')
+    $data = DB::table('retur_purchases')
       ->select(DB::raw('
-        CONCAT(`invoice_purchases`.`prefix`,"-",`invoice_purchases`.`num_bill`) AS num_invoice,
+        CONCAT(`invoice_retur_purchases`.`prefix`,"-",`invoice_retur_purchases`.`num_bill`) AS num_invoice,
         `spareparts`.`name` AS `sparepart_name`,
         `supplier_spareparts`.`name` AS `supplier_name`,
-        `purchases`.`qty`,
-        `purchases`.`price`,
-        (`purchases`.`price` * `purchases`.`qty`) AS `total`,
-        `invoice_purchases`.`invoice_date` AS `invoice_date`
+        `retur_purchases`.`qty`,
+        `retur_purchases`.`price`,
+        (`retur_purchases`.`price` * `retur_purchases`.`qty`) AS `total`,
+        `invoice_retur_purchases`.`invoice_date` AS `invoice_date`
         '))
-      ->leftJoin('invoice_purchases', 'invoice_purchases.id', '=', 'purchases.invoice_purchase_id')
-      ->leftJoin('spareparts', 'spareparts.id', '=', 'purchases.sparepart_id')
-      ->leftJoin('supplier_spareparts', 'supplier_spareparts.id', '=', 'purchases.supplier_sparepart_id')
+      ->leftJoin('invoice_retur_purchases', 'invoice_retur_purchases.id', '=', 'retur_purchases.invoice_retur_purchase_id')
+      ->leftJoin('spareparts', 'spareparts.id', '=', 'retur_purchases.sparepart_id')
+      ->leftJoin('supplier_spareparts', 'supplier_spareparts.id', '=', 'retur_purchases.supplier_sparepart_id')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];
         $date_end = $date_format[1];
-        return $query->whereBetween('invoice_purchases.invoice_date', [$date_begin, $date_end]);
+        return $query->whereBetween('invoice_retur_purchases.invoice_date', [$date_begin, $date_end]);
       })
       ->when($supplier_id, function ($query, $supplier_id) {
-        return $query->where('invoice_purchases.supplier_sparepart_id', $supplier_id);
+        return $query->where('invoice_retur_purchases.supplier_sparepart_id', $supplier_id);
       })
-      ->when($date, function ($query, $date) {
-        $date_format = explode(" / ", $date);
-        $date_begin = $date_format[0];
-        $date_end = $date_format[1];
-        return $query->whereBetween('invoice_purchases.invoice_date', [$date_begin, $date_end]);
-      })
-      ->orderBy('invoice_purchases.invoice_date')
+      ->orderBy('invoice_retur_purchases.invoice_date')
       ->get();
 
     $spreadsheet = new Spreadsheet();
@@ -210,8 +198,8 @@ class ReportReturPurchaseController extends Controller
 
     $sheet->getStyle('A7')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A7', 'No.');
-    $sheet->setCellValue('B7', 'No. Invoice');
-    $sheet->setCellValue('C7', 'Tgl Invoice');
+    $sheet->setCellValue('B7', 'No. Retur');
+    $sheet->setCellValue('C7', 'Tgl Retur');
     $sheet->setCellValue('D7', 'Nama Sparepart');
     $sheet->setCellValue('E7', 'Nama Supplier');
     $sheet->setCellValue('F7', 'Jumlah');
@@ -310,14 +298,8 @@ class ReportReturPurchaseController extends Controller
       ->when($supplier_id, function ($query, $supplier_id) {
         return $query->where('invoice_retur_purchases.supplier_sparepart_id', $supplier_id);
       })
-      ->when($date, function ($query, $date) {
-        $date_format = explode(" / ", $date);
-        $date_begin = $date_format[0];
-        $date_end = $date_format[1];
-        return $query->whereBetween('invoice_retur_purchases.invoice_date', [$date_begin, $date_end]);
-      })
       ->orderBy('invoice_retur_purchases.invoice_date')
       ->get();
-    return view('backend.report.reportpurchaseorders.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'supplier', 'date',));
+    return view('backend.report.reportreturpurchases.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'supplier', 'date',));
   }
 }

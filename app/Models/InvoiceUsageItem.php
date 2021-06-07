@@ -21,6 +21,7 @@ class InvoiceUsageItem extends Model
 
   protected $fillable = [
     'num_bill',
+    'invoice_date',
     'prefix',
     'driver_id',
     'transport_id',

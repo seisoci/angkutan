@@ -145,7 +145,7 @@ class ReportRecapReturPurchaseController extends Controller
     ];
 
     $sheet->mergeCells('A1:C1');
-    $sheet->setCellValue('A1', 'Laporan Recap Purchase Order');
+    $sheet->setCellValue('A1', 'Laporan Recap Retur Purchase Order');
     $sheet->mergeCells('A2:C2');
     $sheet->setCellValue('A2', 'Printed: ' . $this->dateTimeNow());
     $sheet->mergeCells('A3:C3');
@@ -169,8 +169,8 @@ class ReportRecapReturPurchaseController extends Controller
     $sheet->getStyle('F2')->getAlignment()->setVertical(Alignment::VERTICAL_DISTRIBUTED);
     $sheet->getStyle('A7')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A7', 'No.');
-    $sheet->setCellValue('B7', 'No. Invoice');
-    $sheet->setCellValue('C7', 'Tgl Invoice');
+    $sheet->setCellValue('B7', 'No. Retur');
+    $sheet->setCellValue('C7', 'Tgl Retur');
     $sheet->setCellValue('D7', 'Nama Supplier');
     $sheet->setCellValue('E7', 'Total Retur');
 
@@ -203,7 +203,7 @@ class ReportRecapReturPurchaseController extends Controller
     $sheet->getStyle('A' . $startCell . ':E' . $startCell)->getFont()->setBold(true);
     $sheet->setCellValue('E' . $startCell, '=SUM(E' . $startCellFilter . ':E' . $endForSum . ')');
 
-    $filename = 'Laporan Recap Purchase Order ' . $this->dateTimeNow();
+    $filename = 'Laporan Recap Retur Purchase Order ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
       $writer = new Xlsx($spreadsheet);
       header('Cache-Control: no-store, no-cache, must-revalidate');

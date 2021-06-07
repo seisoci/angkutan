@@ -113,7 +113,7 @@
           <td>{{ $item->supplier->name }}</td>
           <td>{{ $item->invoice_date }}</td>
           <td>{{ $item->due_date }}</td>
-          <td class="text-center">{{ number_format($item->total_bill, 2, ',', '.') }}</td>
+          <td class="text-right">{{ number_format($item->total_bill, 2, ',', '.') }}</td>
           <td class="text-right">{{ number_format($item->total_payment, 2, ',', '.') }}</td>
           <td class="text-right">{{ number_format($item->discount, 2, ',', '.') }}</td>
           <td class="text-right">{{ number_format($item->rest_payment, 2, ',', '.') }}</td>

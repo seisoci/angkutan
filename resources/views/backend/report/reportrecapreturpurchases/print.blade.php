@@ -94,8 +94,8 @@
       <thead>
       <tr>
         <th scope="col">#</th>
-        <th>No. Invoice</th>
-        <th>Tgl Invoice</th>
+        <th>No. Retur</th>
+        <th>Tgl Retur</th>
         <th>Nama Supplier</th>
         <th class="text-right">Total Retur</th>
       </tr>
