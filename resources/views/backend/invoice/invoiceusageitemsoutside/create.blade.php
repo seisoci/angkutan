@@ -23,14 +23,21 @@
           <div class="row align-items-center">
             <div class="col-md-6">
               <div class="form-group row">
-                <label class="col-lg-3 col-form-label">Prefix:</label>
+                <label class="col-lg-4 col-form-label">Tanggal Invoice:</label>
+                <div class="col-md-6">
+                  <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date"
+                         placeholder="Tanggal Invoice" readonly>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-lg-4 col-form-label">Prefix:</label>
                 <div class="col-lg-6">
                   <select name="prefix" class="form-control" id="select2Prefix">
                   </select>
                 </div>
               </div>
               <div class="form-group row">
-                <label class="col-lg-3 col-form-label">No. Invoice Pemakaian:</label>
+                <label class="col-lg-4 col-form-label">No. Invoice Pemakaian:</label>
                 <div class="col-lg-6">
                   <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                   <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
@@ -139,6 +146,7 @@
   $(document).ready(function() {
     initCalculation();
     initCurrency();
+    initDate();
 
     $("#select2Prefix").select2({
       placeholder: "Choose Prefix",
@@ -214,12 +222,21 @@
       });
     }
 
+    function initDate() {
+      $('.datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        todayBtn: "linked",
+        clearBtn: true,
+        todayHighlight: true
+      });
+    }
+
     function initCalculation(){
       $('input[name^="items[qty]"], input[name^="items[price]"]').on('keyup',function()  {
-        var $row       = $(this).closest("tr");
-        var qty        = parseInt($row.find('input[name="items[qty][]"]').val());
-        var price      = parseInt($row.find('input[name="items[price][]"]').val());
-        var totalTagihan = 0;
+        let $row       = $(this).closest("tr");
+        let qty        = parseInt($row.find('input[name="items[qty][]"]').val());
+        let price      = parseInt($row.find('input[name="items[price][]"]').val());
+        let totalTagihan = 0;
         total = qty * price;
         $row.find('input[name="items[total][]"]').val(total);
         $('input[name^="items[total]"]').each(function() {
@@ -230,18 +247,18 @@
     }
 
     $('tbody').on('click', '.rmItems',function(){
-      var id = this.id;
-      var split_id = id.split("_");
-      var deleteindex = split_id[1];
+      let id = this.id;
+      let split_id = id.split("_");
+      let deleteindex = split_id[1];
       $("#items_" + deleteindex).remove();
     });
 
     $(".add").on('click', function(){
-      var total_items = $(".items").length;
-      var lastid = $(".items:last").attr("id");
-      var split_id = lastid.split("_");
-      var nextindex = Number(split_id[1]) + 1;
-      var max = 100;
+      let total_items = $(".items").length;
+      let lastid = $(".items:last").attr("id");
+      let split_id = lastid.split("_");
+      let nextindex = Number(split_id[1]) + 1;
+      let max = 100;
       if(total_items < max ){
         $(".items:last").after("<tr class='items' id='items_"+ nextindex +"'></tr>");
         $("#items_" + nextindex).append(raw_items(nextindex));
@@ -262,11 +279,11 @@
       $('.unit').inputmask('remove');
       $('.currency').inputmask('remove');
       e.preventDefault();
-      var form = $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
+      let form = $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let url = form.attr("action");
+      let data = new FormData(this);
       $.ajax({
         beforeSend: function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");

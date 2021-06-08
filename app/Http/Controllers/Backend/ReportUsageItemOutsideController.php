@@ -18,32 +18,33 @@ use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yajra\DataTables\Facades\DataTables;
 
-class ReportUsageItemsController extends Controller
+class ReportUsageItemOutsideController extends Controller
 {
   use CarbonTrait;
 
   public function index(Request $request)
   {
-    $config['page_title'] = "Laporan Pemakaian Barang";
-    $config['page_description'] = "Laporan Pemakaian Barang";
+    $config['page_title'] = "Laporan Pembelian Barang Diluar";
+    $config['page_description'] = "Laporan Pembelian Barang Diluar";
     $page_breadcrumbs = [
-      ['page' => '#', 'title' => "Laporan Pemakaian Barang"],
+      ['page' => '#', 'title' => "Laporan Pembelian Barang Diluar"],
     ];
-    $config['excel_url'] = 'reportusageitems/document?type=EXCEL';
-    $config['pdf_url'] = 'reportusageitems/document?type=PDF';
-    $config['print_url'] = 'reportusageitems/print';
+    $config['excel_url'] = 'reportusageitemoutside/document?type=EXCEL';
+    $config['pdf_url'] = 'reportusageitemoutside/document?type=PDF';
+    $config['print_url'] = 'reportusageitemoutside/print';
 
     if ($request->ajax()) {
       $date = $request->date;
       $driver_id = $request->driver_id;
       $transport_id = $request->transport_id;
-      $sparepart_id = $request->sparepart_id;
 
       $data = DB::table('usage_items')
         ->select(DB::raw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
-        `spareparts`.`name` AS `sparepart_name`,
+        `usage_items`.`name` AS `sparepart_name`,
         `usage_items`.`qty`,
+        `usage_items`.`price`,
+        (`usage_items`.`qty` * `usage_items`.`price`) AS `total_price`,
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
         `transports`.`num_pol` AS `num_pol`,
         `drivers`.`name` AS `driver_name`
@@ -52,7 +53,7 @@ class ReportUsageItemsController extends Controller
         ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
         ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
         ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
-        ->whereNull('total_payment')
+        ->whereNull('sparepart_id')
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $date_format[0];
@@ -65,16 +66,13 @@ class ReportUsageItemsController extends Controller
         ->when($transport_id, function ($query, $transport_id) {
           return $query->where('invoice_usage_items.transport_id', $transport_id);
         })
-        ->when($sparepart_id, function ($query, $sparepart_id) {
-          return $query->where('usage_items.sparepart_id', $sparepart_id);
-        })
         ->orderBy('invoice_usage_items.invoice_date', 'asc');
 
       return DataTables::of($data)
         ->addIndexColumn()
         ->make(true);
     }
-    return view('backend.report.reportusageitems.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.report.reportusageitemoutside.index', compact('config', 'page_breadcrumbs'));
   }
 
   public function document(Request $request)
@@ -87,16 +85,17 @@ class ReportUsageItemsController extends Controller
     $type = $request->type;
     $driver_id = $request->driver_id;
     $transport_id = $request->transport_id;
-    $sparepart_id = $request->sparepart_id;
     $date = $request->date;
     $transport = Transport::find($transport_id)->num_pol ?? "All";
     $driver = Driver::find($driver_id)->name ?? "All";
-    $sparepart = Sparepart::find($sparepart_id)->name ?? "All";
+
     $data = DB::table('usage_items')
       ->select(DB::raw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
-        `spareparts`.`name` AS `sparepart_name`,
+        `usage_items`.`name` AS `sparepart_name`,
         `usage_items`.`qty`,
+        `usage_items`.`price`,
+        (`usage_items`.`qty` * `usage_items`.`price`) AS `total_price`,
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
         `transports`.`num_pol` AS `num_pol`,
         `drivers`.`name` AS `driver_name`
@@ -105,7 +104,7 @@ class ReportUsageItemsController extends Controller
       ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
       ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
-      ->whereNull('total_payment')
+      ->whereNull('sparepart_id')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];
@@ -117,9 +116,6 @@ class ReportUsageItemsController extends Controller
       })
       ->when($transport_id, function ($query, $transport_id) {
         return $query->where('invoice_usage_items.transport_id', $transport_id);
-      })
-      ->when($sparepart_id, function ($query, $sparepart_id) {
-        return $query->where('usage_items.sparepart_id', $sparepart_id);
       })
       ->orderBy('invoice_usage_items.invoice_date', 'asc')
       ->get();
@@ -191,7 +187,7 @@ class ReportUsageItemsController extends Controller
     ];
 
     $sheet->mergeCells('A1:C1');
-    $sheet->setCellValue('A1', 'Laporan Pemakaian Barang');
+    $sheet->setCellValue('A1', 'Laporan Pembelian Barang Diluar');
     $sheet->mergeCells('A2:C2');
     $sheet->setCellValue('A2', 'Printed: ' . $this->dateTimeNow());
     $sheet->mergeCells('A3:C3');
@@ -200,16 +196,14 @@ class ReportUsageItemsController extends Controller
     $sheet->setCellValue('A4', 'Nama Supir: ' . $driver);
     $sheet->mergeCells('A5:C5');
     $sheet->setCellValue('A5', 'No. Polisi: ' . $transport);
-    $sheet->mergeCells('A6:C6');
-    $sheet->setCellValue('A6', 'Nama Sparepart: ' . $sparepart);
-    $sheet->mergeCells('E1:G1');
-    $sheet->setCellValue('E1', $profile['name']);
-    $sheet->mergeCells('E2:G2');
-    $sheet->setCellValue('E2', $profile['address']);
-    $sheet->mergeCells('E3:G3');
-    $sheet->setCellValue('E3', 'Telp: ' . $profile['telp']);
-    $sheet->mergeCells('E4:G4');
-    $sheet->setCellValue('F4', 'Fax: ' . $profile['fax']);
+    $sheet->mergeCells('G1:I1');
+    $sheet->setCellValue('G1', $profile['name']);
+    $sheet->mergeCells('G2:I2');
+    $sheet->setCellValue('G2', $profile['address']);
+    $sheet->mergeCells('G3:I3');
+    $sheet->setCellValue('G3', 'Telp: ' . $profile['telp']);
+    $sheet->mergeCells('G4:I4');
+    $sheet->setCellValue('G4', 'Fax: ' . $profile['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -218,28 +212,33 @@ class ReportUsageItemsController extends Controller
     $sheet->getColumnDimension('E')->setWidth(26);
     $sheet->getColumnDimension('F')->setWidth(12);
     $sheet->getColumnDimension('G')->setWidth(15);
+    $sheet->getColumnDimension('H')->setWidth(15);
+    $sheet->getColumnDimension('I')->setWidth(15);
 //    $sheet->getRowDimension('2')->setRowHeight(30);
     $sheet->getStyle('F2')->getAlignment()->setVertical(Alignment::VERTICAL_DISTRIBUTED);
 
-    $sheet->getStyle('A8')->getAlignment()->setHorizontal('center');
-    $sheet->setCellValue('A8', 'No.');
-    $sheet->setCellValue('B8', 'No. Invoice');
-    $sheet->setCellValue('C8', 'Tgl Invoice');
-    $sheet->setCellValue('D8', 'Nama Sparepart');
-    $sheet->setCellValue('E8', 'Nama Supir');
-    $sheet->setCellValue('F8', 'No. Polisi');
-    $sheet->setCellValue('G8', 'Jumlah');
+    $sheet->getStyle('A7')->getAlignment()->setHorizontal('center');
+    $sheet->setCellValue('A7', 'No.');
+    $sheet->setCellValue('B7', 'No. Invoice');
+    $sheet->setCellValue('C7', 'Tgl Invoice');
+    $sheet->setCellValue('D7', 'Nama Sparepart');
+    $sheet->setCellValue('E7', 'Nama Supir');
+    $sheet->setCellValue('F7', 'No. Polisi');
+    $sheet->setCellValue('G7', 'Jumlah');
+    $sheet->setCellValue('H7', 'Harga');
+    $sheet->setCellValue('I7', 'Total');
 
-    $startCell = 8;
-    $startCellFilter = 8;
+    $startCell = 7;
+    $startCellFilter = 7;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')
       ->applyFromArray($borderTopBottom);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTopBottom);
+      $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderTopBottom);
       $sheet->getStyle('A' . $startCell . ':' . 'F' . $startCell)->getAlignment()->setVertical('top');
       $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
+      $sheet->getStyle('H' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->num_invoice);
       $sheet->setCellValue('C' . $startCell, $item->invoice_date);
@@ -247,21 +246,26 @@ class ReportUsageItemsController extends Controller
       $sheet->setCellValue('E' . $startCell, $item->driver_name);
       $sheet->setCellValue('F' . $startCell, $item->num_pol);
       $sheet->setCellValue('G' . $startCell, $item->qty);
+      $sheet->setCellValue('H' . $startCell, $item->price);
+      $sheet->setCellValue('I' . $startCell, $item->total_price);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':G' . $startCell);
-    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderBottom);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':I' . $startCell);
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderBottom);
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total');
     $sheet->mergeCells('A' . $startCell . ':F' . $startCell . '');
-    $sheet->getStyle('A' . $startCell . ':G' . $startCell)->getFont()->setBold(true);
+    $sheet->getStyle('H' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell)->getFont()->setBold(true);
     $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startCellFilter . ':G' . $endForSum . ')');
+    $sheet->setCellValue('H' . $startCell, '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
+    $sheet->setCellValue('I' . $startCell, '=SUM(I' . $startCellFilter . ':I' . $endForSum . ')');
 
-    $filename = 'Laporan Pemakaian Barang ' . $this->dateTimeNow();
+    $filename = 'Laporan Pembelian Barang Diluar ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
       $writer = new Xlsx($spreadsheet);
       header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -281,11 +285,11 @@ class ReportUsageItemsController extends Controller
 
   public function print(Request $request)
   {
-    $config['page_title'] = "Laporan Pemakaian Barang";
-    $config['page_description'] = "Laporan Pemakaian Barang";
+    $config['page_title'] = "Laporan Pembelian Barang Diluar";
+    $config['page_description'] = "Laporan Pembelian Barang Diluar";
     $config['current_time'] = $this->dateTimeNow();
     $page_breadcrumbs = [
-      ['page' => '#', 'title' => "Laporan Pemakaian Barang"],
+      ['page' => '#', 'title' => "Laporan Pembelian Barang Diluar"],
     ];
 
     $collection = Setting::all();
@@ -295,16 +299,17 @@ class ReportUsageItemsController extends Controller
 
     $driver_id = $request->driver_id;
     $transport_id = $request->transport_id;
-    $sparepart_id = $request->sparepart_id;
     $date = $request->date;
     $transport = Transport::find($transport_id)->num_pol ?? "All";
     $driver = Driver::find($driver_id)->name ?? "All";
-    $sparepart = Sparepart::find($sparepart_id)->name ?? "All";
+
     $data = DB::table('usage_items')
       ->select(DB::raw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
-        `spareparts`.`name` AS `sparepart_name`,
+        `usage_items`.`name` AS `sparepart_name`,
         `usage_items`.`qty`,
+        `usage_items`.`price`,
+        (`usage_items`.`qty` * `usage_items`.`price`) AS `total_price`,
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
         `transports`.`num_pol` AS `num_pol`,
         `drivers`.`name` AS `driver_name`
@@ -313,7 +318,7 @@ class ReportUsageItemsController extends Controller
       ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
       ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
-      ->whereNull('total_payment')
+      ->whereNull('sparepart_id')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];
@@ -326,12 +331,9 @@ class ReportUsageItemsController extends Controller
       ->when($transport_id, function ($query, $transport_id) {
         return $query->where('invoice_usage_items.transport_id', $transport_id);
       })
-      ->when($sparepart_id, function ($query, $sparepart_id) {
-        return $query->where('usage_items.sparepart_id', $sparepart_id);
-      })
       ->orderBy('invoice_usage_items.invoice_date', 'asc')
       ->get();
 
-    return view('backend.report.reportusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'transport', 'driver', 'sparepart'));
+    return view('backend.report.reportusageitemoutside.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'transport', 'driver'));
   }
 }

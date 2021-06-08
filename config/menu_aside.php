@@ -116,16 +116,8 @@ return [
       'arrow' => true,
       'submenu' => [
         [
-          'title' => 'Master Akun Kas',
-          'page' => 'backend/cashes'
-        ],
-        [
-          'title' => 'Master Bank',
-          'page' => 'backend/banks'
-        ],
-        [
-          'title' => 'Master Perusahaan',
-          'page' => 'backend/companies'
+          'title' => 'Master Akun',
+          'page' => 'backend/spareparts'
         ],
         [
           'title' => 'Kasbon Karyawaan',
@@ -142,7 +134,8 @@ return [
               'page' => 'backend/invoicekasbonemployees'
             ],
           ]
-        ], [
+        ],
+        [
           'title' => 'Karyawan',
           'bullet' => 'dot',
           'root' => true,
@@ -347,8 +340,28 @@ return [
           'page' => 'backend/reportreturpurchases'
         ],
         [
-          'title' => 'Laporan Retur Rekap Purchase Order',
+          'title' => 'Laporan Rekap Retur Purchase Order',
           'page' => 'backend/reportrecapreturpurchases'
+        ],
+        [
+          'title' => 'Laporan Pemakaian Barang',
+          'page' => 'backend/reportusageitems'
+        ],
+        [
+          'title' => 'Laporan Rekap Pemakaian Barang',
+          'page' => 'backend/reportrecapusageitems'
+        ],
+        [
+          'title' => 'Laporan Pembelian Barang Diluar',
+          'page' => 'backend/reportusageitems'
+        ],
+        [
+          'title' => 'Laporan Rekap Pembelian Barang Diluar',
+          'page' => 'backend/reportrecapusageitems'
+        ],
+        [
+          'title' => 'Laporan Stok Barang',
+          'page' => 'backend/reportstock'
         ],
       ]
     ],

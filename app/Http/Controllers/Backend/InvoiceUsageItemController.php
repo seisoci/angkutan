@@ -60,7 +60,7 @@ class InvoiceUsageItemController extends Controller
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
-        'invoice_date' => 'required|date_format:Y-m-d',
+        'invoice_date'            => 'required|date_format:Y-m-d',
         'items.sparepart_id'      => 'required|array',
         'items.sparepart_id.*'    => 'required|integer',
         'items.qty'               => 'required|array',

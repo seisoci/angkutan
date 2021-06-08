@@ -67,6 +67,10 @@ use App\Http\Controllers\Backend\ReportRecapPurchaseOrderController as BackendRe
 use App\Http\Controllers\Backend\ReportReturPurchaseController as BackendReportReturPurchaseController;
 use App\Http\Controllers\Backend\ReportRecapReturPurchaseController as ReportRecapReturPurchaseController;
 use App\Http\Controllers\Backend\ReportUsageItemsController as BackendReportUsageItemsController;
+use App\Http\Controllers\Backend\ReportRecapUsageItemsController as BackendReportRecapUsageItemsController;
+use App\Http\Controllers\Backend\ReportUsageItemOutsideController as BackendReportUsageItemOutsideController;
+use App\Http\Controllers\Backend\ReportRecapUsageItemOutsideController as BackendReportRecapUsageItemOutsideController;
+use App\Http\Controllers\Backend\ReportStockController as BackendReportStockController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -165,8 +169,16 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportreturpurchases/document', [BackendReportReturPurchaseController::class, 'document']);
     Route::get('reportrecapreturpurchases/print', [ReportRecapReturPurchaseController::class, 'print']);
     Route::get('reportrecapreturpurchases/document', [ReportRecapReturPurchaseController::class, 'document']);
-    Route::get('reportusageitems/print', [ReportRecapReturPurchaseController::class, 'print']);
-    Route::get('reportusageitems/document', [ReportRecapReturPurchaseController::class, 'document']);
+    Route::get('reportusageitems/print', [BackendReportUsageItemsController::class, 'print']);
+    Route::get('reportusageitems/document', [BackendReportUsageItemsController::class, 'document']);
+    Route::get('reportrecapusageitems/print', [BackendReportRecapUsageItemsController::class, 'print']);
+    Route::get('reportrecapusageitems/document', [BackendReportRecapUsageItemsController::class, 'document']);
+    Route::get('reportusageitemoutside/print', [BackendReportUsageItemOutsideController::class, 'print']);
+    Route::get('reportusageitemoutside/document', [BackendReportUsageItemOutsideController::class, 'document']);
+    Route::get('reportrecapusageitemoutside/print', [BackendReportRecapUsageItemOutsideController::class, 'print']);
+    Route::get('reportrecapusageitemoutside/document', [BackendReportRecapUsageItemOutsideController::class, 'document']);
+    Route::get('reportstocks/print', [BackendReportStockController::class, 'print']);
+    Route::get('reportstocks/document', [BackendReportStockController::class, 'document']);
 
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
@@ -293,6 +305,9 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportreturpurchases', [BackendReportReturPurchaseController::class, 'index'])->name('reportreturpurchases.index');
     Route::get('reportrecapreturpurchases', [ReportRecapReturPurchaseController::class, 'index'])->name('reportrecapreturpurchases.index');
     Route::get('reportusageitems', [BackendReportUsageItemsController::class, 'index'])->name('reportusageitems.index');
+    Route::get('reportusageitemoutside', [BackendReportUsageItemOutsideController::class, 'index'])->name('reportusageitemoutside.index');
+    Route::get('reportrecapusageitemoutside', [BackendReportRecapUsageItemOutsideController::class, 'index'])->name('reportrecapusageitemoutside.index');
+    Route::get('reportstocks', [BackendReportStockController::class, 'index'])->name('reportstocks.index');
 
   });
 });
