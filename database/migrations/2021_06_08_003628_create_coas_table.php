@@ -15,10 +15,11 @@ class CreateCoasTable extends Migration
   {
     Schema::create('coas', function (Blueprint $table) {
       $table->id();
-      $table->string('name');
-      $table->string('parent')->nullable();
+      $table->string('name')->unique();
+      $table->string('code')->unique();
+      $table->integer('parent_id')->nullable();
       $table->enum('type', ['harta', 'kewajiban', 'modal', 'pendapatan', 'beban']);
-      $table->enum('normal_balance', ['debit', 'kredit']);
+      $table->enum('normal_balance', ['Db', 'Kr'])->nullable();
     });
   }
 

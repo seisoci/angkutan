@@ -71,6 +71,8 @@ use App\Http\Controllers\Backend\ReportRecapUsageItemsController as BackendRepor
 use App\Http\Controllers\Backend\ReportUsageItemOutsideController as BackendReportUsageItemOutsideController;
 use App\Http\Controllers\Backend\ReportRecapUsageItemOutsideController as BackendReportRecapUsageItemOutsideController;
 use App\Http\Controllers\Backend\ReportStockController as BackendReportStockController;
+use App\Http\Controllers\Backend\CoaController as BackendCoaController;
+use App\Http\Controllers\Backend\JournalController as BackendJournalController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -124,6 +126,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('stocks/select2', [BackendStockController::class, 'select2'])->name('stocks.select2');
     Route::get('employeesmaster/select2', [BackendEmployeeMasterController::class, 'select2'])->name('employeesmaster.select2');
     Route::get('employee/select2', [BackendEmployeeController::class, 'select2'])->name('employee.select2');
+    Route::get('mastercoa/select2', [BackendCoaController::class, 'select2'])->name('mastercoa.select2');
+    Route::get('mastercoa/select2self', [BackendCoaController::class, 'select2self'])->name('mastercoa.select2self');
 
     //Print
     Route::get('invoicesalaries/{id}/print', [BackendInvoiceSalaryController::class, 'print']);
@@ -308,6 +312,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportusageitemoutside', [BackendReportUsageItemOutsideController::class, 'index'])->name('reportusageitemoutside.index');
     Route::get('reportrecapusageitemoutside', [BackendReportRecapUsageItemOutsideController::class, 'index'])->name('reportrecapusageitemoutside.index');
     Route::get('reportstocks', [BackendReportStockController::class, 'index'])->name('reportstocks.index');
+    Route::resource('mastercoa', BackendCoaController::class);
+    Route::resource('journals', BackendJournalController::class);
 
   });
 });

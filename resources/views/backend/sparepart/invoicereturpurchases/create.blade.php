@@ -216,12 +216,12 @@
           },
         },
       }).on('change', function(evt){
-        var $row = $(this).closest("tr");
+        let $row = $(this).closest("tr");
         $row.find('input[name="items[unit][]"]').val('');
         $row.find('input[name="items[qty][]"]').val('').attr('max', 0);
       })
       .on('select2:select', function(evt){
-        var $row = $(this).closest("tr");
+        let $row = $(this).closest("tr");
         $row.find('input[name="items[unit][]"]').val(evt.params.data.qty)
         $row.find('input[name="items[qty][]"]').attr('max', evt.params.data.qty);
       });
@@ -258,13 +258,13 @@
 
     function initCalculation(){
       $('input[name^="items[qty]"],input[name^="items[price]"],#diskon').on('keyup',function()  {
-        var grandtotal = 0;
-        var total      = 0;
-        var grandTotalNetto = 0;
-        var $row       = $(this).closest("tr"); //<table> class
-        var qty        = parseInt($row.find('input[name="items[qty][]"]').val());
-        var diskon     = parseInt($('#diskon').val()) || 0;
-        var price      = parseFloat($row.find('input[name="items[price][]"]').val());
+        let grandtotal = 0;
+        let total      = 0;
+        let grandTotalNetto = 0;
+        let $row       = $(this).closest("tr"); //<table> class
+        let qty        = parseInt($row.find('input[name="items[qty][]"]').val());
+        let diskon     = parseInt($('#diskon').val()) || 0;
+        let price      = parseFloat($row.find('input[name="items[price][]"]').val());
         total          = (price * qty) || 0;
         $row.find('input[name="items[total][]"]').val(total);
         $('input[name^="items[total]"]').each(function() {
@@ -274,35 +274,37 @@
         $('#grandTotal').val(grandTotalNetto);
         $('#totalTagihan').val(grandTotalNetto);
       });
-      $('input[name^="payment[payment]"]').on('keyup',function()  {
-        var total_payment = 0;
-        var grandTotalPayment = 0;
-        var grandTotal    = parseInt($('#grandTotal').val());
-        var $row          = $(this).closest("tr");
-        var total         = parseInt($row.find('input[name="payment[payment][]"]').val());
-        $row.find('input[name="payment[total_payment][]"]').val(total);
-        $('input[name^="payment[total_payment]"]').each(function() {
-          grandTotalPayment += parseInt($(this).val());
-        });
-        $('#grandTotal').val(grandTotal);
-        $('#totalPembayaran').val(grandTotalPayment);
-        $('#sisaPembayaran').val(grandTotal-grandTotalPayment);
-      });
     }
 
     $('tbody').on('click', '.rmItems',function(){
-      var id = this.id;
-      var split_id = id.split("_");
-      var deleteindex = split_id[1];
+      let id = this.id;
+      let split_id = id.split("_");
+      let deleteindex = split_id[1];
       $("#items_" + deleteindex).remove();
+
+      let grandtotal = 0;
+      let total      = 0;
+      let grandTotalNetto = 0;
+      let $row       = $(this).closest("tr"); //<table> class
+      let qty        = parseInt($row.find('input[name="items[qty][]"]').val());
+      let diskon     = parseInt($('#diskon').val()) || 0;
+      let price      = parseFloat($row.find('input[name="items[price][]"]').val());
+      total          = (price * qty) || 0;
+      $row.find('input[name="items[total][]"]').val(total);
+      $('input[name^="items[total]"]').each(function() {
+        grandtotal += parseInt($(this).val());
+      });
+      grandTotalNetto = grandtotal - diskon;
+      $('#grandTotal').val(grandTotalNetto);
+      $('#totalTagihan').val(grandTotalNetto);
     });
 
     $(".add").on('click', function(){
-      var total_items = $(".items").length;
-      var lastid = $(".items:last").attr("id");
-      var split_id = lastid.split("_");
-      var nextindex = Number(split_id[1]) + 1;
-      var max = 100;
+      let total_items = $(".items").length;
+      let lastid = $(".items:last").attr("id");
+      let split_id = lastid.split("_");
+      let nextindex = Number(split_id[1]) + 1;
+      let max = 100;
       if(total_items < max ){
         $(".items:last").after("<tr class='items' id='items_"+ nextindex +"'></tr>");
         $("#items_" + nextindex).append(raw_items(nextindex));
@@ -313,7 +315,7 @@
     });
 
     function raw_items(nextindex){
-      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>"+'<td><select class="form-control select2Stock" name="items[sparepart_id][]"></select></td>'+
+      return "<td><button type='button' id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>"+'<td><select class="form-control select2Stock" name="items[sparepart_id][]"></select></td>'+
       '<td><input type="text" name="items[unit][]" class="form-control unit rounded-0" disabled></td>'+
       '<td><input type="number" min="1" name="items[qty][]" class="form-control rounded-0" ></td>'+
       '<td><input type="text" name="items[price][]" class="currency form-control rounded-0"></td>'+
@@ -324,11 +326,11 @@
       $('.currency').inputmask('remove');
       $('.unit').inputmask('remove');
       e.preventDefault();
-      var form = $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
+      let form = $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let url = form.attr("action");
+      let data = new FormData(this);
       $.ajax({
         beforeSend: function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
@@ -341,10 +343,10 @@
         data: data,
         success: function(response) {
           btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          if (response.status == "success") {
+          if (response.status === "success") {
             toastr.success(response.message, 'Success !');
             setTimeout(function() {
-              if(response.redirect == "" || response.redirect == "reload"){
+              if(response.redirect === "" || response.redirect === "reload"){
 								location.reload();
 							} else {
 								location.href = response.redirect;

@@ -205,7 +205,7 @@
               <td></td>
               <td></td>
               <td class="text-right">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary rounded-0">Submit</button>
               </td>
             </tr>
             </tbody>
@@ -352,7 +352,6 @@
           $('#totalTagihan').val(grandTotalNetto);
         });
         $('input[name^="payment[payment]"]').on('keyup', function () {
-          let total_payment = 0;
           let grandTotalPayment = 0;
           let grandTotal = parseInt($('#grandTotal').val());
           let $row = $(this).closest("tr");
@@ -372,6 +371,22 @@
         let split_id = id.split("_");
         let deleteindex = split_id[1];
         $("#items_" + deleteindex).remove();
+
+        let grandtotal = 0;
+        let total = 0;
+        let grandTotalNetto = 0;
+        let $row = $(this).closest("tr"); //<table> class
+        let qty = parseInt($row.find('input[name="items[qty][]"]').val());
+        let diskon = parseInt($('#diskon').val()) || 0;
+        let price = parseFloat($row.find('input[name="items[price][]"]').val());
+        total = (price * qty) || 0;
+        $row.find('input[name="items[total][]"]').val(total);
+        $('input[name^="items[total]"]').each(function () {
+          grandtotal += parseInt($(this).val());
+        });
+        grandTotalNetto = grandtotal - diskon;
+        $('#grandTotal').val(grandTotalNetto);
+        $('#totalTagihan').val(grandTotalNetto);
       });
 
       $(".add").on('click', function () {
@@ -394,6 +409,18 @@
         let split_id = id.split("_");
         let deleteindex = split_id[1];
         $("#payment_" + deleteindex).remove();
+
+        let grandTotalPayment = 0;
+        let grandTotal = parseInt($('#grandTotal').val());
+        let $row = $(this).closest("tr");
+        let total = parseInt($row.find('input[name="payment[payment][]"]').val());
+        $row.find('input[name="payment[total_payment][]"]').val(total);
+        $('input[name^="payment[total_payment]"]').each(function () {
+          grandTotalPayment += parseInt($(this).val());
+        });
+        $('#grandTotal').val(grandTotal);
+        $('#totalPembayaran').val(grandTotalPayment);
+        $('#sisaPembayaran').val(grandTotal - grandTotalPayment);
       });
 
       $(".addPayment").on('click', function () {
@@ -413,7 +440,7 @@
       });
 
       function raw_items(nextindex) {
-        return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>" + '<td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>' +
+        return "<td><button type='button' id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>" + '<td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>' +
           '<td><input type="text" name="items[qty][]" class="form-control unit rounded-0" /></td>' +
           '<td><input type="text" data-inputmask=""alias": "decimal"" name="items[price][]" class="currency form-control rounded-0" /></td>' +
           '<td><input type="text" name="items[total][]" class="currency form-control rounded-0" disabled /></td>';

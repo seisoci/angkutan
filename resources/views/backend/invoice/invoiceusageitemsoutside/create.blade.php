@@ -251,6 +251,17 @@
       let split_id = id.split("_");
       let deleteindex = split_id[1];
       $("#items_" + deleteindex).remove();
+
+      let $row       = $(this).closest("tr");
+      let qty        = parseInt($row.find('input[name="items[qty][]"]').val());
+      let price      = parseInt($row.find('input[name="items[price][]"]').val());
+      let totalTagihan = 0;
+      total = qty * price;
+      $row.find('input[name="items[total][]"]').val(total);
+      $('input[name^="items[total]"]').each(function() {
+        totalTagihan += parseInt($(this).val());
+      });
+      $('#totalTagihan').val(totalTagihan);
     });
 
     $(".add").on('click', function(){
@@ -268,7 +279,7 @@
     });
 
     function raw_items(nextindex){
-      return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>"+'<td><input type="hidden" name="items[stock_id][]"><input type="text" class="form-control rounded-0" name="items[name][]"></td>'+
+      return "<td><button type='button' id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>"+'<td><input type="hidden" name="items[stock_id][]"><input type="text" class="form-control rounded-0" name="items[name][]"></td>'+
       '<td><input type="text" name="items[qty][]" class="form-control unit rounded-0"/></td>'+
       '<td><input type="text" name="items[price][]" class="form-control rounded-0 currency" /></td>'+
       '<td><input type="text" name="items[total][]" class="currency rounded-0 form-control text-right" disabled></td>'
@@ -296,10 +307,10 @@
         data: data,
         success: function(response) {
           btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          if (response.status == "success") {
+          if (response.status === "success") {
             toastr.success(response.message, 'Success !');
             setTimeout(function() {
-              if(response.redirect == "" || response.redirect == "reload"){
+              if(response.redirect === "" || response.redirect === "reload"){
 								location.reload();
 							} else {
 								location.href = response.redirect;
