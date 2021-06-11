@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d7e05fd56edcc4413ee0b7a4432236c2",
+    "content-hash": "bbd9f3c4907d481e15a3e06416aa88d7",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2156,16 +2156,16 @@
         },
         {
             "name": "mpdf/mpdf",
-            "version": "v8.0.4",
+            "version": "v8.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpdf/mpdf.git",
-                "reference": "d3147a0d790b6d11936fd9c73fa31a7ed45e3f6f"
+                "reference": "7daf07f15334ed59a276bd52131dcca48794cdbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/d3147a0d790b6d11936fd9c73fa31a7ed45e3f6f",
-                "reference": "d3147a0d790b6d11936fd9c73fa31a7ed45e3f6f",
+                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/7daf07f15334ed59a276bd52131dcca48794cdbd",
+                "reference": "7daf07f15334ed59a276bd52131dcca48794cdbd",
                 "shasum": ""
             },
             "require": {
@@ -2226,7 +2226,13 @@
                 "issues": "https://github.com/mpdf/mpdf/issues",
                 "source": "https://github.com/mpdf/mpdf"
             },
-            "time": "2019-11-28T09:39:33+00:00"
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/mpdf",
+                    "type": "custom"
+                }
+            ],
+            "time": "2020-07-15T09:48:00+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -10473,7 +10479,8 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3|^8.0"
+        "php": "^7.3|^8.0",
+        "ext-gd": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"

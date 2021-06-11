@@ -17,8 +17,6 @@ use App\Http\Controllers\Backend\SparepartController as BackendSparepartControll
 use App\Http\Controllers\Backend\ServiceController as BackendServiceController;
 use App\Http\Controllers\Backend\BrandController as BackendBrandController;
 use App\Http\Controllers\Backend\CategoryController as BackendCategoryController;
-use App\Http\Controllers\Backend\CashController as BackendCashController;
-use App\Http\Controllers\Backend\BankController as BackendBankController;
 use App\Http\Controllers\Backend\CompanyController as BackendCompanyController;
 use App\Http\Controllers\Backend\TypeCapacityController as BackendTypeCapacityController;
 use App\Http\Controllers\Backend\PrefixController as BackendPrefixController;
@@ -73,6 +71,7 @@ use App\Http\Controllers\Backend\ReportRecapUsageItemOutsideController as Backen
 use App\Http\Controllers\Backend\ReportStockController as BackendReportStockController;
 use App\Http\Controllers\Backend\CoaController as BackendCoaController;
 use App\Http\Controllers\Backend\JournalController as BackendJournalController;
+use App\Http\Controllers\Backend\ConfigCoaController as BackendConfigCoaController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -239,8 +238,6 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
 
     //Master Accounting
     Route::resource('prefixes', BackendPrefixController::class)->except(['create', 'edit', 'show']);
-    Route::resource('cashes', BackendCashController::class)->except(['create', 'edit', 'show']);
-    Route::resource('banks', BackendBankController::class)->except(['create', 'edit', 'show']);
     Route::resource('companies', BackendCompanyController::class)->except(['create', 'edit', 'show']);
     Route::resource('employeesmaster', BackendEmployeeMasterController::class)->except(['create', 'edit', 'show']);
     Route::resource('employees', BackendEmployeeController::class);
@@ -309,11 +306,13 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportreturpurchases', [BackendReportReturPurchaseController::class, 'index'])->name('reportreturpurchases.index');
     Route::get('reportrecapreturpurchases', [ReportRecapReturPurchaseController::class, 'index'])->name('reportrecapreturpurchases.index');
     Route::get('reportusageitems', [BackendReportUsageItemsController::class, 'index'])->name('reportusageitems.index');
+    Route::get('reportrecapusageitems', [BackendReportRecapUsageItemsController::class, 'index'])->name('reportrecapusageitems.index');
     Route::get('reportusageitemoutside', [BackendReportUsageItemOutsideController::class, 'index'])->name('reportusageitemoutside.index');
     Route::get('reportrecapusageitemoutside', [BackendReportRecapUsageItemOutsideController::class, 'index'])->name('reportrecapusageitemoutside.index');
     Route::get('reportstocks', [BackendReportStockController::class, 'index'])->name('reportstocks.index');
     Route::resource('mastercoa', BackendCoaController::class);
     Route::resource('journals', BackendJournalController::class);
+    Route::resource('configcoa', BackendConfigCoaController::class);
 
   });
 });

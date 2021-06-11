@@ -47,6 +47,7 @@ class CoaController extends Controller
       if (is_numeric($request->parent_id)) {
         $parent = Coa::where('parent_id', $request->parent_id)->max('code');
         $parent_id = $request->parent_id;
+        $normal_balance = $request->normal_balance;
         if ($parent) {
           $val = explode('.', $parent);
           $lastNum = end($val);
@@ -54,23 +55,44 @@ class CoaController extends Controller
           $code = implode('.', $val) . "." . ++$lastNum;
         } else {
           $parent = Coa::findOrFail($request->parent_id);
-          $code = $parent->code.".1";
+          $code = $parent->code . ".1";
         }
       } elseif ($request->parent_id == 'none') {
-        $parent = Coa::whereNull('parent_id')->max('code');
+        $parent = Coa::whereNull('parent_id')->where('type', $request->type)->max('code');
         $parent_id = NULL;
-        $val = explode('.', $parent);
-        $lastNum = end($val);
-        array_pop($val);
-        $code = implode('.', $val) . "." . ++$lastNum;
+          $normal_balance = NULL;
+        if ($parent == NULL) {
+          switch ($request->type) {
+            case 'harta':
+              $code = '1.0';
+              break;
+            case 'kewajiban':
+              $code = '2.0';
+              break;
+            case 'modal':
+              $code = '3.0';
+              break;
+            case 'pendapatan':
+              $code = '4.0';
+              break;
+            case 'beban':
+              $code = '5.0';
+              break;
+            default:
+          }
+        }else{
+          $val = explode('.', $parent);
+          $lastNum = end($val);
+          array_pop($val);
+          $code = implode('.', $val) . "." . ++$lastNum;
+        }
       }
-
       Coa::create([
         'name' => $request->name,
         'code' => $code,
         'parent_id' => $parent_id,
         'type' => $request->type,
-        'normal_balance' => $request->normal_balance ?? NULL,
+        'normal_balance' => $normal_balance,
       ]);
       $response = response()->json([
         'status' => 'success',
@@ -81,27 +103,6 @@ class CoaController extends Controller
       $response = response()->json(['error' => $validator->errors()->all()]);
     }
     return $response;
-  }
-
-  public function show(Coa $coa)
-  {
-    //
-  }
-
-
-  public function edit(Coa $coa)
-  {
-    //
-  }
-
-  public function update(Request $request, Coa $coa)
-  {
-    //
-  }
-
-  public function destroy(Coa $coa)
-  {
-    //
   }
 
   public function select2(Request $request)
@@ -115,10 +116,10 @@ class CoaController extends Controller
       ->when($status, function ($q, $status) {
         return $q->where('status', $status);
       })
-      ->orderBy('name')
+      ->orderBy('code')
       ->skip($offset)
       ->take($resultCount)
-      ->selectRaw('id, name as text')
+      ->selectRaw('id, CONCAT(`code`, " - ", `name`) as text')
       ->get();
 
     $count = Coa::where('name', 'LIKE', '%' . $request->q . '%')
@@ -150,7 +151,7 @@ class CoaController extends Controller
       ->when($status, function ($q, $status) {
         return $q->where('status', $status);
       })
-      ->orderBy('name')
+      ->orderBy('code')
       ->skip($offset)
       ->take($resultCount)
       ->selectRaw('id, CONCAT(`code`, " - ", `name`) as text')

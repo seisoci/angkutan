@@ -48,4 +48,8 @@ class Coa extends Model
   {
     return $this->code ." - ". $this->name;
   }
+
+  public function configcoa(){
+    return $this->belongsToMany(ConfigCoa::class);
+  }
 }

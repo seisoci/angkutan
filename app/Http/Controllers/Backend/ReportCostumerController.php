@@ -7,12 +7,9 @@ use App\Models\Costumer;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yajra\DataTables\Facades\DataTables;
@@ -33,7 +30,7 @@ class ReportCostumerController extends Controller
     $config['print_url'] = 'reportcostumers/print';
 
     if ($request->ajax()) {
-      $data = Costumer::query();
+      $data = Costumer::orderBy('name', 'asc');
       return DataTables::of($data)
         ->make(true);
     }
@@ -47,7 +44,7 @@ class ReportCostumerController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = Costumer::all();
+    $data = Costumer::orderBy('name', 'asc')->get();
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->getPageSetup()
@@ -196,7 +193,7 @@ class ReportCostumerController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = Costumer::all();
+    $data = Costumer::orderBy('name', 'asc')->get();
     return view('backend.report.reportcostumers.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
   }
 

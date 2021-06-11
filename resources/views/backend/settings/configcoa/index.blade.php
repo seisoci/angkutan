@@ -10,7 +10,7 @@
       </h3>
     </div>
     <!--begin::Form-->
-    <form id="formStore" action="{{ route('backend.mastercoa.store') }}">
+    <form id="formStore" action="{{ route('backend.configcoa.store') }}">
       @csrf
       <div class="card-body">
         <div class="form-group" style="display:none;">
@@ -21,48 +21,20 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-8 offset-md-1">
-            <div class="form-group row">
-              <label class="col-form-label text-right col-lg-3 col-sm-12">Nama Akun<span
-                  class="text-danger"> *</span></label>
-              <div class="col-lg-9 col-md-9 col-sm-12">
-                <input type="text" class="form-control" name="name"/>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-form-label text-right col-lg-3 col-sm-12">Akun Parent<span class="text-danger"> *</span></label>
-              <div class="col-lg-9 col-md-9 col-sm-12">
-                <select id="select2Coa" name="parent_id" class="form-control">
+          <div class="col-md-8">
+            @foreach($data as $item)
+              <div class="form-group">
+                <label>{{ $item->name }} <span class="text-danger">*</span></label>
+                <select name="coa[{{ $item->id }}][]" class="select2" multiple="multiple" style="width: 100%">
+                  @foreach($item->coa as $itemChild)
+                    <option value="{{ $itemChild->id }}" selected>{{ $itemChild->code ." - ". $itemChild->name}}</option>
+                  @endforeach
                 </select>
               </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-form-label text-right col-lg-3 col-sm-12">Saldo Normal<span
-                  class="text-danger"> *</span></label>
-              <div class="col-lg-9 col-md-9 col-sm-12">
-                <select name="normal_balance" class="form-control">
-                  <option value="Db">Debit</option>
-                  <option value="Kr">Kredit</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-form-label text-right col-lg-3 col-sm-12">Kelompok<span
-                  class="text-danger"> *</span></label>
-              <div class="col-lg-9 col-md-9 col-sm-12">
-                <select name="type" class="form-control">
-                  <option value="harta">Harta</option>
-                  <option value="kewajiban">Kewajiban</option>
-                  <option value="modal">Modal</option>
-                  <option value="pendapatan">Pendapatan</option>
-                  <option value="beban">Beban</option>
-                </select>
-              </div>
-            </div>
+            @endforeach
           </div>
         </div>
         <div class="card-footer d-flex justify-content-end">
-          <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
           <button type="submit" class="btn btn-primary">Submit</button>
         </div>
       </div>
@@ -78,9 +50,25 @@
 {{-- Scripts Section --}}
 @section('scripts')
   {{-- vendors --}}
+
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
+      $(".select2").select2({
+        placeholder: 'Select Coa',
+        ajax: {
+          url: "{{route('backend.mastercoa.select2self')}}",
+          dataType: 'json',
+          cache: true,
+          data: function (params) {
+            return {
+              q: params.term,
+              page: params.page || 1
+            };
+          },
+        },
+      });
+
       $("#formStore").submit(function (e) {
         e.preventDefault();
         let form = $(this);
@@ -100,16 +88,15 @@
           data: data,
           success: function (response) {
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-            if (response.status === "success") {
+            if (response.status == "success") {
               toastr.success(response.message, 'Success !');
               setTimeout(function () {
-                if (response.redirect === "" || response.redirect === "reload") {
+                if (response.redirect == "" || response.redirect == "reload") {
                   location.reload();
                 } else {
                   location.href = response.redirect;
                 }
               }, 1000);
-              $("[role='alert']").parent().css("display", "none");
             } else {
               $("[role='alert']").parent().removeAttr("style");
               $(".alert-text").html('');
@@ -124,21 +111,6 @@
             toastr.error(response.responseJSON.message, 'Failed !');
           }
         });
-      });
-
-      $("#select2Coa").select2({
-        placeholder: "Choose Parent",
-        ajax: {
-          url: "{{ route('backend.mastercoa.select2') }}",
-          dataType: "json",
-          cache: true,
-          data: function (e) {
-            return {
-              q: e.term || '',
-              page: e.page || 1
-            }
-          },
-        },
       });
     });
   </script>

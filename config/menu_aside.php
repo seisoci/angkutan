@@ -117,7 +117,11 @@ return [
       'submenu' => [
         [
           'title' => 'Master Akun',
-          'page' => 'backend/spareparts'
+          'page' => 'backend/mastercoa'
+        ],
+        [
+          'title' => 'Jurnal Transaksi',
+          'page' => 'backend/journals'
         ],
         [
           'title' => 'Kasbon Karyawaan',
@@ -275,10 +279,10 @@ return [
           'title' => 'Laporan Rekapitulasi',
           'page' => 'backend/recapitulation'
         ],
-        [
-          'title' => 'Laporan Pemakaian Sparepart',
-          'page' => 'backend/reportsparepart'
-        ],
+//        [
+//          'title' => 'Laporan Pemakaian Sparepart',
+//          'page' => 'backend/reportsparepart'
+//        ],
         [
           'title' => 'Laporan Data Pelanggan',
           'page' => 'backend/reportcostumers'
@@ -353,15 +357,15 @@ return [
         ],
         [
           'title' => 'Laporan Pembelian Barang Diluar',
-          'page' => 'backend/reportusageitems'
+          'page' => 'backend/reportusageitemoutside'
         ],
         [
           'title' => 'Laporan Rekap Pembelian Barang Diluar',
-          'page' => 'backend/reportrecapusageitems'
+          'page' => 'backend/reportrecapusageitemoutside'
         ],
         [
           'title' => 'Laporan Stok Barang',
-          'page' => 'backend/reportstock'
+          'page' => 'backend/reportstocks'
         ],
       ]
     ],
@@ -383,6 +387,10 @@ return [
         [
           'title' => 'Master Prefix',
           'page' => 'backend/prefixes'
+        ],
+        [
+          'title' => 'Config Akun COA',
+          'page' => 'backend/configcoa'
         ]
       ]
     ],

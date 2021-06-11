@@ -33,7 +33,8 @@ class ReportDriverController extends Controller
     $config['print_url'] = 'reportdrivers/print';
 
     if ($request->ajax()) {
-      $data = Driver::where('another_expedition_id', NULL);
+      $data = Driver::where('another_expedition_id', NULL)
+        ->orderBy('name', 'asc');
       return DataTables::of($data)
         ->addIndexColumn()
         ->editColumn('image', function (Driver $data) {

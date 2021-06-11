@@ -10,11 +10,7 @@ use Validator;
 
 class SettingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
       $config['page_title'] = "Settings";
@@ -24,14 +20,9 @@ class SettingController extends Controller
       $favicon = Setting::where('name', 'favicon_url')->first();
       $logo = Setting::where('name', 'logo_url')->first();
       $data = Setting::where('type', 'settings')->get();
-      return view('backend.settings.index', compact('config', 'data', 'logo', 'favicon'));
+      return view('backend.settings.index', compact('config', 'page_breadcrumbs', 'data', 'logo', 'favicon'));
     }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [

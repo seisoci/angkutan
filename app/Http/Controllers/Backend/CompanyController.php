@@ -9,11 +9,6 @@ use Validator;
 use DataTables;
 class CompanyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
       $config['page_title']       = "List Perusahaan";

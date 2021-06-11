@@ -104,6 +104,8 @@
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
+        bSort: false,
+        searching: false,
         processing: true,
         serverSide: true,
         order: [[0, 'asc']],

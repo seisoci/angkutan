@@ -9,21 +9,28 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
- * @mixin IdeHelperBank
+ * @mixin IdeHelperConfigCoa
  */
-class Bank extends Model
+class ConfigCoa extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
-  protected static $logName = 'Master Bank';
+  protected static $logName = 'Config COA';
   protected static $logFillable = true;
 
   protected $fillable = [
     'name',
-    'bank_code',
+    'code',
+    'parent_id',
+    'type',
+    'normal_balance',
   ];
 
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
-      return $date->format('Y-m-d H:i:s');
+    return $date->format('Y-m-d');
+  }
+
+  public function coa(){
+    return $this->belongsToMany(Coa::class);
   }
 }
