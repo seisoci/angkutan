@@ -21,6 +21,7 @@ class KasbonEmployee extends Model
   protected $fillable = [
     'invoice_kasbon_employee_id',
     'employee_id',
+    'coa_id',
     'amount',
     'status',
     'memo'

@@ -83,82 +83,84 @@
               </div>
             </div>
           </div>
-          <table class="table table-bordered ">
+          <table class="table table-bordered table-responsive">
             <thead>
             <tr>
-              <th class="text-center" scope="col" width="5%">
+              <th class="text-center" scope="col" style="width: 50px">
                 <button type="button"
                         class="add btn btn-sm btn-primary rounded-0">+
                 </button>
               </th>
-              <th class="text-left" scope="col" width="45%">Produk</th>
-              <th class="text-right" scope="col" width="10%">Unit</th>
-              <th class="text-right" scope="col" wdith="20%">Harga</th>
-              <th class="text-right" scope="col" width="20%">Total</th>
+              <th class="text-left" scope="col">Produk</th>
+              <th class="text-right" scope="col">Unit</th>
+              <th class="text-right" scope="col">Harga</th>
+              <th class="text-right" scope="col">Total</th>
             </tr>
             </thead>
             <tbody>
             <tr class="items" id="items_1">
               <td></td>
-              <td><select class="form-control select2SparePart" name="items[sparepart_id][]"></select></td>
-              <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit"/>
-              </td>
-              <td><input type="text" name="items[price][]" class="currency rounded-0 form-control"/></td>
-              <td><input type="text" name="items[total][]" class="currency rounded-0 form-control" disabled/></td>
+              <td><select class="form-control select2SparePart" name="items[sparepart_id][]"
+                          style="width: 350px"></select></td>
+              <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" style="width: 50px"/></td>
+              <td><input type="text" name="items[price][]" class="currency rounded-0 form-control"
+                         style="width: 175px"/></td>
+              <td><input type="text" name="items[total][]" class="currency rounded-0 form-control" disabled
+                         style="width: 175px"/></td>
             </tr>
             </tbody>
           </table>
           <table class="table table-borderless ">
             <thead>
             <tr>
-              <th class="text-center" scope="col" width="5%"></th>
-              <th class="text-left" scope="col" width="45%"></th>
-              <th class="text-right" scope="col" width="10%"></th>
-              <th class="text-right" scope="col" wdith="20%"></th>
-              <th class="text-right" scope="col" width="20%"></th>
+              <th class="text-right" scope="col"></th>
+              <th class="text-right" scope="col"></th>
             </tr>
             </thead>
             <tbody>
             <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="pt-6">Diskon</td>
-              <td width="22%"><input id="diskon" name="discount" type="text" class="currency form-control rounded-0"
-                                     value="0"/>
+              <td class="pt-6 text-right">Diskon</td>
+              <td style="width: 150px;"><input id="diskon" name="discount" type="text" class="currency form-control rounded-0"
+                                     value="0" style="width: 150px"/>
               </td>
             </tr>
             <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="pt-6">Grand Total</td>
-              <td width="22%"><input id="grandTotal" type="text" class="currency form-control rounded-0" disabled/>
+              <td class="pt-6 text-right">Grand Total</td>
+              <td style="width: 150px;"><input id="grandTotal" type="text" class="currency form-control rounded-0" disabled style="width: 150px;"/>
               </td>
             </tr>
             </tbody>
           </table>
-          <table class="table table-bordered">
+          <table class="table table-bordered table-responsive">
             <thead>
             <tr>
-              <th class="text-center" scope="col" width="5%">
+              <th class="text-center" scope="col">
                 <button type="button"
                         class="addPayment btn btn-sm btn-primary rounded-0">+
                 </button>
               </th>
-              <th class="text-left" scope="col" width="45%">Tanggal Pembayaran</th>
-              <th class="text-right" scope="col" width="28%">Nominal</th>
-              <th class="text-right" scope="col" width="22%">Total Pembayaran</th>
+              <th class="text-left" scope="col">Tanggal Pembayaran</th>
+              <th class="text-left" scope="col">Akun</th>
+              <th class="text-right" scope="col">Nominal</th>
+              <th class="text-right" scope="col">Total Pembayaran</th>
             </tr>
             </thead>
             <tbody>
             <tr class="payment" id="payment_1">
-              <td></td>
-              <td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"
-                         style="width:100% !important" readonly/>
+              <td style="width: 50px;"></td>
+              <td style="width: 100px"><input type="text" name="payment[date][]"
+                                              class="form-control rounded-0 datepicker"
+                                              style="width:100px !important" readonly/>
               </td>
-              <td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control"/></td>
-              <td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled/>
+              <td><select name="payment[coa][]" class="form-control rounded-0" style="width: 300px;" required>
+                  @foreach($selectCoa->coa as $item)
+                    <option value="{{ $item->id }}">{{ $item->code ." - ". $item->name }}</option>
+                  @endforeach
+                </select></td>
+              <td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control"
+                         style="width: 175px"/></td>
+              <td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled
+                         style="width: 175px"/>
               </td>
             </tr>
             </tbody>
@@ -166,45 +168,30 @@
           <table class="table table-borderless ">
             <thead>
             <tr>
-              <th class="text-center" scope="col" width="5%"></th>
-              <th class="text-left" scope="col" width="45%"></th>
-              <th class="text-right" scope="col" width="10%"></th>
-              <th class="text-right" scope="col" wdith="20%"></th>
-              <th class="text-right" scope="col" width="20%"></th>
+              <th class="text-right" scope="col"></th>
+              <th class="text-right" scope="col"></th>
             </tr>
             </thead>
             <tbody>
             <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="pt-6">Total Tagihan</td>
-              <td width="22%"><input id="totalTagihan" type="text" class="currency form-control rounded-0" disabled/>
+              <td class="pt-6 text-right">Total Tagihan</td>
+              <td  style="width: 150px"><input id="totalTagihan" type="text" class="currency form-control rounded-0" disabled  style="width: 150px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="pt-6 text-right">Total Pembayaran</td>
+              <td class="text-right" style="width: 150px"><input id="totalPembayaran" type="text" class="currency form-control rounded-0 text-right"
+                                     disabled  style="width: 150px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="pt-6 text-right">Sisa Tagihan</td>
+              <td style="width: 150px"><input id="sisaPembayaran" type="text" class="currency form-control rounded-0" disabled  style="width: 150px;"//>
               </td>
             </tr>
             <tr>
               <td></td>
-              <td></td>
-              <td></td>
-              <td class="pt-6">Total Pembayaran</td>
-              <td width="22%"><input id="totalPembayaran" type="text" class="currency form-control rounded-0"
-                                     disabled/>
-              </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="pt-6">Sisa Tagihan</td>
-              <td width="22%"><input id="sisaPembayaran" type="text" class="currency form-control rounded-0" disabled/>
-              </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="text-right">
+              <td class="text-right" style="width: 150px">
                 <button type="submit" class="btn btn-primary rounded-0">Submit</button>
               </td>
             </tr>
@@ -285,7 +272,6 @@
           ajax: {
             url: "{{ route('backend.spareparts.select2') }}",
             dataType: "json",
-            delay: 250,
             cache: true,
             data: function (e) {
               let arrayUsed = [];
@@ -301,7 +287,7 @@
               }
             },
           },
-        });
+        })
       }
 
       function initDate() {
@@ -312,7 +298,6 @@
           todayHighlight: true
         });
       }
-
 
       function initCurrency() {
         $(".currency").inputmask('decimal', {
@@ -334,36 +319,35 @@
       }
 
       function initCalculation() {
-        $('input[name^="items[qty]"],input[name^="items[price]"],#diskon').on('keyup', function () {
-          let grandtotal = 0;
-          let total = 0;
+        $('input[name^="items[qty]"],input[name^="items[price]"],#diskon,input[name^="payment[payment]"]').on('keyup', function () {
+          let totalPriceItem = 0;
+          let totalPrice = 0;
           let grandTotalNetto = 0;
           let $row = $(this).closest("tr"); //<table> class
-          let qty = parseInt($row.find('input[name="items[qty][]"]').val());
+          let qty = parseInt($row.find('input[name="items[qty][]"]').val()) || 0;
           let diskon = parseInt($('#diskon').val()) || 0;
-          let price = parseFloat($row.find('input[name="items[price][]"]').val());
-          total = (price * qty) || 0;
-          $row.find('input[name="items[total][]"]').val(total);
+          let price = parseFloat($row.find('input[name="items[price][]"]').val()) || 0;
+          totalPrice = (price * qty) || 0;
+          $row.find('input[name="items[total][]"]').val(totalPrice);
           $('input[name^="items[total]"]').each(function () {
-            grandtotal += parseInt($(this).val());
+            totalPriceItem += parseInt($(this).val()) || 0;
           });
-          grandTotalNetto = grandtotal - diskon;
+          grandTotalNetto = totalPriceItem - diskon;
           $('#grandTotal').val(grandTotalNetto);
           $('#totalTagihan').val(grandTotalNetto);
-        });
-        $('input[name^="payment[payment]"]').on('keyup', function () {
+
           let grandTotalPayment = 0;
-          let grandTotal = parseInt($('#grandTotal').val());
-          let $row = $(this).closest("tr");
-          let total = parseInt($row.find('input[name="payment[payment][]"]').val());
-          $row.find('input[name="payment[total_payment][]"]').val(total);
+          let grandTotal = parseInt($('#grandTotal').val()) || 0;
+          let totalPayment = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
+          $row.find('input[name="payment[total_payment][]"]').val(totalPayment);
           $('input[name^="payment[total_payment]"]').each(function () {
-            grandTotalPayment += parseInt($(this).val());
+            grandTotalPayment += parseInt($(this).val()) || 0;
           });
           $('#grandTotal').val(grandTotal);
           $('#totalPembayaran').val(grandTotalPayment);
           $('#sisaPembayaran').val(grandTotal - grandTotalPayment);
         });
+
       }
 
       $('tbody').on('click', '.rmItems', function () {
@@ -372,21 +356,32 @@
         let deleteindex = split_id[1];
         $("#items_" + deleteindex).remove();
 
-        let grandtotal = 0;
-        let total = 0;
+        let totalPriceItem = 0;
+        let totalPrice = 0;
         let grandTotalNetto = 0;
         let $row = $(this).closest("tr"); //<table> class
-        let qty = parseInt($row.find('input[name="items[qty][]"]').val());
+        let qty = parseInt($row.find('input[name="items[qty][]"]').val()) || 0;
         let diskon = parseInt($('#diskon').val()) || 0;
-        let price = parseFloat($row.find('input[name="items[price][]"]').val());
-        total = (price * qty) || 0;
-        $row.find('input[name="items[total][]"]').val(total);
+        let price = parseFloat($row.find('input[name="items[price][]"]').val()) || 0;
+        totalPrice = (price * qty) || 0;
+        $row.find('input[name="items[total][]"]').val(totalPrice);
         $('input[name^="items[total]"]').each(function () {
-          grandtotal += parseInt($(this).val());
+          totalPriceItem += parseInt($(this).val()) || 0;
         });
-        grandTotalNetto = grandtotal - diskon;
+        grandTotalNetto = totalPriceItem - diskon;
         $('#grandTotal').val(grandTotalNetto);
         $('#totalTagihan').val(grandTotalNetto);
+
+        let grandTotalPayment = 0;
+        let grandTotal = parseInt($('#grandTotal').val()) || 0;
+        let totalPayment = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
+        $row.find('input[name="payment[total_payment][]"]').val(totalPayment);
+        $('input[name^="payment[total_payment]"]').each(function () {
+          grandTotalPayment += parseInt($(this).val()) || 0;
+        });
+        $('#grandTotal').val(grandTotal);
+        $('#totalPembayaran').val(grandTotalPayment);
+        $('#sisaPembayaran').val(grandTotal - grandTotalPayment);
       });
 
       $(".add").on('click', function () {
@@ -410,13 +405,28 @@
         let deleteindex = split_id[1];
         $("#payment_" + deleteindex).remove();
 
+        let totalPriceItem = 0;
+        let totalPrice = 0;
+        let grandTotalNetto = 0;
+        let $row = $(this).closest("tr"); //<table> class
+        let qty = parseInt($row.find('input[name="items[qty][]"]').val()) || 0;
+        let diskon = parseInt($('#diskon').val()) || 0;
+        let price = parseFloat($row.find('input[name="items[price][]"]').val()) || 0;
+        totalPrice = (price * qty) || 0;
+        $row.find('input[name="items[total][]"]').val(totalPrice);
+        $('input[name^="items[total]"]').each(function () {
+          totalPriceItem += parseInt($(this).val()) || 0;
+        });
+        grandTotalNetto = totalPriceItem - diskon;
+        $('#grandTotal').val(grandTotalNetto);
+        $('#totalTagihan').val(grandTotalNetto);
+
         let grandTotalPayment = 0;
-        let grandTotal = parseInt($('#grandTotal').val());
-        let $row = $(this).closest("tr");
-        let total = parseInt($row.find('input[name="payment[payment][]"]').val());
-        $row.find('input[name="payment[total_payment][]"]').val(total);
+        let grandTotal = parseInt($('#grandTotal').val()) || 0;
+        let totalPayment = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
+        $row.find('input[name="payment[total_payment][]"]').val(totalPayment);
         $('input[name^="payment[total_payment]"]').each(function () {
-          grandTotalPayment += parseInt($(this).val());
+          grandTotalPayment += parseInt($(this).val()) || 0;
         });
         $('#grandTotal').val(grandTotal);
         $('#totalPembayaran').val(grandTotalPayment);
@@ -448,13 +458,23 @@
 
       function raw_payment(nextindex) {
         return "<td><button id='payment_" + nextindex + "' class='btn btn-block btn-danger rmPayment rounded-0'>-</button></td>" +
-          '<td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"' +
-          ' style="width:100% !important" readonly />' +
+          '<td style="width: 100px"><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"' +
+          '   style="width:100px !important" readonly/>' +
           '</td>' +
-          '<td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control" /></td>' +
-          '<td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled />' +
+          '<td>' +
+          '   <select name="payment[coa][]" class="form-control rounded-0" style="width: 300px;" required>' +
+          '      @foreach($selectCoa->coa as $item)' +
+          '      <option value="{{ $item->id }}">{{ $item->code ." - ". $item->name }}</option>' +
+          '      @endforeach' +
+          '   </select>' +
+          '</td>' +
+          '<td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control" style="width: 175px"/>' +
+          '</td>' +
+          '<td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled' +
+          '   style="width: 175px"/>' +
           '</td>';
       }
+
 
       $("#formStore").submit(function (e) {
         $('.currency').inputmask('remove');

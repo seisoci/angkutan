@@ -12,7 +12,7 @@
           <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
       </div>
     </div>
-    <form id="formStore" action="{{ route('backend.invoicekasbons.store') }}">
+    <form id="formStore" action="{{ route('backend.invoicekasbonemployees.store') }}">
       @csrf
       <div id="TampungId">
       </div>
@@ -34,7 +34,6 @@
                     <div class="col-lg-6">
                       <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                       <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
-                      </select>
                     </div>
                   </div>
                 </div>
@@ -42,7 +41,7 @@
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">Supir:</label>
                     <div class="col-lg-9">
-                      <select name="driver_id" class="form-control" id="select2Driver">
+                      <select name="employee_id" class="form-control" id="select2Employee">
                       </select>
                     </div>
                   </div>
@@ -54,83 +53,96 @@
                   </div>
                 </div>
               </div>
-              <table id="table_invoice" class="table table-striped">
+              <div class="table-responsive">
+                <table id="table_invoice" class="table table-striped">
+                  <thead>
+                  <tr>
+                    <th scope="col" class="text-center">#</th>
+                    <th scope="col">Tanggal</th>
+                    <th scope="col">Nama Supir</th>
+                    <th scope="col">Keterangan</th>
+                    <th scope="col" class="text-right">Nominal</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                  <tfoot>
+                  </tfoot>
+                </table>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-bordered mt-20">
+                  <thead>
+                  <tr>
+                    <th class="text-center" scope="col" style="width: 50px">
+                      <button type="button"
+                              class="addPayment btn btn-sm btn-primary rounded-0" style="width: 50px">+
+                      </button>
+                    </th>
+                    <th class="text-left" scope="col">Tanggal Pembayaran</th>
+                    <th class="text-left" scope="col">Master Akun</th>
+                    <th class="text-right" scope="col">Nominal Cicilan</th>
+                    <th class="text-right" scope="col">Total Cicilan</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr class="payment" id="payment_1">
+                    <td></td>
+                    <td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"
+                               style="max-width:150px !important" readonly/>
+                    </td>
+                    <td><select name="payment[coa_id][]" class="form-control rounded-0" style="min-width: 250px">
+                        @foreach($selectCoa->coa as $item)
+                          <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                        @endforeach
+                      </select></td>
+                    <td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control"
+                               style="min-width: 150px"/></td>
+                    <td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control"
+                               disabled style="min-width: 150px"/>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+              <table class="table table-borderless">
                 <thead>
                 <tr>
-                  <th scope="col" class="text-center">#</th>
-                  <th scope="col">Tanggal</th>
-                  <th scope="col">Nama Supir</th>
-                  <th scope="col">Keterangan</th>
-                  <th scope="col" class="text-right">Nominal</th>
+                  <th class="text-right" scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
-                </tbody>
-                <tfoot>
-                </tfoot>
-              </table>
-              <table class="table table-bordered mt-20">
-                <thead>
                 <tr>
-                  <th class="text-center" scope="col" width="5%">
-                    <button type="button"
-                            class="addPayment btn btn-sm btn-primary rounded-0">+
-                    </button>
-                  </th>
-                  <th class="text-left" scope="col" width="45%">Tanggal Pembayaran</th>
-                  <th class="text-right" scope="col" width="28%">Nominal Cicilan</th>
-                  <th class="text-right" scope="col" width="22%">Total Cicilan</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="payment" id="payment_1">
-                  <td></td>
-                  <td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"
-                             style="width:100% !important" readonly/>
-                  </td>
-                  <td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control"/></td>
-                  <td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control"
-                             disabled/>
-                  </td>
-                </tr>
-                </tbody>
-              </table>
-              <table class="table table-borderless ">
-                <thead>
-                <tr>
-                  <th class="text-center" scope="col" width="5%"></th>
-                  <th class="text-left" scope="col" width="45%"></th>
-                  <th class="text-right" scope="col" width="10%"></th>
-                  <th class="text-right" scope="col" wdith="20%"></th>
-                  <th class="text-right" scope="col" width="20%"></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td class="pt-6">Total Kasbon</td>
-                  <td width="22%"><input id="totalTagihan" type="text" class="currency form-control rounded-0"
-                                         disabled/>
+                  <td>
+                    <div class="form-group row">
+                      <label for="totalTagihan" class="col-lg-3 offset-6 col-form-label text-right">Total Kasbon:</label>
+                      <div class="col-lg-3">
+                        <input id="totalTagihan" type="text" class="currency form-control rounded-0 float-right"
+                               disabled style="width: 150px"/>
+                      </div>
+                    </div>
                   </td>
                 </tr>
                 <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td class="pt-6">Total Pembayaran</td>
-                  <td width="22%"><input id="totalPembayaran" type="text" class="currency form-control rounded-0"
-                                         disabled/>
+                  <td>
+                    <div class="form-group row">
+                      <label for="totalPembayaran" class="col-lg-3 offset-6 col-form-label text-right">Total Pembayaran:</label>
+                      <div class="col-lg-3">
+                        <input id="totalPembayaran" type="text" class="currency form-control rounded-0 float-right"
+                               disabled style="width: 150px"/>
+                      </div>
+                    </div>
                   </td>
                 </tr>
                 <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td class="pt-6">Total Sisa Kasbon</td>
-                  <td width="22%"><input id="sisaPembayaran" type="text" class="currency form-control rounded-0"
-                                         disabled/>
+                  <td>
+                    <div class="form-group row">
+                      <label for="sisaPembayaran" class="col-lg-3 offset-6 col-form-label text-right">Sisa Pembayaran:</label>
+                      <div class="col-lg-3">
+                        <input id="sisaPembayaran" type="text" class="currency form-control rounded-0 float-right"
+                               disabled style="width: 150px"/>
+                      </div>
+                    </div>
                   </td>
                 </tr>
                 </tbody>
@@ -163,7 +175,7 @@
         <thead>
         <tr>
           <th></th>
-          <th>Nama Supir</th>
+          <th>Nama Karyawaan</th>
           <th>Total Pinjaman</th>
           <th>Keterangan</th>
           <th>Created At</th>
@@ -207,14 +219,14 @@
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
-          url: "{{ route('backend.invoicekasbons.create') }}",
+          url: "{{ route('backend.invoicekasbonemployees.create') }}",
           data: function (d) {
-            d.driver_id = $('#select2Driver').find(':selected').val();
+            d.employee_id = $('#select2Employee').find(':selected').val();
           }
         },
         columns: [
           {data: 'id', name: 'id'},
-          {data: 'driver.name', name: 'driver.name'},
+          {data: 'employee.name', name: 'employee.name'},
           {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number('.', '.', 2), className: 'dt-right'},
           {data: 'memo', name: 'memo'},
           {data: 'created_at', name: 'created_at'},
@@ -244,7 +256,7 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           },
           type: 'POST',
-          url: "{{ route('backend.invoicekasbons.findbypk') }}",
+          url: "{{ route('backend.invoicekasbonemployees.findbypk') }}",
           data: {data: JSON.stringify(dataSelected)},
           success: function (response) {
             if (response.data) {
@@ -254,11 +266,11 @@
               let total = 0;
               $.each(response.data, function (index, data) {
                 total += parseFloat(data.amount);
-                $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="' + data.id + '">');
+                $('#TampungId').append('<input type="hidden" name="kasbon_id[]" value="' + data.id + '">');
                 $('#table_invoice tbody').append('<tr>' +
                   ' <td class="text-center">' + (index + 1) + '</td>' +
                   ' <td>' + data.created_at + '</td>' +
-                  ' <td>' + data.driver.name + '</td>' +
+                  ' <td>' + data.employee.name + '</td>' +
                   ' <td>' + data.memo + '</td>' +
                   ' <td class="text-right currency">' + data.amount + '</td>' +
                   '</tr>');
@@ -294,11 +306,11 @@
         },
       });
 
-      $("#select2Driver").select2({
-        placeholder: "Search Supir",
+      $("#select2Employee").select2({
+        placeholder: "Search Karywaaan",
         allowClear: true,
         ajax: {
-          url: "{{ route('backend.drivers.select2self') }}",
+          url: "{{ route('backend.employee.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,
@@ -336,11 +348,10 @@
       }
 
       function initCalculation() {
-        let total_payment = 0;
         let grandTotalPayment = 0;
         let grandTotal = parseInt($('input[name=total_kasbon]').val());
         let $row = $(this).closest("tr");
-        let total = parseInt($row.find('input[name="payment[payment][]"]').val());
+        let total = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
         $row.find('input[name="payment[total_payment][]"]').val(total);
         $('input[name^="payment[total_payment]"]').each(function () {
           grandTotalPayment += parseInt($(this).val());
@@ -350,11 +361,10 @@
         $('#sisaPembayaran').val(grandTotal - grandTotalPayment);
 
         $('input[name^="payment[payment]"]').on('keyup', function () {
-          let total_payment = 0;
           let grandTotalPayment = 0;
           let grandTotal = parseInt($('input[name=total_kasbon]').val()) || 0;
           let $row = $(this).closest("tr");
-          let total = parseInt($row.find('input[name="payment[payment][]"]').val());
+          let total = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
           $row.find('input[name="payment[total_payment][]"]').val(total);
           $('input[name^="payment[total_payment]"]').each(function () {
             grandTotalPayment += parseInt($(this).val()) || 0;
@@ -380,11 +390,38 @@
         }
       });
 
+      $('tbody').on('click', '.rmPayment', function () {
+        let id = this.id;
+        let split_id = id.split("_");
+        let deleteindex = split_id[1];
+        $("#payment_" + deleteindex).remove();
+
+        let grandTotalPayment = 0;
+        let grandTotal = parseInt($('input[name=total_kasbon]').val());
+        let $row = $(this).closest("tr");
+        let total = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
+        $row.find('input[name="payment[total_payment][]"]').val(total);
+        $('input[name^="payment[total_payment]"]').each(function () {
+          grandTotalPayment += parseInt($(this).val());
+        });
+        $('#grandTotal').val(grandTotal);
+        $('#totalPembayaran').val(grandTotalPayment);
+        $('#sisaPembayaran').val(grandTotal - grandTotalPayment);
+      });
+
+
       function raw_payment(nextindex) {
-        return "<td><button id='payment_" + nextindex + "' class='btn btn-block btn-danger rmPayment rounded-0'>-</button></td>" +
+        return "<td><button type='button' id='payment_" + nextindex + "' class='btn btn-block btn-danger rmPayment rounded-0'>-</button></td>" +
           '<td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"' +
           ' style="width:100% !important" readonly />' +
           '</td>' +
+          '<td>'+
+          '   <select  name="payment[coa_id][]" class="form-control rounded-0" style="min-width: 250px">'+
+          '      @foreach($selectCoa->coa as $item)'+
+          '      <option value="{{ $item->id }}">{{ $item->code ." - ". $item->name }}</option>' +
+          '      @endforeach'+
+          '   </select>'+
+          '</td>'+
           '<td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control" /></td>' +
           '<td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled />' +
           '</td>';

@@ -21,6 +21,7 @@ class Kasbon extends Model
   protected $fillable = [
     'invoice_kasbon_id',
     'driver_id',
+    'coa_id',
     'amount',
     'status',
     'memo'

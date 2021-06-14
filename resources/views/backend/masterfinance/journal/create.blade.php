@@ -23,7 +23,7 @@
         <div class="row">
           <div class="col-md-12">
             <div class="form-group row">
-              <label class="col-form-label text-right col-lg-2 col-md-2 col-sm-12">Tanggal Transaksi<span
+              <label class="col-form-label text-right col-lg-3 col-md-3 col-sm-12">Tanggal Transaksi<span
                   class="text-danger"> *</span></label>
               <div class="col-lg-6 col-md-6 col-sm-12">
                 <input type="text" class="form-control rounded-0 datepicker" name="date_journal" readonly/>

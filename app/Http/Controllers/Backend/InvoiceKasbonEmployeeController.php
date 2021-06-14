@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coa;
+use App\Models\ConfigCoa;
+use App\Models\Employee;
 use App\Models\InvoiceKasbonEmployee;
+use App\Models\Journal;
 use App\Models\Kasbon;
 use App\Models\KasbonEmployee;
 use App\Models\PaymentKasbonEmployee;
 use App\Models\Prefix;
 use App\Models\Setting;
+use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -16,6 +21,8 @@ use Yajra\DataTables\Facades\DataTables;
 
 class InvoiceKasbonEmployeeController extends Controller
 {
+  use CarbonTrait;
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Invoice Kasbon Karyawaan";
@@ -70,7 +77,8 @@ class InvoiceKasbonEmployeeController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
-    return view('backend.accounting.invoicekasbonemployees.create', compact('config', 'page_breadcrumbs'));
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicekasbonemployees')->sole();
+    return view('backend.accounting.invoicekasbonemployees.create', compact('config', 'page_breadcrumbs', 'selectCoa'));
   }
 
   public function store(Request $request)
@@ -87,15 +95,16 @@ class InvoiceKasbonEmployeeController extends Controller
       'payment.date.*' => 'required|date_format:Y-m-d',
       'payment.payment' => 'required|array',
       'payment.payment.*' => 'required|integer',
+      'payment.coa_id.*' => 'required|integer',
+      'payment.coa_id..*' => 'required|integer',
     ]);
-
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
         $totalPayment = 0;
         $payments = $request->payment;
         $prefix = Prefix::find($request->prefix);
-
+        $employee = Employee::findOrFail($request->employee_id);
         foreach ($payments['date'] as $key => $item):
           $totalPayment += $payments['payment'][$key];
         endforeach;
@@ -110,16 +119,38 @@ class InvoiceKasbonEmployeeController extends Controller
           'memo' => $request->input('memo'),
         ]);
 
+
         foreach ($request->kasbon_id as $item):
           KasbonEmployee::where('id', $item)->update(['invoice_kasbon_employee_id' => $data->id, 'status' => '1']);
         endforeach;
         foreach ($payments['date'] as $key => $item):
           PaymentKasbonEmployee::create([
             'invoice_kasbon_employee_id' => $data->id,
+            'coa_id' => $payments['coa_id'][$key],
             'date_payment' => $payments['date'][$key],
             'payment' => $payments['payment'][$key],
           ]);
+
+          $coa = Coa::findOrFail($payments['coa_id'][$key]);
+          Journal::create([
+            'coa_id' => $payments['coa_id'][$key],
+            'date_journal' => $payments['date'][$key],
+            'debit' => $payments['payment'][$key],
+            'kredit' => 0,
+            'table_ref' => 'invoicekasbonemployees',
+            'description' => "Penambahan saldo dari kasbon karyawaan $employee->name"
+          ]);
+
+          Journal::create([
+            'coa_id' => 8,
+            'date_journal' => $payments['date'][$key],
+            'debit' => 0,
+            'kredit' => $payments['payment'][$key],
+            'table_ref' => 'invoicekasbonemployees',
+            'description' => "Pembayaran kasbon karyawaan $employee->name ke $coa->name"
+          ]);
         endforeach;
+
 
         if ($restPayment <= -1) {
           return response()->json([
@@ -186,8 +217,9 @@ class InvoiceKasbonEmployeeController extends Controller
       ['page' => '#', 'title' => "Edit Invoice Kasbon Karyawaan"],
 
     ];
-    $data = InvoiceKasbonEmployee::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['employee:id,name', 'kasbonemployees', 'paymentkasbonemployes'])->firstOrFail();
-    return view('backend.accounting.invoicekasbonemployees.edit', compact('config', 'page_breadcrumbs', 'data'));
+    $data = InvoiceKasbonEmployee::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['employee:id,name', 'kasbonemployees', 'paymentkasbonemployes.coa'])->firstOrFail();
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicekasbonemployees')->sole();
+    return view('backend.accounting.invoicekasbonemployees.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
   }
 
   public function update(Request $request, $id)
@@ -197,6 +229,8 @@ class InvoiceKasbonEmployeeController extends Controller
       'payment.date.*' => 'required|date_format:Y-m-d',
       'payment.payment' => 'required|array',
       'payment.payment.*' => 'required|integer',
+      'payment.coa_id.*' => 'required|integer',
+      'payment.coa_id..*' => 'required|integer',
     ]);
 
     if ($validator->passes()) {
@@ -209,6 +243,8 @@ class InvoiceKasbonEmployeeController extends Controller
           $totalPayment += $payments['payment'][$key];
         endforeach;
         $data = InvoiceKasbonEmployee::findOrFail($id);
+        $employee = Employee::findOrFail($data->employee_id);
+
         $restPayment = $data->rest_payment;
         $restPayment -= $totalPayment;
         $totalPayment += $data->total_payment;
@@ -217,11 +253,31 @@ class InvoiceKasbonEmployeeController extends Controller
           'rest_payment' => $restPayment
         ]);
         foreach ($payments['date'] as $key => $item):
-          $dataPayment[] = [
+          PaymentKasbonEmployee::create([
             'invoice_kasbon_employee_id' => $data->id,
+            'coa_id' => $payments['coa_id'][$key],
             'date_payment' => $payments['date'][$key],
             'payment' => $payments['payment'][$key],
-          ];
+          ]);
+
+          $coa = Coa::findOrFail($payments['coa_id'][$key]);
+          Journal::create([
+            'coa_id' => $payments['coa_id'][$key],
+            'date_journal' => $payments['date'][$key],
+            'debit' => $payments['payment'][$key],
+            'kredit' => 0,
+            'table_ref' => 'invoicekasbonemployees',
+            'description' => "Penambahan saldo dari kasbon karyawaan $employee->name"
+          ]);
+
+          Journal::create([
+            'coa_id' => 8,
+            'date_journal' => $payments['date'][$key],
+            'debit' => 0,
+            'kredit' => $payments['payment'][$key],
+            'table_ref' => 'invoicekasbonemployees',
+            'description' => "Pembayaran kasbon karyawaan $employee->name ke $coa->name"
+          ]);
         endforeach;
 
         if ($restPayment <= -1) {
@@ -232,8 +288,6 @@ class InvoiceKasbonEmployeeController extends Controller
           ]);
           DB::rollBack();
         }
-
-        PaymentKasbonEmployee::insert($dataPayment);
 
         DB::commit();
         $response = response()->json([

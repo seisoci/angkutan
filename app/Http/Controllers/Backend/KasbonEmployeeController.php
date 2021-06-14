@@ -3,51 +3,48 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coa;
+use App\Models\ConfigCoa;
+use App\Models\Driver;
+use App\Models\Journal;
 use App\Models\KasbonEmployee;
+use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class KasbonEmployeeController extends Controller
 {
+  use CarbonTrait;
+
   public function index(Request $request)
   {
-    $config['page_title']       = "List Kasbon Karyawaan";
+    $config['page_title'] = "List Kasbon Karyawaan";
     $config['page_description'] = "Daftar List Kasbon Karyawaan";
     $page_breadcrumbs = [
-      ['page' => '#','title' => "List Kasbon Karyawaan"],
+      ['page' => '#', 'title' => "List Kasbon Karyawaan"],
     ];
 
     if ($request->ajax()) {
       $data = KasbonEmployee::with('employee:id,name');
       return DataTables::of($data)
         ->addIndexColumn()
-        // ->addColumn('action', function($row){
-        //   $actionBtn = '
-        //     <div class="dropdown">
-        //         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        //             <i class="fas fa-eye"></i>
-        //         </button>
-        //         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        //           <a href="opnames/'.$row->id.'" class="dropdown-item">Detail Opname</a>
-        //         </div>
-        //     </div>
-        //   ';
-        //     return $actionBtn;
-        // })
         ->make(true);
     }
-    return view('backend.accounting.kasbonemployee.index', compact('config', 'page_breadcrumbs'));
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'kasbonemployees')->sole();
+
+    return view('backend.accounting.kasbonemployee.index', compact('config', 'page_breadcrumbs', 'selectCoa'));
   }
 
   public function create(Request $request)
   {
-    $config['page_title']       ="Create Invoice Kasbon Supir";
+    $config['page_title'] = "Create Invoice Kasbon Supir";
     $config['page_description'] = "Create Invoice Kasbon Supir";
     $page_breadcrumbs = [
-      ['page' => '#','title' => "Create Invoice Kasbon Supir"],
+      ['page' => '#', 'title' => "Create Invoice Kasbon Supir"],
     ];
-    $employee_id    = $request->employee_id;
+    $employee_id = $request->employee_id;
     if ($request->ajax()) {
       $data = KasbonEmployee::with(['employee:id,name'])
         ->when($employee_id, function ($query, $employee_id) {
@@ -63,23 +60,67 @@ class KasbonEmployeeController extends Controller
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'employee_id'   => 'required|integer',
-      'amount'      => 'required|integer',
-      'memo'        => 'required|string',
+      'employee_id' => 'required|integer',
+      'coa_id' => 'required|integer',
+      'amount' => 'required|integer',
+      'memo' => 'required|string',
     ]);
 
-    if($validator->passes()){
-      KasbonEmployee::create([
-        'employee_id'   => $request->input('employee_id'),
-        'amount'      => $request->input('amount'),
-        'memo'      => $request->input('memo'),
-      ]);
-      $response = response()->json([
-        'status'  => 'success',
-        'message' => 'Data has been saved',
-      ]);
-    }else{
-      $response = response()->json(['error'=>$validator->errors()->all()]);
+
+    if ($validator->passes()) {
+      try {
+        DB::beginTransaction();
+        $employee = Driver::findOrFail($request->employee_id);
+        $coa = Coa::findOrFail($request->coa_id);
+        $checksaldo = DB::table('journals')
+          ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+          ->where('journals.coa_id', $request->coa_id)
+          ->groupBy('journals.coa_id')
+          ->first();
+        if ($checksaldo->saldo && $request->amount <= $checksaldo->saldo) {
+          KasbonEmployee::create([
+            'employee_id' => $request->input('employee_id'),
+            'coa_id' => $request->input('coa_id'),
+            'amount' => $request->input('amount'),
+            'memo' => $request->input('memo'),
+          ]);
+          Journal::create([
+            'coa_id' => 8,
+            'date_journal' => $this->dateNow(),
+            'debit' => $request->input('amount'),
+            'kredit' => 0,
+            'table_ref' => 'kasbon',
+            'description' => "Karyawaan $employee->name melakukan kasbon dengan $coa->name"
+          ]);
+          Journal::create([
+            'coa_id' => $request->input('coa_id'),
+            'date_journal' => $this->dateNow(),
+            'debit' => 0,
+            'kredit' => $request->input('amount'),
+            'table_ref' => 'kasbonemployees',
+            'description' => "Pengeluaran untuk kasbon $employee->name"
+          ]);
+          $response = response()->json([
+            'status' => 'success',
+            'message' => 'Data has been saved',
+          ]);
+        } else {
+          $response = response()->json([
+            'status' => 'errors',
+            'message' => "Saldo $coa->name tidak ada/kurang",
+          ]);
+        }
+        DB::commit();
+      } catch (\Throwable $throw) {
+        DB::rollBack();
+        $response = $throw;
+      }
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
     }
     return $response;
   }

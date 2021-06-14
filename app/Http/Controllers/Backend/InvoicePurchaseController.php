@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConfigCoa;
 use App\Models\InvoicePurchase;
 use App\Models\Prefix;
 use App\Models\Purchase;
 use App\Models\PurchasePayment;
 use App\Models\Setting;
 use App\Models\Stock;
-use Illuminate\Http\Request;
-use DB;
-use Validator;
 use DataTables;
+use DB;
+use Illuminate\Http\Request;
+use Validator;
 
 class InvoicePurchaseController extends Controller
 {
@@ -43,7 +44,6 @@ class InvoicePurchaseController extends Controller
             ';
           return $actionBtn;
         })->make(true);
-
     }
     return view('backend.sparepart.invoicepurchases.index', compact('config', 'page_breadcrumbs'));
   }
@@ -54,7 +54,8 @@ class InvoicePurchaseController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "Purchase Order"],
     ];
-    return view('backend.sparepart.invoicepurchases.create', compact('config', 'page_breadcrumbs'));
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicepurchases')->sole();
+    return view('backend.sparepart.invoicepurchases.create', compact('config', 'page_breadcrumbs', 'selectCoa'));
   }
 
   public function store(Request $request)
@@ -75,6 +76,8 @@ class InvoicePurchaseController extends Controller
       'payment.date.*' => 'required|date_format:Y-m-d',
       'payment.payment' => 'required|array',
       'payment.payment.*' => 'required|integer',
+      'payment.coa' => 'required|array',
+      'payment.coa.*' => 'required|integer',
     ]);
 
     if ($validator->passes()) {
@@ -82,7 +85,6 @@ class InvoicePurchaseController extends Controller
         DB::beginTransaction();
         $totalBill = 0;
         $totalPayment = 0;
-        $restPayment = 0;
         $items = $request->items;
         $discount = $request->discount ?? 0;
         $payments = $request->payment;
@@ -133,6 +135,7 @@ class InvoicePurchaseController extends Controller
           PurchasePayment::create([
             'invoice_purchase_id' => $invoice->id,
             'date_payment' => $payments['date'][$key],
+            'coa_id' => $payments['coa'][$key],
             'payment' => $payments['payment'][$key],
           ]);
         endforeach;

@@ -21,6 +21,7 @@ class PurchasePayment extends Model
   protected $fillable = [
     'invoice_purchase_id',
     'date_payment',
+    'coa_id',
     'payment',
   ];
 

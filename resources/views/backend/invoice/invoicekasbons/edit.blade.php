@@ -55,16 +55,16 @@
             </div>
             <table id="table_invoice" class="table table-striped">
               <thead>
-                <tr>
-                  <th scope="col" class="text-center">#</th>
-                  <th scope="col">Tanggal</th>
-                  <th scope="col">Nama Supir</th>
-                  <th scope="col">Keterangan</th>
-                  <th scope="col" class="text-right">Nominal</th>
-                </tr>
+              <tr>
+                <th scope="col" class="text-center">#</th>
+                <th scope="col">Tanggal</th>
+                <th scope="col">Nama Supir</th>
+                <th scope="col">Keterangan</th>
+                <th scope="col" class="text-right">Nominal</th>
+              </tr>
               </thead>
               <tbody>
-                @foreach ($data->kasbons as $item)
+              @foreach ($data->kasbons as $item)
                 <tr>
                   <td class="text-center">{{ $loop->iteration }}</td>
                   <td>{{ $item->created_at }}</td>
@@ -72,89 +72,109 @@
                   <td>{{ $item->memo }}</td>
                   <td class="text-right currency">{{ $item->amount }}</td>
                 </tr>
-                @endforeach
+              @endforeach
               </tbody>
               <tfoot>
-                <tr>
-                  <td colspan="4" class="text-right">Total</td>
-                  <td class="text-right currency">{{ $data->total_kasbon }}</td>
-                </tr>
+              <tr>
+                <td colspan="4" class="text-right">Total</td>
+                <td class="text-right currency">{{ $data->total_kasbon }}</td>
+              </tr>
               </tfoot>
             </table>
             <table class="table table-bordered mt-20">
               <thead>
-                <tr>
-                  <th class="text-center" scope="col" width="5%"><button type="button"
-                      class="addPayment btn btn-sm btn-primary rounded-0">+</button>
-                  </th>
-                  <th class="text-left" scope="col" width="45%">Tanggal Pembayaran</th>
-                  <th class="text-right" scope="col" width="28%">Nominal Cicilan</th>
-                  <th class="text-right" scope="col" width="22%">Total Cicilan</th>
-                </tr>
+              <tr>
+                <th class="text-center" scope="col" width="5%">
+                  <button type="button"
+                          class="addPayment btn btn-sm btn-primary rounded-0">+
+                  </button>
+                </th>
+                <th class="text-left" scope="col">Tanggal Pembayaran</th>
+                <th class="text-left" scope="col">Master Akun</th>
+                <th class="text-right" scope="col">Nominal Cicilan</th>
+                <th class="text-right" scope="col">Total Cicilan</th>
+              </tr>
               </thead>
               <tbody>
-                @foreach ($data->paymentkasbons as $item)
+              @foreach ($data->paymentkasbons as $item)
                 <tr>
                   <td></td>
-                  <td><input type="text" class="rounded-0 form-control" value="{{ $item->date_payment }}" disabled />
+                  <td><input type="text" class="rounded-0 form-control" value="{{ $item->date_payment }}" disabled/>
+                  </td>
+                  <td><input type="text" class="rounded-0 form-control"
+                             value="{{ $item->coa->code ." - ".$item->coa->name }}"
+                             disabled/>
                   </td>
                   <td><input type="text" class="currency rounded-0 form-control" value="{{ $item->payment }}"
-                      disabled />
+                             disabled/>
                   </td>
                   <td><input type="text" class="currency rounded-0 form-control" value="{{ $item->payment }}"
-                      disabled /></td>
+                             disabled/></td>
                 </tr>
-                @endforeach
-                <tr class="payment" id="payment_1">
-                  <td></td>
-                  <td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"
-                      style="width:100% !important" readonly />
-                  </td>
-                  <td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control" /></td>
-                  <td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control"
-                      disabled />
-                  </td>
-                </tr>
+              @endforeach
+              <tr class="payment" id="payment_1">
+                <td></td>
+                <td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"
+                           style="max-width:150px !important" readonly/>
+                </td>
+                <td><select name="payment[coa_id][]" class="form-control rounded-0" style="min-width: 250px">
+                    @foreach($selectCoa->coa as $item)
+                      <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                    @endforeach
+                  </select></td>
+                <td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control"
+                           style="min-width: 150px"/></td>
+                <td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control"
+                           disabled style="min-width: 150px"/>
+                </td>
+              </tr>
               </tbody>
             </table>
             <table class="table table-borderless ">
               <thead>
-                <tr>
-                  <th class="text-center" scope="col" width="5%"></th>
-                  <th class="text-left" scope="col" width="45%"></th>
-                  <th class="text-right" scope="col" width="10%"></th>
-                  <th class="text-right" scope="col" wdith="20%"></th>
-                  <th class="text-right" scope="col" width="20%"></th>
-                </tr>
+              <tr>
+                <th></th>
+              </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td class="pt-6">Total Kasbon</td>
-                  <td width="22%"><input id="totalTagihan" type="text" class="currency form-control rounded-0"
-                      value="{{ $data->total_kasbon }}}" disabled />
-                  </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td class="pt-6">Total Pembayaran</td>
-                  <td width="22%"><input id="totalPembayaran" type="text" class="currency form-control rounded-0"
-                      disabled />
-                  </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td class="pt-6">Total Sisa Kasbon</td>
-                  <td width="22%"><input id="sisaPembayaran" type="text" class="currency form-control rounded-0"
-                      disabled />
-                  </td>
-                </tr>
+              <tr>
+                <td>
+                  <div class="form-group row">
+                    <label for="totalTagihan" class="col-lg-3 offset-6 col-form-label text-right">Total
+                      Kasbon:</label>
+                    <div class="col-lg-3">
+                      <input id="totalTagihan" type="text" class="currency form-control rounded-0 float-right"
+                             disabled style="width: 150px" value="{{ $data->total_kasbon }}"/>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="form-group row">
+                    <label for="totalPembayaran" class="col-lg-3 offset-6 col-form-label text-right">Total
+                      Pembayaran:</label>
+                    <div class="col-lg-3">
+                      <input type="hidden" value="{{ $data->total_payment }}" id="hiddenTotalPembayaran"/>
+                      <input id="totalPembayaran" type="text" class="currency form-control rounded-0 float-right"
+                             style="width: 150px"  value="{{ $data->total_payment }}" disabled/>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="form-group row">
+                    <label for="sisaPembayaran" class="col-lg-3 offset-6 col-form-label text-right">Sisa
+                      Pembayaran:</label>
+                    <div class="col-lg-3">
+                      <input type="hidden" value="{{ $data->rest_payment }}" id="hiddenSisaPembayaran"/>
+                      <input id="sisaPembayaran" type="text" class="currency form-control rounded-0 float-right"
+                             style="width: 150px" disabled/>
+                    </div>
+                  </div>
+                </td>
+              </tr>
               </tbody>
             </table>
           </div>
@@ -214,32 +234,42 @@
       });
     }
 
-    function initCalculation(){
-      $('#totalPembayaran').val({{ $data->total_payment }});
-      $('#sisaPembayaran').val({{ $data->rest_payment }});
+    function initCalculation() {
+      let grandTotalPayment = parseInt($('#hiddenTotalPembayaran').val()) || 0;
+      let grandTotal = parseInt($('#totalTagihan').val()) || 0;
+      let $row = $(this).closest("tr");
+      let total = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
+      $row.find('input[name="payment[total_payment][]"]').val(total);
+      $('input[name^="payment[total_payment]"]').each(function () {
+        grandTotalPayment += parseInt($(this).val()) || 0;
+      });
+      $('#grandTotal').val(grandTotal);
+      $('#totalPembayaran').val(grandTotalPayment);
+      $('#sisaPembayaran').val(grandTotal - grandTotalPayment);
 
-      $('input[name^="payment[payment]"]').on('keyup',function()  {
-        var grandTotalPayment = {{ $data->total_payment }};
-        var grandTotal = {{ $data->total_kasbon }};
-        var $row          = $(this).closest("tr");
-        var total         = parseInt($row.find('input[name="payment[payment][]"]').val());
+      $('input[name^="payment[payment]"]').on('keyup', function () {
+        let grandTotalPayment = parseInt($('#hiddenTotalPembayaran').val()) || 0;
+        let grandTotal = parseInt($('#totalTagihan').val()) || 0;
+        let $row = $(this).closest("tr");
+        let total = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
         $row.find('input[name="payment[total_payment][]"]').val(total);
-        $('input[name^="payment[total_payment]"]').each(function() {
-          grandTotalPayment += parseInt($(this).val());
+        $('input[name^="payment[total_payment]"]').each(function () {
+          grandTotalPayment += parseInt($(this).val()) || 0;
         });
+        $('#grandTotal').val(grandTotal);
         $('#totalPembayaran').val(grandTotalPayment);
-        $('#sisaPembayaran').val(grandTotal-grandTotalPayment);
+        $('#sisaPembayaran').val(grandTotal - grandTotalPayment);
       });
     }
 
-    $(".addPayment").on('click', function(){
-      var total_items = $(".payment").length;
-      var lastid = $(".payment:last").attr("id");
-      var split_id = lastid.split("_");
-      var nextindex = Number(split_id[1]) + 1;
-      var max = 100;
-      if(total_items < max ){
-        $(".payment:last").after("<tr class='payment' id='payment_"+ nextindex +"'></tr>");
+    $(".addPayment").on('click', function () {
+      let total_items = $(".payment").length;
+      let lastid = $(".payment:last").attr("id");
+      let split_id = lastid.split("_");
+      let nextindex = Number(split_id[1]) + 1;
+      let max = 100;
+      if (total_items < max) {
+        $(".payment:last").after("<tr class='payment' id='payment_" + nextindex + "'></tr>");
         $("#payment_" + nextindex).append(raw_payment(nextindex));
         initCalculation();
         initCurrency();
@@ -247,25 +277,51 @@
       }
     });
 
+    $('tbody').on('click', '.rmPayment', function () {
+      let id = this.id;
+      let split_id = id.split("_");
+      let deleteindex = split_id[1];
+      $("#payment_" + deleteindex).remove();
+
+      let grandTotalPayment = parseInt($('#hiddenTotalPembayaran').val()) || 0;
+      let grandTotal = parseInt($('#totalTagihan').val()) || 0;
+      let $row = $(this).closest("tr");
+      let total = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
+      $row.find('input[name="payment[total_payment][]"]').val(total);
+      $('input[name^="payment[total_payment]"]').each(function () {
+        grandTotalPayment += parseInt($(this).val()) || 0;
+      });
+      $('#grandTotal').val(grandTotal);
+      $('#totalPembayaran').val(grandTotalPayment);
+      $('#sisaPembayaran').val(grandTotal - grandTotalPayment);
+    });
+
     function raw_payment(nextindex){
-      return "<td><button id='payment_" + nextindex + "' class='btn btn-block btn-danger rmPayment rounded-0'>-</button></td>"+
-      '<td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"'+
-      ' style="width:100% !important" readonly />'+
-        '</td>'+
-      '<td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control" /></td>'+
-      '<td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled />'+
+      return "<td><button id='payment_" + nextindex + "' class='btn btn-block btn-danger rmPayment rounded-0'>-</button></td>" +
+        '<td><input type="text" name="payment[date][]" class="form-control rounded-0 datepicker"' +
+        ' style="width:100% !important" readonly />' +
+        '</td>' +
+        '<td>' +
+        '   <select  name="payment[coa_id][]" class="form-control rounded-0" style="min-width: 250px">' +
+        '      @foreach($selectCoa->coa as $item)' +
+        '      <option value="{{ $item->id }}">{{ $item->code ." - ". $item->name }}</option>' +
+        '      @endforeach' +
+        '   </select>' +
+        '</td>' +
+        '<td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control" /></td>' +
+        '<td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled />' +
         '</td>';
     }
 
     $("#formUpdate").submit(function(e){
       $('.currency').inputmask('remove');
       e.preventDefault();
-      var form 	= $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
-      var url 	= form.attr("action");
-      var data 	= new FormData(this);
+      let form 	= $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      let url 	= form.attr("action");
+      let data 	= new FormData(this);
       $.ajax({
         beforeSend:function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled","disabled");
@@ -282,10 +338,10 @@
         success: function(response) {
           initCurrency();
           btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          if ( response.status == "success" ){
+          if ( response.status === "success" ){
             toastr.success(response.message,'Success !');
             setTimeout(function() {
-              if(response.redirect == "" || response.redirect == "reload"){
+              if(response.redirect === "" || response.redirect === "reload"){
 								location.reload();
 							} else {
 								location.href = response.redirect;

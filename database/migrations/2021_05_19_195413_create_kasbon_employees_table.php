@@ -17,6 +17,7 @@ class CreateKasbonEmployeesTable extends Migration
       $table->id();
       $table->foreignId('invoice_kasbon_employee_id')->nullable()->references('id')->on('invoice_kasbon_employees')->onDelete('cascade');
       $table->foreignId('employee_id')->references('id')->on('employees');
+      $table->foreignId('coa_id')->constrained('coa');
       $table->decimal('amount', 15, 2);
       $table->enum('status', [0, 1])->default(0);
       $table->text('memo')->nullable();

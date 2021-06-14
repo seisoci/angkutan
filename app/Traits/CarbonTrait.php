@@ -16,6 +16,10 @@ trait CarbonTrait {
     return Carbon::now()->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s');
   }
 
+  public function dateNow(){
+    return Carbon::now()->setTimezone('Asia/Jakarta')->format('Y-m-d');
+  }
+
   public function toDateServerStart($date){
     return Carbon::createFromFormat('Y-m-d H:i:s', $date." 00:00:00", 'UTC')->setTimezone('America/Los_Angeles')->format('Y-m-d H:i:s');
   }

@@ -17,6 +17,7 @@ class CreateKasbonsTable extends Migration
           $table->id();
           $table->foreignId('invoice_kasbon_id')->nullable()->references('id')->on('invoice_kasbons')->onDelete('cascade');
           $table->foreignId('driver_id')->references('id')->on('drivers');
+          $table->foreignId('coa_id')->references('id')->on('coas');
           $table->decimal('amount', 15, 2);
           $table->enum('status', [0,1])->default(0);
           $table->text('memo')->nullable();

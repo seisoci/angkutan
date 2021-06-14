@@ -21,6 +21,7 @@ class PaymentKasbonEmployee extends Model
 
   protected $fillable = [
     'invoice_kasbon_employee_id',
+    'coa_id',
     'date_payment',
     'payment'
   ];
@@ -28,6 +29,10 @@ class PaymentKasbonEmployee extends Model
   public function getCreatedAtAttribute($value){
     $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('Y-m-d H:i:s');
+  }
+
+  public function coa(){
+    return $this->belongsTo(Coa::class, 'coa_id');
   }
 
   public function invoicekasbonemployee(){

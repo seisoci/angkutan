@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CoaController extends Controller
 {
+
   public function index()
   {
     $config['page_title'] = "Master Akun COA";
@@ -18,7 +18,7 @@ class CoaController extends Controller
       ['page' => '#', 'title' => "Master Akun COA"],
     ];
 
-    $data = Coa::with('children')->whereNull('parent_id')->get();
+    $data = Coa::with('children')->whereNull('parent_id')->orderBy('code', 'asc')->get();
     $collection = collect($data)->groupBy('type');
     return view('backend.masterfinance.coa.index', compact('config', 'page_breadcrumbs', 'collection'));
 
@@ -60,7 +60,7 @@ class CoaController extends Controller
       } elseif ($request->parent_id == 'none') {
         $parent = Coa::whereNull('parent_id')->where('type', $request->type)->max('code');
         $parent_id = NULL;
-          $normal_balance = NULL;
+        $normal_balance = NULL;
         if ($parent == NULL) {
           switch ($request->type) {
             case 'harta':
@@ -80,7 +80,7 @@ class CoaController extends Controller
               break;
             default:
           }
-        }else{
+        } else {
           $val = explode('.', $parent);
           $lastNum = end($val);
           array_pop($val);

@@ -3,7 +3,13 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coa;
+use App\Models\ConfigCoa;
+use App\Models\Driver;
+use App\Models\Employee;
 use App\Models\InvoiceKasbon;
+use App\Models\InvoiceKasbonEmployee;
+use App\Models\Journal;
 use App\Models\Kasbon;
 use App\Models\PaymentKasbon;
 use App\Models\Prefix;
@@ -70,7 +76,8 @@ class InvoiceKasbonController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
-    return view('backend.invoice.invoicekasbons.create', compact('config', 'page_breadcrumbs'));
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicekasbons')->sole();
+    return view('backend.invoice.invoicekasbons.create', compact('config', 'page_breadcrumbs', 'selectCoa'));
   }
 
   public function store(Request $request)
@@ -87,6 +94,8 @@ class InvoiceKasbonController extends Controller
       'payment.date.*' => 'required|date_format:Y-m-d',
       'payment.payment' => 'required|array',
       'payment.payment.*' => 'required|integer',
+      'payment.coa_id.*' => 'required|integer',
+      'payment.coa_id..*' => 'required|integer',
     ]);
 
     if ($validator->passes()) {
@@ -94,9 +103,8 @@ class InvoiceKasbonController extends Controller
         DB::beginTransaction();
         $prefix = Prefix::findOrFail($request->prefix);
         $totalPayment = 0;
-        $restPayment = 0;
         $payments = $request->payment;
-        $prefix = Prefix::find($request->prefix);
+        $driver = Driver::findOrFail($request->driver_id);
 
         foreach ($payments['date'] as $key => $item):
           $totalPayment += $payments['payment'][$key];
@@ -118,8 +126,28 @@ class InvoiceKasbonController extends Controller
         foreach ($payments['date'] as $key => $item):
           PaymentKasbon::create([
             'invoice_kasbon_id' => $data->id,
+            'coa_id' => $payments['coa_id'][$key],
             'date_payment' => $payments['date'][$key],
             'payment' => $payments['payment'][$key],
+          ]);
+
+          $coa = Coa::findOrFail($payments['coa_id'][$key]);
+          Journal::create([
+            'coa_id' => $payments['coa_id'][$key],
+            'date_journal' => $payments['date'][$key],
+            'debit' => $payments['payment'][$key],
+            'kredit' => 0,
+            'table_ref' => 'invoicekasbons',
+            'description' => "Penambahan saldo dari kasbon supir $driver->name"
+          ]);
+
+          Journal::create([
+            'coa_id' => 8,
+            'date_journal' => $payments['date'][$key],
+            'debit' => 0,
+            'kredit' => $payments['payment'][$key],
+            'table_ref' => 'invoicekasbons',
+            'description' => "Pembayaran kasbon supir $driver->name ke $coa->name"
           ]);
         endforeach;
 
@@ -188,8 +216,9 @@ class InvoiceKasbonController extends Controller
       ['page' => '#', 'title' => "Edit Invoice Kasbon Supir"],
 
     ];
-    $data = InvoiceKasbon::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['driver:id,name', 'kasbons', 'paymentkasbons'])->firstOrFail();
-    return view('backend.invoice.invoicekasbons.edit', compact('config', 'page_breadcrumbs', 'data'));
+    $data = InvoiceKasbon::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['driver:id,name', 'kasbons', 'paymentkasbons.coa'])->firstOrFail();
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicekasbons')->sole();
+    return view('backend.invoice.invoicekasbons.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
   }
 
 
@@ -200,6 +229,8 @@ class InvoiceKasbonController extends Controller
       'payment.date.*' => 'required|date_format:Y-m-d',
       'payment.payment' => 'required|array',
       'payment.payment.*' => 'required|integer',
+      'payment.coa_id.*' => 'required|integer',
+      'payment.coa_id..*' => 'required|integer',
     ]);
 
     if ($validator->passes()) {
@@ -207,11 +238,11 @@ class InvoiceKasbonController extends Controller
         DB::beginTransaction();
         $totalPayment = 0;
         $payments = $request->payment;
-
         foreach ($payments['date'] as $key => $item):
           $totalPayment += $payments['payment'][$key];
         endforeach;
         $data = InvoiceKasbon::findOrFail($id);
+        $driver = Driver::findOrFail($data->driver_id);
         $restPayment = $data->rest_payment;
         $restPayment -= $totalPayment;
         $totalPayment += $data->total_payment;
@@ -220,11 +251,31 @@ class InvoiceKasbonController extends Controller
           'rest_payment' => $restPayment
         ]);
         foreach ($payments['date'] as $key => $item):
-          $dataPayment[] = [
+          PaymentKasbon::create([
             'invoice_kasbon_id' => $data->id,
+            'coa_id' => $payments['coa_id'][$key],
             'date_payment' => $payments['date'][$key],
             'payment' => $payments['payment'][$key],
-          ];
+          ]);
+
+          $coa = Coa::findOrFail($payments['coa_id'][$key]);
+          Journal::create([
+            'coa_id' => $payments['coa_id'][$key],
+            'date_journal' => $payments['date'][$key],
+            'debit' => $payments['payment'][$key],
+            'kredit' => 0,
+            'table_ref' => 'invoicekasbons',
+            'description' => "Penambahan saldo dari kasbon supir $driver->name"
+          ]);
+
+          Journal::create([
+            'coa_id' => 8,
+            'date_journal' => $payments['date'][$key],
+            'debit' => 0,
+            'kredit' => $payments['payment'][$key],
+            'table_ref' => 'invoicekasbons',
+            'description' => "Pembayaran kasbon supir $driver->name ke $coa->name"
+          ]);
         endforeach;
 
         if ($restPayment <= -1) {
@@ -235,8 +286,6 @@ class InvoiceKasbonController extends Controller
           ]);
           DB::rollBack();
         }
-
-        PaymentKasbon::insert($dataPayment);
 
         DB::commit();
         $response = response()->json([
