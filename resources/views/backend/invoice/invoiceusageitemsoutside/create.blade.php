@@ -24,21 +24,21 @@
             <div class="col-md-6">
               <div class="form-group row">
                 <label class="col-lg-4 col-form-label">Tanggal Invoice:</label>
-                <div class="col-md-6">
+                <div class="col-md-8">
                   <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date"
                          placeholder="Tanggal Invoice" readonly>
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-lg-4 col-form-label">Prefix:</label>
-                <div class="col-lg-6">
+                <div class="col-lg-8">
                   <select name="prefix" class="form-control" id="select2Prefix">
                   </select>
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-lg-4 col-form-label">No. Invoice Pemakaian:</label>
-                <div class="col-lg-6">
+                <div class="col-lg-8">
                   <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                   <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
                   </select>
@@ -60,61 +60,63 @@
                   </select>
                 </div>
               </div>
+              <div class="form-group row">
+                <label class="col-lg-3 col-form-label">Master Akun:</label>
+                <div class="col-lg-9">
+                  <select name="coa_id" class="form-control rounded-0" style="min-width: 250px">
+                    @foreach($selectCoa->coa as $item)
+                      <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
-          <table class="table table-bordered ">
-            <thead>
+          <div class="table-responsive">
+            <table class="table table-bordered ">
+              <thead>
               <tr>
-                <th class="text-center" scope="col" width="5%"><button type="button"
-                    class="add btn btn-sm btn-primary rounded-0">+</button>
+                <th class="text-center" scope="col" style="min-width: 50px"><button type="button"
+                                                                       class="add btn btn-sm btn-primary rounded-0">+</button>
                 </th>
-                <th class="text-left" scope="col" width="45%">Produk</th>
-                <th class="text-center" scope="col" width="10%">Unit</th>
-                <th class="text-right" scope="col" wdith="20%">Harga</th>
-                <th class="text-right" scope="col" wdith="20%">Total</th>
+                <th class="text-left" scope="col" style="min-width: 300px">Produk</th>
+                <th class="text-center" scope="col" style="width: 75px">Unit</th>
+                <th class="text-right" scope="col" style="min-width: 150px">Harga</th>
+                <th class="text-right" scope="col" style="min-width: 150px">Total</th>
               </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
               <tr class="items" id="items_1">
                 <td></td>
                 <td>
                   <input type="hidden" name="items[stock_id][]">
-                  <input type="text" class="form-control rounded-0" name="items[name][]">
+                  <input type="text" class="form-control rounded-0" name="items[name][]" style="width: 300px">
                 </td>
-                <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" />
+                <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" style="max-width: 50px"/>
                 </td>
-                <td><input type="text" name="items[price][]" class="rounded-0 form-control currency" />
+                <td><input type="text" name="items[price][]" class="rounded-0 form-control currency" style="min-width: 150px"/>
                 </td>
-                <td><input type="text" name="items[total][]" class="currency rounded-0 form-control text-right"
-                    disabled></td>
+                <td><input type="text" name="items[total][]" class="currency rounded-0 form-control text-right" style="min-width: 150px"
+                           disabled></td>
               </tr>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
           <table class="table table-borderless ">
             <thead>
               <tr>
-                <th class="text-center" scope="col" width="5%"></th>
-                <th class="text-left" scope="col" width="45%"></th>
-                <th class="text-right" scope="col" width="10%"></th>
-                <th class="text-right" scope="col" wdith="20%"></th>
-                <th class="text-right" scope="col" width="20%"></th>
+                <th class="text-center" scope="col"></th>
+                <th class="text-left" scope="col"></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="pt-6">Total Tagihan</td>
-                <td width="22%"><input id="totalTagihan" type="text" class="currency form-control rounded-0" disabled />
+                <td class="pt-6 text-right float-right">Total Tagihan</td>
+                <td style="width: 150px"><input id="totalTagihan" type="text" class="currency form-control rounded-0 float-right" disabled  style="width: 150px"/>
                 </td>
               </tr>
               <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="text-right"><button type="submit" class="btn btn-primary rounded-0">Submit</button></td>
+                <td class="text-right" colspan="2"><button type="submit" class="btn btn-primary rounded-0">Submit</button></td>
               </tr>
             </tbody>
           </table>
@@ -234,8 +236,8 @@
     function initCalculation(){
       $('input[name^="items[qty]"], input[name^="items[price]"]').on('keyup',function()  {
         let $row       = $(this).closest("tr");
-        let qty        = parseInt($row.find('input[name="items[qty][]"]').val());
-        let price      = parseInt($row.find('input[name="items[price][]"]').val());
+        let qty        = parseInt($row.find('input[name="items[qty][]"]').val()) || 0;
+        let price      = parseInt($row.find('input[name="items[price][]"]').val()) || 0;
         let totalTagihan = 0;
         total = qty * price;
         $row.find('input[name="items[total][]"]').val(total);

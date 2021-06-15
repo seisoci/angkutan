@@ -45,8 +45,16 @@
           @method('PUT')
           <meta name="csrf-token" content="{{ csrf_token() }}">
           <div class="modal-body">
-            Anda yakin gaji sudah dibayar ?
+            <label for="">Anda yakin gaji sudah dibayar ?</label>
             <input type="hidden" name="status" value="1">
+            <div class="form-group mt-3">
+              <label>Master Akun <span class="text-danger">*</span></label>
+              <select name="coa_id" class="form-control">
+                  @foreach($selectCoa->coa as $item)
+                    <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                  @endforeach
+                </select>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -172,7 +180,7 @@
               $.each(response.error, function (key, value) {
                 $(".alert-text").append('<span style="display: block">' + value + '</span>');
               });
-              toastr.error("Please complete your form", 'Failed !');
+              toastr.error((response.message || "Please complete your form"), 'Failed !');
             }
           }, error: function (response) {
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");

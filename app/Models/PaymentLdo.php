@@ -21,6 +21,7 @@ class PaymentLdo extends Model
 
   protected $fillable = [
     'invoice_ldo_id',
+    'coa_id',
     'date_payment',
     'payment',
     'description'
@@ -33,5 +34,9 @@ class PaymentLdo extends Model
 
   public function invoiceldo(){
     return $this->belongsTo(InvoiceLdo::class, 'invoice_ldo_id');
+  }
+
+  public function coa(){
+    return $this->belongsTo(Coa::class, 'coa_id');
   }
 }

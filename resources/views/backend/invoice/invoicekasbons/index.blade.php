@@ -80,8 +80,8 @@
   </script>
   <script type="text/javascript">
     $(function () {
-      var template = Handlebars.compile($("#details-template").html());
-      var dataTable = $('#Datatable').DataTable({
+      let template = Handlebars.compile($("#details-template").html());
+      let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
@@ -125,9 +125,9 @@
       });
 
       $('#Datatable tbody').on('click', 'td.details-control', function () {
-        var tr = $(this).closest('tr');
-        var row = dataTable.row(tr);
-        var tableId = 'posts-' + row.data().id;
+        let tr = $(this).closest('tr');
+        let row = dataTable.row(tr);
+        let tableId = 'posts-' + row.data().id;
 
         if (row.child.isShown()) {
           // This row is already open - close it
@@ -165,7 +165,7 @@
       }
 
       $('#modalDelete').on('show.bs.modal', function (event) {
-        var id = $(event.relatedTarget).data('id');
+        let id = $(event.relatedTarget).data('id');
         $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.drivers.index") }}/' + id);
       });
 
@@ -175,10 +175,10 @@
 
       $("#formDelete").click(function (e) {
         e.preventDefault();
-        var form = $(this);
-        var url = $('#modalDelete').find('a[name="id"]').attr('href');
-        var btnHtml = form.html();
-        var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+        let form = $(this);
+        let url = $('#modalDelete').find('a[name="id"]').attr('href');
+        let btnHtml = form.html();
+        let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
         $.ajax({
           beforeSend: function () {
             form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");

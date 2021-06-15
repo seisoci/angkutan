@@ -81,7 +81,7 @@ class KasbonEmployeeController extends Controller
           ->where('journals.coa_id', $request->coa_id)
           ->groupBy('journals.coa_id')
           ->first();
-        if ($checksaldo->saldo && $request->amount <= $checksaldo->saldo) {
+        if (($checksaldo->saldo ?? FALSE) && $request->amount <= $checksaldo->saldo) {
           KasbonEmployee::create([
             'employee_id' => $request->input('employee_id'),
             'coa_id' => $request->input('coa_id'),
@@ -108,13 +108,14 @@ class KasbonEmployeeController extends Controller
             'status' => 'success',
             'message' => 'Data has been saved',
           ]);
+          DB::commit();
         } else {
+          DB::rollBack();
           $response = response()->json([
             'status' => 'errors',
             'message' => "Saldo $coa->name tidak ada/kurang",
           ]);
         }
-        DB::commit();
       } catch (\Throwable $throw) {
         DB::rollBack();
         $response = $throw;

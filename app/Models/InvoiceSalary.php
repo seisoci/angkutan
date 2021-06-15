@@ -24,6 +24,7 @@ class InvoiceSalary extends Model
     'num_bill',
     'driver_id',
     'transport_id',
+    'invoice_date',
     'grandtotal',
     'description',
     'memo',

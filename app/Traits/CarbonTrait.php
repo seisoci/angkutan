@@ -28,6 +28,12 @@ trait CarbonTrait {
     return Carbon::createFromFormat('Y-m-d H:i:s', $date." 23:59:59", 'UTC')->setTimezone('America/Los_Angeles')->format('Y-m-d H:i:s');
   }
 
+
+  public function getEndOfMonthByMonthYear($date){
+    return Carbon::createFromFormat('M Y', $date)->endOfMonth()->format('Y-m-d');
+
+  }
+
   public function convertToMonthYear($date){
     return Carbon::parse($date)->timezone('Asia/Jakarta')->format('Y M');
   }

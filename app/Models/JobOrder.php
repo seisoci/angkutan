@@ -150,4 +150,8 @@ class JobOrder extends Model
     }
     return $this->tax_percent . "\n(" . number_format(($this->total_basic_price * ($this->tax_percent / 100)), 2, '.', ' ,') . ")";
   }
+
+  public function coaldo (){
+    return $this->belongsTo(Coa::class, 'payment_ldo_coa_id');
+  }
 }

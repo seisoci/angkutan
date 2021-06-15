@@ -80,7 +80,7 @@ class KasbonController extends Controller
           ->where('journals.coa_id', $request->coa_id)
           ->groupBy('journals.coa_id')
           ->first();
-        if ($checksaldo->saldo && $request->amount <= $checksaldo->saldo) {
+        if (($checksaldo->saldo ?? FALSE) && $request->amount <= $checksaldo->saldo) {
           Kasbon::create([
             'driver_id' => $request->input('driver_id'),
             'coa_id' => $request->input('coa_id'),
@@ -107,13 +107,14 @@ class KasbonController extends Controller
             'status' => 'success',
             'message' => 'Data has been saved',
           ]);
+          DB::commit();
         } else {
+          DB::rollBack();
           $response = response()->json([
             'status' => 'errors',
             'message' => "Saldo $coa->name tidak ada/kurang",
           ]);
         }
-        DB::commit();
       } catch (\Throwable $throw) {
         DB::rollBack();
         $response = $throw;

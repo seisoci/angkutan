@@ -23,14 +23,20 @@
             <div class="row align-items-center">
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-lg-3 col-form-label">Prefix:</label>
+                  <label class="col-lg-4 col-form-label">Tanggal Invoice:</label>
+                  <div class="col-md-6">
+                    <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date" placeholder="Tanggal Invoice" readonly>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-lg-4 col-form-label">Prefix:</label>
                   <div class="col-lg-6">
                     <select name="prefix" class="form-control" id="select2Prefix">
                     </select>
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-lg-3 col-form-label">No. Slip Gaji:</label>
+                  <label class="col-lg-4 col-form-label">No. Slip Gaji:</label>
                   <div class="col-lg-6">
                     <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                     <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
@@ -40,16 +46,26 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-lg-3 col-form-label">Supir:</label>
-                  <div class="col-lg-6">
+                  <label class="col-lg-4 col-form-label">Supir:</label>
+                  <div class="col-lg-8">
                     <select name="driver_id" class="form-control" id="select2Driver">
                     </select>
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-lg-3 col-form-label">Kendaraan:</label>
-                  <div class="col-lg-6">
+                  <label class="col-lg-4 col-form-label">Kendaraan:</label>
+                  <div class="col-lg-8">
                     <select name="transport_id" class="form-control" id="select2Transport">
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-lg-4 col-form-label">Master Akun:</label>
+                  <div class="col-lg-8">
+                    <select name="coa_id" class="form-control rounded-0">
+                      @foreach($selectCoa->coa as $item)
+                        <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                      @endforeach
                     </select>
                   </div>
                 </div>
@@ -131,7 +147,7 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
-    var dataTable = $('#Datatable').DataTable({
+    let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
@@ -172,7 +188,7 @@
     $('#submitAppend').on('click', function(e){
         e.preventDefault();
         let selected = dataTable.column(0).checkboxes.selected();
-        var dataSelected = [];
+        let dataSelected = [];
         $.each(selected, function(index, data){
           dataSelected.push(data);
         });
@@ -189,7 +205,7 @@
             $('#table_invoice tbody').empty();
             $('#table_invoice tfoot').empty();
             $('#TampungId').empty();
-            var total = 0;
+            let total = 0;
             $.each(response.data, function(index, data){
               total += parseFloat(data.total_salary);
               $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="'+data.id+'">');
@@ -292,13 +308,20 @@
       $('#TampungId').empty();
     });
 
+    $('.datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      todayBtn: "linked",
+      clearBtn: true,
+      todayHighlight: true
+    });
+
     $("#formStore").submit(function(e) {
       e.preventDefault();
-      var form = $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
+      let form = $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let url = form.attr("action");
+      let data = new FormData(this);
       $.ajax({
         beforeSend: function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");

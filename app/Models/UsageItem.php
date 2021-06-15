@@ -22,6 +22,7 @@ class UsageItem extends Model
   protected $fillable = [
     'invoice_usage_item_id',
     'sparepart_id',
+    'coa_id',
     'name',
     'qty',
     'price',

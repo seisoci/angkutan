@@ -19,6 +19,7 @@ class MonthlySalaryDetail extends Model
   protected static $logFillable = true;
   protected $fillable = [
     'monthly_salary_id',
+    'coa_id',
     'employee_id',
     'status'
   ];
@@ -28,6 +29,9 @@ class MonthlySalaryDetail extends Model
     return $date->format('Y-m-d H:i:s');
   }
 
+  public function coa(){
+    $this->belongsTo(Coa::class, 'coa_id');
+  }
 
   public function employee(){
     return $this->belongsTo(Employee::class, 'employee_id');
