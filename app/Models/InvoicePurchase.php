@@ -49,6 +49,10 @@ class InvoicePurchase extends Model
     return $this->belongsTo(SupplierSparepart::class, 'supplier_sparepart_id');
   }
 
+  public function stock(){
+    return $this->hasMany(Stock::class, 'invoice_purchase_id');
+  }
+
   public function getTotalNetAttribute()
   {
       return $this->total_bill - $this->discount;

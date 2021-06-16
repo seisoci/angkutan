@@ -20,6 +20,7 @@ class Stock extends Model
 
   protected $fillable = [
     'sparepart_id',
+    'invoice_purchase_id',
     'qty',
   ];
 
@@ -30,5 +31,9 @@ class Stock extends Model
 
   public function sparepart(){
     return $this->belongsTo(Sparepart::class);
+  }
+
+  public function invoicepurchase(){
+    return $this->belongsTo(InvoicePurchase::class, 'invoice_purchase_id');
   }
 }

@@ -22,33 +22,31 @@
             <div class="row align-items-center">
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-lg-4 col-form-label">Tanggal Invoice:</label>
+                  <label class="col-lg-5 col-form-label">Tanggal Invoice:</label>
                   <div class="col-md-6">
                     <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date"
                            placeholder="Tanggal Invoice" readonly>
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-lg-4 col-form-label">Prefix:</label>
+                  <label class="col-lg-5 col-form-label">Tgl Jatuh Tempo:</label>
+                  <div class="col-lg-6">
+                    <input type="text" class="form-control rounded-0 datepicker w-100" name="due_date"
+                           placeholder="Tgl Jatuh Tempo" readonly>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-lg-5 col-form-label">Prefix:</label>
                   <div class="col-lg-6">
                     <select name="prefix" class="form-control" id="select2Prefix">
                     </select>
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-lg-4 col-form-label">No. Invoice Pembelian:</label>
+                  <label class="col-lg-5 col-form-label">No. Invoice Pembelian:</label>
                   <div class="col-lg-6">
                     <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                     <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <label class="col-lg-4 col-form-label">Metode Pembayaran</label>
-                  <div class="col-lg-6">
-                    <select id="method_payment" name="method_payment" class="form-control rounded-0">
-                      <option value="cash">Tunai</option>
-                      <option value="credit">Kredit</option>
                     </select>
                   </div>
                 </div>
@@ -74,42 +72,47 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-lg-4 offset-md-2 col-form-label">Tgl Jatuh Tempo:</label>
+                  <label class="col-lg-4 offset-2 col-form-label">Metode Pembayaran</label>
                   <div class="col-lg-6">
-                    <input type="text" class="form-control rounded-0 datepicker w-100" name="due_date"
-                           placeholder="Tgl Jatuh Tempo" readonly>
+                    <select id="method_payment" name="method_payment" class="form-control rounded-0">
+                      <option value="cash">Tunai</option>
+                      <option value="credit">Kredit</option>
+                    </select>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <table class="table table-bordered table-responsive">
-            <thead>
-            <tr>
-              <th class="text-center" scope="col" style="width: 50px">
-                <button type="button"
-                        class="add btn btn-sm btn-primary rounded-0">+
-                </button>
-              </th>
-              <th class="text-left" scope="col">Produk</th>
-              <th class="text-right" scope="col">Unit</th>
-              <th class="text-right" scope="col">Harga</th>
-              <th class="text-right" scope="col">Total</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="items" id="items_1">
-              <td></td>
-              <td><select class="form-control select2SparePart" name="items[sparepart_id][]"
-                          style="width: 350px"></select></td>
-              <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" style="width: 50px"/></td>
-              <td><input type="text" name="items[price][]" class="currency rounded-0 form-control"
-                         style="width: 175px"/></td>
-              <td><input type="text" name="items[total][]" class="currency rounded-0 form-control" disabled
-                         style="width: 175px"/></td>
-            </tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th class="text-center" scope="col" style="width: 50px">
+                  <button type="button"
+                          class="add btn btn-sm btn-primary rounded-0">+
+                  </button>
+                </th>
+                <th class="text-left" scope="col">Produk</th>
+                <th class="text-right" scope="col" style="width: 50px">Unit</th>
+                <th class="text-right" scope="col">Harga</th>
+                <th class="text-right" scope="col">Total</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr class="items" id="items_1">
+                <td></td>
+                <td style="width: 350px"><select class="form-control select2SparePart" name="items[sparepart_id][]"
+                                                 style="width: 350px"></select></td>
+                <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" style="width: 50px"/>
+                </td>
+                <td><input type="text" name="items[price][]" class="currency rounded-0 form-control"
+                           style="min-width: 175px"/></td>
+                <td><input type="text" name="items[total][]" class="currency rounded-0 form-control" disabled
+                           style="min-width: 175px"/></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
           <table class="table table-borderless ">
             <thead>
             <tr>
@@ -120,52 +123,57 @@
             <tbody>
             <tr>
               <td class="pt-6 text-right">Diskon</td>
-              <td style="width: 150px;"><input id="diskon" name="discount" type="text" class="currency form-control rounded-0"
-                                     value="0" style="width: 150px"/>
+              <td style="width: 150px;"><input id="diskon" name="discount" type="text"
+                                               class="currency form-control rounded-0"
+                                               value="0" style="width: 175px"/>
               </td>
             </tr>
             <tr>
               <td class="pt-6 text-right">Grand Total</td>
-              <td style="width: 150px;"><input id="grandTotal" type="text" class="currency form-control rounded-0" disabled style="width: 150px;"/>
+              <td style="width: 150px;"><input id="grandTotal" type="text" class="currency form-control rounded-0"
+                                               disabled style="width: 175px;"/>
               </td>
             </tr>
             </tbody>
           </table>
-          <table class="table table-bordered table-responsive">
-            <thead>
-            <tr>
-              <th class="text-center" scope="col">
-                <button type="button"
-                        class="addPayment btn btn-sm btn-primary rounded-0">+
-                </button>
-              </th>
-              <th class="text-left" scope="col">Tanggal Pembayaran</th>
-              <th class="text-left" scope="col">Akun</th>
-              <th class="text-right" scope="col">Nominal</th>
-              <th class="text-right" scope="col">Total Pembayaran</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="payment" id="payment_1">
-              <td style="width: 50px;"></td>
-              <td style="width: 100px"><input type="text" name="payment[date][]"
-                                              class="form-control rounded-0 datepicker"
-                                              style="width:100px !important" readonly/>
-              </td>
-              <td><select name="payment[coa][]" class="form-control rounded-0" style="width: 300px;" required>
-                  @foreach($selectCoa->coa as $item)
-                    <option value="{{ $item->id }}">{{ $item->code ." - ". $item->name }}</option>
-                  @endforeach
-                </select></td>
-              <td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control"
-                         style="width: 175px"/></td>
-              <td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled
-                         style="width: 175px"/>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-          <table class="table table-borderless ">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th class="text-center" scope="col">
+                  <button type="button"
+                          class="addPayment btn btn-sm btn-primary rounded-0">+
+                  </button>
+                </th>
+                <th class="text-left" scope="col" style="width: 100px">Tanggal Pembayaran</th>
+                <th class="text-left" scope="col">Akun</th>
+                <th class="text-right" scope="col">Nominal</th>
+                <th class="text-right" scope="col">Total Pembayaran</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr class="payment" id="payment_1">
+                <td style="width: 50px;"></td>
+                <td style="width: 100px">
+                  <input type="text" name="payment[date][]"
+                         class="form-control rounded-0 datepicker"
+                         style="width:100px" readonly/>
+                </td>
+                <td><select name="payment[coa][]" class="form-control rounded-0" style="min-width: 300px;" required>
+                    @foreach($selectCoa->coa as $item)
+                      <option value="{{ $item->id }}">{{ $item->code ." - ". $item->name }}</option>
+                    @endforeach
+                  </select></td>
+                <td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control"
+                           style="min-width: 175px"/></td>
+                <td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled
+                           style="min-width: 175px"/>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <table class="table table-borderless">
             <thead>
             <tr>
               <th class="text-right" scope="col"></th>
@@ -175,18 +183,21 @@
             <tbody>
             <tr>
               <td class="pt-6 text-right">Total Tagihan</td>
-              <td  style="width: 150px"><input id="totalTagihan" type="text" class="currency form-control rounded-0" disabled  style="width: 150px;"/>
+              <td style="width: 175px"><input id="totalTagihan" type="text" class="currency form-control rounded-0"
+                                               disabled style="width: 175px;"/>
               </td>
             </tr>
             <tr>
               <td class="pt-6 text-right">Total Pembayaran</td>
-              <td class="text-right" style="width: 150px"><input id="totalPembayaran" type="text" class="currency form-control rounded-0 text-right"
-                                     disabled  style="width: 150px;"/>
+              <td class="text-right" style="width: 175px"><input id="totalPembayaran" type="text"
+                                                                 class="currency form-control rounded-0 text-right"
+                                                                 disabled style="width: 175px;"/>
               </td>
             </tr>
             <tr>
               <td class="pt-6 text-right">Sisa Tagihan</td>
-              <td style="width: 150px"><input id="sisaPembayaran" type="text" class="currency form-control rounded-0" disabled  style="width: 150px;"//>
+              <td style="width: 150px"><input id="sisaPembayaran" type="text" class="currency form-control rounded-0"
+                                              disabled style="width: 175px;"/>
               </td>
             </tr>
             <tr>
@@ -462,16 +473,16 @@
           '   style="width:100px !important" readonly/>' +
           '</td>' +
           '<td>' +
-          '   <select name="payment[coa][]" class="form-control rounded-0" style="width: 300px;" required>' +
+          '   <select name="payment[coa][]" class="form-control rounded-0" style="min-width: 300px;" required>' +
           '      @foreach($selectCoa->coa as $item)' +
           '      <option value="{{ $item->id }}">{{ $item->code ." - ". $item->name }}</option>' +
           '      @endforeach' +
           '   </select>' +
           '</td>' +
-          '<td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control" style="width: 175px"/>' +
+          '<td><input type="text" name="payment[payment][]" class="currency rounded-0 form-control" style="min-width: 175px"/>' +
           '</td>' +
           '<td><input type="text" name="payment[total_payment][]" class="currency rounded-0 form-control" disabled' +
-          '   style="width: 175px"/>' +
+          '   style="min-width: 175px"/>' +
           '</td>';
       }
 
@@ -496,6 +507,7 @@
           url: url,
           data: data,
           success: function (response) {
+            initCurrency();
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             if (response.status === "success") {
               toastr.success(response.message, 'Success !');
@@ -507,13 +519,12 @@
                 }
               }, 1000);
             } else {
-              initCurrency();
               $("[role='alert']").parent().removeAttr("style");
               $(".alert-text").html('');
               $.each(response.error, function (key, value) {
                 $(".alert-text").append('<span style="display: block">' + value + '</span>');
               });
-              toastr.error("Please complete your form", 'Failed !');
+              toastr.error((response.message || "Please complete your form"), 'Failed !');
             }
           },
           error: function (response) {

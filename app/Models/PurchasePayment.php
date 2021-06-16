@@ -34,5 +34,8 @@ class PurchasePayment extends Model
     return $this->belongsTo(InvoicePurchase::class);
   }
 
+  public function coa(){
+    return $this->belongsTo(Coa::class, 'coa_id');
+  }
 
 }
