@@ -117,16 +117,20 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>No. Invoice</th>
-          <th>Tgl Invoice</th>
+          <th>No. Pemakaian</th>
+          <th>Tgl Pemakaian</th>
           <th>Nama Sparepart</th>
           <th>Nama Supir</th>
           <th>No. Polisi</th>
           <th>Jumlah</th>
+          <th>Harga</th>
+          <th>Total</th>
         </tr>
         </thead>
         <tfoot>
         <tr>
+          <th></th>
+          <th></th>
           <th></th>
           <th></th>
           <th></th>
@@ -209,6 +213,13 @@
           {data: 'driver_name', name: 'driver_name'},
           {data: 'num_pol', name: 'num_pol'},
           {data: 'qty', name: 'qty', className: 'text-right'},
+          {data: 'price', name: 'price', render: $.fn.dataTable.render.number(',', '.', 2), className: 'text-right'},
+          {
+            data: 'total_price',
+            name: 'total_price',
+            render: $.fn.dataTable.render.number(',', '.', 2),
+            className: 'text-right'
+          },
         ],
         footerCallback: function (row, data, start, end, display) {
           let api = this.api();
@@ -225,8 +236,23 @@
               return intVal(a) + intVal(b);
             }, 0);
 
+          let price = api
+            .column(6)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          let totalPrice = api
+            .column(7)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
           $(api.column(4).footer()).html('Total');
           $(api.column(5).footer()).html(qty);
+          $(api.column(6).footer()).html(format(price));
+          $(api.column(7).footer()).html(format(totalPrice));
         },
       });
 

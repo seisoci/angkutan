@@ -23,7 +23,9 @@ class InvoiceReturPurchase extends Model
     'prefix',
     'num_bill',
     'supplier_sparepart_id',
+    'invoice_purchase_id',
     'invoice_date',
+    'discount',
     'total_payment',
   ];
 

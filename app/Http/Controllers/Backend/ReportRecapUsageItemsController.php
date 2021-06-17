@@ -168,14 +168,14 @@ class ReportRecapUsageItemsController extends Controller
     $sheet->setCellValue('A4', 'Nama Supir: ' . $driver);
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'No. Polisi: ' . $transport);
-    $sheet->mergeCells('E1:F1');
-    $sheet->setCellValue('E1', $profile['name']);
-    $sheet->mergeCells('E2:F2');
-    $sheet->setCellValue('E2', $profile['address']);
-    $sheet->mergeCells('E3:F3');
-    $sheet->setCellValue('E3', 'Telp: ' . $profile['telp']);
-    $sheet->mergeCells('E4:F4');
-    $sheet->setCellValue('E4', 'Fax: ' . $profile['fax']);
+    $sheet->mergeCells('F1:G1');
+    $sheet->setCellValue('F1', $profile['name']);
+    $sheet->mergeCells('F2:G2');
+    $sheet->setCellValue('F2', $profile['address']);
+    $sheet->mergeCells('F3:G3');
+    $sheet->setCellValue('F3', 'Telp: ' . $profile['telp']);
+    $sheet->mergeCells('F4:G4');
+    $sheet->setCellValue('F4', 'Fax: ' . $profile['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -183,6 +183,8 @@ class ReportRecapUsageItemsController extends Controller
     $sheet->getColumnDimension('D')->setWidth(30);
     $sheet->getColumnDimension('E')->setWidth(18);
     $sheet->getColumnDimension('F')->setWidth(18);
+    $sheet->getColumnDimension('G')->setWidth(18);
+
     $sheet->getRowDimension('2')->setRowHeight(30);
     $sheet->getStyle('E2')->getAlignment()->setVertical(Alignment::VERTICAL_DISTRIBUTED);
     $sheet->getStyle('A7')->getAlignment()->setHorizontal('center');
@@ -192,16 +194,18 @@ class ReportRecapUsageItemsController extends Controller
     $sheet->setCellValue('D7', 'Nama Supir');
     $sheet->setCellValue('E7', 'No. Polisi');
     $sheet->setCellValue('F7', 'Total Pemakaian');
+    $sheet->setCellValue('G7', 'Total');
 
     $startCell = 7;
     $startCellFilter = 7;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')
       ->applyFromArray($borderTopBottom);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderTopBottom);
-      $sheet->getStyle('A' . $startCell . ':' . 'F' . $startCell)->getAlignment()->setVertical('top');
+      $sheet->getStyle('G' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTopBottom);
+      $sheet->getStyle('A' . $startCell . ':G' . $startCell)->getAlignment()->setVertical('top');
       $sheet->getStyle('F' . $startCell)->getAlignment()->setVertical('top');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->num_invoice);
@@ -209,19 +213,22 @@ class ReportRecapUsageItemsController extends Controller
       $sheet->setCellValue('D' . $startCell, $item->driver->name);
       $sheet->setCellValue('E' . $startCell, $item->transport->num_pol);
       $sheet->setCellValue('F' . $startCell, $item->usageitem_sum_qty);
+      $sheet->setCellValue('G' . $startCell, $item->total_payment);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':F' . $startCell);
-    $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderBottom);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':G' . $startCell);
+    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderBottom);
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderTop)->applyFromArray(($borderBottom));
+    $sheet->getStyle('G' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTop)->applyFromArray(($borderBottom));
     $sheet->getStyle('A' . $startCell)->getAlignment()->setHorizontal('right');
     $sheet->getStyle('F' . $startCell)->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total');
     $sheet->mergeCells('A' . $startCell . ':E' . $startCell . '');
-    $sheet->getStyle('A' . $startCell . ':F' . $startCell)->getFont()->setBold(true);
+    $sheet->getStyle('A' . $startCell . ':G' . $startCell)->getFont()->setBold(true);
     $sheet->setCellValue('F' . $startCell, '=SUM(F' . $startCellFilter . ':F' . $endForSum . ')');
+    $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startCellFilter . ':G' . $endForSum . ')');
 
     $filename = 'Laporan Rekap Pemakaian Barang ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {

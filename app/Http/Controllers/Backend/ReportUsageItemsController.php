@@ -46,13 +46,15 @@ class ReportUsageItemsController extends Controller
         `usage_items`.`qty`,
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
         `transports`.`num_pol` AS `num_pol`,
-        `drivers`.`name` AS `driver_name`
+        `drivers`.`name` AS `driver_name`,
+        `usage_items`.`price` AS `price`,
+        (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
         '))
         ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
         ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
         ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
         ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
-        ->whereNull('total_payment')
+        ->where('invoice_usage_items.type', 'self')
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $date_format[0];
@@ -99,13 +101,15 @@ class ReportUsageItemsController extends Controller
         `usage_items`.`qty`,
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
         `transports`.`num_pol` AS `num_pol`,
-        `drivers`.`name` AS `driver_name`
+        `drivers`.`name` AS `driver_name`,
+        `usage_items`.`price` AS `price`,
+        SUM(`usage_items`.`price` * `usage_items`.`qty`) AS total_price
         '))
       ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
       ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
       ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
-      ->whereNull('total_payment')
+      ->where('invoice_usage_items.type', 'self')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];
@@ -202,14 +206,14 @@ class ReportUsageItemsController extends Controller
     $sheet->setCellValue('A5', 'No. Polisi: ' . $transport);
     $sheet->mergeCells('A6:C6');
     $sheet->setCellValue('A6', 'Nama Sparepart: ' . $sparepart);
-    $sheet->mergeCells('E1:G1');
-    $sheet->setCellValue('E1', $profile['name']);
-    $sheet->mergeCells('E2:G2');
-    $sheet->setCellValue('E2', $profile['address']);
-    $sheet->mergeCells('E3:G3');
-    $sheet->setCellValue('E3', 'Telp: ' . $profile['telp']);
-    $sheet->mergeCells('E4:G4');
-    $sheet->setCellValue('F4', 'Fax: ' . $profile['fax']);
+    $sheet->mergeCells('G1:I1');
+    $sheet->setCellValue('G1', $profile['name']);
+    $sheet->mergeCells('G2:I2');
+    $sheet->setCellValue('G2', $profile['address']);
+    $sheet->mergeCells('G3:I3');
+    $sheet->setCellValue('G3', 'Telp: ' . $profile['telp']);
+    $sheet->mergeCells('G4:I4');
+    $sheet->setCellValue('G4', 'Fax: ' . $profile['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -218,25 +222,30 @@ class ReportUsageItemsController extends Controller
     $sheet->getColumnDimension('E')->setWidth(26);
     $sheet->getColumnDimension('F')->setWidth(12);
     $sheet->getColumnDimension('G')->setWidth(15);
+    $sheet->getColumnDimension('H')->setWidth(15);
+    $sheet->getColumnDimension('I')->setWidth(15);
 //    $sheet->getRowDimension('2')->setRowHeight(30);
     $sheet->getStyle('F2')->getAlignment()->setVertical(Alignment::VERTICAL_DISTRIBUTED);
 
     $sheet->getStyle('A8')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A8', 'No.');
-    $sheet->setCellValue('B8', 'No. Invoice');
-    $sheet->setCellValue('C8', 'Tgl Invoice');
+    $sheet->setCellValue('B8', 'No. Pemakaian');
+    $sheet->setCellValue('C8', 'Tgl Pemakaian');
     $sheet->setCellValue('D8', 'Nama Sparepart');
     $sheet->setCellValue('E8', 'Nama Supir');
     $sheet->setCellValue('F8', 'No. Polisi');
     $sheet->setCellValue('G8', 'Jumlah');
+    $sheet->setCellValue('H8', 'Harga');
+    $sheet->setCellValue('I8', 'Total');
 
     $startCell = 8;
     $startCellFilter = 8;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')
       ->applyFromArray($borderTopBottom);
     foreach ($data as $item):
       $startCell++;
+      $sheet->getStyle('H' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTopBottom);
       $sheet->getStyle('A' . $startCell . ':' . 'F' . $startCell)->getAlignment()->setVertical('top');
       $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
@@ -247,19 +256,24 @@ class ReportUsageItemsController extends Controller
       $sheet->setCellValue('E' . $startCell, $item->driver_name);
       $sheet->setCellValue('F' . $startCell, $item->num_pol);
       $sheet->setCellValue('G' . $startCell, $item->qty);
+      $sheet->setCellValue('H' . $startCell, $item->price);
+      $sheet->setCellValue('I' . $startCell, $item->total_price);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':G' . $startCell);
-    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderBottom);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':I' . $startCell);
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderBottom);
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
+    $sheet->getStyle('H' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total');
     $sheet->mergeCells('A' . $startCell . ':F' . $startCell . '');
     $sheet->getStyle('A' . $startCell . ':G' . $startCell)->getFont()->setBold(true);
     $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startCellFilter . ':G' . $endForSum . ')');
+    $sheet->setCellValue('H' . $startCell, '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
+    $sheet->setCellValue('I' . $startCell, '=SUM(I' . $startCellFilter . ':I' . $endForSum . ')');
 
     $filename = 'Laporan Pemakaian Barang ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
@@ -307,13 +321,15 @@ class ReportUsageItemsController extends Controller
         `usage_items`.`qty`,
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
         `transports`.`num_pol` AS `num_pol`,
-        `drivers`.`name` AS `driver_name`
+        `drivers`.`name` AS `driver_name`,
+        `usage_items`.`price` AS `price`,
+        SUM(`usage_items`.`price` * `usage_items`.`qty`) AS total_price
         '))
       ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
       ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
       ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
-      ->whereNull('total_payment')
+      ->where('invoice_usage_items.type', 'self')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];

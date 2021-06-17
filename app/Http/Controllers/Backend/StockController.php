@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Stock;
 use Illuminate\Http\Request;
 use DataTables;
+use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
@@ -18,7 +19,10 @@ class StockController extends Controller
     ];
 
     if ($request->ajax()) {
-      $data = Stock::with(['sparepart']);
+      $data = DB::table('stocks')
+        ->select(['spareparts.name', DB::raw('SUM(`qty`) AS `qty`')])
+        ->leftJoin('spareparts', 'spareparts.id', '=', 'stocks.sparepart_id')
+        ->groupBy('stocks.sparepart_id');
       return DataTables::of($data)
         ->addIndexColumn()
         ->make(true);
@@ -79,7 +83,7 @@ class StockController extends Controller
         $join->on('purchases.invoice_purchase_id', '=', 'stocks.invoice_purchase_id')
           ->where('purchases.sparepart_id', $sparepart_id);
       })
-      ->selectRaw('stocks.id as id, CONCAT(invoice_purchases.prefix, " - " , invoice_purchases.num_bill) as text, stocks.qty as qty, purchases.price as price')
+      ->selectRaw('stocks.id as id, invoice_purchases.id as invoice_purchase_id, CONCAT(invoice_purchases.prefix, " - " , invoice_purchases.num_bill) as text, stocks.qty as qty, purchases.price as price')
       ->when($sparepart_id, function ($query, $sparepart_id) {
         return $query->where('stocks.sparepart_id', $sparepart_id);
       })

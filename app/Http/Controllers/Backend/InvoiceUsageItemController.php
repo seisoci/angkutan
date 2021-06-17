@@ -74,9 +74,13 @@ class InvoiceUsageItemController extends Controller
     ]);
     if ($validator->passes()) {
       try {
-        $items = $request->items;
         DB::beginTransaction();
+        $grandTotal = 0;
+        $items = $request->items;
         $prefix = Prefix::findOrFail($request->prefix);
+        foreach ($items['sparepart_id'] as $key => $item):
+          $grandTotal += $items['qty'][$key] * $items['price'][$key];
+        endforeach;
         $invoiceUsageItem = InvoiceUsageItem::create([
           'num_bill' => $request->num_bill,
           'prefix' => $prefix->name,
@@ -84,16 +88,16 @@ class InvoiceUsageItemController extends Controller
           'driver_id' => $request->driver_id,
           'transport_id' => $request->transport_id,
           'type' => $request->type,
-          'total_payment' => $request->total_payment,
+          'total_payment' => $grandTotal,
         ]);
         $driver = Driver::findOrFail($request->driver_id);
         foreach ($items['sparepart_id'] as $key => $item):
-          $stock = Stock::findOrFail($items['invoice_purchase_id'][$key]);
-
+          $stock = Stock::findOrFail($items['stock_id'][$key]);
           $totalPrice = $items['qty'][$key] * $items['price'][$key];
           UsageItem::create([
             'invoice_usage_item_id' => $invoiceUsageItem->id,
             'sparepart_id' => $items['sparepart_id'][$key],
+            'invoice_purchase_id' => $items['invoice_purchase_id'][$key],
             'coa_id' => 17,
             'qty' => $items['qty'][$key],
             'price' => $items['price'][$key],

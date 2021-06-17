@@ -68,7 +68,7 @@
               <td colspan="2" class="text-left font-weight-bolder">
                 {{ ucwords(Terbilang::terbilang($data->total_payment)) }}
               </td>
-              <td colspan="2" class="text-right font-weight-bolder text-uppercase">Total Tagihan</td>
+              <td colspan="2" class="text-right font-weight-bolder text-uppercase">Total Retur</td>
               <td class="text-right font-weight-bolder">
                 {{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
             </tr>

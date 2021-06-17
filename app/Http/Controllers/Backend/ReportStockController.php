@@ -38,9 +38,10 @@ class ReportStockController extends Controller
       $data = DB::table('stocks')
         ->select(DB::raw('
           `spareparts`.`name` AS `name`,
-          `qty`
+          SUM(`qty`) AS `qty`
         '))
         ->leftJoin('spareparts', 'spareparts.id', '=', 'stocks.sparepart_id')
+        ->groupBy('stocks.sparepart_id')
         ->orderBy('spareparts.name');
 
       return DataTables::of($data)
@@ -61,9 +62,10 @@ class ReportStockController extends Controller
     $data = DB::table('stocks')
       ->select(DB::raw('
           `spareparts`.`name` AS `name`,
-          `qty`
+          SUM(`qty`) AS `qty`
         '))
       ->leftJoin('spareparts', 'spareparts.id', '=', 'stocks.sparepart_id')
+      ->groupBy('stocks.sparepart_id')
       ->orderBy('spareparts.name')
       ->get();
 
@@ -205,9 +207,10 @@ class ReportStockController extends Controller
     $data = DB::table('stocks')
       ->select(DB::raw('
           `spareparts`.`name` AS `name`,
-          `qty`
+          SUM(`qty`) AS `qty`
         '))
       ->leftJoin('spareparts', 'spareparts.id', '=', 'stocks.sparepart_id')
+      ->groupBy('stocks.sparepart_id')
       ->orderBy('spareparts.name')
       ->get();
 

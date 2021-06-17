@@ -96,12 +96,14 @@
       <thead>
       <tr>
         <th scope="col">#</th>
-        <th>No. Invoice</th>
-        <th>Tgl Invoice</th>
+        <th>No. Pemakaian</th>
+        <th>Tgl Pemakaian</th>
         <th>Nama Sparepart</th>
         <th>Nama Supir</th>
         <th>No. Polisi</th>
         <th class="text-center">Jumlah</th>
+        <th class="text-right">Jumlah</th>
+        <th class="text-right">Jumlah</th>
       </tr>
       </thead>
       <tbody>
@@ -113,13 +115,17 @@
           <td>{{ $item->sparepart_name }}</td>
           <td>{{ $item->driver_name }}</td>
           <td>{{ $item->num_pol }}</td>
-          <td class="text-center">{{ $item->qty}}</td>
+          <td class="text-center">{{ $item->qty }}</td>
+          <td class="text-right">{{ number_format($item->price, 2, '.', ',') }}</td>
+          <td class="text-right">{{ number_format($item->total_price, 2, '.', ',') }}</td>
         </tr>
       @endforeach
       </tbody>
       <tfoot>
       <td colspan="6" class="text-right">Total</td>
-      <td class="text-center">{{$data->sum('qty')}}</td>
+      <td class="text-center">{{ $data->sum('qty') }}</td>
+      <td class="text-right">{{ number_format($data->sum('price'), 2, '.', ',') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_price'), 2, '.', ',') }}</td>
       </tfoot>
     </table>
   </div>

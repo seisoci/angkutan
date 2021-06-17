@@ -78,14 +78,15 @@
                 <tbody>
                 <tr class="items" id="items_1">
                   <td></td>
-                  <td style="width: 200px">
+                  <td style="width: 300px">
                     <select class="form-control select2Stocks" name="items[sparepart_id][]"
-                            style="width: 200px"></select></td>
-                  <td style="width: 175px"><select class="form-control select2Invoice" name="items[invoice_purchase_id][]"
-                              style="width: 175px"></select></td>
-                  <td><input type="text" name="items[qty_system][]" class="form-control rounded-0 unit" disabled/></td>
-                  <td><input type="hidden" name="items[price][]">
-                    <input type="number" min="1" name="items[qty][]" class="unit rounded-0 form-control"/>
+                            style="width: 300px"></select></td>
+                  <td style="width: 225px"><select class="form-control select2Invoice"
+                                                   name="items[stock_id][]"
+                                                   style="width: 225px"></select></td>
+                  <td style="width: 75px"><input type="text" name="items[qty_system][]" class="form-control rounded-0 unit" disabled  style="min-width: 75px"/></td>
+                  <td><input type="hidden" name="items[invoice_purchase_id][]"><input type="hidden" name="items[price][]">
+                    <input type="number" min="1" name="items[qty][]" class="unit rounded-0 form-control" style="min-width: 100px"/>
                   </td>
                 </tr>
                 </tbody>
@@ -187,7 +188,6 @@
             delay: 250,
             cache: true,
             data: function (e) {
-
               return {
                 q: e.term || '',
                 page: e.page || 1
@@ -196,8 +196,9 @@
           },
         }).on('change', function () {
           let $row = $(this).closest("tr");
-          $row.find('select[name="items[invoice_purchase_id][]"]').val("");
-          $row.find('select[name="items[invoice_purchase_id][]"]').trigger("change");
+          $row.find('select[name="items[stock_id][]"]').val("");
+          $row.find('select[name="items[stock_id][]"]').trigger("change");
+          $row.find('input[name="items[invoice_purchase_id][]"]').val('');
           $row.find('input[name="items[qty_system][]"]').val('');
           $row.find('input[name="items[price][]"]').val('');
         });
@@ -224,7 +225,10 @@
         }).on('select2:select', function (evt) {
           let $row = $(this).closest("tr");
           $row.find('input[name="items[qty_system][]"]').val(evt.params.data.qty);
+          $row.find('input[name="items[invoice_purchase_id][]"]').val(evt.params.data.invoice_purchase_id);
           $row.find('input[name="items[price][]"]').val(evt.params.data.price);
+          $row.find('input[name="items[qty][]"]').attr('max', evt.params.data.qty);
+
         });
       }
 
@@ -282,14 +286,14 @@
 
       function raw_items(nextindex) {
         return "<td><button id='itemsx_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>" +
-          '<td style="width: 200px">'+
-          '   <select class="form-control select2Stocks" name="items[sparepart_id][]"'+
-          '      style="width: 200px"></select>'+
-          '</td>'+
-          '<td style="width: 175px"><select class="form-control select2Invoice" name="items[invoice_purchase_id][]"'+
-          '   style="width: 175px"></select></td>'+
-          '<td><input type="text" name="items[qty_system][]" class="form-control rounded-0 unit" disabled/></td>'+
-          '<td><input type="hidden" name="items[price][]"><input type="number" min="1" name="items[qty][]" class="unit rounded-0 form-control"/>'+
+          '<td style="width: 300px">' +
+          '   <select class="form-control select2Stocks" name="items[sparepart_id][]"' +
+          '      style="width: 300px"></select>' +
+          '</td>' +
+          '<td style="width: 225px"><select class="form-control select2Invoice" name="items[stock_id][]"' +
+          '   style="width: 225px"></select></td>' +
+          '<td><input type="text" name="items[qty_system][]" class="form-control rounded-0 unit" disabled/></td>' +
+          '<td><input type="hidden" name="items[price][]"><input type="number" min="1" name="items[qty][]" class="unit rounded-0 form-control"/>' +
           '</td>';
       }
 

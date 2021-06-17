@@ -174,7 +174,7 @@
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
-          url: "{{ route('backend.reportreturpurchases.index') }}",
+          url: "{{ route('backend.reportpurchaseorders.index') }}",
           data: function (d) {
             d.date = $("input[name=date]").val();
             d.supplier_id = $('#select2Supplier').find(':selected').val();

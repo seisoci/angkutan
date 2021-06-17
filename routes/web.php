@@ -128,6 +128,9 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('mastercoa/select2', [BackendCoaController::class, 'select2'])->name('mastercoa.select2');
     Route::get('mastercoa/select2self', [BackendCoaController::class, 'select2self'])->name('mastercoa.select2self');
     Route::get('stocks/select2Invoice', [BackendStockController::class, 'select2Invoice'])->name('stocks.select2Invoice');
+    Route::get('invoicereturpurchases/select2Invoice', [BackendInvoiceReturPurchaseController::class, 'select2Invoice'])->name('invoicereturpurchases.select2Invoice');
+    Route::get('invoicereturpurchases/select2SparePart', [BackendInvoiceReturPurchaseController::class, 'select2SparePart'])->name('invoicereturpurchases.select2SparePart');
+
 
     //Print
     Route::get('invoicesalaries/{id}/print', [BackendInvoiceSalaryController::class, 'print']);

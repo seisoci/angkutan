@@ -99,6 +99,7 @@
         <th>Nama Supir</th>
         <th>No. Polisi</th>
         <th class="text-right">Total Pemakaian</th>
+        <th class="text-right">Total</th>
       </tr>
       </thead>
       <tbody>
@@ -110,12 +111,14 @@
           <td>{{ $item->driver->name }}</td>
           <td>{{ $item->transport->num_pol }}</td>
           <td class="text-right">{{ $item->usageitem_sum_qty }}</td>
+          <td class="text-right">{{ number_format($item->total_payment, 2,'.',',') }}</td>
         </tr>
       @endforeach
       </tbody>
       <tfoot>
       <td colspan="5" class="text-right">Total</td>
       <td class="text-right">{{ $data->sum('usageitem_sum_qty') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_payment'), 2,'.',',') }}</td>
       <td></td>
       </tfoot>
     </table>

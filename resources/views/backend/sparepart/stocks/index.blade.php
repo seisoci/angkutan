@@ -22,7 +22,6 @@
         <tr>
           <th>Nama Spare part</th>
           <th>Unit</th>
-          <th>Created At</th>
         </tr>
       </thead>
     </table>
@@ -43,19 +42,18 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
-    var dataTable = $('#Datatable').DataTable({
+    let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[2, 'desc']],
+        order: [[0, 'asc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.stocks.index') }}",
         columns: [
-            {data: 'sparepart.name', name: 'sparepart.name'},
+            {data: 'name', name: 'spareparts.name'},
             {data: 'qty', name: 'qty'},
-            {data: 'created_at', name: 'created_at'},
         ],
     });
 

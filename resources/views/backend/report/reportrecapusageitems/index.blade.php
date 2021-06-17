@@ -105,7 +105,6 @@
           </div>
         </div>
       </div>
-
       <!--begin: Datatable-->
       <table class="table table-hover" id="Datatable">
         <thead>
@@ -115,10 +114,12 @@
           <th>Nama Supir</th>
           <th>No. Polisi</th>
           <th>Total Pemakaian</th>
+          <th>Total</th>
         </tr>
         </thead>
         <tfoot>
         <tr>
+          <th></th>
           <th></th>
           <th></th>
           <th></th>
@@ -194,6 +195,12 @@
           {data: 'driver.name', name: 'driver.name'},
           {data: 'transport.num_pol', name: 'transport.num_pol'},
           {data: 'usageitem_sum_qty', name: 'usageitem_sum_qty', className: 'dt-right'},
+          {
+            data: 'total_payment',
+            name: 'total_payment',
+            render: $.fn.dataTable.render.number(',', '.', 2),
+            className: 'dt-right'
+          },
         ],
         footerCallback: function (row, data, start, end, display) {
           let api = this.api();
@@ -210,11 +217,41 @@
               return intVal(a) + intVal(b);
             }, 0);
 
+          let total = api
+            .column(5)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+
           $(api.column(3).footer()).html('Total');
           $(api.column(4).footer()).html(qty);
+          $(api.column(5).footer()).html(format(total));
         },
 
       });
+
+      let format = function (num) {
+        let str = num.toString().replace("", ""), parts = false, output = [], i = 1, formatted = null;
+        if (str.indexOf(".") > 0) {
+          parts = str.split(".");
+          str = parts[0];
+        }
+        str = str.split("").reverse();
+        for (let j = 0, len = str.length; j < len; j++) {
+          if (str[j] !== ",") {
+            output.push(str[j]);
+            if (i % 3 === 0 && j < (len - 1)) {
+              output.push(",");
+            }
+            i++;
+          }
+        }
+        formatted = output.reverse().join("");
+        return ("" + formatted + ((parts) ? "." + parts[1].substr(0, 2) : ".00"));
+      };
+
 
       $("#select2Driver").select2({
         placeholder: "Search Supir",

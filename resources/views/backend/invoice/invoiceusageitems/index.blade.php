@@ -62,7 +62,7 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(function () {
-    var dataTable = $('#Datatable').DataTable({
+    let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
