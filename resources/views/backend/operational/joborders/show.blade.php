@@ -54,7 +54,7 @@
               <span class="opacity-70">{{ $data->date_end ?? '' }}</span>
             </div>
             <div class="d-flex flex-column flex-root">
-              <span class="font-weight-bolder mb-2">{{ $data->type == 'ldo' ? 'Pemilik' : NULL }}</span>
+              <span class="font-weight-bolder mb-2">{{ $data->type === 'ldo' ? 'Pemilik' : NULL }}</span>
               <span class="opacity-70">{{ $data->anotherexpedition->name ?? '' }}</span>
             </div>
           </div>
@@ -70,7 +70,7 @@
       <!-- begin: Invoice body-->
       <div class="row justify-content-center py-8 px-8 py-md-10 px-md-0">
         <div class="col-md-9">
-          <div class="table">
+          <div class="table-responsive">
             <table class="table">
               <thead>
               <tr>
@@ -98,9 +98,16 @@
           </div>
           <h4 class="display-7 font-weight-boldest mt-15">Tambahan Operasional</h4>
           <div class="border-bottom w-100"></div>
-          <div class="table">
+          <div class="table-responsive">
             <table class="table-borderless d-print-table">
-              <thead>
+              <thead class="mb-10">
+              <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
               </thead>
               <tbody>
               @foreach ($data->operationalexpense as $item)
@@ -123,17 +130,23 @@
                   @csrf
                   <input type="hidden" name="job_order_id" value="{{ $data->id }}">
                   <tr class="font-weight-boldest">
-                    <td class="d-print-none pr-7" width="30%"><select class="form-control select2Expense"
-                                                                      name="expense_id"></select>
+                    <td class="d-print-none pr-7" style="width: 200px">
+                      <select class="form-control select2Expense" name="expense_id" style="width: 200px"></select>
                     </td>
-                    <td class="d-print-none pr-7" width="45%"><input type="text" class="form-control" name="description"
-                                                                     placeholder="Keterangan"/>
+                    <td class="d-print-none pr-7" style="width: 250px">
+                      <input type="text" class="form-control" name="description" placeholder="Keterangan"  style="width: 250px"/>
                     </td>
-                    <td class="d-print-none pr-7" width="20%"><input type="text"
-                                                                     class="form-control currency text-right"
-                                                                     name="amount" placeholder="Biaya"/>
+                    <td class="d-print-none pr-7" style="width: 150px">
+                      <input type="text" class="form-control currency text-right" name="amount" placeholder="Biaya"  style="width: 150px"/>
                     </td>
-                    <td class="d-print-none pr-7" width="20%">
+                    <td class="d-print-none pr-7" style="width: 250px">
+                      <select name="coa_id" class="form-control" style="width: 250px;">
+                        @foreach($selectCoa->coa as $item)
+                          <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                        @endforeach
+                      </select>
+                    </td>
+                    <td class="d-print-none pr-7" style="width: 100px">
                       <button id="submit" type="submit"
                               class="btn btn-primary btn-sm">+
                       </button>
@@ -220,11 +233,11 @@
       });
       $("#formStore").submit(function (e) {
         e.preventDefault();
-        var form = $(this);
-        var btnSubmit = $('#submit');
-        var btnSubmitHtml = btnSubmit.html();
-        var url = form.attr("action");
-        var data = new FormData(this);
+        let form = $(this);
+        let btnSubmit = $('#submit');
+        let btnSubmitHtml = btnSubmit.html();
+        let url = form.attr("action");
+        let data = new FormData(this);
         $.ajax({
           beforeSend: function () {
             btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i>").prop("disabled", "disabled");
@@ -237,10 +250,10 @@
           data: data,
           success: function (response) {
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-            if (response.status == "success") {
+            if (response.status === "success") {
               toastr.success(response.message, 'Success !');
               setTimeout(function () {
-                if (response.redirect == "" || response.redirect == "reload") {
+                if (response.redirect === "" || response.redirect === "reload") {
                   location.reload();
                 } else {
                   location.href = response.redirect;
@@ -263,7 +276,7 @@
       });
 
       $('#modalDelete').on('show.bs.modal', function (event) {
-        var id = $(event.relatedTarget).data('id');
+        let id = $(event.relatedTarget).data('id');
         $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.operationalexpenses.index") }}/' + id);
       });
       $('#modalDelete').on('hidden.bs.modal', function (event) {
@@ -272,10 +285,10 @@
 
       $("#formDelete").click(function (e) {
         e.preventDefault();
-        var form = $(this);
-        var url = $('#modalDelete').find('a[name="id"]').attr('href');
-        var btnHtml = form.html();
-        var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+        let form = $(this);
+        let url = $('#modalDelete').find('a[name="id"]').attr('href');
+        let btnHtml = form.html();
+        let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
         $.ajax({
           beforeSend: function () {
             form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");
@@ -285,11 +298,11 @@
           dataType: 'json',
           headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
           success: function (response) {
-            if (response.status == "success") {
+            if (response.status === "success") {
               toastr.success(response.message, 'Success !');
               $('#modalDelete').modal('hide');
               setTimeout(function () {
-                if (response.redirect == "" || response.redirect == "reload") {
+                if (response.redirect === "" || response.redirect === "reload") {
                   location.reload();
                 } else {
                   location.href = response.redirect;

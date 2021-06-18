@@ -68,71 +68,88 @@
                   </div>
                 </div>
               </div>
-              <table id="table_invoice" class="table table-striped">
-                <thead>
-                <tr>
-                  <th scope="col" class="text-center">#</th>
-                  <th scope="col">Tanggal</th>
-                  <th scope="col">S. Jalan</th>
-                  <th scope="col">Pelanggan</th>
-                  <th scope="col">Rute Dari</th>
-                  <th scope="col">Rute Ke</th>
-                  <th scope="col">Jenis Barang</th>
-                  <th scope="col" class="text-right">Tarif (Rp.)</th>
-                  <th scope="col">Qty (Unit)</th>
-                  <th scope="col">Pajak (%)</th>
-                  <th scope="col" class="text-right">Total (Inc. Tax)</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-                <tfoot>
-                </tfoot>
-              </table>
+              <div class="table-responsive">
+                <table id="table_invoice" class="table table-striped">
+                  <thead>
+                  <tr>
+                    <th scope="col" class="text-center">#</th>
+                    <th scope="col">Tanggal</th>
+                    <th scope="col">S. Jalan</th>
+                    <th scope="col">Pelanggan</th>
+                    <th scope="col">Rute Dari</th>
+                    <th scope="col">Rute Ke</th>
+                    <th scope="col">Jenis Barang</th>
+                    <th scope="col" class="text-right">Tarif (Rp.)</th>
+                    <th scope="col">Qty (Unit)</th>
+                    <th scope="col">Pajak (%)</th>
+                    <th scope="col" class="text-right">Total (Inc. Tax)</th>
+                    <th scope="col" class="text-right">Total (Inc. Tax & Fee)</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                  <tfoot>
+                  </tfoot>
+                </table>
+              </div>
               <h2 class="pt-10"><u>Pembayaran</u></h2>
-              <table class="table table-borderless">
-                <thead>
-                <tr>
-                  <th scope="col" width="20%">Tanggal Pembayaran</th>
-                  <th scope="col" width="30%">Keterangan</th>
-                  <th scope="col" width="25%">Nominal</th>
-                  <th scope="col" width="25%">Total Dibayar</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <td><input type="text" class="form-control rounded-0 datepicker w-100" name="payment[date_payment]"
-                             placeholder="Tanggal Invoice" readonly></td>
-                  <td><textarea name="payment[description]" rows="3" class="form-control rounded-0"></textarea></td>
-                  <td><input type="text" name="payment[payment]" class="currency rounded-0 form-control"></td>
-                  <td><input type="text" class="currency rounded-0 form-control total_payment" disabled></td>
-                </tr>
-                </tbody>
-                <tfoot>
-                <tr>
-                  <td colspan="3" class="text-right">Total Tagihan</td>
-                  <td class="text-right"><input type="text" name="total_bill" class="currency rounded-0 form-control"
-                                                disabled></td>
-                </tr>
-                <tr>
-                  <td colspan="3" class="text-right">Total Pemotongan</td>
-                  <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control">
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="3" class="text-right">Total Pembayaran</td>
-                  <td class="text-right"><input type="text" class="currency rounded-0 form-control total_payment"
-                                                disabled>
-                  </td>
-                </tr>
-                <tr>
-                  <input type="hidden" name="rest_payment" class="currency rounded-0 form-control rest_payment">
-                  <td colspan="3" class="text-right">Sisa Pembayaran</td>
-                  <td class="text-right"><input type="text" class="currency rounded-0 form-control rest_payment"  disabled>
-                  </td>
-                </tr>
-                </tfoot>
-              </table>
+              <div class="table-responsive">
+                <table class="table table-borderless">
+                  <thead>
+                  <tr>
+                    <th scope="col" style="min-width: 150px">Tanggal Pembayaran</th>
+                    <th scope="col" style="min-width: 200px">Keterangan</th>
+                    <th scope="col" style="min-width: 150px">Master Akun</th>
+                    <th scope="col" style="min-width: 150px">Nominal</th>
+                    <th scope="col" style="min-width: 150px">Total Dibayar</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td><input type="text" class="form-control rounded-0 datepicker w-100" name="payment[date_payment]"
+                               placeholder="Tanggal Invoice" readonly></td>
+                    <td><input name="payment[description]" class="form-control rounded-0"/></td>
+                    <td><select name="coa_id" class="form-control rounded-0" style="width: 250px">
+                        @foreach($selectCoa->coa as $item)
+                          <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                        @endforeach
+                      </select></td>
+                    <td><input type="text" name="payment[payment]" class="currency rounded-0 form-control"></td>
+                    <td><input type="text" class="currency rounded-0 form-control total_payment" disabled></td>
+                  </tr>
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <td colspan="4" class="text-right">Total Tagihan (Inc. Tax)</td>
+                    <td class="text-right"><input type="text" name="total_bill" class="currency rounded-0 form-control"
+                                                  disabled></td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" class="text-right">Total Potongan fee</td>
+                    <td class="text-right"><input type="text" name="total_fee" class="currency rounded-0 form-control"
+                                                  disabled></td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" class="text-right">Total Pemotongan Klaim</td>
+                    <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" class="text-right">Total Pembayaran</td>
+                    <td class="text-right"><input type="text" class="currency rounded-0 form-control total_payment"
+                                                  disabled>
+                    </td>
+                  </tr>
+                  <tr>
+                    <input type="hidden" name="rest_payment" class="currency rounded-0 form-control rest_payment">
+                    <td colspan="4" class="text-right">Sisa Pembayaran</td>
+                    <td class="text-right"><input type="text" class="currency rounded-0 form-control rest_payment"
+                                                  disabled>
+                    </td>
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -173,7 +190,8 @@
           <th>Tagihan</th>
           <th>Pajak (%)</th>
           <th>Potongan</th>
-          <th>Tagihan (Inc. Tax Only)</th>
+          <th>Tagihan (Inc. Tax)</th>
+          <th>Tagihan (Inc. Tax & Fee)</th>
           <th>Created At</th>
         </tr>
         </thead>
@@ -208,7 +226,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[14, 'desc']],
+        order: [[15, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
@@ -254,6 +272,14 @@
             orderable: false,
             searchable: false
           },
+          {
+            data: 'total_basic_price_after_thanks',
+            name: 'total_basic_price_after_thanks',
+            render: $.fn.dataTable.render.number(',', '.', 2),
+            className: 'dt-right',
+            orderable: false,
+            searchable: false
+          },
           {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [
@@ -290,12 +316,14 @@
 
       function initCalculate() {
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
+        let total_fee = parseFloat($('input[name="total_fee"]').val()) || 0;
         let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
-        let rest_payment = total_bill - total_cut - total_payment;
+        let rest_payment = total_bill - total_fee - total_cut - total_payment;
         $('.total_payment').val(total_payment);
         $('.rest_payment').val(rest_payment);
         $('input[name=total_bill]').val(total_bill);
+        $('input[name=total_fee]').val(total_fee);
       }
 
       $('input[name="payment[payment]"],input[name="total_cut"],#diskon').on('keyup', function () {
@@ -323,8 +351,12 @@
               $('#table_invoice tfoot').empty();
               $('#TampungId').empty();
               let total = 0;
+              let totalThanks = 0;
+              let totalFee = 0;
               $.each(response.data, function (index, data) {
                 total += parseFloat(data.total_basic_price_after_tax);
+                totalThanks += parseFloat(data.total_basic_price_after_thanks);
+                totalFee += parseFloat(data.fee_thanks);
                 $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="' + data.id + '">');
                 $('#table_invoice tbody').append('<tr>' +
                   ' <td class="text-center">' + (index + 1) + '</td>' +
@@ -338,13 +370,15 @@
                   ' <td class="text-center">' + data.payload + '</td>' +
                   ' <td class="text-center">' + (data.tax_percent ? data.tax_percent : 0) + '</td>' +
                   ' <td class="text-right money">' + data.total_basic_price_after_tax + '</td>' +
+                  ' <td class="text-right money">' + data.total_basic_price_after_thanks + '</td>' +
                   '</tr>');
               });
-              $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '">');
+              $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '"><input type="hidden" name="total_fee" value="' + totalFee + '">');
 
               $('#table_invoice tfoot').append('<tr>' +
                 '<td colspan="10" class="text-right">Total</td>' +
                 '<td class="text-right money">' + total + '</td>' +
+                '<td class="text-right money">' + totalThanks + '</td>' +
                 '</tr>');
               $(".money").inputmask({
                 'alias': 'decimal',

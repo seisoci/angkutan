@@ -46,6 +46,7 @@ class CoaController extends Controller
     if ($validator->passes()) {
       if (is_numeric($request->parent_id)) {
         $parent = Coa::where('parent_id', $request->parent_id)->max('code');
+        $type = Coa::findOrFail($request->parent_id)->type ?? NULL;
         $parent_id = $request->parent_id;
         $normal_balance = $request->normal_balance;
         if ($parent) {
@@ -58,6 +59,7 @@ class CoaController extends Controller
           $code = $parent->code . ".1";
         }
       } elseif ($request->parent_id == 'none') {
+        $type = $request->type;
         $parent = Coa::whereNull('parent_id')->where('type', $request->type)->max('code');
         $parent_id = NULL;
         $normal_balance = NULL;
@@ -91,7 +93,7 @@ class CoaController extends Controller
         'name' => $request->name,
         'code' => $code,
         'parent_id' => $parent_id,
-        'type' => $request->type,
+        'type' => $type,
         'normal_balance' => $normal_balance,
       ]);
       $response = response()->json([

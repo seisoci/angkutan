@@ -197,15 +197,17 @@ class InvoicePurchaseController extends Controller
           ]);
         }
 
-        Journal::create([
-          'coa_id' => 42,
-          'date_journal' => $request->input('invoice_date'),
-          'debit' => 0,
-          'kredit' => $discount,
-          'table_ref' => 'invoicepurchases',
-          'code_ref' => $invoice->id,
-          'description' => "Penambahan persediaan barang $supplier->name"
-        ]);
+        if (!($discount <= 0)) {
+          Journal::create([
+            'coa_id' => 42,
+            'date_journal' => $request->input('invoice_date'),
+            'debit' => 0,
+            'kredit' => $discount,
+            'table_ref' => 'invoicepurchases',
+            'code_ref' => $invoice->id,
+            'description' => "Diskon Pembelian barang barang $supplier->name"
+          ]);
+        }
 
         Journal::create([
           'coa_id' => 17,

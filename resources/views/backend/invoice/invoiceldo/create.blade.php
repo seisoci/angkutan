@@ -68,28 +68,30 @@
                   </div>
                 </div>
               </div>
-              <table id="table_invoice" class="table table-responsive table-striped">
-                <thead>
-                <tr>
-                  <th scope="col" class="text-center">#</th>
-                  <th scope="col">Tanggal</th>
-                  <th scope="col">S. Jalan</th>
-                  <th scope="col">Pelanggan</th>
-                  <th scope="col">Rute Dari</th>
-                  <th scope="col">Rute Ke</th>
-                  <th scope="col">Jenis Barang</th>
-                  <th scope="col">Tarif LDO (Rp.)</th>
-                  <th scope="col">Qty (Unit)</th>
-                  <th scope="col">Total Harga Dasar</th>
-                  <th scope="col">Total Operasional</th>
-                  <th scope="col">Tagihan Bersih</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-                <tfoot>
-                </tfoot>
-              </table>
+              <div class="table-responsive">
+                <table id="table_invoice" class="table table-responsive table-striped">
+                  <thead>
+                  <tr>
+                    <th scope="col" class="text-center">#</th>
+                    <th scope="col">Tanggal</th>
+                    <th scope="col">S. Jalan</th>
+                    <th scope="col">Pelanggan</th>
+                    <th scope="col">Rute Dari</th>
+                    <th scope="col">Rute Ke</th>
+                    <th scope="col">Jenis Barang</th>
+                    <th scope="col">Tarif LDO (Rp.)</th>
+                    <th scope="col">Qty (Unit)</th>
+                    <th scope="col">Total Harga Dasar</th>
+                    <th scope="col">Total Operasional</th>
+                    <th scope="col">Tagihan Bersih</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                  <tfoot>
+                  </tfoot>
+                </table>
+              </div>
               <h2 class="pt-10"><u>Pembayaran</u></h2>
               <div class="table-responsive">
                 <table class="table table-borderless">

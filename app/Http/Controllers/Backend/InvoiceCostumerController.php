@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConfigCoa;
+use App\Models\Costumer;
 use App\Models\InvoiceCostumer;
 use App\Models\JobOrder;
+use App\Models\Journal;
 use App\Models\PaymentCostumer;
 use App\Models\Prefix;
 use App\Models\Setting;
@@ -85,7 +88,8 @@ class InvoiceCostumerController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
-    return view('backend.invoice.invoicecostumers.create', compact('config', 'page_breadcrumbs'));
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicecostumers')->sole();
+    return view('backend.invoice.invoicecostumers.create', compact('config', 'page_breadcrumbs', 'selectCoa'));
   }
 
   public function store(Request $request)
@@ -98,11 +102,14 @@ class InvoiceCostumerController extends Controller
       'costumer_id' => 'required|integer',
       'invoice_date' => 'required|date_format:Y-m-d',
       'due_date' => 'required|date_format:Y-m-d',
+      'coa_id' => 'required|integer',
     ]);
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
         $prefix = Prefix::findOrFail($request->prefix);
+        $costumer = Costumer::findOrFail($request->input('costumer_id'));
+        $total = ($request->input('payment.payment') ?? 0) + ($request->input('total_cut') ?? 0) + ($request->input('total_fee') ?? 0);
         $data = InvoiceCostumer::create([
           'prefix' => $prefix->name,
           'num_bill' => $request->input('num_bill'),
@@ -110,6 +117,7 @@ class InvoiceCostumerController extends Controller
           'invoice_date' => $request->input('invoice_date'),
           'due_date' => $request->input('due_date'),
           'total_bill' => $request->input('total_bill'),
+          'total_fee_thanks' => $request->input('total_fee'),
           'total_cut' => $request->input('total_cut') ?? 0,
           'total_payment' => $request->input('payment.payment') ?? 0,
           'rest_payment' => $request->input('rest_payment'),
@@ -122,9 +130,50 @@ class InvoiceCostumerController extends Controller
         if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
           PaymentCostumer::create([
             'invoice_costumer_id' => $data->id,
+            'coa_id' => $request->input('coa_id'),
             'date_payment' => $request->input('payment.date_payment'),
             'payment' => $request->input('payment.payment'),
             'description' => $request->input('payment.description'),
+          ]);
+
+          Journal::create([
+            'coa_id' => 46,
+            'date_journal' => $request->input('payment.date_payment'),
+            'debit' => $request->input('total_fee'),
+            'kredit' => 0,
+            'table_ref' => 'invoicecostumers',
+            'code_ref' => $data->id,
+            'description' => "Potongan Pendapatan untuk Potongan Klaim"
+          ]);
+
+          Journal::create([
+            'coa_id' => 48,
+            'date_journal' => $request->input('payment.date_payment'),
+            'debit' => ($request->input('total_cut') ?? 0),
+            'kredit' => 0,
+            'table_ref' => 'invoicecostumers',
+            'code_ref' => $data->id,
+            'description' => "Potongan Pendapatan untuk Potongan Fee"
+          ]);
+
+          Journal::create([
+            'coa_id' => $request->input('coa_id'),
+            'date_journal' => $request->input('payment.date_payment'),
+            'debit' => $request->input('payment.payment'),
+            'kredit' => 0,
+            'table_ref' => 'invoicecostumers',
+            'code_ref' => $data->id,
+            'description' => "Penambahan saldo dari tagihan jo pelanggan $costumer->name"
+          ]);
+
+          Journal::create([
+            'coa_id' => 43,
+            'date_journal' => $request->input('payment.date_payment'),
+            'debit' => 0,
+            'kredit' => $total,
+            'table_ref' => 'invoicecostumers',
+            'code_ref' => $data->id,
+            'description' => "Pembayaran tagihan jo pelanggan $costumer->name"
           ]);
         }
         if($request->rest_payment <= -1){
@@ -165,7 +214,7 @@ class InvoiceCostumerController extends Controller
       return [$item['name'] => $item['value']];
     });
     $data = InvoiceCostumer::select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
-      ->with(['joborders', 'costumer', 'paymentcostumers', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
+      ->with(['joborders', 'costumer', 'paymentcostumers.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
       ->findOrFail($id);
     return view('backend.invoice.invoicecostumers.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
@@ -196,20 +245,25 @@ class InvoiceCostumerController extends Controller
       ['page' => '#', 'title' => "Detail Detail Pembayaran Pelanggan"],
     ];
     $data = InvoiceCostumer::select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
-      ->with(['joborders', 'costumer', 'paymentcostumers', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
+      ->with(['joborders', 'costumer', 'paymentcostumers.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
       ->findOrFail($id);
-    return view('backend.invoice.invoicecostumers.edit', compact('config', 'page_breadcrumbs', 'data'));
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicecostumers')->sole();
+    return view('backend.invoice.invoicecostumers.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
   }
 
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
       'total_cut' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+      'payment.payment' => 'required|integer',
+      'payment.date_payment' => 'required|date_format:Y-m-d',
+      'coa_id' => 'required|integer',
     ]);
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
         $data = InvoiceCostumer::findOrFail($id);
+        $costumer = Costumer::findOrFail($data->costumer_id);
         $payment = PaymentCostumer::where('invoice_costumer_id', $data->id)->sum('payment');
         $payment += $request->input('payment.payment');
         $data->update([
@@ -221,9 +275,30 @@ class InvoiceCostumerController extends Controller
         if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
           PaymentCostumer::create([
             'invoice_costumer_id' => $data->id,
+            'coa_id' => $request->input('coa_id'),
             'date_payment' => $request->input('payment.date_payment'),
             'payment' => $request->input('payment.payment'),
             'description' => $request->input('payment.description'),
+          ]);
+
+          Journal::create([
+            'coa_id' => $request->input('coa_id'),
+            'date_journal' => $request->input('payment.date_payment'),
+            'debit' => $request->input('payment.payment'),
+            'kredit' => 0,
+            'table_ref' => 'invoicecostumers',
+            'code_ref' => $data->id,
+            'description' => "Penambahan saldo dari tagihan jo pelanggan $costumer->name"
+          ]);
+
+          Journal::create([
+            'coa_id' => 43,
+            'date_journal' => $request->input('payment.date_payment'),
+            'debit' => 0,
+            'kredit' => $request->input('payment.payment'),
+            'table_ref' => 'invoicecostumers',
+            'code_ref' => $data->id,
+            'description' => "Pembayaran tagihan jo pelanggan $costumer->name"
           ]);
         }
 

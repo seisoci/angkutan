@@ -157,7 +157,7 @@
               <tr>
                 <td colspan="4" class="text-right">Total Pemotongan</td>
                 <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control"
-                                              value="{{ $data->total_cut }}">
+                                              value="{{ $data->total_cut }}" disabled>
                 </td>
               </tr>
               <tr>

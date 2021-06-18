@@ -4,120 +4,90 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
+use App\Models\JobOrder;
+use App\Models\Journal;
 use App\Models\OperationalExpense;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 class OperationalExpenseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-  public function store(Request $request){
+  public function store(Request $request)
+  {
     $validator = Validator::make($request->all(), [
-        'job_order_id'  => 'required|integer',
-        'expense_id'    => 'required|integer',
-        'amount'       => 'required|integer',
-        'description'   => 'string|nullable',
+      'job_order_id' => 'required|integer',
+      'expense_id' => 'required|integer',
+      'amount' => 'required|integer',
+      'description' => 'string|nullable',
     ]);
-    if($validator->passes()){
-      Expense::findOrFail($request->expense_id);
-      OperationalExpense::create([
-        'job_order_id' => $request->input('job_order_id'),
-        'expense_id'   => $request->input('expense_id'),
-        'description'  => $request->input('description'),
-        'amount'      => $request->input('amount'),
-      ]);
+    if ($validator->passes()) {
+      $data = JobOrder::with(['driver', 'routefrom', 'routeto', 'costumer'])->findOrFail($request->job_order_id);
+      try {
+        DB::beginTransaction();
+        $operationalExpense = OperationalExpense::create([
+          'job_order_id' => $request->input('job_order_id'),
+          'expense_id' => $request->input('expense_id'),
+          'description' => $request->input('description'),
+          'amount' => $request->input('amount'),
+        ]);
 
-      $response = response()->json([
-        'status'  => 'success',
-        'message' => 'Data has been saved',
-        'redirect' => 'reload',
-      ]);
-    }else{
-        $response = response()->json(['error'=>$validator->errors()->all()]);
+        Journal::create([
+          'coa_id' => $request->input('coa_id'),
+          'date_journal' => $data->date_begin,
+          'debit' => 0,
+          'kredit' => $request->input('amount'),
+          'table_ref' => 'operationalexpense',
+          'code_ref' => $operationalExpense->id,
+          'description' => "Pengurangan saldo untuk uang jalan " . "$data->prefix-$data->num_bill " . $data->costumer->name . " dari " . $data->routefrom->name . " ke " . $data->routeto->name
+        ]);
+
+        Journal::create([
+          'coa_id' => 50,
+          'date_journal' => $data->date_begin,
+          'debit' => $request->input('amount'),
+          'kredit' => 0,
+          'table_ref' => 'operationalexpense',
+          'code_ref' => $operationalExpense->id,
+          'description' => "Beban operasional tambahan " . "$data->prefix-$data->num_bill " . $data->costumer->name . " dari " . $data->routefrom->name . " ke " . $data->routeto->name
+        ]);
+
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been saved',
+          'redirect' => 'reload',
+        ]);
+        DB::commit();
+      } catch (\Throwable $throw) {
+        DB::rollBack();
+        $response = $throw;
+      }
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
     }
     return $response;
   }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\OperationalExpense  $operationalExpense
-     * @return \Illuminate\Http\Response
-     */
-    public function show(OperationalExpense $operationalExpense)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\OperationalExpense  $operationalExpense
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(OperationalExpense $operationalExpense)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\OperationalExpense  $operationalExpense
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, OperationalExpense $operationalExpense)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\OperationalExpense  $operationalExpense
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
+  public function destroy($id)
+  {
+    try {
+      DB::beginTransaction();
+      $data = OperationalExpense::find($id);
+      $journal = Journal::where('table_ref', 'operationalexpense')->where('code_ref', $id);
+      $data->delete();
+      $journal->delete();
       $response = response()->json([
-          'status'  => 'error',
-          'message' => 'Data cannot be deleted',
+        'status' => 'success',
+        'message' => 'Data has been deleted',
+        'redirect' => 'reload'
       ]);
 
-      $data = OperationalExpense::find($id);
-      if($data->delete()){
-        $response = response()->json([
-          'status'    => 'success',
-          'message'   => 'Data has been deleted',
-          'redirect'  => 'reload'
-        ]);
-      }
-      return $response;
+      DB::commit();
+    } catch (\Throwable $throw) {
+      DB::rollBack();
+      $response = $throw;
     }
+
+    return $response;
+  }
 }

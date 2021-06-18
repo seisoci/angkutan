@@ -27,6 +27,7 @@ class InvoiceCostumer extends Model
     'invoice_date',
     'due_date',
     'total_bill',
+    'total_fee_thanks',
     'total_cut',
     'total_payment',
     'rest_payment',

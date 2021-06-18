@@ -235,6 +235,13 @@
               <input name="grandtotalnetto" type="text" class="form-control currency" disabled>
             </div>
             <div class="form-group">
+              <select name="coa_id" class="form-control">
+                @foreach($selectCoa->coa as $item)
+                  <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="form-group">
               <label>Keterangan</label>
               <textarea class="form-control" name="description" rows="5"></textarea>
             </div>
@@ -365,11 +372,10 @@
           delay: 250,
           cache: true,
           data: function (e) {
-            let query = {
+            return {
               q: e.term || '',
               page: e.page || 1
             }
-            return query
           },
         },
       }).on('change', function () {
@@ -388,12 +394,11 @@
           delay: 250,
           cache: true,
           data: function (e) {
-            let query = {
+            return {
               type: $('#select2AnotherExpedition').find(":selected").val() || null,
               q: e.term || '',
               page: e.page || 1
             }
-            return query
           },
         },
       });
@@ -407,13 +412,12 @@
           delay: 250,
           cache: true,
           data: function (e) {
-            let query = {
+            return {
               status: 'active',
               type: $('#select2AnotherExpedition').find(":selected").val(),
               q: e.term || '',
               page: e.page || 1
             }
-            return query
           },
         },
       });
@@ -427,11 +431,10 @@
           delay: 250,
           cache: true,
           data: function (e) {
-            let query = {
+            return {
               q: e.term || '',
               page: e.page || 1
             }
-            return query
           },
         },
       }).on('change', function () {
@@ -441,6 +444,22 @@
         $("#select2RoadTo").trigger("change");
         $("#select2RoadTo").val("");
         $("#select2RoadTo").trigger("change");
+        $("#select2TypeCapacity").val("");
+        $("#select2TypeCapacity").trigger("change");
+        $('#selectTypeOngkosan').val('');
+        $('#selectTypeOngkosan').val('');
+        $('#convertToTon').val('');
+        $('#totalPayload').val('');
+        $('input[name=basic_price]').val('');
+        $('input[name=basic_price_ldo]').val('');
+        $('input[name=payload]').val('');
+        $('input[name=road_money]').val('');
+        $('input[name=grandtotalgross]').val('');
+        $('input[name=cut_sparepart]').val('');
+        $('input[name=salary]').val('');
+        $('input[name=grandtotalnetto]').val('');
+        $('input[name=tax_percent]').val('');
+        $('.currency').val('');
       });
 
       $("#select2RoadFrom").select2({
@@ -452,12 +471,11 @@
           delay: 250,
           cache: true,
           data: function (e) {
-            let query = {
+            return {
               costumer_id: $('#select2Costumers').find(":selected").val() || null,
               q: e.term || '',
               page: e.page || 1
             }
-            return query
           },
         },
       }).on('change', function () {
@@ -465,6 +483,22 @@
         $("#select2RoadTo").trigger("change");
         $("#select2Cargo").val("");
         $("#select2Cargo").trigger("change");
+        $("#select2TypeCapacity").val("");
+        $("#select2TypeCapacity").trigger("change");
+        $('#selectTypeOngkosan').val('');
+        $('#selectTypeOngkosan').val('');
+        $('#convertToTon').val('');
+        $('#totalPayload').val('');
+        $('input[name=basic_price]').val('');
+        $('input[name=basic_price_ldo]').val('');
+        $('input[name=payload]').val('');
+        $('input[name=road_money]').val('');
+        $('input[name=grandtotalgross]').val('');
+        $('input[name=cut_sparepart]').val('');
+        $('input[name=salary]').val('');
+        $('input[name=grandtotalnetto]').val('');
+        $('input[name=tax_percent]').val('');
+        $('.currency').val('');
       });
 
       $("#select2RoadTo").select2({
@@ -476,18 +510,33 @@
           delay: 250,
           cache: true,
           data: function (e) {
-            let query = {
+            return {
               costumer_id: $('#select2Costumers').find(":selected").val() || null,
               route_from: $('#select2RoadFrom').find(":selected").val() | null,
               q: e.term || '',
               page: e.page || 1
             }
-            return query
           },
         },
       }).on('change', function () {
         $("#select2Cargo").val("");
         $("#select2Cargo").trigger("change");
+        $("#select2TypeCapacity").val("");
+        $("#select2TypeCapacity").trigger("change");
+        $('#selectTypeOngkosan').val('');
+        $('#selectTypeOngkosan').val('');
+        $('#convertToTon').val('');
+        $('#totalPayload').val('');
+        $('input[name=basic_price]').val('');
+        $('input[name=basic_price_ldo]').val('');
+        $('input[name=payload]').val('');
+        $('input[name=road_money]').val('');
+        $('input[name=grandtotalgross]').val('');
+        $('input[name=cut_sparepart]').val('');
+        $('input[name=salary]').val('');
+        $('input[name=grandtotalnetto]').val('');
+        $('input[name=tax_percent]').val('');
+        $('.currency').val('');
       });
 
       $("#select2Cargo").select2({
@@ -512,6 +561,23 @@
       }).on('select2:select', function (evt) {
         $('input[name=tax_percent],#taxPercent').val(evt.params.data.tax_pph);
         $('input[name=fee_thanks],#fee_thanks').val(evt.params.data.fee_thanks);
+      }).on('change', function(){
+        $("#select2TypeCapacity").val("");
+        $("#select2TypeCapacity").trigger("change");
+        $('#selectTypeOngkosan').val('');
+        $('#selectTypeOngkosan').val('');
+        $('#convertToTon').val('');
+        $('#totalPayload').val('');
+        $('input[name=basic_price]').val('');
+        $('input[name=basic_price_ldo]').val('');
+        $('input[name=payload]').val('');
+        $('input[name=road_money]').val('');
+        $('input[name=grandtotalgross]').val('');
+        $('input[name=cut_sparepart]').val('');
+        $('input[name=salary]').val('');
+        $('input[name=grandtotalnetto]').val('');
+        $('input[name=tax_percent]').val('');
+        $('.currency').val('');
       });
 
       $("#select2TypeCapacity").select2({
@@ -543,6 +609,8 @@
         $('input[name=cut_sparepart]').val('');
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
+        $('input[name=tax_percent]').val('');
+        $('.currency').val('');
       });
 
       $('#selectTypeOngkosan').on('change', function () {
@@ -556,6 +624,8 @@
         $('input[name=cut_sparepart]').val('');
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
+        $('input[name=tax_percent]').val('');
+        $('.currency').val('');
         getData();
         if (this.value == 'fix') {
           $('input[name="payload"]').prop('disabled', true).val(1);
@@ -699,7 +769,6 @@
         });
       }
 
-
       $("#formStore").submit(function (e) {
         e.preventDefault();
         let form = $(this);
@@ -734,7 +803,7 @@
               $.each(response.error, function (key, value) {
                 $(".alert-text").append('<span style="display: block">' + value + '</span>');
               });
-              toastr.error("Please complete your form", 'Failed !');
+              toastr.error((response.message || "Please complete your form"), 'Failed !');
             }
           },
           error: function (response) {

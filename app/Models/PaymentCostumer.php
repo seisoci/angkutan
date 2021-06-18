@@ -21,6 +21,7 @@ class PaymentCostumer extends Model
 
   protected $fillable = [
     'invoice_costumer_id',
+    'coa_id',
     'date_payment',
     'payment',
     'description'
@@ -33,5 +34,9 @@ class PaymentCostumer extends Model
 
   public function invoicekasbon(){
     return $this->belongsTo(InvoiceKasbon::class, 'invoice_kasbon_id');
+  }
+
+  public function coa(){
+    return $this->belongsTo(Coa::class, 'coa_id');
   }
 }

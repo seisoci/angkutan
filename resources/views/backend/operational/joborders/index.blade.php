@@ -223,7 +223,6 @@
             <div class="form-group">
               <label>Status Job Order:</label>
               <select id="statusCargoModal" class="form-control" name="status_cargo">
-                <option value="mulai">Mulai</option>
                 <option value="selesai">Selesai</option>
                 <option value="batal">Batal</option>
               </select>
