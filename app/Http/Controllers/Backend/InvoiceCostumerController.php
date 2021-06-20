@@ -70,6 +70,7 @@ class InvoiceCostumerController extends Controller
     $cargo_id = $request->cargo_id;
     if ($request->ajax()) {
       $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        ->withSum('operationalexpense', 'amount')
         ->where('status_payment', '0')
         ->where('status_cargo', 'selesai')
         ->when($costumer_id, function ($query, $costumer_id) {
@@ -109,13 +110,14 @@ class InvoiceCostumerController extends Controller
         DB::beginTransaction();
         $prefix = Prefix::findOrFail($request->prefix);
         $costumer = Costumer::findOrFail($request->input('costumer_id'));
-        $total = ($request->input('payment.payment') ?? 0) + ($request->input('total_cut') ?? 0) + ($request->input('total_fee') ?? 0);
+        $total = ($request->input('payment.payment') ?? 0) + ($request->input('total_cut') ?? 0);
         $data = InvoiceCostumer::create([
           'prefix' => $prefix->name,
           'num_bill' => $request->input('num_bill'),
           'costumer_id' => $request->input('costumer_id'),
           'invoice_date' => $request->input('invoice_date'),
           'due_date' => $request->input('due_date'),
+          'total_tax' => $request->input('total_tax'),
           'total_bill' => $request->input('total_bill'),
           'total_fee_thanks' => $request->input('total_fee'),
           'total_cut' => $request->input('total_cut') ?? 0,
@@ -136,24 +138,32 @@ class InvoiceCostumerController extends Controller
             'description' => $request->input('payment.description'),
           ]);
 
+//          Journal::create([
+//            'coa_id' => 48,
+//            'date_journal' => $request->input('payment.date_payment'),
+//            'debit' => ($request->input('total_cut') ?? 0),
+//            'kredit' => 0,
+//            'table_ref' => 'invoicecostumers',
+//            'code_ref' => $data->id,
+//            'description' => "Potongan Pendapatan untuk Potongan Fee"
+//          ]);
+//          Journal::create([
+//            'coa_id' => 53,
+//            'date_journal' => $request->input('payment.date_payment'),
+//            'debit' => $request->input('total_tax'),
+//            'kredit' => 0,
+//            'table_ref' => 'invoicecostumers',
+//            'code_ref' => $data->id,
+//            'description' => "Beban pembayaran pajak jo pelanggan $costumer->name"
+//          ]);
           Journal::create([
             'coa_id' => 46,
             'date_journal' => $request->input('payment.date_payment'),
-            'debit' => $request->input('total_fee'),
+            'debit' => $request->input('total_cut'),
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
             'description' => "Potongan Pendapatan untuk Potongan Klaim"
-          ]);
-
-          Journal::create([
-            'coa_id' => 48,
-            'date_journal' => $request->input('payment.date_payment'),
-            'debit' => ($request->input('total_cut') ?? 0),
-            'kredit' => 0,
-            'table_ref' => 'invoicecostumers',
-            'code_ref' => $data->id,
-            'description' => "Potongan Pendapatan untuk Potongan Fee"
           ]);
 
           Journal::create([
@@ -175,6 +185,8 @@ class InvoiceCostumerController extends Controller
             'code_ref' => $data->id,
             'description' => "Pembayaran tagihan jo pelanggan $costumer->name"
           ]);
+
+
         }
         if($request->rest_payment <= -1){
           return response()->json([
@@ -239,10 +251,10 @@ class InvoiceCostumerController extends Controller
 
   public function edit($id)
   {
-    $config['page_title'] = "Detail Pembayaran Pelanggan";
+    $config['page_title'] = "Edit Pembayaran Pelanggan";
     $page_breadcrumbs = [
       ['page' => '/backend/invoicecostumers', 'title' => "List Detail Pembayaran Pelanggan"],
-      ['page' => '#', 'title' => "Detail Detail Pembayaran Pelanggan"],
+      ['page' => '#', 'title' => "Edit Pembayaran Pelanggan"],
     ];
     $data = InvoiceCostumer::select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
       ->with(['joborders', 'costumer', 'paymentcostumers.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
@@ -254,7 +266,6 @@ class InvoiceCostumerController extends Controller
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
-      'total_cut' => 'required|regex:/^\d+(\.\d{1,2})?$/',
       'payment.payment' => 'required|integer',
       'payment.date_payment' => 'required|date_format:Y-m-d',
       'coa_id' => 'required|integer',

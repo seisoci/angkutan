@@ -79,11 +79,12 @@
                     <th scope="col">Rute Dari</th>
                     <th scope="col">Rute Ke</th>
                     <th scope="col">Jenis Barang</th>
-                    <th scope="col" class="text-right">Tarif (Rp.)</th>
                     <th scope="col">Qty (Unit)</th>
+                    <th scope="col">Harga Dasar</th>
                     <th scope="col">Pajak (%)</th>
-                    <th scope="col" class="text-right">Total (Inc. Tax)</th>
-                    <th scope="col" class="text-right">Total (Inc. Tax & Fee)</th>
+                    <th scope="col">Pajak (Rp.)</th>
+                    <th scope="col">Fee</th>
+                    <th scope="col" class="text-right">Total Tagihan (Rp.)</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -120,13 +121,8 @@
                   </tbody>
                   <tfoot>
                   <tr>
-                    <td colspan="4" class="text-right">Total Tagihan (Inc. Tax)</td>
+                    <td colspan="4" class="text-right">Total Tagihan</td>
                     <td class="text-right"><input type="text" name="total_bill" class="currency rounded-0 form-control"
-                                                  disabled></td>
-                  </tr>
-                  <tr>
-                    <td colspan="4" class="text-right">Total Potongan fee</td>
-                    <td class="text-right"><input type="text" name="total_fee" class="currency rounded-0 form-control"
                                                   disabled></td>
                   </tr>
                   <tr>
@@ -189,10 +185,10 @@
           <th>Qty (Unit)</th>
           <th>Tagihan</th>
           <th>Pajak (%)</th>
-          <th>Potongan</th>
+          <th>Pajak (Rp.)</th>
+          <th>Fee Thanks</th>
           <th>Tagihan (Inc. Tax)</th>
           <th>Tagihan (Inc. Tax & Fee)</th>
-          <th>Created At</th>
         </tr>
         </thead>
       </table>
@@ -226,7 +222,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[15, 'desc']],
+        order: [[1, 'asc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
@@ -265,6 +261,12 @@
             className: 'dt-right'
           },
           {
+            data: 'tax_amount',
+            name: 'tax_amount',
+            render: $.fn.dataTable.render.number(',', '.', 2),
+            className: 'dt-right'
+          },
+          {
             data: 'total_basic_price_after_tax',
             name: 'total_basic_price_after_tax',
             render: $.fn.dataTable.render.number(',', '.', 2),
@@ -280,7 +282,6 @@
             orderable: false,
             searchable: false
           },
-          {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [
           {
@@ -316,14 +317,13 @@
 
       function initCalculate() {
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
-        let total_fee = parseFloat($('input[name="total_fee"]').val()) || 0;
         let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
-        let rest_payment = total_bill - total_fee - total_cut - total_payment;
+        let rest_payment = total_bill - total_payment - total_cut;
         $('.total_payment').val(total_payment);
         $('.rest_payment').val(rest_payment);
         $('input[name=total_bill]').val(total_bill);
-        $('input[name=total_fee]').val(total_fee);
+        $('input[name=total_basic_price_after_thanks]').val(total_basic_price_after_thanks);
       }
 
       $('input[name="payment[payment]"],input[name="total_cut"],#diskon').on('keyup', function () {
@@ -351,12 +351,14 @@
               $('#table_invoice tfoot').empty();
               $('#TampungId').empty();
               let total = 0;
-              let totalThanks = 0;
+              let totalBasicPriceAfterThanks = 0;
+              let totalTax = 0;
               let totalFee = 0;
               $.each(response.data, function (index, data) {
-                total += parseFloat(data.total_basic_price_after_tax);
-                totalThanks += parseFloat(data.total_basic_price_after_thanks);
-                totalFee += parseFloat(data.fee_thanks);
+                total += parseFloat(data.total_basic_price) || 0;
+                totalTax += parseFloat(data.tax_amount) || 0;
+                totalFee += parseFloat(data.fee_thanks) || 0;
+                totalBasicPriceAfterThanks += parseFloat(data.total_basic_price_after_thanks) || 0;
                 $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="' + data.id + '">');
                 $('#table_invoice tbody').append('<tr>' +
                   ' <td class="text-center">' + (index + 1) + '</td>' +
@@ -369,16 +371,22 @@
                   ' <td class="text-right money">' + data.basic_price + '</td>' +
                   ' <td class="text-center">' + data.payload + '</td>' +
                   ' <td class="text-center">' + (data.tax_percent ? data.tax_percent : 0) + '</td>' +
-                  ' <td class="text-right money">' + data.total_basic_price_after_tax + '</td>' +
-                  ' <td class="text-right money">' + data.total_basic_price_after_thanks + '</td>' +
+                  ' <td class="text-right money">' + data.tax_amount + '</td>' +
+                  ' <td class="text-right money">' + (data.fee_thanks ? data.fee_thanks : 0) + '</td>' +
+                  ' <td class="text-right money">' + data.total_basic_price + '</td>' +
                   '</tr>');
+
               });
-              $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '"><input type="hidden" name="total_fee" value="' + totalFee + '">');
+              $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '">' +
+                '<input type="hidden" name="total_tax" value="' + totalTax + '">' +
+                '<input type="hidden" name="total_fee" value="' + totalFee + '">' +
+                '<input type="hidden" name="total_basic_price_after_thanks" value="' + totalBasicPriceAfterThanks + '">');
 
               $('#table_invoice tfoot').append('<tr>' +
                 '<td colspan="10" class="text-right">Total</td>' +
+                '<td class="text-right money">' + totalTax + '</td>' +
+                '<td class="text-right money">' + totalFee + '</td>' +
                 '<td class="text-right money">' + total + '</td>' +
-                '<td class="text-right money">' + totalThanks + '</td>' +
                 '</tr>');
               $(".money").inputmask({
                 'alias': 'decimal',

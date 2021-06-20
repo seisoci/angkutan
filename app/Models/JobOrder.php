@@ -145,10 +145,7 @@ class JobOrder extends Model
 
   public function getTaxAmountAttribute()
   {
-    if ($this->basic_price_ldo) {
-      return $this->tax_percent . "\n(" . number_format(($this->total_basic_price_ldo * ($this->tax_percent / 100)), 2, '.', ' ,') . ")";
-    }
-    return $this->tax_percent . "\n(" . number_format(($this->total_basic_price * ($this->tax_percent / 100)), 2, '.', ' ,') . ")";
+    return $this->total_basic_price * ($this->tax_percent / 100);
   }
 
   public function coaldo (){

@@ -14,7 +14,7 @@ class InvoiceCostumer extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
 
-  protected $appends = ['num_invoice'];
+  protected $appends = ['num_invoice', 'total_netto'];
   protected static $logName = 'Invoice Pelanggan';
   protected static $logFillable = true;
   protected static $logAttributes = ['costumer.name'];
@@ -27,6 +27,7 @@ class InvoiceCostumer extends Model
     'invoice_date',
     'due_date',
     'total_bill',
+    'total_tax',
     'total_fee_thanks',
     'total_cut',
     'total_payment',
@@ -54,5 +55,10 @@ class InvoiceCostumer extends Model
   public function getNumInvoiceAttribute()
   {
       return ($this->prefix ."-". $this->num_bill);
+  }
+
+  public function getTotalNettoAttribute()
+  {
+    return $this->total_bill - $this->total_tax - $this->total_fee_thanks - $this->total_cut;
   }
 }

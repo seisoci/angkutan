@@ -45,26 +45,21 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-lg-4 offset-md-2 col-form-label">Supplier:</label>
-                  <div class="col-lg-6">
+                  <label class="col-lg-3  col-form-label">Tgl Jatuh Tempo:</label>
+                  <div class="col-lg-9">
+                    <input class="form-control rounded-0" value="{{ $data->due_date }}" disabled>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-lg-3 col-form-label">Pelanggan:</label>
+                  <div class="col-lg-9">
                     <input class="form-control rounded-0" value="{{ $data->costumer->name }}" disabled>
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-lg-4 offset-md-2 col-form-label">Phone:</label>
-                  <div class="col-lg-6">
-                    <input class="form-control rounded-0" value="{{ $data->costumer->phone }}" disabled></div>
-                </div>
-                <div class="form-group row">
-                  <label class="col-lg-4 offset-md-2 col-form-label">Alamat:</label>
-                  <div class="col-lg-6">
-                    <input class="form-control rounded-0" value="{{ $data->costumer->address }}" disabled>
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <label class="col-lg-4 offset-md-2 col-form-label">Tgl Jatuh Tempo:</label>
-                  <div class="col-lg-6">
-                    <input class="form-control rounded-0" value="{{ $data->due_date }}" disabled>
+                  <label class="col-lg-3 col-form-label">Memo:</label>
+                  <div class="col-lg-9">
+                    <textarea name="memo" class="form-control rounded-0" disabled>{{ $data->memo }}</textarea>
                   </div>
                 </div>
               </div>
@@ -81,10 +76,12 @@
                 <th scope="col">Rute Dari</th>
                 <th scope="col">Rute Ke</th>
                 <th scope="col">Jenis Barang</th>
-                <th scope="col" class="text-right">Tarif (Rp.)</th>
                 <th scope="col">Qty (Unit)</th>
+                <th scope="col">Harga Dasar</th>
                 <th scope="col">Pajak (%)</th>
-                <th scope="col" class="text-right">Total (Inc. Tax)</th>
+                <th scope="col">Pajak (Rp.)</th>
+                <th scope="col">Fee</th>
+                <th scope="col" class="text-right">Total Tagihan (Rp.)</th>
               </tr>
               </thead>
               <tbody>
@@ -100,11 +97,19 @@
                   <td class="text-right currency">{{ $item->basic_price }}</td>
                   <td class="text-center">{{ $item->payload }}</td>
                   <td class="text-center">{{ $item->tax_percent ?? 0 }}</td>
-                  <td class="text-right currency">{{ $item->total_basic_price_after_tax }}</td>
+                  <td class="text-right currency">{{ $item->tax_amount }}</td>
+                  <td class="text-right currency">{{ $item->fee_thanks }}</td>
+                  <td class="text-right currency">{{ $item->total_basic_price }}</td>
                 </tr>
               @endforeach
               </tbody>
               <tfoot>
+              <tr>
+                <td colspan="10" class="text-right">Total</td>
+                <td class="text-right currency">{{ $data->joborders->sum('tax_amount') }}</td>
+                <td class="text-right currency">{{ $data->joborders->sum('fee_thanks') }}</td>
+                <td class="text-right currency">{{ $data->joborders->sum('total_basic_price') }}</td>
+              </tr>
               </tfoot>
             </table>
           </div>
@@ -156,13 +161,7 @@
                                               disabled></td>
               </tr>
               <tr>
-                <td colspan="4" class="text-right">Total Potongan fee</td>
-                <td class="text-right"><input type="text" name="total_fee" class="currency rounded-0 form-control"
-                                              value="{{ $data->total_fee_thanks }}"
-                                              disabled></td>
-              </tr>
-              <tr>
-                <td colspan="4" class="text-right">Total Pemotongan</td>
+                <td colspan="4" class="text-right">Total Pemotongan Klaim</td>
                 <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control"
                                               value="{{ $data->total_cut }}" disabled>
                 </td>
@@ -240,11 +239,12 @@
       function initCalculate() {
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
         let total_fee = parseFloat($('input[name="total_fee"]').val()) || 0;
-        let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
+        let total_cut =  parseFloat('{{ $data->total_cut }}');
         let totalPayment = parseFloat('{{ $data->total_payment }}');
+        let totalTax = parseFloat('{{ $data->total_tax }}');
         let payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
         let grandTotal = totalPayment + payment;
-        let rest_payment = total_bill - total_fee - total_cut - totalPayment - payment;
+        let rest_payment = total_bill - total_cut - totalPayment - payment;
         $('.totalPayment').val(payment);
         $('.total_payment').val(grandTotal);
         $('.rest_payment').val(rest_payment);

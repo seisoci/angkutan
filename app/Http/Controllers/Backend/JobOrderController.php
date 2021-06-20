@@ -311,7 +311,7 @@ class JobOrderController extends Controller
         'status' => 'error',
         'message' => 'Failed updated',
       ]);
-      $data = JobOrder::with('operationalexpense')->find($id);
+      $data = JobOrder::with('operationalexpense')->withSum('operationalexpense', 'amount')->find($id);
       switch ($request->status_cargo) {
         case 'batal':
           $data->update($request->except('date_end'));
@@ -329,6 +329,25 @@ class JobOrderController extends Controller
           ]);
           break;
         case 'selesai':
+          Journal::create([
+            'coa_id' => 43,
+            'date_journal' => $data->date_begin,
+            'debit' => $data->total_basic_price,
+            'kredit' => 0,
+            'table_ref' => 'joborders',
+            'code_ref' => $data->id,
+            'description' => "Penambahan piutang usaha dari joborder"
+          ]);
+
+          Journal::create([
+            'coa_id' => 52,
+            'date_journal' => $data->date_begin,
+            'debit' => 0,
+            'kredit' => $data->total_basic_price,
+            'table_ref' => 'joborders',
+            'code_ref' => $data->id,
+            'description' => "Penambahan Pendapatan joborder"
+          ]);
           $data->update($request->all());
           $response = response()->json([
             'status' => 'success',
