@@ -380,6 +380,7 @@ class InvoiceCostumerController extends Controller
         DB::beginTransaction();
         $data = InvoiceCostumer::findOrFail($id);
         $coa = Coa::findOrFail($request->input('coa_id'));
+        $type = $request->input('type')  == 'tax' ? 'Pajak' : 'Fee';
         if($request->input('type') == 'tax'){
           $data->update([
             'tax_coa_id' => $request->input('coa_id')
@@ -407,7 +408,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => $request->input('type') == 'tax' ? $data->total_tax : $data->total_fee_thanks,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Pembayaran ".$request->input('type') == 'tax' ? 'Pajak' : 'Fee'
+            'description' => "Pembayaran $type"
           ]);
 
           Journal::create([
@@ -417,7 +418,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Beban ".$request->input('type') == 'tax' ? 'Pajak' : 'Fee'
+            'description' => "Beban $type"
           ]);
           DB::commit();
           $response = response()->json([
