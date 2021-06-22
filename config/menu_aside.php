@@ -286,7 +286,7 @@ return [
             ],
             [
               'title' => 'Laporan Keuangan',
-              'page' => 'backend/ledger'
+              'page' => 'backend/finance'
             ],
           ]
         ],
