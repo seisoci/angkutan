@@ -164,15 +164,17 @@ class InvoiceCostumerController extends Controller
 //            'code_ref' => $data->id,
 //            'description' => "Beban pembayaran pajak jo pelanggan $costumer->name"
 //          ]);
-          Journal::create([
-            'coa_id' => 46,
-            'date_journal' => $request->input('payment.date_payment'),
-            'debit' => $request->input('total_cut'),
-            'kredit' => 0,
-            'table_ref' => 'invoicecostumers',
-            'code_ref' => $data->id,
-            'description' => "Potongan Pendapatan untuk Potongan Klaim"
-          ]);
+          if($request->input('total_cut')){
+            Journal::create([
+              'coa_id' => 46,
+              'date_journal' => $request->input('payment.date_payment'),
+              'debit' => $request->input('total_cut'),
+              'kredit' => 0,
+              'table_ref' => 'invoicecostumers',
+              'code_ref' => $data->id,
+              'description' => "Potongan Pendapatan untuk Potongan Klaim"
+            ]);
+          }
 
           Journal::create([
             'coa_id' => $request->input('coa_id'),
