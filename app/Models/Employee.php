@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -27,18 +27,19 @@ class Employee extends Model
     'status',
   ];
 
-  public function getCreatedAtAttribute($value)
+  protected function serializeDate(DateTimeInterface $date)
   {
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('Y-m-d H:i:s');
   }
+
 
   public function salaries()
   {
     return $this->belongsToMany(EmployeeMaster::class)->withPivot('amount');
   }
 
-  public function monthlysalarydetail(){
+  public function monthlysalarydetail()
+  {
     return $this->hasOne(MonthlySalaryDetail::class);
   }
 

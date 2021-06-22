@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+use DateTimeInterface;
+
 /**
  * @mixin IdeHelperInvoiceUsageItem
  */
@@ -14,6 +15,7 @@ class InvoiceUsageItem extends Model
 {
   protected $appends = ['num_invoice'];
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Invoice Pemakaian Barang';
   protected static $logFillable = true;
   protected static $logAttributes = ['driver.name', 'transport.num_pol'];
@@ -29,26 +31,29 @@ class InvoiceUsageItem extends Model
     'total_payment',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function usageitem(){
+  public function usageitem()
+  {
     return $this->hasMany(UsageItem::class);
   }
 
-  public function driver(){
+  public function driver()
+  {
     return $this->belongsTo(Driver::class);
   }
 
-  public function transport(){
+  public function transport()
+  {
     return $this->belongsTo(Transport::class);
   }
 
   public function getNumInvoiceAttribute()
   {
-    return ($this->prefix ."-". $this->num_bill);
+    return ($this->prefix . "-" . $this->num_bill);
   }
 
 }

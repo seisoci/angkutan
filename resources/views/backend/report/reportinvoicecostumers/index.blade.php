@@ -114,6 +114,8 @@
           <th>Total Tagihan</th>
           <th>Total Pembayaran</th>
           <th>Potongan</th>
+          <th>Pajak (Rp.)</th>
+          <th>Fee</th>
           <th>Sisa Tagihan</th>
           <th>Created At</th>
         </tr>
@@ -226,6 +228,18 @@
           {
             data: 'total_cut',
             name: 'total_cut',
+            render: $.fn.dataTable.render.number('.', '.', 2),
+            className: 'dt-right'
+          },
+          {
+            data: 'total_tax',
+            name: 'total_tax',
+            render: $.fn.dataTable.render.number('.', '.', 2),
+            className: 'dt-right'
+          },
+          {
+            data: 'total_fee_thanks',
+            name: 'total_fee_thanks',
             render: $.fn.dataTable.render.number('.', '.', 2),
             className: 'dt-right'
           },

@@ -151,7 +151,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" type="button" class="btn btn-primary">Submit</button>
+          <button type="submit"  class="btn btn-primary">Submit</button>
         </div>
       </form>
     </div>
@@ -172,7 +172,7 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
-    var dataTable = $('#Datatable').DataTable({
+    let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
@@ -215,7 +215,7 @@
           targets: 8,
           width: '75px',
           render: function(data, type, full, meta) {
-            var status = {
+            let status = {
               0: {'title': 'Unapid', 'class': ' label-light-danger'},
               1: {'title': 'Paid', 'class': ' label-light-success'},
             };
@@ -373,16 +373,16 @@
     })
 
     $('#modalDelete').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
+      let id = $(event.relatedTarget).data('id');
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.brands.index") }}/'+ id);
     });
     $('#modalDelete').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
     });
     $('#modalEdit').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
-      var status_cargo = $(event.relatedTarget).data('status_cargo');
-      var date_end = $(event.relatedTarget).data('date_end');
+      let id = $(event.relatedTarget).data('id');
+      let status_cargo = $(event.relatedTarget).data('status_cargo');
+      let date_end = $(event.relatedTarget).data('date_end');
       $(this).find('#formUpdate').attr('action', '{{ route("backend.joborders.index") }}/'+id)
       $(this).find('.modal-body').find('select[name="status_cargo"]').val(status_cargo);
       $(this).find('.modal-body').find('input[name="date_end"]').val(date_end);
@@ -393,12 +393,12 @@
     });
     $("#formUpdate").submit(function(e){
       e.preventDefault();
-      var form 	= $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
-      var url 	= form.attr("action");
-      var data 	= new FormData(this);
+      let form 	= $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      let url 	= form.attr("action");
+      let data 	= new FormData(this);
       $.ajax({
         beforeSend:function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled","disabled");
@@ -414,7 +414,7 @@
         data : data,
         success: function(response) {
           btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
-          if (response.status == "success" ){
+          if (response.status === "success" ){
             toastr.success(response.message,'Success !');
             $('#modalEdit').modal('hide');
             dataTable.draw();
@@ -437,10 +437,10 @@
     });
     $("#formDelete").click(function(e){
       e.preventDefault();
-      var form 	    = $(this);
-      var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
-      var btnHtml   = form.html();
-      var spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      let form 	    = $(this);
+      let url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
+      let btnHtml   = form.html();
+      let spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
       $.ajax({
         beforeSend:function() {
           form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");
@@ -450,7 +450,7 @@
         dataType: 'json',
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         success: function (response) {
-          if(response.status == "success"){
+          if(response.status === "success"){
             form.prop('disabled', false).html(btnHtml);
             toastr.success(response.message,'Success !');
             $('#modalDelete').modal('hide');

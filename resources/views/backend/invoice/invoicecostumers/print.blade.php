@@ -103,46 +103,50 @@
       </tbody>
     </table>
     <div class="separator separator-solid separator-border-1"></div>
-    <table class="table">
-      <thead>
-      <tr>
-        <th scope="col" class="text-center">#</th>
-        <th scope="col">Tanggal</th>
-        <th scope="col">S. Jalan</th>
-        <th scope="col">Pelanggan</th>
-        <th scope="col">Rute Dari</th>
-        <th scope="col">Rute Ke</th>
-        <th scope="col">Jenis Barang</th>
-        <th scope="col" class="text-right">Tarif (Rp.)</th>
-        <th scope="col">Qty (Unit)</th>
-        <th scope="col">Pajak (%)</th>
-        <th scope="col" class="text-right">Total (Inc. Tax)</th>
-      </tr>
-      </thead>
-      <tbody>
-      @foreach($data->joborders as $item)
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
         <tr>
-          <td class="text-center">{{ $loop->iteration }}</td>
-          <td>{{  $item->date_begin }}</td>
-          <td>{{ $item->prefix . '-' . $item->num_bill  }}</td>
-          <td>{{ $item->costumer->name }}</td>
-          <td>{{ $item->routefrom->name }}</td>
-          <td>{{ $item->routeto->name }}</td>
-          <td>{{ $item->cargo->name }}</td>
-          <td class="text-right currency">{{  number_format($item->basic_price ?? 0,2, ',', '.') }}</td>
-          <td class="text-center">{{ $item->payload }}</td>
-          <td class="text-center">{{ $item->tax_percent ?? 0 }}</td>
-          <td
-            class="text-right currency">{{ number_format($item->total_basic_price_after_tax ?? 0,2, ',', '.') }}</td>
+          <th scope="col" class="text-center">#</th>
+          <th scope="col">Tanggal</th>
+          <th scope="col">S. Jalan</th>
+          <th scope="col">Pelanggan</th>
+          <th scope="col">Rute Dari</th>
+          <th scope="col">Rute Ke</th>
+          <th scope="col">Jenis Barang</th>
+          <th scope="col">Qty (Unit)</th>
+          <th scope="col">Harga Dasar</th>
+          <th scope="col">Pajak (%)</th>
+          <th scope="col">Pajak (Rp.)</th>
+          <th scope="col" class="text-right">Total Tagihan (Rp.)</th>
         </tr>
-      @endforeach
-      <tr>
-        <td colspan="10" class="text-right font-weight-bolder">Total Tagihan</td>
-        <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
-      </tr>
-      </tbody>
-    </table>
-    <h4 style="color: black"><u>Pembayaran</u></h4>
+        </thead>
+        <tbody>
+        @foreach($data->joborders as $item)
+          <tr>
+            <td class="text-center">{{ $loop->iteration }}</td>
+            <td>{{  $item->date_begin }}</td>
+            <td>{{ $item->prefix . '-' . $item->num_bill  }}</td>
+            <td>{{ $item->costumer->name }}</td>
+            <td>{{ $item->routefrom->name }}</td>
+            <td>{{ $item->routeto->name }}</td>
+            <td>{{ $item->cargo->name }}</td>
+            <td class="text-right currency">{{ $item->basic_price }}</td>
+            <td class="text-center">{{ $item->payload }}</td>
+            <td class="text-center">{{ $item->tax_percent ?? 0 }}</td>
+            <td class="text-right currency">{{ number_format($item->tax_amount, 2, '.', ',') }}</td>
+            <td class="text-right currency">{{ $item->total_basic_price }}</td>
+          </tr>
+        @endforeach
+        <tr>
+          <td colspan="10" class="text-right font-weight-bolder">Total</td>
+          <td class="text-right font-weight-bolder currency">{{ $data->total_tax }}</td>
+          <td class="text-right font-weight-bolder currency">{{ $data->total_bill  }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <h4><u>Pembayaran</u></h4>
     <table class="table">
       <thead>
       <tr>
@@ -162,21 +166,22 @@
         </tr>
       @endforeach
       <tr>
-        <td colspan="3" class="text-right font-weight-bolder">Total Pembayaran</td>
-        <td class="text-right font-weight-bolder">{{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
+        <td colspan="3" class="text-right font-weight-bolder">Total Tagihan</td>
+        <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
       </tr>
       <tr>
-        <td colspan="3" class="text-right font-weight-bolder">Total Pemotongan</td>
+        <td colspan="3" class="text-right font-weight-bolder">Total Pemotongan Klaim</td>
         <td class="text-right font-weight-bolder">{{ number_format($data->total_cut ?? 0,2, ',', '.') }}</td>
       </tr>
       <tr>
-        <td colspan="3" class="text-right font-weight-bolder">Total Tagihan</td>
-        <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
+        <td colspan="3" class="text-right font-weight-bolder">Total Pembayaran</td>
+        <td class="text-right font-weight-bolder">{{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
       </tr>
       <tr>
         <td colspan="3" class="text-right font-weight-bolder">Sisa Pembayaran</td>
         <td class="text-right font-weight-bolder">{{ number_format($data->rest_payment ?? 0,2, ',', '.') }}</td>
       </tr>
+
       </tbody>
     </table>
   </div>
@@ -192,6 +197,15 @@
       window.close();
     }, 2000);
   </script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $(".currency").inputmask('decimal', {
+        groupSeparator: '.',
+        digits: 2,
+        rightAlign: true,
+        removeMaskOnSubmit: true,
+        autoUnmask: true,
+      });
+    });
+  </script>
 @endforeach
-
-</html>

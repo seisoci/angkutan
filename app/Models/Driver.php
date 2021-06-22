@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+
 /**
  * @mixin IdeHelperDriver
  */
 class Driver extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Master Supir';
   protected static $logFillable = true;
 
@@ -33,12 +35,13 @@ class Driver extends Model
     'photo_sim',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function kasbon(){
+  public function kasbon()
+  {
     return $this->hasMany(Kasbon::class, 'driver_id');
   }
 }

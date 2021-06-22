@@ -154,7 +154,7 @@
       removeMaskOnSubmit: true
     });
 
-    var dataTable = $('#Datatable').DataTable({
+    let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
@@ -171,7 +171,7 @@
     });
 
     $('#modalDelete').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
+      let id = $(event.relatedTarget).data('id');
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.brands.index") }}/'+ id);
     });
     $('#modalDelete').on('hidden.bs.modal', function (event) {
@@ -183,8 +183,8 @@
       $(this).find('.modal-body').find('input[name="name"]').val('');
     });
     $('#modalEdit').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
-      var name = $(event.relatedTarget).data('name');
+      let id = $(event.relatedTarget).data('id');
+      let name = $(event.relatedTarget).data('name');
       $(this).find('#formUpdate').attr('action', '{{ route("backend.brands.index") }}/'+id)
       $(this).find('.modal-body').find('input[name="name"]').val(name);
     });
@@ -194,11 +194,11 @@
 
     $("#formStore").submit(function(e) {
       e.preventDefault();
-      var form = $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
+      let form = $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let url = form.attr("action");
+      let data = new FormData(this);
       $.ajax({
         beforeSend: function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
@@ -236,12 +236,12 @@
 
     $("#formUpdate").submit(function(e){
       e.preventDefault();
-      var form 	= $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
-      var url 	= form.attr("action");
-      var data 	= new FormData(this);
+      let form 	= $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      let url 	= form.attr("action");
+      let data 	= new FormData(this);
       $.ajax({
         beforeSend:function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled","disabled");
@@ -281,10 +281,10 @@
 
     $("#formDelete").click(function(e){
       e.preventDefault();
-      var form 	    = $(this);
-      var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
-      var btnHtml   = form.html();
-      var spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      let form 	    = $(this);
+      let url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
+      let btnHtml   = form.html();
+      let spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
       $.ajax({
         beforeSend:function() {
           form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");

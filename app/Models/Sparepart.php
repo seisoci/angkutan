@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+use DateTimeInterface;
 /**
  * @mixin IdeHelperSparepart
  */
@@ -23,8 +24,8 @@ class Sparepart extends Model
     'photo',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 

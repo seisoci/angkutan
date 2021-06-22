@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -25,10 +25,11 @@ class PurchasePayment extends Model
     'payment',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
+
 
   public function invoicepurchase(){
     return $this->belongsTo(InvoicePurchase::class);

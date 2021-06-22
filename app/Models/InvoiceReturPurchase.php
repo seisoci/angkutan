@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+
 /**
  * @mixin IdeHelperInvoiceReturPurchase
  */
 class InvoiceReturPurchase extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected $appends = ['num_invoice'];
   protected static $logName = 'Invoice Pembelian Barang';
   protected static $logFillable = true;
@@ -29,21 +31,23 @@ class InvoiceReturPurchase extends Model
     'total_payment',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function supplier(){
+  public function supplier()
+  {
     return $this->belongsTo(SupplierSparepart::class, 'supplier_sparepart_id');
   }
 
-  public function returpurchases(){
+  public function returpurchases()
+  {
     return $this->hasMany(ReturPurchase::class);
   }
 
   public function getNumInvoiceAttribute()
   {
-    return ($this->prefix ."-". $this->num_bill);
+    return ($this->prefix . "-" . $this->num_bill);
   }
 }

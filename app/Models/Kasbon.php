@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+
 /**
  * @mixin IdeHelperKasbon
  */
 class Kasbon extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Data Kasbon Supir';
   protected static $logFillable = true;
   protected static $logAttributes = ['driver.name', 'invoicekasbon'];
@@ -27,16 +29,18 @@ class Kasbon extends Model
     'memo'
   ];
 
-  public function driver(){
+  public function driver()
+  {
     return $this->belongsTo(Driver::class, 'driver_id');
   }
 
-  public function invoicekasbon(){
+  public function invoicekasbon()
+  {
     return $this->belongsTo(InvoiceKasbon::class, 'invoice_kasbon_id');
   }
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 }

@@ -276,97 +276,144 @@ return [
       'arrow' => true,
       'submenu' => [
         [
-          'title' => 'Laporan Rekapitulasi',
-          'page' => 'backend/recapitulation'
+          'title' => 'Laporan Akutansi',
+          'bullet' => 'dot',
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Laporan Buku Besar',
+              'page' => 'backend/ledger'
+            ],
+          ]
         ],
+        [
+          'title' => 'Laporan Rekapitulasi',
+          'bullet' => 'dot',
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Laporan Rekapitulasi',
+              'page' => 'backend/recapitulation'
+            ],
+            [
+              'title' => 'Laporan Rekap Gaji Supir',
+              'page' => 'backend/reportrecapsalaries'
+            ],
+            [
+              'title' => 'Laporan Rekap Tagihan Job Order',
+              'page' => 'backend/reportrecapjoborders'
+            ],
+            [
+              'title' => 'Laporan Rekap Purchase Order',
+              'page' => 'backend/reportrecappurchaseorders'
+            ],
+            [
+              'title' => 'Laporan Rekap Retur Purchase Order',
+              'page' => 'backend/reportrecapreturpurchases'
+            ],
+            [
+              'title' => 'Laporan Rekap Pemakaian Barang',
+              'page' => 'backend/reportrecapusageitems'
+            ],
+            [
+              'title' => 'Laporan Rekap Pembelian Barang Diluar',
+              'page' => 'backend/reportrecapusageitemoutside'
+            ]
+          ]
+        ],
+        [
+          'title' => 'Laporan Data',
+          'bullet' => 'dot',
+          'arrow' => true,
+          'submenu' => [
+            ['title' => 'Laporan Data Pelanggan',
+              'page' => 'backend/reportcostumers'
+            ],
+            [
+              'title' => 'Laporan Data Supir',
+              'page' => 'backend/reportdrivers'
+            ],
+
+            [
+              'title' => 'Laporan Data Kendaraan',
+              'page' => 'backend/reporttransports'
+            ],
+          ]
+        ],
+        [
+          'title' => 'Laporan Job Order & Invoice',
+          'bullet' => 'dot',
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Laporan Tagihan Job Order',
+              'page' => 'backend/reportjoborders'
+            ],
+            [
+              'title' => 'Laporan Invoice Costumer & Fee',
+              'page' => 'backend/reportinvoicecostumers'
+            ],
+            [
+              'title' => 'Laporan Invoice LDO',
+              'page' => 'backend/reportinvoiceldo'
+            ],
+          ]
+        ],
+        [
+          'title' => 'Laporan Gaji & Hutang',
+          'bullet' => 'dot',
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Laporan Hutang Supir',
+              'page' => 'backend/reportkasbondrivers'
+            ],
+            [
+              'title' => 'Laporan Gaji Supir',
+              'page' => 'backend/reportsalarydrivers'
+            ],
+            [
+              'title' => 'Laporan Hutang Karyawaan',
+              'page' => 'backend/reportkasbonemployees'
+            ],
+            [
+              'title' => 'Laporan Gaji Karyawaan',
+              'page' => 'backend/reportsalaryemployees'
+            ],
+          ]
+        ],
+        [
+          'title' => 'Laporan Barang',
+          'bullet' => 'dot',
+          'arrow' => true,
+          'submenu' => [
+            [
+              'title' => 'Laporan Purchase Order',
+              'page' => 'backend/reportpurchaseorders'
+            ],
+            [
+              'title' => 'Laporan Retur Purchase Order',
+              'page' => 'backend/reportreturpurchases'
+            ],
+            [
+              'title' => 'Laporan Pemakaian Barang',
+              'page' => 'backend/reportusageitems'
+            ],
+            [
+              'title' => 'Laporan Pembelian Barang Diluar',
+              'page' => 'backend/reportusageitemoutside'
+            ],
+            [
+              'title' => 'Laporan Stok Barang',
+              'page' => 'backend/reportstocks'
+            ],
+          ]
+        ],
+
 //        [
 //          'title' => 'Laporan Pemakaian Sparepart',
 //          'page' => 'backend/reportsparepart'
 //        ],
-        [
-          'title' => 'Laporan Data Pelanggan',
-          'page' => 'backend/reportcostumers'
-        ],
-        [
-          'title' => 'Laporan Data Supir',
-          'page' => 'backend/reportdrivers'
-        ],
-        [
-          'title' => 'Laporan Hutang Supir',
-          'page' => 'backend/reportkasbondrivers'
-        ],
-        [
-          'title' => 'Laporan Gaji Supir',
-          'page' => 'backend/reportsalarydrivers'
-        ],
-        [
-          'title' => 'Laporan Rekap Gaji Supir',
-          'page' => 'backend/reportrecapsalaries'
-        ],
-        [
-          'title' => 'Laporan Hutang Karyawaan',
-          'page' => 'backend/reportkasbonemployees'
-        ],
-        [
-          'title' => 'Laporan Gaji Karyawaan',
-          'page' => 'backend/reportsalaryemployees'
-        ],
-        [
-          'title' => 'Laporan Data Kendaraan',
-          'page' => 'backend/reporttransports'
-        ],
-        [
-          'title' => 'Laporan Tagihan Job Order',
-          'page' => 'backend/reportjoborders'
-        ],
-        [
-          'title' => 'Laporan Rekap Tagihan Job Order',
-          'page' => 'backend/reportrecapjoborders'
-        ],
-        [
-          'title' => 'Laporan Invoice Costumer & Fee',
-          'page' => 'backend/reportinvoicecostumers'
-        ],
-        [
-          'title' => 'Laporan Invoice LDO',
-          'page' => 'backend/reportinvoiceldo'
-        ],
-        [
-          'title' => 'Laporan Purchase Order',
-          'page' => 'backend/reportpurchaseorders'
-        ],
-        [
-          'title' => 'Laporan Rekap Purchase Order',
-          'page' => 'backend/reportrecappurchaseorders'
-        ],
-        [
-          'title' => 'Laporan Retur Purchase Order',
-          'page' => 'backend/reportreturpurchases'
-        ],
-        [
-          'title' => 'Laporan Rekap Retur Purchase Order',
-          'page' => 'backend/reportrecapreturpurchases'
-        ],
-        [
-          'title' => 'Laporan Pemakaian Barang',
-          'page' => 'backend/reportusageitems'
-        ],
-        [
-          'title' => 'Laporan Rekap Pemakaian Barang',
-          'page' => 'backend/reportrecapusageitems'
-        ],
-        [
-          'title' => 'Laporan Pembelian Barang Diluar',
-          'page' => 'backend/reportusageitemoutside'
-        ],
-        [
-          'title' => 'Laporan Rekap Pembelian Barang Diluar',
-          'page' => 'backend/reportrecapusageitemoutside'
-        ],
-        [
-          'title' => 'Laporan Stok Barang',
-          'page' => 'backend/reportstocks'
-        ],
       ]
     ],
     [

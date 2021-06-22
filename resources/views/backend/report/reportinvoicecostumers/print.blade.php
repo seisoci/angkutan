@@ -119,33 +119,43 @@
           <td width="1%">:</td>
           <td scope="col" class="text-left" style="width:30%">{{ $item->num_invoice }}</td>
           <td scope="col" class="text-left" style="width:20%"></td>
-          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Total Tagihan</td>
+          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Total Pajak</td>
           <td scope="col" class="text-left" style="width:1%">:</td>
-          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_bill, 2, ',', '.') }}</td>
+          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_tax, 2, ',', '.') }}</td>
         </tr>
         <tr>
           <td scope="col" class="font-weight-normal" style="width:10%; font-weight: bold;">Tgl Invoice</td>
           <td width="1%">:</td>
-          <td scope="col" class="text-left" style="width:30%">{{ $item->date_invoice }}</td>
+          <td scope="col" class="text-left" style="width:30%">{{ $item->invoice_date }}</td>
           <td scope="col" class="text-left" style="width:10%"></td>
-          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Total Pembayaran</td>
+          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Total Fee</td>
           <td scope="col" class="text-left" style="width:1%">:</td>
-          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_payment, 2, ',', '.') }}</td>
+          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_fee_thanks, 2, ',', '.') }}</td>
         </tr>
         <tr>
           <td scope="col" class="font-weight-normal" style="width:10%; font-weight: bold;">Tgl Jth. Tempo Invoice</td>
           <td width="1%">:</td>
           <td scope="col" class="text-left" style="width:30%">{{ $item->due_date }}</td>
           <td scope="col" class="text-left" style="width:10%"></td>
-          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Potongan</td>
+          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Total Pembayaran</td>
           <td scope="col" class="text-left" style="width:1%">:</td>
-          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_cut, 2, ',', '.') }}</td>
+          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_payment, 2, ',', '.') }}</td>
         </tr>
         <tr>
           <td scope="col" class="font-weight-normal" style="width:15%; font-weight: bold;">Nama Pelanggan</td>
           <td width="1%">:</td>
           <td scope="col" class="text-left" style="width:30%">{{ $item->costumer->name }}</td>
           <td scope="col" class="text-left" style="width:10%"></td>
+          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Potongan</td>
+          <td scope="col" class="text-left" style="width:1%">:</td>
+          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_cut, 2, ',', '.') }}</td>
+        </tr>
+        <tr>
+          <td scope="col" class="font-weight-normal" style="width:10%; font-weight: bold;">Total Tagihan
+          </td>
+          <td width="1%">:</td>
+          <td scope="col" class="text-left" style="width:30%">{{ number_format($item->total_bill, 2, ',', '.') }}</td>
+          <td scope="col" class="text-left" style="width:20%"></td>
           <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Sisa Tagihan</td>
           <td scope="col" class="text-left" style="width:1%">:</td>
           <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->rest_payment, 2, ',', '.') }}</td>
@@ -165,8 +175,9 @@
           <th style="text-align: left !important;">Rute Dari</th>
           <th style="text-align: left !important;">Rute Tujuan</th>
           <th style="text-align: left !important;">Muatan</th>
-          <th style="text-align: right !important;">Fee Thanks</th>
-          <th style="text-align: right !important;">Total Tagihan (Inc. Tax)</th>
+          <th style="text-align: right !important;">Pajak (Rp.)</th>
+          <th style="text-align: right !important;">Fee</th>
+          <th style="text-align: right !important;">Total Tagihan</th>
         </tr>
         </thead>
         <tbody>
@@ -180,8 +191,9 @@
             <td>{{ $child->routefrom->name }}</td>
             <td>{{ $child->routeto->name }}</td>
             <td>{{ $child->cargo->name }}</td>
+            <td  style="text-align: right !important;">{{ number_format($child->tax_amount, 2, ',', '.') }}</td>
             <td  style="text-align: right !important;">{{ number_format($child->fee_thanks, 2, ',', '.') }}</td>
-            <td  style="text-align: right !important;">{{ number_format($child->total_basic_price_after_thanks, 2, ',', '.') }}</td>
+            <td  style="text-align: right !important;">{{ number_format($child->total_basic_price, 2, ',', '.') }}</td>
           </tr>
         @endforeach
         </tbody>

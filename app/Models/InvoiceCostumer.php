@@ -32,6 +32,8 @@ class InvoiceCostumer extends Model
     'total_cut',
     'total_payment',
     'rest_payment',
+    'tax_coa_id',
+    'fee_coa_id',
     'memo',
   ];
 

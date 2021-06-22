@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+
 /**
  * @mixin IdeHelperTypeCapacity
  */
 class TypeCapacity extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Master Kapasistas';
   protected static $logFillable = true;
 
@@ -20,16 +22,19 @@ class TypeCapacity extends Model
     'name',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function getNameAttribute($value){
+
+  public function getNameAttribute($value)
+  {
     return ucwords($value);
   }
 
-  public function roadmonies(){
+  public function roadmonies()
+  {
     return $this->belongsToMany(RoadMoney::class, 'roadmoney_typecapacity')->withPivot(['road_engkel', 'road_tronton']);
   }
 }

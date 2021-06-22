@@ -53,6 +53,82 @@
         </thead>
       </table>
     </div>
+    <div class="modal fade" id="modalEditTax" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Bayar Seluruh Pajak ?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <i aria-hidden="true" class="ki ki-close"></i>
+            </button>
+          </div>
+          <form class="formUpdate" action="#">
+            @method('PUT')
+            <meta name="csrf-token" content="{{ csrf_token() }}">
+            <div class="modal-body">
+              <div class="form-group" style="display:none;">
+                <div class="alert alert-custom alert-light-danger" role="alert">
+                  <div class="alert-icon"><i class="flaticon-danger text-danger"></i></div>
+                  <div class="alert-text">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="hidden" name="type" value="tax">
+                <label>Master Akun</label>
+                <select name="coa_id" class="form-control" style="width: 100%">
+                  @foreach($selectCoa->coa as $item)
+                    <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="modalEditFee" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Bayar Seluruh Fee ?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <i aria-hidden="true" class="ki ki-close"></i>
+            </button>
+          </div>
+          <form class="formUpdate" action="#">
+            @method('PUT')
+            <meta name="csrf-token" content="{{ csrf_token() }}">
+            <div class="modal-body">
+              <div class="form-group" style="display:none;">
+                <div class="alert alert-custom alert-light-danger" role="alert">
+                  <div class="alert-icon"><i class="flaticon-danger text-danger"></i></div>
+                  <div class="alert-text">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="hidden" name="type" value="fee">
+                <label>Master Akun</label>
+                <select name="coa_id" class="form-control" style="width: 100%">
+                  @foreach($selectCoa->coa as $item)
+                    <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 @endsection
 
@@ -171,6 +247,75 @@
           ]
         })
       }
+
+      $('#modalEditTax').on('show.bs.modal', function (event) {
+        let id = $(event.relatedTarget).data('id');
+        let name = $(event.relatedTarget).data('name');
+        $(this).find('.formUpdate').attr('action', 'invoicecostumerstaxfee/'+id)
+        $(this).find('.modal-body').find('input[name="name"]').val(name);
+      });
+      $('#modalEditTax').on('hidden.bs.modal', function (event) {
+        $(this).find('.modal-body').find('input[name="name"]').val('');
+      });
+
+      $('#modalEditFee').on('show.bs.modal', function (event) {
+        let id = $(event.relatedTarget).data('id');
+        let name = $(event.relatedTarget).data('name');
+        $(this).find('.formUpdate').attr('action', 'invoicecostumerstaxfee/'+id)
+        $(this).find('.modal-body').find('input[name="name"]').val(name);
+      });
+      $('#modalEditFee').on('hidden.bs.modal', function (event) {
+        $(this).find('.modal-body').find('input[name="name"]').val('');
+      });
+
+      $(".formUpdate").submit(function(e){
+        e.preventDefault();
+        let form 	= $(this);
+        let btnSubmit = form.find("[type='submit']");
+        let btnSubmitHtml = btnSubmit.html();
+        let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+        let url 	= form.attr("action");
+        let data 	= new FormData(this);
+        $.ajax({
+          beforeSend:function() {
+            btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled","disabled");
+          },
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          cache: false,
+          processData: false,
+          contentType: false,
+          type: "POST",
+          url : url,
+          data : data,
+          success: function(response) {
+            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+            if (response.status === "success" ){
+              toastr.success(response.message,'Success !');
+              $('#modalEditTax').modal('hide');
+              $('#modalEditFee').modal('hide');
+              dataTable.draw();
+              $("[role='alert']").parent().css("display", "none");
+            }else{
+              $("[role='alert']").parent().removeAttr("style");
+              $(".alert-text").html('');
+              $.each( response.error, function( key, value ) {
+                $(".alert-text").append('<span style="display: block">'+value+'</span>');
+              });
+              toastr.error(( response.message|| "Please complete your form"),'Failed !');
+            }
+          },error: function(response){
+            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
+            toastr.error(response.responseJSON.message, 'Failed !');
+            $('#modalEditTax').modal('hide');
+            $('#modalEditTax').find('a[name="id"]').attr('href', '');
+            $('#modalEditFee').modal('hide');
+            $('#modalEditFee').find('a[name="id"]').attr('href', '');
+          }
+        });
+      });
+
     });
   </script>
 @endsection

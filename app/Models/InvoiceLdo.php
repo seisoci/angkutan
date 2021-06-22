@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+
 /**
  * @mixin IdeHelperInvoiceLdo
  */
 class InvoiceLdo extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected $appends = ['num_invoice'];
   protected static $logName = 'Invoice LDO';
   protected static $logFillable = true;
@@ -32,22 +34,25 @@ class InvoiceLdo extends Model
     'memo',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function anotherexpedition(){
+
+  public function anotherexpedition()
+  {
     return $this->belongsTo(AnotherExpedition::class, 'another_expedition_id');
   }
 
-  public function joborders(){
+  public function joborders()
+  {
     return $this->hasMany(JobOrder::class);
   }
 
   public function getNumInvoiceAttribute()
   {
-    return ($this->prefix ."-". $this->num_bill);
+    return ($this->prefix . "-" . $this->num_bill);
   }
 
   public function paymentldos()

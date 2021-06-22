@@ -80,7 +80,7 @@
                 <th scope="col">Harga Dasar</th>
                 <th scope="col">Pajak (%)</th>
                 <th scope="col">Pajak (Rp.)</th>
-                <th scope="col">Fee</th>
+                <th scope="col" cl>Fee</th>
                 <th scope="col" class="text-right">Total Tagihan (Rp.)</th>
               </tr>
               </thead>
@@ -105,10 +105,10 @@
               </tbody>
               <tfoot>
               <tr>
-                <td colspan="10" class="text-right">Total</td>
-                <td class="text-right currency">{{ $data->joborders->sum('tax_amount') }}</td>
-                <td class="text-right currency">{{ $data->joborders->sum('fee_thanks') }}</td>
-                <td class="text-right currency">{{ $data->joborders->sum('total_basic_price') }}</td>
+                <td colspan="10" class="font-weight-bolder text-right">Total</td>
+                <td class="text-right font-weight-bolder currency">{{ $data->joborders->sum('tax_amount') }}</td>
+                <td class="text-right font-weight-bolder currency">{{ $data->joborders->sum('fee_thanks') }}</td>
+                <td class="text-right font-weight-bolder currency">{{ $data->joborders->sum('total_basic_price') }}</td>
               </tr>
               </tfoot>
             </table>

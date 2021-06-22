@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
@@ -14,12 +15,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Coa extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Master Akun COA';
   protected static $logFillable = true;
   protected static $logAttributesToIgnore = ['parent'];
   public $timestamps = false;
-  public  $appends = [
-    'kode_akun'
+  public $appends = [
+    'kode_akun',
   ];
 
   protected $fillable = [
@@ -30,26 +32,33 @@ class Coa extends Model
     'normal_balance',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
-    return $date->format('Y-m-d');
+  protected function serializeDate(DateTimeInterface $date)
+  {
+    return $date->format('Y-m-d H:i:s');
   }
 
   public function parent()
   {
-    return $this->belongsTo(Coa::class,'parent_id')->whereNull('parent_id')->with('parent_id');
+    return $this->belongsTo(Coa::class, 'parent_id')->whereNull('parent_id')->with('parent_id');
   }
 
-  public function children(){
-    return $this->hasMany(Coa::class, 'parent_id')->with('children');
+  public function children()
+  {
+    return $this->hasMany(Coa::class, 'parent_id');
+  }
+
+  public function journal()
+  {
+    return $this->hasMany(Journal::class, 'coa_id');
   }
 
   public function getKodeAkunAttribute()
   {
-    return $this->code ." - ". $this->name;
+    return $this->code . " - " . $this->name;
   }
 
-  public function configcoa(){
+  public function configcoa()
+  {
     return $this->belongsToMany(ConfigCoa::class);
   }
 }

@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+
 /**
  * @mixin IdeHelperInvoicePurchase
  */
 class InvoicePurchase extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected $appends = ['total_net', 'num_invoice'];
   protected static $logName = 'Invoice Pembelian Barang';
   protected static $logFillable = true;
@@ -32,34 +34,38 @@ class InvoicePurchase extends Model
     'method_payment',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function purchases(){
+  public function purchases()
+  {
     return $this->hasMany(Purchase::class, 'invoice_purchase_id');
   }
 
-  public function purchasepayments(){
+  public function purchasepayments()
+  {
     return $this->hasMany(PurchasePayment::class);
   }
 
-  public function supplier(){
+  public function supplier()
+  {
     return $this->belongsTo(SupplierSparepart::class, 'supplier_sparepart_id');
   }
 
-  public function stock(){
+  public function stock()
+  {
     return $this->hasMany(Stock::class, 'invoice_purchase_id');
   }
 
   public function getTotalNetAttribute()
   {
-      return $this->total_bill - $this->discount;
+    return $this->total_bill - $this->discount;
   }
 
   public function getNumInvoiceAttribute()
   {
-    return ($this->prefix ."-". $this->num_bill);
+    return ($this->prefix . "-" . $this->num_bill);
   }
 }

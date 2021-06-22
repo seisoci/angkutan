@@ -31,7 +31,14 @@ trait CarbonTrait {
 
   public function getEndOfMonthByMonthYear($date){
     return Carbon::createFromFormat('M Y', $date)->endOfMonth()->format('Y-m-d');
+  }
 
+  public function getStartOfMonthByMonthYear($date){
+    return Carbon::createFromFormat('M Y', $date)->startOfMonth()->format('Y-m-d');
+  }
+
+  public function getStartOfMonthByNow(){
+    return Carbon::now()->startOfMonth()->format('Y-m-d');
   }
 
   public function convertToMonthYear($date){

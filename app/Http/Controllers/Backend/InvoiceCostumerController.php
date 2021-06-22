@@ -3,21 +3,26 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Costumer;
+use App\Models\Employee;
 use App\Models\InvoiceCostumer;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\PaymentCostumer;
 use App\Models\Prefix;
 use App\Models\Setting;
+use App\Traits\CarbonTrait;
 use DataTables;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 class InvoiceCostumerController extends Controller
 {
+  use CarbonTrait;
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Invoice Pelanggan";
@@ -37,23 +42,26 @@ class InvoiceCostumerController extends Controller
         })
         ->addColumn('action', function ($row) {
           $restPayment = $row->rest_payment != 0 ? '<a href="invoicecostumers/' . $row->id . '/edit" class="dropdown-item">Input Pembayaran</a>' : NULL;
+          $tax_coa_id = !$row->tax_coa_id ? '<a href="#" data-toggle="modal" data-target="#modalEditTax" data-id="' . $row->id . '"  data-tax="' . $row->total_tax . '" class="edit dropdown-item">Bayar Pajak</a>' : NULL;
+          $fee_coa_id = !$row->fee_coa_id ? '<a href="#" data-toggle="modal" data-target="#modalEditFee" data-id="' . $row->id . '"  class="edit dropdown-item">Bayar Fee</a>' : NULL;
           $actionBtn = '
-              <div class="dropdown">
-                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-eye"></i>
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    ' . $restPayment . '
-                    <a href="invoicecostumers/' . $row->id . '" class="dropdown-item">Invoice Detail</a>
-                  </div>
-              </div>
-            ';
+            <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type = "button" id = "dropdownMenuButton" data-toggle = "dropdown" aria-haspopup = "true" aria-expanded = "false" >
+                      <i class="fas fa-eye" ></i >
+                  </button >
+                  <div class="dropdown-menu" aria-labelledby = "dropdownMenuButton" >
+                    ' . $restPayment . $tax_coa_id . $fee_coa_id . '
+                    <a href = "invoicecostumers/' . $row->id . '" class="dropdown-item" > Invoice Detail </a >
+                  </div >
+              </div >
+          ';
           return $actionBtn;
         })
         ->make(true);
 
     }
-    return view('backend.invoice.invoicecostumers.index', compact('config', 'page_breadcrumbs'));
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicecostumers')->sole();
+    return view('backend.invoice.invoicecostumers.index', compact('config', 'page_breadcrumbs', 'selectCoa'));
   }
 
   public function create(Request $request)
@@ -188,11 +196,11 @@ class InvoiceCostumerController extends Controller
 
 
         }
-        if($request->rest_payment <= -1){
+        if ($request->rest_payment <= -1) {
           return response()->json([
-            'status'    => 'error',
-            'message'   => 'Pastikan sisa tagihan tidak negative',
-            'redirect'  => '/backend/invoicecostumers',
+            'status' => 'error',
+            'message' => 'Pastikan sisa tagihan tidak negative',
+            'redirect' => '/backend/invoicecostumers',
           ]);
           DB::rollBack();
         }
@@ -313,11 +321,11 @@ class InvoiceCostumerController extends Controller
           ]);
         }
 
-        if($request->rest_payment <= -1){
+        if ($request->rest_payment <= -1) {
           return response()->json([
-            'status'    => 'error',
-            'message'   => 'Pastikan sisa tagihan tidak negative',
-            'redirect'  => '/backend/invoicecostumers',
+            'status' => 'error',
+            'message' => 'Pastikan sisa tagihan tidak negative',
+            'redirect' => '/backend/invoicecostumers',
           ]);
           DB::rollBack();
         }
@@ -357,5 +365,77 @@ class InvoiceCostumerController extends Controller
     $data = JobOrder::where('invoice_costumer_id', $id);
 
     return Datatables::of($data)->make(true);
+  }
+
+  public function taxfee(Request $request, $id)
+  {
+    $validator = Validator::make($request->all(), [
+      'fee_coa_id' => 'integer',
+      'tax_coa_id' => 'integer',
+    ]);
+    if ($validator->passes()) {
+      try {
+        DB::beginTransaction();
+        $data = InvoiceCostumer::findOrFail($id);
+        $coa = Coa::findOrFail($request->input('coa_id'));
+        if($request->input('type') == 'tax'){
+          $data->update([
+            'tax_coa_id' => $request->input('coa_id')
+          ]);
+        }else{
+          $data->update([
+            'fee_coa_id' => $request->input('coa_id')
+          ]);
+        }
+        $checksaldo = DB::table('journals')
+          ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+          ->where('journals.coa_id', $request->coa_id)
+          ->groupBy('journals.coa_id')
+          ->first();
+
+        if (($checksaldo->saldo ?? FALSE) && $data->total_tax <= $checksaldo->saldo) {
+          Journal::create([
+            'coa_id' => $request->input('coa_id'),
+            'date_journal' => $this->dateNow(),
+            'debit' => 0,
+            'kredit' => $request->input('type') == 'tax' ? $data->total_tax : $data->total_fee_thanks,
+            'table_ref' => 'invoicecostumers',
+            'code_ref' => $data->id,
+            'description' => "Pembayaran ".$request->input('type') == 'tax' ? 'Pajak' : 'Fee'
+          ]);
+
+          Journal::create([
+            'coa_id' => $request->input('type') == 'tax' ? 53 : 54,
+            'date_journal' => $this->dateNow(),
+            'debit' => $request->input('type') == 'tax' ? $data->total_tax : $data->total_fee_thanks,
+            'kredit' => 0,
+            'table_ref' => 'invoicecostumers',
+            'code_ref' => $data->id,
+            'description' => "Beban ".$request->input('type') == 'tax' ? 'Pajak' : 'Fee'
+          ]);
+          DB::commit();
+          $response = response()->json([
+            'status' => 'success',
+            'message' => 'Data has been saved',
+          ]);
+        } else {
+          DB::rollBack();
+          $response = response()->json([
+            'status' => 'errors',
+            'message' => "Saldo $coa->name tidak ada/kurang",
+          ]);
+        }
+      } catch (\Throwable $throw) {
+        DB::rollBack();
+        $response = $throw;
+      }
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
+    }
+    return $response;
   }
 }

@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @mixin IdeHelperJobOrder
@@ -37,10 +35,8 @@ class JobOrder extends Model
     'tax_amount'
   ];
 
-
-  public function getCreatedAtAttribute($value)
+  protected function serializeDate(DateTimeInterface $date)
   {
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
     return $date->format('Y-m-d H:i:s');
   }
 
@@ -148,7 +144,8 @@ class JobOrder extends Model
     return $this->total_basic_price * ($this->tax_percent / 100);
   }
 
-  public function coaldo (){
+  public function coaldo()
+  {
     return $this->belongsTo(Coa::class, 'payment_ldo_coa_id');
   }
 }

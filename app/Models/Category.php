@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+
 /**
  * @mixin IdeHelperCategory
  */
 class Category extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Master Kategori';
   protected static $logFillable = true;
 
@@ -20,16 +22,18 @@ class Category extends Model
     'name',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function spareparts(){
+  public function spareparts()
+  {
     return $this->belongsToMany(Sparepart::class);
   }
 
-  public function getNameAttribute($value){
+  public function getNameAttribute($value)
+  {
     return ucwords($value);
   }
 }

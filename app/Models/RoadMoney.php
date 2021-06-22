@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+
 /**
  * @mixin IdeHelperRoadMoney
  */
 class RoadMoney extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Master Uang Jalan';
   protected static $logFillable = true;
 
@@ -27,28 +29,33 @@ class RoadMoney extends Model
     'road_tronton',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function costumers(){
+  public function costumers()
+  {
     return $this->belongsTo(Costumer::class, 'costumer_id');
   }
 
-  public function routefrom(){
+  public function routefrom()
+  {
     return $this->belongsTo(Route::class, 'route_from');
   }
 
-  public function routeto(){
+  public function routeto()
+  {
     return $this->belongsTo(Route::class, 'route_to');
   }
 
-  public function cargo(){
+  public function cargo()
+  {
     return $this->belongsTo(Cargo::class);
   }
 
-  public function typecapacities(){
+  public function typecapacities()
+  {
     return $this->belongsToMany(TypeCapacity::class, 'roadmoney_typecapacity')->withPivot(['road_engkel', 'road_tronton', 'type', 'expense']);
   }
 }

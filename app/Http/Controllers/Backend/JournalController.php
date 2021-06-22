@@ -19,22 +19,30 @@ class JournalController extends Controller
       ['page' => '#', 'title' => "Jurnal Transaksi"],
     ];
     if ($request->ajax()) {
-      $data = Journal::with('coa')->orderBy('id', 'desc');
+      $date = $request->date;
+      $data = Journal::with('coa')
+        ->when($date, function ($query, $date) {
+          $date_format = explode(" / ", $date);
+          $date_begin = $date_format[0];
+          $date_end = $date_format[1];
+          return $query->whereBetween('date_journal', [$date_begin, $date_end]);
+        });
+
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
           $editJournal = $row->can_delete == 1 ? '<a href="journals/' . $row->code_ref . '/edit" class="dropdown-item">Edit</a>' : NULL;
           $deleteJournal = $row->can_delete == 1 ? '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->code_ref . '" class="delete dropdown-item">Delete</a>' : NULL;
-          if($editJournal == NULL && $deleteJournal == NULL){
+          if ($editJournal == NULL && $deleteJournal == NULL) {
             $actionBtn = NULL;
-          }else{
-          $actionBtn = '
+          } else {
+            $actionBtn = '
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-eye"></i>
             </button>
              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                '. $editJournal . $deleteJournal. '
+                ' . $editJournal . $deleteJournal . '
              </div>
           </div>
            ';
@@ -123,7 +131,6 @@ class JournalController extends Controller
     return $response;
   }
 
-
   public function edit($id)
   {
     $config['page_title'] = "Edit Jurnal Transaksi";
@@ -201,7 +208,6 @@ class JournalController extends Controller
     }
     return $response;
   }
-
 
   public function destroy($id)
   {

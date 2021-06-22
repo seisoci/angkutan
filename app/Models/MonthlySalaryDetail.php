@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -15,6 +15,7 @@ class MonthlySalaryDetail extends Model
 {
   use HasFactory;
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'List Gaji Bulanan Pegawai';
   protected static $logFillable = true;
   protected $fillable = [
@@ -24,24 +25,29 @@ class MonthlySalaryDetail extends Model
     'status'
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function coa(){
+
+  public function coa()
+  {
     $this->belongsTo(Coa::class, 'coa_id');
   }
 
-  public function employee(){
+  public function employee()
+  {
     return $this->belongsTo(Employee::class, 'employee_id');
   }
 
-  public function monthlysalary(){
+  public function monthlysalary()
+  {
     return $this->belongsTo(MonthlySalary::class, 'monthly_salary_id');
   }
 
-  public function monthlysalarydetailemployees(){
+  public function monthlysalarydetailemployees()
+  {
     return $this->hasMany(MonthlySalaryDetailEmployee::class);
   }
 

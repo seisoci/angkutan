@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,8 +17,8 @@ class Company extends Model
     'name',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
-      return $date->format('Y-m-d H:i:s');
+  protected function serializeDate(DateTimeInterface $date)
+  {
+    return $date->format('Y-m-d H:i:s');
   }
 }

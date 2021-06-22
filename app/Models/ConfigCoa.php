@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -14,6 +14,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class ConfigCoa extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Config COA';
   protected static $logFillable = true;
 
@@ -25,12 +26,13 @@ class ConfigCoa extends Model
     'normal_balance',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
-    return $date->format('Y-m-d');
+  protected function serializeDate(DateTimeInterface $date)
+  {
+    return $date->format('Y-m-d H:i:s');
   }
 
-  public function coa(){
+  public function coa()
+  {
     return $this->belongsToMany(Coa::class);
   }
 }

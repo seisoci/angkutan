@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+
 /**
  * @mixin IdeHelperOpnameDetail
  */
 class OpnameDetail extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Opname Detail';
   protected static $logFillable = true;
   protected static $logAttributes = ['sparepart.name', 'opname'];
@@ -26,16 +28,18 @@ class OpnameDetail extends Model
     'qty_difference',
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function sparepart(){
+  public function sparepart()
+  {
     return $this->belongsTo(Sparepart::class);
   }
 
-  public function opname(){
+  public function opname()
+  {
     return $this->belongsTo(Opname::class, 'opname_id');
   }
 

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -14,6 +14,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class PaymentCostumer extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected static $logName = 'Rincian Pembayaran Pelanggan';
   protected static $logFillable = true;
   protected static $logAttributes = ['invoicekasbon'];
@@ -27,16 +28,18 @@ class PaymentCostumer extends Model
     'description'
   ];
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
+  protected function serializeDate(DateTimeInterface $date)
+  {
     return $date->format('Y-m-d H:i:s');
   }
 
-  public function invoicekasbon(){
+  public function invoicekasbon()
+  {
     return $this->belongsTo(InvoiceKasbon::class, 'invoice_kasbon_id');
   }
 
-  public function coa(){
+  public function coa()
+  {
     return $this->belongsTo(Coa::class, 'coa_id');
   }
 }

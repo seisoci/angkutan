@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -14,6 +14,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class InvoiceKasbon extends Model
 {
   use HasFactory, Notifiable, LogsActivity;
+
   protected $appends = ['num_invoice'];
   protected static $logName = 'Invoice Kasbon Supir';
   protected static $logFillable = true;
@@ -30,25 +31,28 @@ class InvoiceKasbon extends Model
     'memo',
   ];
 
-  public function driver(){
+  public function driver()
+  {
     return $this->belongsTo(Driver::class, 'driver_id');
   }
 
-  public function paymentkasbons(){
+  public function paymentkasbons()
+  {
     return $this->hasMany(PaymentKasbon::class, 'invoice_kasbon_id');
   }
 
-  public function kasbons(){
+  public function kasbons()
+  {
     return $this->hasMany(Kasbon::class, 'invoice_kasbon_id');
   }
 
-  public function getCreatedAtAttribute($value){
-    $date = Carbon::parse($value)->timezone('Asia/Jakarta');
-    return $date->format('Y-m-d');
+  protected function serializeDate(DateTimeInterface $date)
+  {
+    return $date->format('Y-m-d H:i:s');
   }
 
   public function getNumInvoiceAttribute()
   {
-    return ($this->prefix ."-". $this->num_bill);
+    return ($this->prefix . "-" . $this->num_bill);
   }
 }
