@@ -44,6 +44,7 @@
           <th>Nama Pelanggan</th>
           <th>Total Tagihan</th>
           <th>Total Pembayaran</th>
+          <th>Pajak (Rp.)</th>
           <th>Potongan Klaim</th>
           <th>Potongan Fee</th>
           <th>Sisa Tagihan</th>
@@ -187,6 +188,12 @@
           {
             data: 'total_payment',
             name: 'total_payment',
+            render: $.fn.dataTable.render.number('.', '.', 2),
+            className: 'dt-right'
+          },
+          {
+            data: 'total_tax',
+            name: 'total_tax',
             render: $.fn.dataTable.render.number('.', '.', 2),
             className: 'dt-right'
           },
