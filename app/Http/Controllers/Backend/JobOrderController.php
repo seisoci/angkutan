@@ -505,7 +505,7 @@ class JobOrderController extends Controller
       ->orderBy('cargos.name')
       ->skip($offset)
       ->take($resultCount)
-      ->selectRaw('cargos.id AS id, cargos.name as text, fee_thanks, tax_pph')
+      ->selectRaw('cargos.id AS id, cargos.name as text')
       ->groupBy('road_money.cargo_id')
       ->get();
 
@@ -544,15 +544,25 @@ class JobOrderController extends Controller
     ]);
     if ($validator->passes()) {
       $transport = Transport::select('type_car')->firstOrFail($request->transport_id);
+      $taxfee = RoadMoney::where('costumer_id', $request->costumer_id)
+        ->where('route_from', $request->route_from)
+        ->where('route_to', $request->route_to)
+        ->where('cargo_id', $request->cargo_id)
+        ->first();
+
       $data = RoadMoney::where('costumer_id', $request->costumer_id)
         ->where('route_from', $request->route_from)
         ->where('route_to', $request->route_to)
         ->where('cargo_id', $request->cargo_id)
-        ->first()->typecapacities()->where('type_capacity_id', $request->type_capacity_id)->where('type', $request->type)
+        ->first()
+        ->typecapacities()
+        ->where('type_capacity_id', $request->type_capacity_id)
+        ->where('type', $request->type)
         ->first();
 
       $response = response()->json([
         'data' => $data,
+        'taxfee' => $taxfee,
         'type' => $transport
       ]);
     }

@@ -287,7 +287,6 @@
 
       $(".ton").inputmask({
         'alias': 'decimal',
-        'groupSeparator': ',',
         'autoGroup': true,
         'digits': 3,
         'digitsOptional': false,
@@ -459,6 +458,7 @@
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
         $('input[name=tax_percent]').val('');
+        $('#taxPercent').val('');
         $('.currency').val('');
       });
 
@@ -498,6 +498,7 @@
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
         $('input[name=tax_percent]').val('');
+        $('#taxPercent').val('');
         $('.currency').val('');
       });
 
@@ -536,6 +537,7 @@
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
         $('input[name=tax_percent]').val('');
+        $('#taxPercent').val('');
         $('.currency').val('');
       });
 
@@ -558,9 +560,6 @@
             return query
           },
         },
-      }).on('select2:select', function (evt) {
-        $('input[name=tax_percent],#taxPercent').val(evt.params.data.tax_pph);
-        $('input[name=fee_thanks],#fee_thanks').val(evt.params.data.fee_thanks);
       }).on('change', function(){
         $("#select2TypeCapacity").val("");
         $("#select2TypeCapacity").trigger("change");
@@ -577,6 +576,7 @@
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
         $('input[name=tax_percent]').val('');
+        $('#taxPercent').val('');
         $('.currency').val('');
       });
 
@@ -589,11 +589,10 @@
           delay: 250,
           cache: true,
           data: function (e) {
-            let query = {
+            return {
               q: e.term || '',
               page: e.page || 1
             }
-            return query
           },
         },
       }).on('change', function () {
@@ -609,8 +608,6 @@
         $('input[name=cut_sparepart]').val('');
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
-        $('input[name=tax_percent]').val('');
-        $('.currency').val('');
       });
 
       $('#selectTypeOngkosan').on('change', function () {
@@ -624,8 +621,6 @@
         $('input[name=cut_sparepart]').val('');
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
-        $('input[name=tax_percent]').val('');
-        $('.currency').val('');
         getData();
         if (this.value == 'fix') {
           $('input[name="payload"]').prop('disabled', true).val(1);
@@ -665,6 +660,7 @@
       function callSelf() {
         let basicPrice = parseFloat($('.basicprice').val()) || 0;
         let payload = parseFloat($('input[name=payload]').val()) || 0;
+        console.log(payload);
         let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
         let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
         let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
@@ -747,11 +743,14 @@
           success: function (response) {
             if (response.data) {
               let data = response.data.pivot;
+              let taxfee= response.taxfee;
               let transport = response.type.type_car;
               let type = response.data.pivot.type;
               if (transport === 'engkel') {
                 $('input[name=road_money]').val(data.road_engkel);
                 $('.basicprice').val(data.expense);
+                $('input[name=tax_percent],#taxPercent').val(taxfee.tax_pph);
+                $('input[name=fee_thanks],#fee_thanks').val(taxfee.fee_thanks);
                 if (type === 'fix') {
                   callBorongan();
                 }

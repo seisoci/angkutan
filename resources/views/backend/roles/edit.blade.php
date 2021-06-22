@@ -70,7 +70,6 @@
             </div>
 
             <div class="form-group">
-              <label>List Permission</label>
               <div class="checkbox-list">
                 {{--                @foreach($listPermission as $value)--}}
                 {{--                  <label class="checkbox">--}}
