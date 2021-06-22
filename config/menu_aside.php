@@ -284,6 +284,10 @@ return [
               'title' => 'Laporan Buku Besar',
               'page' => 'backend/ledger'
             ],
+            [
+              'title' => 'Laporan Keuangan',
+              'page' => 'backend/ledger'
+            ],
           ]
         ],
         [

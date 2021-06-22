@@ -74,6 +74,7 @@ use App\Http\Controllers\Backend\JournalController as BackendJournalController;
 use App\Http\Controllers\Backend\ConfigCoaController as BackendConfigCoaController;
 use App\Http\Controllers\Backend\NeracaBalanceController as BackendNeracaBalanceController;
 use App\Http\Controllers\Backend\LedgerController as BackendLedgerController;
+use App\Http\Controllers\Backend\ReportFinanceController as BackendReportFinanceController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -322,5 +323,6 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('configcoa', BackendConfigCoaController::class);
     Route::resource('necarabalane', BackendNeracaBalanceController::class);
     Route::resource('ledger', BackendLedgerController::class);
+    Route::resource('finance', BackendReportFinanceController::class);
   });
 });
