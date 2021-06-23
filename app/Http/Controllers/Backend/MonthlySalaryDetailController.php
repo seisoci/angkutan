@@ -58,7 +58,6 @@ class MonthlySalaryDetailController extends Controller
     return view('backend.accounting.monthlysalarydetail.index', compact('config', 'page_breadcrumbs', 'selectCoa'));
   }
 
-
   public function show($id)
   {
     $config['page_title'] = "Detail Gaji Bulanan Karyawaan";
@@ -124,7 +123,8 @@ class MonthlySalaryDetailController extends Controller
           ->where('journals.coa_id', $request->coa_id)
           ->groupBy('journals.coa_id')
           ->first();
-        $employee = Employee::findOrFail($id);
+        $monthlySalaryDetail = MonthlySalaryDetail::findOrFail($id);
+        $employee = Employee::findOrFail($monthlySalaryDetail->employee_id);
         if (($checksaldo->saldo ?? FALSE) && $data->monthlysalarydetailemployees_sum_amount <= $checksaldo->saldo) {
           Journal::create([
             'coa_id' => $request->coa_id,

@@ -34,41 +34,24 @@ class PermissionTableSeeder extends Seeder
     ];
 
     $listData = [
-      'activitylog',
-      'anotherexpedition',
-      'bank',
-      'brand',
-      'cargo',
-      'cash',
-      'transport',
-      'expense',
-      'route',
-      'cargo',
-      'roadmoney',
+      ['name' => 'activitylog', 'title'=> 'BABI'],
+      ['name' => 'anotherexpedition', 'title'=> 'BABI'],
+      ['name' => 'bank', 'title'=> 'BABI'],
+      ['name' => 'brand', 'title'=> 'BABI'],
+      ['name' => 'cargo', 'title'=> 'BABI'],
+      ['name' => 'cash', 'title'=> 'BABI'],
+      ['name' => 'transport', 'title'=> 'BABI'],
+      ['name' => 'expense', 'title'=> 'BABI'],
+      ['name' => 'route', 'title'=> 'BABI'],
+      ['name' => 'cargo', 'title'=> 'BABI'],
+      ['name' => 'roadmoney', 'title'=> 'BABI'],
     ];
 
-    $master_spare_part = [
-      'suppliersparepart-list',
-      'suppliersparepart-create',
-      'suppliersparepart-edit',
-      'suppliersparepart-delete',
-      'brand-list',
-      'brand-create',
-      'brand-edit',
-      'brand-delete',
-      'category-list',
-      'category-create',
-      'category-edit',
-      'category-delete',
-      'service-list',
-      'service-create',
-      'service-edit',
-      'service-delete',
-      'sparepart-list',
-      'sparepart-create',
-      'sparepart-edit',
-      'sparepart-delete',
-    ];
+    foreach ($listData as $item):
+      foreach ($appends as $append):
+        Permission::create(['name' => $item['name'].'-'.$append, 'title'=> $item['title']]);
+      endforeach;
+    endforeach;
 
     $master_account = [
       'cash-list',
@@ -89,10 +72,6 @@ class PermissionTableSeeder extends Seeder
 //      Permission::create(['name' => $permission]);
 //    }
 
-    foreach ($listData as $item):
-      foreach ($appends as $append):
-        Permission::create(['name' => $item.'-'.$append]);
-        endforeach;
-    endforeach;
+
   }
 }

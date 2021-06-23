@@ -31,7 +31,6 @@ class EmployessSalaryController extends Controller
                     <i class="fas fa-eye"></i>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Show Detail</a>
                   <a href="employeessalary/' . $row->id . '/edit" class="edit dropdown-item">Edit Gaji</a>
                 </div>
             </div>';

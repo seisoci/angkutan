@@ -39,11 +39,7 @@
                   <thead>
                   <tr>
                     <th>#</th>
-                    <th class="text-center">Nama</th>
-                    <th class="text-center">List</th>
-                    <th class="text-center">Create</th>
-                    <th class="text-center">Edit</th>
-                    <th class="text-center">Delete</th>
+                    <th class="text-center" colspan="5">Nama</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -51,16 +47,21 @@
                     <tr>
                       <td>{{ $loop->iteration }}</td>
                       <td>{{ $key }}</td>
-                      @foreach($item as $item_child)
-                        @foreach($lists as $list)
-                        @if($list == $item_child['name'] && in_array($item_child['name'], $lists))
-                            <td class="text-center">
-                              {{ $list. $item_child['name']  }}
-                              <input type="checkbox" name="permission[]" value="{{ $item_child['id'] }}"
-                                {{ in_array($item_child['id'], $rolePermissions) ? 'checked' : NULL }} />
-                            </td>
-                          @endif
-                        @endforeach
+                      @foreach($item as $keyChild => $item_child)
+                        <td class="text-center">
+                          <label class="col-3 col-form-label row"
+                                 for="{{ $item_child['id'] }}">{{ ucwords($item_child['name']) }}</label>
+                          <div class="col-3 row">
+                           <span class="switch switch-sm">
+                            <label>
+                               <input id="{{ $item_child['id'] }}" type="checkbox" name="permission[]"
+                                      value="{{ $item_child['id'] }}" {{ in_array($item_child['id'], $rolePermissions) ? 'checked' : NULL }} />
+                             <span>
+                             </span>
+                            </label>
+                           </span>
+                          </div>
+                        </td>
                       @endforeach
                     </tr>
                   @endforeach
@@ -69,30 +70,33 @@
               </div>
             </div>
 
-            <div class="form-group">
-              <div class="checkbox-list">
-                {{--                @foreach($listPermission as $value)--}}
-                {{--                  <label class="checkbox">--}}
-                {{--                    <input type="checkbox" name="permission[]" value="{{ $value->id }}"--}}
-                {{--                      {{ in_array($value->id, $rolePermissions) ? 'checked' : NULL }} />--}}
-                {{--                    {{ ucwords($value->name) }}--}}
-                {{--                  </label>--}}
-                {{--                @endforeach--}}
-              </div>
-            </div>
+            {{--            <div class="form-group">--}}
+            {{--              <div class="checkbox-list">--}}
+            {{--                @foreach($listPermission as $value)--}}
+            {{--                  <label class="checkbox">--}}
+            {{--                    <input type="checkbox" name="permission[]" value="{{ $value->id }}"--}}
+            {{--                      {{ in_array($value->id, $rolePermissions) ? 'checked' : NULL }} />--}}
+            {{--                    {{ ucwords($value->name) }}--}}
+            {{--                  </label>--}}
+            {{--                @endforeach--}}
+            {{--              </div>--}}
+            {{--            </div>--}}
             <div class="card-footer">
               <button type="submit" class="btn btn-primary mr-2">Submit</button>
               <button type="button" class="btn btn-secondary" onclick="window.history.back();">Cancel</button>
             </div>
+          </div>
         </form>
         <!--end::Form-->
       </div>
     </div>
   </div>
+
 @endsection
 
 {{-- Styles Section --}}
 @section('styles')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
 @endsection
 
 {{-- Scripts Section --}}
@@ -104,12 +108,12 @@
     $(document).ready(function () {
       $("#formUpdate").submit(function (e) {
         e.preventDefault();
-        var form = $(this);
-        var btnSubmit = form.find("[type='submit']");
-        var btnSubmitHtml = btnSubmit.html();
-        var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
-        var url = form.attr("action");
-        var data = new FormData(this);
+        let form = $(this);
+        let btnSubmit = form.find("[type='submit']");
+        let btnSubmitHtml = btnSubmit.html();
+        let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+        let url = form.attr("action");
+        let data = new FormData(this);
         $.ajax({
           beforeSend: function () {
             btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled", "disabled");

@@ -85,23 +85,42 @@ class RolesController extends Controller
       ->all();
     $group = $permission->mapToGroups(function ($item, $key) {
       $split = explode("-", $item['name']);
-      $lists = ['list', 'create', 'edit', 'delete'];
-//      foreach ($lists as $list) {
-//        if ($list == $split[0] || in_array($split[0], $lists)) {
-//          $tes = [$split[0] => ['id' => $item->id, 'name' => $split[1]]];
-//        } else {
-//          $tes = [
-//            $split[0] => ['id' => $list, 'name' => $split[1]],
-//            $split[0] => ['id' => $item->id, 'name' => $split[1]]
-//          ];
-//        }
-//      }
-      return[$split[0] => ['id' => $item->id, 'name' => $split[1]]];
+      return [$split[0] => ['id' => $item->id, 'name' => $split[1]]];
     });
-
-
     $lists = ['list', 'create', 'edit', 'delete'];
-//      dd($group->all());
+
+//    foreach ($group as $key => $item):
+//      foreach ($item as $keyChild => $itemChild):
+//        $sdsa = $keyChild;
+//
+//        if (($keyChild == 0 && $itemChild['name'] == 'list') || ($keyChild == 1 && $itemChild['name'] == 'create') || ($keyChild == 2 && $itemChild['name'] == 'edit' || ($keyChild == 3 && $itemChild['name'] == 'delete'))) {
+//          continue;
+//        } else {
+//          for ($i = 4 - 1; $i > 0; $i--) {
+//            $start = $i;
+//            $finish = $i;
+//            ++$finish;
+//            --$start;
+//            if ($keyChild != $i) {
+//              $group[$key][$finish] = ['id' => $group[$key][$i]['id'], 'name' => $group[$key][$i]['name']];
+//              unset($group[$key][$i]);
+//            }
+////            else{
+////              $group[$key][$keyChild] = ['id' => $group[$key][$start]['id'], 'name' => $group[$key][$start]['name']];
+////              unset($group[$key][$i-1]);
+////            }
+//          }
+//
+////          unset($group[$key][$keyChild]);
+//        }
+//      endforeach;
+//    endforeach;
+//    dd($group);
+
+
+//    $lists = ['list', 'create', 'edit', 'delete'];
+//      dd($group->toArray());
+
     $listPermission = $group->all();
     return view('backend.roles.edit', compact('config', 'page_breadcrumbs', 'data', 'listPermission', 'rolePermissions', 'lists'));
   }
