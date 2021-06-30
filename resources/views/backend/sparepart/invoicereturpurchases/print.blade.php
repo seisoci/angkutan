@@ -3,8 +3,8 @@
 
 <head>
   @foreach(config('layout.resources.css') as $style)
-  <link href="{{ config('layout.self.rtl') ? asset(Metronic::rtlCssPath($style)) : asset($style) }}" rel="stylesheet"
-    type="text/css" />
+    <link href="{{ config('layout.self.rtl') ? asset(Metronic::rtlCssPath($style)) : asset($style) }}" rel="stylesheet"
+          type="text/css"/>
   @endforeach
   <style type="text/css">
     @media print {
@@ -57,79 +57,91 @@
 </head>
 
 <body>
-  <div class="row justify-content-center py-8 px-8 px-md-0">
-    <div class="col-md-11">
-      <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Retur Pembelian</u></h2>
-      <table class="table table-borderless table-title">
-        <tbody>
-          <tr>
-            <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
-            </td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" class="text-right" style="width:30%">Tanggal Nota</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:8%"> {{ $data->invoice_date }}</td>
-          </tr>
-          <tr>
-            <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
-          </tr>
-          <tr>
-            <td scope="col">{{ $profile['telp'] ?? ''}}</td>
-          </tr>
-          <tr>
-            <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="separator separator-solid separator-border-1"></div>
-      <table class="table" style="font-size: 11px !important">
-        <thead>
-          <tr>
-            <th scope="col" style="width:5%">#</th>
-            <th scope="col" style="width:65%">Produk</th>
-            <th scope="col" class="text-center" style="width:10%">Unit</th>
-            <th scope="col" class="text-right" style="width:10%">Harga</th>
-            <th scope="col" class="text-right" style="width:10%">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach ($data->returpurchases as $item)
-          <tr>
-            <td>{{ $loop->iteration }}</td>
-            <td>{{ $item->sparepart->name }}</td>
-            <td class="text-center">{{ $item->qty }}</td>
-            <td class="text-right">{{ number_format($item->price ?? 0,2, ',', '.') }}</td>
-            <td class="text-right">{{ number_format($item->total_price ?? 0,2, ',', '.') }}</td>
-          </tr>
-          @endforeach
-          <tr class="font-weight-normal">
-            <td colspan="4" class="text-right font-weight-bolder text-uppercase">Diskon Tepotong</td>
-            <td class="text-right font-weight-bolder">
-              {{ number_format($data->discount ?? 0,2, ',', '.') }}</td>
-          </tr>
-          <tr class="font-weight-normal">
-            <td colspan="2" class="text-left font-weight-bolder">
-              {{ ucwords(Terbilang::terbilang($data->total_payment)) }}
-            </td>
-            <td colspan="2" class="text-right font-weight-bolder text-uppercase">Total Retur</td>
-            <td class="text-right font-weight-bolder">
-              {{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
-          </tr>
-        </tbody>
-      </table>
+<div class="row justify-content-center py-8 px-8 px-md-0">
+  <div class="col-md-11">
+    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Retur Pembelian</u></h2>
+    <table class="table table-borderless table-title">
+      <tbody>
+      <tr>
+        <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+        </td>
+        <td scope="col" class="text-left" style="width:10%">Tanggal Nota</td>
+        <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
+        <td scope="col" class="text-left" style="width:20%"> {{ $data->invoice_date }}</td>
+      </tr>
+      <tr>
+        <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
+        <td scope="col" class="text-left" style="width:10%">Supplier</td>
+        <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
+        <td scope="col" class="text-left" style="width:20%"> {{ $data->supplier->name }}</td>
+      </tr>
+      <tr>
+        <td scope="col">{{ $profile['telp'] ?? ''}}</td>
+      </tr>
+      <tr>
+        <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="separator separator-solid separator-border-1"></div>
+    <table class="table" style="font-size: 11px !important">
+      <thead>
+      <tr>
+        <th scope="col" style="width:5%">#</th>
+        <th scope="col" style="width:65%">Produk</th>
+        <th scope="col" class="text-center" style="width:10%">Unit</th>
+        <th scope="col" class="text-right" style="width:10%">Harga</th>
+        <th scope="col" class="text-right" style="width:10%">Total</th>
+      </tr>
+      </thead>
+      <tbody>
+      @foreach ($data->returpurchases as $item)
+        <tr>
+          <td>{{ $loop->iteration }}</td>
+          <td>{{ $item->sparepart->name }}</td>
+          <td class="text-center">{{ $item->qty }}</td>
+          <td class="text-right">{{ number_format($item->price ?? 0,2, ',', '.') }}</td>
+          <td class="text-right">{{ number_format($item->total_price ?? 0,2, ',', '.') }}</td>
+        </tr>
+      @endforeach
+      <tr class="font-weight-normal">
+        <td colspan="4" class="text-right font-weight-bolder text-uppercase">Diskon Tepotong</td>
+        <td class="text-right font-weight-bolder">
+          {{ number_format($data->discount ?? 0,2, ',', '.') }}</td>
+      </tr>
+      <tr class="font-weight-normal">
+        <td colspan="2" class="text-left font-weight-bolder">
+          {{ ucwords(Terbilang::terbilang($data->total_payment)) }}
+        </td>
+        <td colspan="2" class="text-right font-weight-bolder text-uppercase">Total Retur</td>
+        <td class="text-right font-weight-bolder">
+          {{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-around mt-20">
+      <div class="mr-20">
+        <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  auth()->user()->name }}</u></h5>
+      </div>
+      <div class="ml-20">
+        <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  $data->supplier->name }}</u></h5>
+      </div>
     </div>
   </div>
+</div>
 </body>
 @foreach(config('layout.resources.js') as $script)
-<script src="{{ asset($script) }}" type="text/javascript"></script>
-<script>
-  window.onload = function(e){
-    window.print();
-  }
-  window.setTimeout(function(){
-    window.close();
-  }, 2000);
-</script>
+  <script src="{{ asset($script) }}" type="text/javascript"></script>
+  <script>
+    window.onload = function (e) {
+      window.print();
+    }
+    window.setTimeout(function () {
+      window.close();
+    }, 2000);
+  </script>
 @endforeach
 
 </html>

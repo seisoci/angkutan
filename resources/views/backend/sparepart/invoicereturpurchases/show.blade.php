@@ -27,13 +27,15 @@
             <tr>
               <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
               </td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-right" style="width:30%">Tanggal Nota</td>
-              <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-              <td scope="col" class="text-left" style="width:8%"> {{ $data->invoice_date }}</td>
+              <td scope="col" class="text-left" style="width:10%">Tanggal Nota</td>
+              <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
+              <td scope="col" class="text-left" style="width:20%"> {{ $data->invoice_date }}</td>
             </tr>
             <tr>
               <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
+              <td scope="col" class="text-left" style="width:10%">Supplier</td>
+              <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
+              <td scope="col" class="text-left" style="width:20%"> {{ $data->supplier->name }}</td>
             </tr>
             <tr>
               <td scope="col">{{ $profile['telp'] ?? ''}}</td>
@@ -74,6 +76,7 @@
             </tr>
           </tbody>
         </table>
+
       </div>
     </div>
   </div>

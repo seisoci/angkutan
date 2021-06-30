@@ -21,6 +21,11 @@ class ReportRecapUsageItemOutsideController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportrecapusageitemoutside-list|reportrecapusageitemoutside-create|reportrecapusageitemoutside-edit|reportrecapusageitemoutside-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Rekap Pembelian Baranng Diluar";

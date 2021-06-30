@@ -20,6 +20,11 @@ class ReportReturPurchaseController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportreturpurchases-list|reportreturpurchases-create|reportreturpurchases-edit|reportreturpurchases-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Retur Purchase Order";

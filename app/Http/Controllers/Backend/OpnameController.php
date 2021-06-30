@@ -19,6 +19,14 @@ class OpnameController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:opnames-list|opnames-create|opnames-edit|opnames-delete', ['only' => ['index']]);
+    $this->middleware('permission:opnames-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:opnames-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:opnames-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Opname";
@@ -89,8 +97,8 @@ class OpnameController extends Controller
           Journal::create([
             'coa_id' => 49,
             'date_journal' => $this->dateNow(),
-            'debit' => 0,
-            'kredit' => $items['price'][$key],
+            'debit' => $items['price'][$key],
+            'kredit' => 0,
             'table_ref' => 'opnames',
             'code_ref' => $data->id,
             'description' => "Pengeluaran barang ".$stock->sparepart->name
@@ -99,8 +107,8 @@ class OpnameController extends Controller
           Journal::create([
             'coa_id' => 17,
             'date_journal' => $this->dateNow(),
-            'debit' => $items['price'][$key],
-            'kredit' => 0,
+            'debit' => 0,
+            'kredit' => $items['price'][$key],
             'table_ref' => 'opnames',
             'code_ref' => $data->id,
             'description' => "Penambahan kehilangan barang ".$stock->sparepart->name

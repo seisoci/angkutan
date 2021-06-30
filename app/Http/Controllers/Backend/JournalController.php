@@ -11,6 +11,14 @@ use Yajra\DataTables\Facades\DataTables;
 
 class JournalController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:journals-list|journals-create|journals-edit|journals-delete', ['only' => ['index']]);
+    $this->middleware('permission:journals-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:journals-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:journals-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Jurnal Transaksi";

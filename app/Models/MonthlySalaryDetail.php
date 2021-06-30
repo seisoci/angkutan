@@ -48,7 +48,7 @@ class MonthlySalaryDetail extends Model
 
   public function monthlysalarydetailemployees()
   {
-    return $this->hasMany(MonthlySalaryDetailEmployee::class);
+    return $this->hasMany(MonthlySalaryDetailEmployee::class, 'monthly_salary_detail_id');
   }
 
 }

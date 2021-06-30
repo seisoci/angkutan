@@ -18,6 +18,11 @@ class ReportCostumerController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportcostumers-list|reportcostumers-create|reportcostumers-edit|reportcostumers-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Data Pelanggan";

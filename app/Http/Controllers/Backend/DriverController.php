@@ -13,6 +13,13 @@ use Illuminate\Support\Facades\File;
 
 class DriverController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:drivers-list|drivers-create|drivers-edit|drivers-delete', ['only' => ['index']]);
+    $this->middleware('permission:drivers-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:drivers-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:drivers-delete', ['only' => ['destroy']]);
+  }
 
   public function index(Request $request)
   {

@@ -22,28 +22,28 @@
         </div>
         <div class="row">
           <div class="col-md-6">
-            <div class="form-group">
-              <label class="mx-0 text-bold d-block">Logo</label>
-              <img id="avatar"
-                   src="{{ $logo->value != NULL ? asset("/images/original/".$logo->value) : asset('media/bg/no-content.svg') }}"
-                   style="object-fit: fit; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="100px"
-                   width="300px">
-              <input type="file" class="image d-block" name="logo" accept=".jpg, .jpeg, .png">
-              <p class="text-muted ml-75 mt-50"><small>Allowed JPG, JPEG or PNG. Max
-                  size of
-                  2000kB</small></p>
-            </div>
-            <div class="form-group">
-              <label class="mx-0 text-bold d-block">Favicon</label>
-              <img id="avatar"
-                   src="{{ $favicon->value != NULL ? asset("/images/original/".$favicon->value) : asset('media/bg/no-content.svg') }}"
-                   style="object-fit: fit; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="50px"
-                   width="50px">
-              <input type="file" class="image d-block" name="favicon" accept=".jpg, .jpeg, .png">
-              <p class="text-muted ml-75 mt-50"><small>Allowed JPG, JPEG or PNG. Max
-                  size of
-                  2000kB</small></p>
-            </div>
+{{--            <div class="form-group">--}}
+{{--              <label class="mx-0 text-bold d-block">Logo</label>--}}
+{{--              <img id="avatar"--}}
+{{--                   src="{{ $logo->value != NULL ? asset("/images/original/".$logo->value) : asset('media/bg/no-content.svg') }}"--}}
+{{--                   style="object-fit: fit; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="100px"--}}
+{{--                   width="300px">--}}
+{{--              <input type="file" class="image d-block" name="logo" accept=".jpg, .jpeg, .png">--}}
+{{--              <p class="text-muted ml-75 mt-50"><small>Allowed JPG, JPEG or PNG. Max--}}
+{{--                  size of--}}
+{{--                  2000kB</small></p>--}}
+{{--            </div>--}}
+{{--            <div class="form-group">--}}
+{{--              <label class="mx-0 text-bold d-block">Favicon</label>--}}
+{{--              <img id="avatar"--}}
+{{--                   src="{{ $favicon->value != NULL ? asset("/images/original/".$favicon->value) : asset('media/bg/no-content.svg') }}"--}}
+{{--                   style="object-fit: fit; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="50px"--}}
+{{--                   width="50px">--}}
+{{--              <input type="file" class="image d-block" name="favicon" accept=".jpg, .jpeg, .png">--}}
+{{--              <p class="text-muted ml-75 mt-50"><small>Allowed JPG, JPEG or PNG. Max--}}
+{{--                  size of--}}
+{{--                  2000kB</small></p>--}}
+{{--            </div>--}}
             @foreach ($data as $item)
               <div class="form-group">
                 <label>{{ ucwords($item->name) }} <span class="text-danger">*</span></label>

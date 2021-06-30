@@ -40,7 +40,7 @@ class Employee extends Model
 
   public function monthlysalarydetail()
   {
-    return $this->hasOne(MonthlySalaryDetail::class);
+    return $this->hasMany(MonthlySalaryDetail::class, 'employee_id');
   }
 
 

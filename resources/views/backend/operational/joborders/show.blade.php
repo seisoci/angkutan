@@ -21,11 +21,11 @@
             </div>
             <div class="d-flex flex-column align-items-md-end px-0">
               <!--begin::Logo-->
-              <a href="#" class="mb-5">
-                <img
-                  src="{{ $profile['logo_url'] != NULL ? asset("/images/thumbnail/".$profile['logo_url']) : asset('media/bg/no-content.svg') }}"
-                  width="75px" height="75px"/>
-              </a>
+{{--              <a href="#" class="mb-5">--}}
+{{--                <img--}}
+{{--                  src="{{ $profile['logo_url'] != NULL ? asset("/images/thumbnail/".$profile['logo_url']) : asset('media/bg/no-content.svg') }}"--}}
+{{--                  width="75px" height="75px"/>--}}
+{{--              </a>--}}
               <!--end::Logo-->
             </div>
           </div>

@@ -7,7 +7,9 @@ use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Driver;
 use App\Models\Journal;
+use App\Models\Kasbon;
 use App\Models\KasbonEmployee;
+use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +19,14 @@ use Yajra\DataTables\Facades\DataTables;
 class KasbonEmployeeController extends Controller
 {
   use CarbonTrait;
+
+  function __construct()
+  {
+    $this->middleware('permission:kasbonemployees-list|kasbonemployees-create|kasbonemployees-edit|kasbonemployees-delete', ['only' => ['index']]);
+    $this->middleware('permission:kasbonemployees-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:kasbonemployees-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:kasbonemployees-delete', ['only' => ['destroy']]);
+  }
 
   public function index(Request $request)
   {
@@ -29,6 +39,18 @@ class KasbonEmployeeController extends Controller
     if ($request->ajax()) {
       $data = KasbonEmployee::with('employee:id,name');
       return DataTables::of($data)
+        ->addColumn('action', function ($row) {
+          return '
+              <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-eye"></i>
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a href="kasbonemployees/' . $row->id . '" class="dropdown-item">Detail Kasbon</a>
+                  </div>
+              </div>
+            ';
+        })
         ->addIndexColumn()
         ->make(true);
     }
@@ -125,4 +147,35 @@ class KasbonEmployeeController extends Controller
     }
     return $response;
   }
+
+  public function show($id){
+    $config['page_title'] = "Detail Kasbon Karyawaan";
+    $config['print_url'] = "/backend/kasbonemployees/$id/print";
+    $page_breadcrumbs = [
+      ['page' => '/backend/kasbonemployees', 'title' => "Kasbon Karyawaan"],
+      ['page' => '#', 'title' => "Detail Kasbon Karyawaan"],
+    ];
+    $collection = Setting::all();
+    $profile = collect($collection)->mapWithKeys(function ($item) {
+      return [$item['name'] => $item['value']];
+    });
+    $data = KasbonEmployee::with('employee')->findOrFail($id);
+    return view('backend.accounting.kasbonemployee.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+  }
+
+  public function print($id){
+    $config['page_title'] = "Detail Kasbon Karyawaan";
+    $config['print_url'] = "/backend/kasbonemployees/$id/print";
+    $page_breadcrumbs = [
+      ['page' => '/backend/kasbonemployees', 'title' => "Kasbon Karyawaan"],
+      ['page' => '#', 'title' => "Detail Kasbon Karyawaan"],
+    ];
+    $collection = Setting::all();
+    $profile = collect($collection)->mapWithKeys(function ($item) {
+      return [$item['name'] => $item['value']];
+    });
+    $data = KasbonEmployee::with('employee')->findOrFail($id);
+    return view('backend.accounting.kasbonemployee.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+  }
+
 }

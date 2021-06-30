@@ -22,6 +22,13 @@ use Validator;
 
 class JobOrderController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:joborders-list|joborders-create|joborders-edit|joborders-delete', ['only' => ['index']]);
+    $this->middleware('permission:joborders-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:joborders-edit', ['only' => ['edit', 'update']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Job Order";
@@ -220,6 +227,8 @@ class JobOrderController extends Controller
             $data->basic_price = $request->basic_price;
             $data->basic_price_ldo = $request->basic_price_ldo;
             $data->road_money = $request->road_money;
+            $data->tax_percent = $request->tax_percent ?? 0;
+            $data->fee_thanks = $request->fee_thanks ?? 0;
             $data->invoice_bill = $sumPayload;
             $data->description = $request->description;
             $data->save();

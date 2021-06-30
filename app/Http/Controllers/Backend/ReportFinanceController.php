@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class ReportFinanceController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:finance-list|finance-create|finance-edit|finance-delete', ['only' => ['index']]);
+  }
+
   public function index()
   {
     $config['page_title'] = "laporan Keuangan";

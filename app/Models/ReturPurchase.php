@@ -22,6 +22,7 @@ class ReturPurchase extends Model
     protected $fillable = [
       'invoice_retur_purchase_id',
       'sparepart_id',
+      'supplier_sparepart_id',
       'qty',
       'price',
     ];

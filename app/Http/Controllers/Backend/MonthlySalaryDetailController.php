@@ -20,6 +20,13 @@ class MonthlySalaryDetailController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:employeessalary-list|employeessalary-create|employeessalary-edit|employeessalary-delete', ['only' => ['index']]);
+    $this->middleware('permission:employeessalary-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:employeessalary-edit', ['only' => ['edit', 'update']]);
+  }
+
   public function index($id, Request $request)
   {
     $config['page_title'] = "List Gaji Bulanan Karyawaan";
@@ -37,7 +44,7 @@ class MonthlySalaryDetailController extends Controller
         ->addColumn('details_url', function (MonthlySalaryDetail $monthlySalaryDetail) {
           return route('backend.monthlysalarydetail.datatabledetail', $monthlySalaryDetail->id);
         })
-        ->addColumn('action', function ($row) {
+        ->addColumn('action', function ($row) use($id) {
           $btnEditStatus = $row->status == '0' ? '<a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" class="dropdown-item">Edit Status</a>' : NULL;
           $actionBtn = '
              <div class="dropdown">
@@ -72,12 +79,7 @@ class MonthlySalaryDetailController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = Employee::with(['monthlysalarydetail', 'monthlysalarydetail.employee:id,name', 'monthlysalarydetail.monthlysalarydetailemployees.employeemaster', 'monthlysalarydetail.monthlysalary'])
-      ->whereHas('monthlysalarydetail', function ($q) use ($id) {
-        $q->where('id', $id);
-      })
-      ->firstOrFail();
-
+    $data = MonthlySalaryDetail::with(['monthlysalary','employee', 'monthlysalarydetailemployees.employeemaster'])->findOrFail($id);
     return view('backend.accounting.monthlysalarydetail.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
@@ -94,12 +96,7 @@ class MonthlySalaryDetailController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = Employee::with(['monthlysalarydetail', 'monthlysalarydetail.employee:id,name', 'monthlysalarydetail.monthlysalarydetailemployees.employeemaster', 'monthlysalarydetail.monthlysalary'])
-      ->whereHas('monthlysalarydetail', function ($q) use ($id) {
-        $q->where('id', $id);
-      })
-      ->firstOrFail();
-
+    $data = MonthlySalaryDetail::with(['monthlysalary','employee', 'monthlysalarydetailemployees.employeemaster'])->findOrFail($id);
     return view('backend.accounting.monthlysalarydetail.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 

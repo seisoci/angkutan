@@ -306,7 +306,7 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           },
           type: 'POST',
-          url: "{{ route('backend.invoicecostumers.findbypk') }}",
+          url: "{{ route('backend.invoiceldo.findbypk') }}",
           data: {data: JSON.stringify(dataSelected)},
           success: function (response) {
             if (response.data) {

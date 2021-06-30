@@ -18,6 +18,11 @@ class ReportRecapJobOrderController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportrecapjoborder-list|reportrecapjoborder-create|reportrecapjoborder-edit|reportrecapjoborder-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Rekap Tagihan Job Order";
@@ -205,9 +210,9 @@ class ReportRecapJobOrderController extends Controller
     foreach ($data as $item):
       $startCell++;
       $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderLeftRight);
-      $sheet->getStyle('D' . $startCell . ':H'.$startCell)->getAlignment()->setHorizontal('right');
+      $sheet->getStyle('D' . $startCell . ':H' . $startCell)->getAlignment()->setHorizontal('right');
       $sheet->getStyle('A' . $startCell)->getAlignment()->setHorizontal('center');
-      $sheet->getStyle('D' . $startCell.':H'. $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('D' . $startCell . ':H' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->costumer_name);
       $sheet->setCellValue('C' . $startCell, $item->costumer_address);

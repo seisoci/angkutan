@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:stocks-list|stocks-create|stocks-edit|stocks-delete', ['only' => ['index']]);
+    $this->middleware('permission:stocks-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:stocks-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:stocks-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Stok Spare Part";

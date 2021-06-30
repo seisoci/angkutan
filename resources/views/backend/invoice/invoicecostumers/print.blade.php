@@ -181,9 +181,18 @@
         <td colspan="3" class="text-right font-weight-bolder">Sisa Pembayaran</td>
         <td class="text-right font-weight-bolder">{{ number_format($data->rest_payment ?? 0,2, ',', '.') }}</td>
       </tr>
-
       </tbody>
     </table>
+    <div class="d-flex justify-content-around mt-20">
+      <div class="mr-20">
+        <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  auth()->user()->name }}</u></h5>
+      </div>
+      <div class="ml-20">
+        <h4  class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  $data->costumer->name }}</u></h5>
+      </div>
+    </div>
   </div>
 </div>
 </body>

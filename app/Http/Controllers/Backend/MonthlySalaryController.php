@@ -15,6 +15,13 @@ use Yajra\DataTables\Facades\DataTables;
 
 class MonthlySalaryController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:employeessalary-list|employeessalary-create|employeessalary-edit|employeessalary-delete', ['only' => ['index']]);
+    $this->middleware('permission:employeessalary-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:employeessalary-edit', ['only' => ['edit', 'update']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Gaji Bulanan";

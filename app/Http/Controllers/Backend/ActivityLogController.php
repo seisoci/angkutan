@@ -9,6 +9,10 @@ use Spatie\Activitylog\Models\Activity;
 
 class ActivityLogController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:activitylog-list|activitylog-create|activitylog-edit|activitylog-delete', ['only' => ['index']]);
+  }
   public function index(Request $request)
   {
     $config['page_title'] = "Activity Log";

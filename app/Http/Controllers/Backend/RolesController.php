@@ -83,46 +83,22 @@ class RolesController extends Controller
     $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
       ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
       ->all();
+
+//    $rolePermissions = DB::table("role_has_permissions")
+//      ->select(DB::raw('SUBSTRING_INDEX(`permissions`.`name`, "-", 1) as name'))
+//      ->where("role_has_permissions.role_id", $id)
+//      ->leftJoin('permissions', 'role_has_permissions.permission_id', '=', 'permissions.id')
+//      ->groupBy('permissions.title')
+//      ->pluck('name')
+//      ->all();
+//    dd($rolePermissions);
     $group = $permission->mapToGroups(function ($item, $key) {
       $split = explode("-", $item['name']);
-      return [$split[0] => ['id' => $item->id, 'name' => $split[1]]];
+      return [$item['title'] => ['id' => $item->id, 'name' => $split[1]]];
     });
-    $lists = ['list', 'create', 'edit', 'delete'];
-
-//    foreach ($group as $key => $item):
-//      foreach ($item as $keyChild => $itemChild):
-//        $sdsa = $keyChild;
-//
-//        if (($keyChild == 0 && $itemChild['name'] == 'list') || ($keyChild == 1 && $itemChild['name'] == 'create') || ($keyChild == 2 && $itemChild['name'] == 'edit' || ($keyChild == 3 && $itemChild['name'] == 'delete'))) {
-//          continue;
-//        } else {
-//          for ($i = 4 - 1; $i > 0; $i--) {
-//            $start = $i;
-//            $finish = $i;
-//            ++$finish;
-//            --$start;
-//            if ($keyChild != $i) {
-//              $group[$key][$finish] = ['id' => $group[$key][$i]['id'], 'name' => $group[$key][$i]['name']];
-//              unset($group[$key][$i]);
-//            }
-////            else{
-////              $group[$key][$keyChild] = ['id' => $group[$key][$start]['id'], 'name' => $group[$key][$start]['name']];
-////              unset($group[$key][$i-1]);
-////            }
-//          }
-//
-////          unset($group[$key][$keyChild]);
-//        }
-//      endforeach;
-//    endforeach;
-//    dd($group);
-
-
-//    $lists = ['list', 'create', 'edit', 'delete'];
-//      dd($group->toArray());
 
     $listPermission = $group->all();
-    return view('backend.roles.edit', compact('config', 'page_breadcrumbs', 'data', 'listPermission', 'rolePermissions', 'lists'));
+    return view('backend.roles.edit', compact('config', 'page_breadcrumbs', 'data', 'listPermission', 'rolePermissions'));
   }
 
   public function update(Request $request, $id)

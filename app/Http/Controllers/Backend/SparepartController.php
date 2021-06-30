@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\Validator;
 
 class SparepartController extends Controller
 {
+
+  function __construct()
+  {
+    $this->middleware('permission:spareparts-list|spareparts-create|spareparts-edit|spareparts-delete', ['only' => ['index']]);
+    $this->middleware('permission:spareparts-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:spareparts-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:spareparts-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Spare Part";
@@ -62,7 +71,7 @@ class SparepartController extends Controller
     $validator = Validator::make($request->all(), [
       'brand_id' => 'required|integer',
       'name' => 'required|string',
-      'categories' => 'required|array',
+      'categories.*' => 'required|array',
       'categories' => 'required|distinct',
       'photo' => 'image|mimes:jpg,png,jpeg|max:2048',
     ]);

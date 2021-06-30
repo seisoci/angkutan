@@ -20,6 +20,14 @@ use Validator;
 
 class InvoicePurchaseController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:invoicepurchases-list|invoicepurchases-create|invoicepurchases-edit|invoicepurchases-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoicepurchases-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoicepurchases-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoicepurchases-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Purchase Order";

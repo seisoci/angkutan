@@ -22,6 +22,11 @@ class ReportSalaryEmployeesController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportsalaryemployees-list|reportsalaryemployees-create|reportsalaryemployees-edit|reportsalaryemployees-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Gaji Karyawaan";

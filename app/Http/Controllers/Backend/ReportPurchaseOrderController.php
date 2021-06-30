@@ -21,6 +21,11 @@ class ReportPurchaseOrderController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportpurchaseorders-list|reportpurchaseorders-create|reportpurchaseorders-edit|reportpurchaseorders-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Purchase Order";

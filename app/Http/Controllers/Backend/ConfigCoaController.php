@@ -9,6 +9,12 @@ use Illuminate\Http\Request;
 
 class ConfigCoaController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:configcoa-list|configcoa-create|configcoa-edit|configcoa-delete', ['only' => ['index']]);
+    $this->middleware('permission:configcoa-create', ['only' => ['create', 'store']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Config COA";

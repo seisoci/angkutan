@@ -73,9 +73,10 @@ use App\Http\Controllers\Backend\CoaController as BackendCoaController;
 use App\Http\Controllers\Backend\JournalController as BackendJournalController;
 use App\Http\Controllers\Backend\ConfigCoaController as BackendConfigCoaController;
 use App\Http\Controllers\Backend\ReportNeracaBalanceController as BackendNeracaBalanceController;
-use App\Http\Controllers\Backend\LedgerController as BackendLedgerController;
+use App\Http\Controllers\Backend\ReportLedgerController as BackendReportLedgerController;
 use App\Http\Controllers\Backend\ReportFinanceController as BackendReportFinanceController;
 use App\Http\Controllers\Backend\ReportNeracaBalanceController as BackendReportNeracaBalanceController;
+use App\Http\Controllers\Backend\ReportProfitLossController as BackendReportProfitLossController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -188,13 +189,21 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::get('reportusageitemoutside/document', [BackendReportUsageItemOutsideController::class, 'document']);
     Route::get('reportrecapusageitemoutside/print', [BackendReportRecapUsageItemOutsideController::class, 'print']);
     Route::get('reportrecapusageitemoutside/document', [BackendReportRecapUsageItemOutsideController::class, 'document']);
+    Route::get('recapitulation/document', [BackendRecapitulationController::class, 'document'])->name('recapitulation.document');
+    Route::get('recapitulation/print', [BackendRecapitulationController::class, 'print'])->name('recapitulation.print');
     Route::get('reportstocks/print', [BackendReportStockController::class, 'print']);
     Route::get('reportstocks/document', [BackendReportStockController::class, 'document']);
+    Route::get('ledger/print', [BackendReportLedgerController::class, 'print']);
+    Route::get('ledger/document', [BackendReportLedgerController::class, 'document']);
+    Route::get('profitloss/print', [BackendReportProfitLossController::class, 'print']);
+    Route::get('profitloss/document', [BackendReportProfitLossController::class, 'document']);
 
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
     Route::get('monthlysalarydetail/{id}/print', [BackendMonthlySalaryDetailController::class, 'print']);
     Route::get('invoicekasbonemployees/{id}/print', [BackendInvoiceKasbonEmployeeController::class, 'print']);
+    Route::get('kasbon/{id}/print', [BackendKasbonController::class, 'print']);
+    Route::get('kasbonemployees/{id}/print', [BackendKasbonEmployeeController::class, 'print']);
 
     //Datatables Details
     Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
@@ -222,9 +231,8 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::post('invoicesalaries/findbypk', [BackendInvoiceSalaryController::class, 'findbypk'])->name('invoicesalaries.findbypk');
     Route::post('invoicekasbons/findbypk', [BackendInvoiceKasbonController::class, 'findbypk'])->name('invoicekasbons.findbypk');
     Route::post('invoicecostumers/findbypk', [BackendInvoiceCostumerController::class, 'findbypk'])->name('invoicecostumers.findbypk');
+    Route::post('invoiceldo/findbypk', [BackendInvoiceLdoController::class, 'findbypk'])->name('invoiceldo.findbypk');
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
-    Route::get('recapitulation/document', [BackendRecapitulationController::class, 'document'])->name('recapitulation.document');
-    Route::get('recapitulation/print', [BackendRecapitulationController::class, 'print'])->name('recapitulation.print');
     Route::post('invoicekasbonemployees/findbypk', [BackendInvoiceKasbonEmployeeController::class, 'findbypk'])->name('invoicekasbonemployees.findbypk');
 
     //Master Operationals
@@ -323,8 +331,9 @@ Route::prefix('backend')->name('backend.')->middleware('auth:web')->group(functi
     Route::resource('journals', BackendJournalController::class);
     Route::resource('configcoa', BackendConfigCoaController::class);
     Route::resource('necarabalane', BackendNeracaBalanceController::class);
-    Route::resource('ledger', BackendLedgerController::class);
+    Route::resource('ledger', BackendReportLedgerController::class);
     Route::resource('finance', BackendReportFinanceController::class);
     Route::resource('neraca', BackendReportNeracaBalanceController::class);
+    Route::resource('profitloss', BackendReportProfitLossController::class);
   });
 });

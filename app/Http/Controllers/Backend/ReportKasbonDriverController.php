@@ -19,6 +19,11 @@ class ReportKasbonDriverController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportkasbondrivers-list|reportkasbondrivers-create|reportkasbondrivers-edit|reportkasbondrivers-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Data Kasbon Supir";

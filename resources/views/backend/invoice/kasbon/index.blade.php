@@ -42,6 +42,7 @@
           <th>Status</th>
           <th>Keterangan</th>
           <th>Created At</th>
+          <th>Action</th>
         </tr>
       </thead>
     </table>
@@ -136,6 +137,7 @@
             {data: 'status', name: 'status'},
             {data: 'memo', name: 'memo'},
             {data: 'created_at', name: 'created_at'},
+            {data: 'action', name: 'action'},
         ],
         columnDefs: [
         {

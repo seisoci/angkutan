@@ -360,7 +360,7 @@
           let grandTotalPayment = 0;
           let grandTotal = parseInt($('#grandTotal').val());
           let $row = $(this).closest("tr");
-          let total = parseInt($row.find('input[name="payment[payment][]"]').val());
+          let total = parseInt($row.find('input[name="payment[payment][]"]').val()) || 0;
           $row.find('input[name="payment[total_payment][]"]').val(total);
           $('input[name^="payment[total_payment]"]').each(function () {
             grandTotalPayment += parseInt($(this).val());

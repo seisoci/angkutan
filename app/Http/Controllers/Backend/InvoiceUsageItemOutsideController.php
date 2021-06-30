@@ -18,6 +18,14 @@ use Validator;
 
 class InvoiceUsageItemOutsideController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:invoiceusageitemsoutside-list|invoiceusageitemsoutside-create|invoiceusageitemsoutside-edit|invoiceusageitemsoutside-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoiceusageitemsoutside-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoiceusageitemsoutside-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoiceusageitemsoutside-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Pembelian Barang Diluar";

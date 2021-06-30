@@ -18,6 +18,11 @@ class ReportTransportController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reporttransports-list|reporttransports-create|reporttransports-edit|reporttransports-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Data Kendaraan";
@@ -33,7 +38,7 @@ class ReportTransportController extends Controller
       $data = Transport::where('another_expedition_id', NULL);
       return DataTables::of($data)
         ->addIndexColumn()
-        ->editColumn('type_car', function(Transport $transport) {
+        ->editColumn('type_car', function (Transport $transport) {
           return ucwords($transport->type_car);
         })
         ->make(true);
@@ -138,7 +143,7 @@ class ReportTransportController extends Controller
     $sheet->mergeCells('E4:G4');
     $sheet->setCellValue('E4', 'Fax: ' . $profile['fax']);
 
-    $filename = 'Laporan Data Kendaraan '. $this->dateTimeNow();
+    $filename = 'Laporan Data Kendaraan ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
       $writer = new Xlsx($spreadsheet);
       header('Content-Type: application/vnd.ms-excel');
@@ -154,7 +159,8 @@ class ReportTransportController extends Controller
     exit();
   }
 
-  public function print(Request $request){
+  public function print(Request $request)
+  {
     $status = $request->status;
     $config['page_title'] = "Laporan Data Kendaraan";
     $config['page_description'] = "Laporan Data Kendaraan";

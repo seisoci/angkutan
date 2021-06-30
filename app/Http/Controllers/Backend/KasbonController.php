@@ -9,6 +9,8 @@ use App\Models\ConfigCoa;
 use App\Models\Driver;
 use App\Models\Journal;
 use App\Models\Kasbon;
+use App\Models\Opname;
+use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use DataTables;
 use Illuminate\Http\Request;
@@ -18,6 +20,14 @@ use Validator;
 class KasbonController extends Controller
 {
   use CarbonTrait;
+
+  function __construct()
+  {
+    $this->middleware('permission:kasbons-list|kasbons-create|kasbons-edit|kasbons-delete', ['only' => ['index']]);
+    $this->middleware('permission:kasbons-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:kasbons-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:kasbons-delete', ['only' => ['destroy']]);
+  }
 
   public function index(Request $request)
   {
@@ -30,31 +40,23 @@ class KasbonController extends Controller
     if ($request->ajax()) {
       $data = Kasbon::with('driver:id,name');
       return DataTables::of($data)
+        ->addColumn('action', function ($row) {
+          return '
+              <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-eye"></i>
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a href="kasbon/' . $row->id . '" class="dropdown-item">Detail Kasbon</a>
+                  </div>
+              </div>
+            ';
+        })
         ->addIndexColumn()
         ->make(true);
     }
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'kasbon')->sole();
     return view('backend.invoice.kasbon.index', compact('config', 'page_breadcrumbs', 'selectCoa'));
-  }
-
-  public function create(Request $request)
-  {
-    $config['page_title'] = "Create Invoice Kasbon Supir";
-    $config['page_description'] = "Create Invoice Kasbon Supir";
-    $page_breadcrumbs = [
-      ['page' => '#', 'title' => "Create Invoice Kasbon Supir"],
-    ];
-    $driver_id = $request->driver_id;
-    if ($request->ajax()) {
-      $data = Kasbon::with(['driver:id,name'])
-        ->when($driver_id, function ($query, $driver_id) {
-          return $query->where('driver_id', $driver_id);
-        });
-      return DataTables::of($data)
-        ->addIndexColumn()
-        ->make(true);
-    }
-    return view('backend.invoice.invoicekasbons.create', compact('config', 'page_breadcrumbs'));
   }
 
   public function store(Request $request)
@@ -88,7 +90,7 @@ class KasbonController extends Controller
             'memo' => $request->input('memo'),
           ]);
           Journal::create([
-            'coa_id' => 8,
+            'coa_id' => 7,
             'date_journal' => $this->dateNow(),
             'debit' => $request->input('amount'),
             'kredit' => 0,
@@ -123,6 +125,36 @@ class KasbonController extends Controller
       $response = response()->json(['error' => $validator->errors()->all()]);
     }
     return $response;
+  }
+
+  public function show($id){
+    $config['page_title'] = "Detail Kasbon";
+    $config['print_url'] = "/backend/kasbon/$id/print";
+    $page_breadcrumbs = [
+      ['page' => '/backend/kasbon', 'title' => "Kasbon"],
+      ['page' => '#', 'title' => "Detail Kasbon"],
+    ];
+    $collection = Setting::all();
+    $profile = collect($collection)->mapWithKeys(function ($item) {
+      return [$item['name'] => $item['value']];
+    });
+    $data = Kasbon::with('driver')->findOrFail($id);
+    return view('backend.invoice.kasbon.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+  }
+
+  public function print($id){
+    $config['page_title'] = "Detail Kasbon";
+    $config['print_url'] = "/backend/kasbon/$id/print";
+    $page_breadcrumbs = [
+      ['page' => '/backend/kasbon', 'title' => "Kasbon"],
+      ['page' => '#', 'title' => "Detail Kasbon"],
+    ];
+    $collection = Setting::all();
+    $profile = collect($collection)->mapWithKeys(function ($item) {
+      return [$item['name'] => $item['value']];
+    });
+    $data = Kasbon::with('driver')->findOrFail($id);
+    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
 }

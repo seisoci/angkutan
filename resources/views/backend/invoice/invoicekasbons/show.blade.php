@@ -21,7 +21,7 @@
     <!-- begin: Invoice header-->
     <div class="row justify-content-center py-8 px-8 px-md-0">
       <div class="col-md-11">
-        <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Kasbon Supir</u></h2>
+        <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Invoice Kasbon Supir</u></h2>
         <table class="table table-borderless table-title">
           <tbody>
             <tr>

@@ -23,6 +23,11 @@ class ReportStockController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportstocks-list|reportstocks-create|reportstocks-edit|reportstocks-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Stok Barang";

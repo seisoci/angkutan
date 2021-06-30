@@ -23,6 +23,14 @@ class InvoiceCostumerController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:invoicecostumers-list|invoicecostumers-create|invoicecostumers-edit|invoicecostumers-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoicecostumers-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoicecostumers-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoicecostumers-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Invoice Pelanggan";
@@ -43,7 +51,7 @@ class InvoiceCostumerController extends Controller
         ->addColumn('action', function ($row) {
           $restPayment = $row->rest_payment != 0 ? '<a href="invoicecostumers/' . $row->id . '/edit" class="dropdown-item">Input Pembayaran</a>' : NULL;
           $tax_coa_id = !$row->tax_coa_id && $row->total_tax > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditTax" data-id="' . $row->id . '"  data-tax="' . $row->total_tax . '" class="edit dropdown-item">Bayar Pajak</a>' : NULL;
-          $fee_coa_id = !$row->fee_coa_id  && $row->total_fee_thanks > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditFee" data-id="' . $row->id . '"  class="edit dropdown-item">Bayar Fee</a>' : NULL;
+          $fee_coa_id = !$row->fee_coa_id && $row->total_fee_thanks > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditFee" data-id="' . $row->id . '"  class="edit dropdown-item">Bayar Fee</a>' : NULL;
           $actionBtn = '
             <div class="dropdown">
                   <button class="btn btn-secondary dropdown-toggle" type = "button" id = "dropdownMenuButton" data-toggle = "dropdown" aria-haspopup = "true" aria-expanded = "false" >
@@ -164,7 +172,7 @@ class InvoiceCostumerController extends Controller
 //            'code_ref' => $data->id,
 //            'description' => "Beban pembayaran pajak jo pelanggan $costumer->name"
 //          ]);
-          if($request->input('total_cut')){
+          if ($request->input('total_cut')) {
             Journal::create([
               'coa_id' => 46,
               'date_journal' => $request->input('payment.date_payment'),
@@ -353,7 +361,8 @@ class InvoiceCostumerController extends Controller
     $data = json_decode($request->data);
     $response = NULL;
     if ($request->data) {
-      $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->whereIn('id', $data)->get();
+      $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        ->whereIn('id', $data)->get();
 
       $response = response()->json([
         'data' => $result,
@@ -380,12 +389,12 @@ class InvoiceCostumerController extends Controller
         DB::beginTransaction();
         $data = InvoiceCostumer::findOrFail($id);
         $coa = Coa::findOrFail($request->input('coa_id'));
-        $type = $request->input('type')  == 'tax' ? 'Pajak' : 'Fee';
-        if($request->input('type') == 'tax'){
+        $type = $request->input('type') == 'tax' ? 'Pajak' : 'Fee';
+        if ($request->input('type') == 'tax') {
           $data->update([
             'tax_coa_id' => $request->input('coa_id')
           ]);
-        }else{
+        } else {
           $data->update([
             'fee_coa_id' => $request->input('coa_id')
           ]);

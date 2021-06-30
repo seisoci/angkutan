@@ -10,11 +10,14 @@ use DataTables;
 
 class RouteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+  function __construct()
+  {
+    $this->middleware('permission:routes-list|routes-create|routes-edit|routes-delete', ['only' => ['index']]);
+    $this->middleware('permission:routes-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:routes-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:routes-delete', ['only' => ['destroy']]);
+  }
+
     public function index(Request $request)
     {
       $config['page_title']       = "List Rute";
@@ -36,12 +39,6 @@ class RouteController extends Controller
       return view('backend.masteroperational.routes.index', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
@@ -62,13 +59,6 @@ class RouteController extends Controller
       return $response;
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Route  $route
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
       $validator = Validator::make($request->all(), [
@@ -90,12 +80,6 @@ class RouteController extends Controller
       return $response;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Route  $route
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
       $response = response()->json([

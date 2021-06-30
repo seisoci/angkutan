@@ -13,6 +13,12 @@ use Validator;
 
 class OperationalExpenseController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:joborders-list|joborders-create|joborders-edit|joborders-delete', ['only' => ['index']]);
+    $this->middleware('permission:joborders-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:joborders-delete', ['only' => ['destroy']]);
+  }
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [

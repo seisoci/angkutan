@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Validator;
 
 class EmployessSalaryController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:employeessalary-list|employeessalary-create|employeessalary-edit|employeessalary-delete', ['only' => ['index']]);
+    $this->middleware('permission:employeessalary-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:employeessalary-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:employeessalary-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Gaji Karyawaan";

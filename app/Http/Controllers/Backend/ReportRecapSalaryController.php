@@ -19,6 +19,11 @@ class ReportRecapSalaryController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportrecapsalaries-list|reportrecapsalaries-create|reportrecapsalaries-edit|reportrecapsalaries-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Rekap Gaji Supir";
@@ -91,8 +96,8 @@ class ReportRecapSalaryController extends Controller
         '))
         ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
         ->leftJoin('drivers', 'drivers.id', '=', 'job_orders.driver_id')
-        ->where('type','self')
-        ->where('job_orders.status_cargo','selesai')
+        ->where('type', 'self')
+        ->where('job_orders.status_cargo', 'selesai')
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $date_format[0];
@@ -182,8 +187,8 @@ class ReportRecapSalaryController extends Controller
         '))
       ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'job_orders.driver_id')
-      ->where('type','self')
-      ->where('job_orders.status_cargo','selesai')
+      ->where('type', 'self')
+      ->where('job_orders.status_cargo', 'selesai')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];
@@ -414,8 +419,8 @@ class ReportRecapSalaryController extends Controller
         '))
       ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'job_orders.driver_id')
-      ->where('type','self')
-      ->where('job_orders.status_cargo','selesai')
+      ->where('type', 'self')
+      ->where('job_orders.status_cargo', 'selesai')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];

@@ -18,6 +18,14 @@ use Validator;
 
 class InvoiceSalaryController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:invoicesalaries-list|invoicesalaries-create|invoicesalaries-edit|invoicesalaries-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoicesalaries-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoicesalaries-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoicesalaries-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Invoice Gaji Supir";

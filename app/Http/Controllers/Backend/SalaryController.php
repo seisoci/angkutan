@@ -9,11 +9,14 @@ use DataTables;
 
 class SalaryController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
+  function __construct()
+  {
+    $this->middleware('permission:salaries-list|salaries-create|salaries-edit|salaries-delete', ['only' => ['index']]);
+    $this->middleware('permission:salaries-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:salaries-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:salaries-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Gaji Supir";
@@ -76,6 +79,4 @@ class SalaryController extends Controller
     }
     return view('backend.operational.salaries.index', compact('config', 'page_breadcrumbs'));
   }
-
-
 }

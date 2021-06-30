@@ -293,7 +293,7 @@
           '<td style="width: 225px"><select class="form-control select2Invoice" name="items[stock_id][]"' +
           '   style="width: 225px"></select></td>' +
           '<td><input type="text" name="items[qty_system][]" class="form-control rounded-0 unit" disabled/></td>' +
-          '<td><input type="hidden" name="items[price][]"><input type="number" min="1" name="items[qty][]" class="unit rounded-0 form-control"/>' +
+          '<td><input type="hidden" name="items[invoice_purchase_id][]"><input type="hidden" name="items[price][]"><input type="number" min="1" name="items[qty][]" class="unit rounded-0 form-control"/>' +
           '</td>';
       }
 

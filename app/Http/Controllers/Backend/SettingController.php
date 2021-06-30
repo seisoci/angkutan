@@ -10,6 +10,11 @@ use Validator;
 
 class SettingController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:settings-list|settings-create|settings-edit|settings-delete', ['only' => ['index']]);
+    $this->middleware('permission:settings-create', ['only' => ['create', 'store']]);
+  }
 
     public function index()
     {

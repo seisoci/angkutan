@@ -113,6 +113,16 @@
           @endforeach
         </tbody>
       </table>
+      <div class="d-flex justify-content-around mt-20">
+        <div class="mr-20">
+          <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+          <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  auth()->user()->name }}</u></h5>
+        </div>
+        <div class="ml-20">
+          <h4  class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+          <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  $data->driver->name }}</u></h5>
+        </div>
+      </div>
     </div>
   </div>
 </body>

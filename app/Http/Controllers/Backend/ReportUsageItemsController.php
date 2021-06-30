@@ -22,6 +22,11 @@ class ReportUsageItemsController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportusageitems-list|reportusageitems-create|reportusageitems-edit|reportusageitems-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Pemakaian Barang";

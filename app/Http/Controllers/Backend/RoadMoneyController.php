@@ -17,11 +17,14 @@ use Route;
 
 class RoadMoneyController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
+  function __construct()
+  {
+    $this->middleware('permission:roadmonies-list|roadmonies-create|roadmonies-edit|roadmonies-delete', ['only' => ['index']]);
+    $this->middleware('permission:roadmonies-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:roadmonies-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:roadmonies-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     //TODO: HAPUS FIELD INVOICE (TIDAK TERPAKAI)
@@ -49,11 +52,6 @@ class RoadMoneyController extends Controller
     return view('backend.masteroperational.roadmonies.index', compact('config', 'page_breadcrumbs'));
   }
 
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
   public function create()
   {
     $config['page_title'] = "Create Uang Jalan";
@@ -64,12 +62,6 @@ class RoadMoneyController extends Controller
     return view('backend.masteroperational.roadmonies.create', compact('config', 'page_breadcrumbs'));
   }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
@@ -121,12 +113,6 @@ class RoadMoneyController extends Controller
     return $response;
   }
 
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param  \App\Models\RoadMoney  $roadMoney
-   * @return \Illuminate\Http\Response
-   */
   public function edit($id)
   {
     $config['page_title'] = "Edit Uang Jalan";
@@ -139,13 +125,6 @@ class RoadMoneyController extends Controller
     return view('backend.masteroperational.roadmonies.edit',compact('config', 'page_breadcrumbs', 'data'));
   }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  \App\Models\RoadMoney  $roadMoney
-   * @return \Illuminate\Http\Response
-   */
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
@@ -186,12 +165,6 @@ class RoadMoneyController extends Controller
     return $response;
   }
 
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  \App\Models\RoadMoney  $roadMoney
-   * @return \Illuminate\Http\Response
-   */
   public function destroy($id)
   {
     $response = response()->json([

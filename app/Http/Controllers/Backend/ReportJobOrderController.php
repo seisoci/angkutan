@@ -19,6 +19,11 @@ class ReportJobOrderController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportjoborders-list|reportjoborders-create|reportjoborders-edit|reportjoborders-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Tagihan Job Order";

@@ -10,6 +10,14 @@ use DataTables;
 
 class EmployeeMasterController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:monthlymaster-list|monthlymaster-create|monthlymaster-edit|monthlymaster-delete', ['only' => ['index']]);
+    $this->middleware('permission:monthlymaster-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:monthlymaster-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:monthlymaster-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Tipe Gaji";

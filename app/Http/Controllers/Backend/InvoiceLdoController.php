@@ -19,6 +19,14 @@ use Validator;
 
 class InvoiceLdoController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:invoiceldo-list|invoiceldo-create|invoiceldo-edit|invoiceldo-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoiceldo-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoiceldo-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoiceldo-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Invoice LDO";
@@ -68,7 +76,8 @@ class InvoiceLdoController extends Controller
     $route_from = $request->route_from;
     $cargo_id = $request->cargo_id;
     if ($request->ajax()) {
-      $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->withSum('operationalexpense', 'amount')
+      $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        ->withSum('operationalexpense', 'amount')
         ->where('status_payment_ldo', '0')
         ->where('status_cargo', 'selesai')
         ->where('another_expedition_id', '!=', 'NULL')
@@ -220,7 +229,10 @@ class InvoiceLdoController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = InvoiceLdo::with(['joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])->findOrFail($id);
+    $data = InvoiceLdo::with(['joborders' => function($q){
+      $q->withSum('operationalexpense', 'amount');
+    }, 'joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])
+      ->findOrFail($id);
 
     return view('backend.invoice.invoiceldo.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
@@ -236,7 +248,9 @@ class InvoiceLdoController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = InvoiceLdo::with(['joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])->findOrFail($id);
+    $data = InvoiceLdo::with(['joborders' => function($q){
+      $q->withSum('operationalexpense', 'amount');
+    },'joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])->findOrFail($id);
 
     return view('backend.invoice.invoiceldo.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
@@ -249,7 +263,9 @@ class InvoiceLdoController extends Controller
       ['page' => '#', 'title' => "Detail Detail Pembayaran Pelanggan"],
     ];
     $data = InvoiceLdo::select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
-      ->with(['joborders', 'anotherexpedition', 'paymentldos.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
+      ->with(['joborders' => function ($q) {
+        $q->withSum('operationalexpense', 'amount');
+      }, 'anotherexpedition', 'paymentldos.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
       ->findOrFail($id);
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoiceldo')->sole();
     return view('backend.invoice.invoiceldo.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
@@ -351,7 +367,24 @@ class InvoiceLdoController extends Controller
 
   public function datatabledetail($id)
   {
-    $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->withSum('operationalexpense', 'amount')->where('invoice_ldo_id', $id);
+    $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+      ->withSum('operationalexpense', 'amount')->where('invoice_ldo_id', $id);
     return Datatables::of($data)->make(true);
+  }
+
+  public function findbypk(Request $request)
+  {
+    $data = json_decode($request->data);
+    $response = NULL;
+    if ($request->data) {
+      $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        ->withSum('operationalexpense', 'amount')
+        ->whereIn('id', $data)->get();
+
+      $response = response()->json([
+        'data' => $result,
+      ]);
+    }
+    return $response;
   }
 }

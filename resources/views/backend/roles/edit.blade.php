@@ -49,9 +49,9 @@
                       <td>{{ $key }}</td>
                       @foreach($item as $keyChild => $item_child)
                         <td class="text-center">
-                          <label class="col-3 col-form-label row"
+                          <label class="form-label row justify-content-center"
                                  for="{{ $item_child['id'] }}">{{ ucwords($item_child['name']) }}</label>
-                          <div class="col-3 row">
+                          <div class="row justify-content-center">
                            <span class="switch switch-sm">
                             <label>
                                <input id="{{ $item_child['id'] }}" type="checkbox" name="permission[]"
@@ -69,18 +69,6 @@
                 </table>
               </div>
             </div>
-
-            {{--            <div class="form-group">--}}
-            {{--              <div class="checkbox-list">--}}
-            {{--                @foreach($listPermission as $value)--}}
-            {{--                  <label class="checkbox">--}}
-            {{--                    <input type="checkbox" name="permission[]" value="{{ $value->id }}"--}}
-            {{--                      {{ in_array($value->id, $rolePermissions) ? 'checked' : NULL }} />--}}
-            {{--                    {{ ucwords($value->name) }}--}}
-            {{--                  </label>--}}
-            {{--                @endforeach--}}
-            {{--              </div>--}}
-            {{--            </div>--}}
             <div class="card-footer">
               <button type="submit" class="btn btn-primary mr-2">Submit</button>
               <button type="button" class="btn btn-secondary" onclick="window.history.back();">Cancel</button>

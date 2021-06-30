@@ -12,6 +12,11 @@ class ReportSparepartController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportsparepart-list|reportsparepart-create|reportsparepart-edit|reportsparepart-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Pemakaian Sparepart";

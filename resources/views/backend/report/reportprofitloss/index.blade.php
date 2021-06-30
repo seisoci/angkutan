@@ -12,13 +12,53 @@
           <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
       </div>
       <div class="card-toolbar">
+        <div class="dropdown dropdown-inline mr-2">
+          <button type="button" class="btn btn-light-primary font-weight-bolder dropdown-toggle" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
+            <span class="svg-icon svg-icon-md">
+              <!--begin::Svg Icon | path:/metronic/theme/html/demo1/dist/assets/media/svg/icons/Design/PenAndRuller.svg-->
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                   width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                  <rect x="0" y="0" width="24" height="24"></rect>
+                  <path
+                    d="M3,16 L5,16 C5.55228475,16 6,15.5522847 6,15 C6,14.4477153 5.55228475,14 5,14 L3,14 L3,12 L5,12 C5.55228475,12 6,11.5522847 6,11 C6,10.4477153 5.55228475,10 5,10 L3,10 L3,8 L5,8 C5.55228475,8 6,7.55228475 6,7 C6,6.44771525 5.55228475,6 5,6 L3,6 L3,4 C3,3.44771525 3.44771525,3 4,3 L10,3 C10.5522847,3 11,3.44771525 11,4 L11,19 C11,19.5522847 10.5522847,20 10,20 L4,20 C3.44771525,20 3,19.5522847 3,19 L3,16 Z"
+                    fill="#000000" opacity="0.3"></path>
+                  <path
+                    d="M16,3 L19,3 C20.1045695,3 21,3.8954305 21,5 L21,15.2485298 C21,15.7329761 20.8241635,16.200956 20.5051534,16.565539 L17.8762883,19.5699562 C17.6944473,19.7777745 17.378566,19.7988332 17.1707477,19.6169922 C17.1540423,19.602375 17.1383289,19.5866616 17.1237117,19.5699562 L14.4948466,16.565539 C14.1758365,16.200956 14,15.7329761 14,15.2485298 L14,5 C14,3.8954305 14.8954305,3 16,3 Z"
+                    fill="#000000"></path>
+                </g>
+              </svg>
+              <!--end::Svg Icon-->
+            </span>Export
+          </button>
+          <!--begin::Dropdown Menu-->
+          <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+            <!--begin::Navigation-->
+            <ul class="navi flex-column navi-hover py-2">
+              <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">Choose an
+                option:
+              </li>
+              <li class="navi-item">
+                <a href="#" id="btn_excel" class="navi-link">
+                  <span class="navi-icon">
+                    <i class="la la-file-excel-o"></i>
+                  </span>
+                  <span class="navi-text">Excel</span>
+                </a>
+              </li>
+            </ul>
+            <!--end::Navigation-->
+          </div>
+          <!--end::Dropdown Menu-->
+        </div>
       </div>
     </div>
     <div class="card-body">
       <div class="mb-10">
-        <form action="{{ route('backend.ledger.index') }}" method="GET">
+        <form action="{{ route('backend.profitloss.index') }}" method="GET">
           <div class="card">
-            <h5 class="card-header bg-primary-o-60">Featured</h5>
+            <h5 class="card-header bg-primary-o-60">{{ $config['page_title'] }}</h5>
             <div class="card-body">
               <div class="row align-items-center">
                 <div class="col-12">
@@ -33,7 +73,8 @@
 											    <i class="la la-calendar-check-o"></i>
                         </span>
                             </div>
-                            <input type="text" class="form-control" name="date_begin" id="dateBegin" readonly/>
+                            <input type="text" class="form-control" name="date_begin" id="dateBegin"
+                                   value="{{ $date ?? NULL }}" readonly/>
                           </div>
                         </div>
                       </div>
@@ -51,22 +92,58 @@
 
       <!--begin: Datatable-->
       <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-borderless">
           <thead>
           <tr>
-            <th scope="col">Laporan Laba Rugi</th>
+            <th scope="col" colspan="2" class="text-center">Laporan Laba Rugi</th>
           </tr>
           <tr>
-            <th scope="col">Untuk Bulan </th>
+            <th scope="col" colspan="2" class="text-center">Priode {{ $date }}</th>
           </tr>
           <tbody>
           <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
+            <th scope="col" colspan="2" class="font-weight-bolder">Pendapatan</th>
           </tr>
+          @foreach($pendapatan as $item)
+            <tr>
+              <td class="font-weight-bold">{{ $item->name }}</td>
+              <td class="font-weight-bold text-right">{{ number_format($item->saldo ?? 0, 2, '.',',') }}</td>
+            </tr>
+            @if($loop->last)
+              <tr>
+                <td class="font-weight-bold text-success">Total Pendapatan</td>
+                <td
+                  class="font-weight-bolder text-right text-success">{{ number_format($pendapatan->sum('saldo') ?? 0, 2, '.',',') }}</td>
+              </tr>
+            @endif
+          @endforeach
+          <tr>
+            <th colspan="2"></th>
+          </tr>
+          <tr>
+            <th scope="col" colspan="2" class="font-weight-bolder">Beban</th>
+          </tr>
+          @foreach($beban as $item)
+            <tr>
+              <td class="font-weight-bold">{{ $item->name }}</td>
+              <td class="font-weight-bolder text-right">{{ number_format($item->saldo ?? 0, 2, '.',',') }}</td>
+            </tr>
+            @if($loop->last)
+              <tr>
+                <td class="font-weight-bold text-danger">Total Beban</td>
+                <td
+                  class="font-weight-bolder text-right text-danger">{{ number_format($beban->sum('saldo') ?? 0, 2, '.',',') }}</td>
+              </tr>
+            @endif
+          @endforeach
           </tbody>
+          <tfoot>
+          <tr>
+            <td class="font-weight-bolder text-success">Pendapatan Bersih</td>
+            <td
+              class="font-weight-bolder text-right {{ ($pendapatan->sum('saldo') - $beban->sum('saldo')) > 0 ? 'text-success' : 'text-danger' }}">{{ number_format(($pendapatan->sum('saldo') - $beban->sum('saldo')) ?? 0, 2, '.',',') }}</td>
+          </tr>
+          </tfoot>
         </table>
       </div>
     </div>
@@ -78,11 +155,15 @@
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
   <style>
     .table thead th {
-      font-size: 0.80rem !important;
+      font-size: 1rem !important;
     }
 
-    .table tbody td {
-      font-size: 0.75rem !important;
+    .table tbody th, .table tbody td {
+      font-size: 1rem !important;
+    }
+
+    table {
+      border: 1px solid #3f4254;
     }
   </style>
 @endsection
@@ -94,6 +175,13 @@
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
+      $('#btn_excel').on('click', function (e) {
+        e.preventDefault();
+        let params = new URLSearchParams({
+          date_begin: $("input[name=date_begin]").val(),
+        });
+        window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
+      });
 
       $('#dateBegin').datepicker({
         format: 'M yyyy',

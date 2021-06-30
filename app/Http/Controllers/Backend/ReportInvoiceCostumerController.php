@@ -20,6 +20,11 @@ class ReportInvoiceCostumerController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportinvoicecostumers-list|reportinvoicecostumers-create|reportinvoicecostumers-edit|reportinvoicecostumers-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Invoice Pelanggan & Fee";

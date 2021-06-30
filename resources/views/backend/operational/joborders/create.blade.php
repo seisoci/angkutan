@@ -445,6 +445,8 @@
         $("#select2RoadTo").trigger("change");
         $("#select2TypeCapacity").val("");
         $("#select2TypeCapacity").trigger("change");
+        $('.basicprice').val('');
+        $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
         $('#selectTypeOngkosan').val('');
         $('#convertToTon').val('');
@@ -485,6 +487,8 @@
         $("#select2Cargo").trigger("change");
         $("#select2TypeCapacity").val("");
         $("#select2TypeCapacity").trigger("change");
+        $('.basicprice').val('');
+        $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
         $('#selectTypeOngkosan').val('');
         $('#convertToTon').val('');
@@ -524,6 +528,8 @@
         $("#select2Cargo").trigger("change");
         $("#select2TypeCapacity").val("");
         $("#select2TypeCapacity").trigger("change");
+        $('.basicprice').val('');
+        $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
         $('#selectTypeOngkosan').val('');
         $('#convertToTon').val('');
@@ -565,6 +571,8 @@
         $("#select2TypeCapacity").trigger("change");
         $('#selectTypeOngkosan').val('');
         $('#selectTypeOngkosan').val('');
+        $('.basicprice').val('');
+        $('#totalpayloadldo').val('');
         $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');
@@ -598,6 +606,8 @@
       }).on('change', function () {
         $('#selectTypeOngkosan').val('');
         $('#selectTypeOngkosan').val('');
+        $('.basicprice').val('');
+        $('#totalpayloadldo').val('');
         $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');
@@ -611,6 +621,8 @@
       });
 
       $('#selectTypeOngkosan').on('change', function () {
+        $('.basicprice').val('');
+        $('#totalpayloadldo').val('');
         $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');

@@ -20,6 +20,13 @@ use Validator;
 
 class InvoiceReturPurchaseController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:invoicereturpurchases-list|invoicereturpurchases-create|invoicereturpurchases-edit|invoicereturpurchases-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoicereturpurchases-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoicereturpurchases-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoicereturpurchases-delete', ['only' => ['destroy']]);
+  }
 
   public function index(Request $request)
   {
@@ -78,7 +85,6 @@ class InvoiceReturPurchaseController extends Controller
     ]);
 
 
-
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
@@ -87,19 +93,19 @@ class InvoiceReturPurchaseController extends Controller
         $discountPO = $request->input('discountPO') ?? 0;
         $items = $request->items;
         $prefix = Prefix::find($request->prefix);
-        $supplier = SupplierSparepart::findOrFail($request->supplier_sparepart_id);
-        $coa = Coa::findOrFail($request->coa_id);
+        $supplier = SupplierSparepart::findOrFail($request->input('supplier_sparepart_id'));
+        $coa = Coa::findOrFail($request->input('coa_id'));
 
         foreach ($items['sparepart_id'] as $key => $item):
           $totalPayment += $items['qty'][$key] * $items['price'][$key];
         endforeach;
-        if(!($discount <= $discountPO))
-        {
+        if (!($discount <= $discountPO)) {
           return response()->json([
             'status' => 'errors',
             'message' => 'Potong dari diskon tidak boleh melebihi total diskon pembelian',
           ]);
         }
+
         $invoice = InvoiceReturPurchase::create([
           'supplier_sparepart_id' => $request->input('supplier_sparepart_id'),
           'invoice_purchase_id' => $request->input('invoice_purchase_id'),
@@ -110,7 +116,7 @@ class InvoiceReturPurchaseController extends Controller
           'total_payment' => $totalPayment,
         ]);
 
-        if($discount > 0){
+        if ($discount > 0) {
           Journal::create([
             'coa_id' => 42,
             'date_journal' => $request->input('invoice_date'),
@@ -151,7 +157,7 @@ class InvoiceReturPurchaseController extends Controller
             'price' => $items['price'][$key],
           ]);
 
-          $stockSummary = Stock::where('sparepart_id',$items['sparepart_id'][$key])->where('invoice_purchase_id', $request->invoice_purchase_id)->firstOrFail();
+          $stockSummary = Stock::where('sparepart_id', $items['sparepart_id'][$key])->where('invoice_purchase_id', $request->invoice_purchase_id)->firstOrFail();
           $stockSummary->decrement('qty', $items['qty'][$key]);
         endforeach;
 

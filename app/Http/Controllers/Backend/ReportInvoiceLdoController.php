@@ -20,6 +20,11 @@ class ReportInvoiceLdoController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:reportinvoiceldo-list|reportinvoiceldo-create|reportinvoiceldo-edit|reportinvoiceldo-delete', ['only' => ['index']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Invoice Ldo";
@@ -331,7 +336,6 @@ class ReportInvoiceLdoController extends Controller
     $writer->save('php://output');
     exit();
   }
-
 
   public function datatabledetail($id)
   {

@@ -17,6 +17,14 @@ use Validator;
 
 class InvoiceUsageItemController extends Controller
 {
+  function __construct()
+  {
+    $this->middleware('permission:invoiceusageitems-list|invoiceusageitems-create|invoiceusageitems-edit|invoiceusageitems-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoiceusageitems-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoiceusageitems-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoiceusageitems-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Pemakaian Barang";
@@ -77,20 +85,20 @@ class InvoiceUsageItemController extends Controller
         DB::beginTransaction();
         $grandTotal = 0;
         $items = $request->items;
-        $prefix = Prefix::findOrFail($request->prefix);
+        $prefix = Prefix::findOrFail($request->input('prefix'));
         foreach ($items['sparepart_id'] as $key => $item):
           $grandTotal += $items['qty'][$key] * $items['price'][$key];
         endforeach;
         $invoiceUsageItem = InvoiceUsageItem::create([
-          'num_bill' => $request->num_bill,
+          'num_bill' => $request->input('num_bill'),
           'prefix' => $prefix->name,
-          'invoice_date' => $request->invoice_date,
-          'driver_id' => $request->driver_id,
-          'transport_id' => $request->transport_id,
-          'type' => $request->type,
+          'invoice_date' => $request->input('invoice_date'),
+          'driver_id' => $request->input('driver_id'),
+          'transport_id' => $request->input('transport_id'),
+          'type' => $request->input('type'),
           'total_payment' => $grandTotal,
         ]);
-        $driver = Driver::findOrFail($request->driver_id);
+        $driver = Driver::findOrFail($request->input('driver_id'));
         foreach ($items['sparepart_id'] as $key => $item):
           $stock = Stock::findOrFail($items['stock_id'][$key]);
           $totalPrice = $items['qty'][$key] * $items['price'][$key];

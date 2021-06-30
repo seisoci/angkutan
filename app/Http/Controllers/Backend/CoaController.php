@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Validator;
 class CoaController extends Controller
 {
 
+  function __construct()
+  {
+    $this->middleware('permission:coas-list|coas-create|coas-edit|coas-delete', ['only' => ['index']]);
+    $this->middleware('permission:coas-create', ['only' => ['create', 'store']]);
+  }
+
   public function index()
   {
     $config['page_title'] = "Master Akun COA";

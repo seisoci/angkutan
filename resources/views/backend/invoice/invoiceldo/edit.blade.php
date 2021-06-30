@@ -95,9 +95,9 @@
                   <td>{{ $item->routeto->name }}</td>
                   <td>{{ $item->cargo->name }}</td>
                   <td class="text-right currency">{{ $item->basic_price_ldo }}</td>
-                  <td class="text-right">{{ $item->payload }}</td>
-                  <td class="text-center">{{ $item->total_basic_price_ldo }}</td>
-                  <td class="text-center">{{ $item->total_operational }}</td>
+                  <td class="text-right currency">{{ $item->payload }}</td>
+                  <td class="text-center currency">{{ $item->total_basic_price_ldo }}</td>
+                  <td class="text-center currency">{{ $item->total_operational }}</td>
                   <td class="text-right currency">{{ $item->total_netto_ldo }}</td>
                 </tr>
               @endforeach
@@ -158,6 +158,8 @@
                 <td colspan="4" class="text-right">Total Pemotongan</td>
                 <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control"
                                               value="{{ $data->total_cut }}" disabled>
+                  <input type="hidden" name="total_cut" class="currency rounded-0 form-control"
+                         value="{{ $data->total_cut }}">
                 </td>
               </tr>
               <tr>

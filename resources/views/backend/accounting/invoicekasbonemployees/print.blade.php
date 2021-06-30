@@ -70,7 +70,7 @@
 <body>
 <div class="row justify-content-center py-8 px-8 px-md-0">
   <div class="col-md-11">
-    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Kasbon Karyawaan</u></h2>
+    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Invoice Kasbon Karyawaan</u></h2>
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
@@ -79,21 +79,21 @@
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="padding-left:4rem;width:20%">No. Kasbon</td>
         <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
+        <td scope="col" class="text-left" style="width:20%"> {{ $data->num_invoice }}</td>
       </tr>
       <tr>
         <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Nama Karyawaan</td>
         <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $data->employee->name }}</td>
+        <td scope="col" class="text-left" style="width:20%"> {{ $data->employee->name }}</td>
       </tr>
       <tr>
         <td scope="col">{{ $profile['telp'] ?? ''}}</td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
         <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
+        <td scope="col" class="text-left" style="width:20%"> {{ $data->created_at }}</td>
       </tr>
       <tr>
         <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
@@ -163,6 +163,16 @@
       </tr>
       </tbody>
     </table>
+    <div class="d-flex justify-content-around mt-20">
+      <div class="mr-20">
+        <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  auth()->user()->name }}</u></h5>
+      </div>
+      <div class="ml-20">
+        <h4  class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  $data->employee->name }}</u></h5>
+      </div>
+    </div>
   </div>
 </div>
 </body>

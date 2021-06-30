@@ -23,6 +23,14 @@ class InvoiceKasbonEmployeeController extends Controller
 {
   use CarbonTrait;
 
+  function __construct()
+  {
+    $this->middleware('permission:invoicekasbonemployees-list|invoicekasbonemployees-create|invoicekasbonemployees-edit|invoicekasbonemployees-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoicekasbonemployees-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoicekasbonemployees-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoicekasbonemployees-delete', ['only' => ['destroy']]);
+  }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Invoice Kasbon Karyawaan";

@@ -21,6 +21,8 @@ use Validator;
 
 class InvoiceKasbonController extends Controller
 {
+
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Invoice Kasbon Supir";
@@ -142,7 +144,7 @@ class InvoiceKasbonController extends Controller
           ]);
 
           Journal::create([
-            'coa_id' => 8,
+            'coa_id' => 7,
             'date_journal' => $payments['date'][$key],
             'debit' => 0,
             'kredit' => $payments['payment'][$key],
@@ -269,7 +271,7 @@ class InvoiceKasbonController extends Controller
           ]);
 
           Journal::create([
-            'coa_id' => 8,
+            'coa_id' => 7,
             'date_journal' => $payments['date'][$key],
             'debit' => 0,
             'kredit' => $payments['payment'][$key],
