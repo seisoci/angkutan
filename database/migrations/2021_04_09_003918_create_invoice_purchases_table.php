@@ -17,7 +17,10 @@ class CreateInvoicePurchasesTable extends Migration
           $table->id();
           $table->string('num_bill')->unique();
           $table->string('prefix');
-          $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
+          $table->foreignId('supplier_sparepart_id')
+            ->constrained('supplier_spareparts')
+            ->onUpdate('cascade')
+            ->onDelete('cascade');
           $table->date('invoice_date');
           $table->date('due_date');
           $table->decimal('discount', 15, 2)->default(0);

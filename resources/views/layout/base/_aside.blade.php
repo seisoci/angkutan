@@ -47,16 +47,7 @@
       {{ Metronic::printAttrs('aside_menu') }}>
 
       <ul class="menu-nav {{ Metronic::printClasses('aside_menu_nav', false) }}">
-        @php
-          $data =  DB::table("role_has_permissions")
-->select(DB::raw('SUBSTRING_INDEX(`permissions`.`name`, "-", 1) as name'))
-->where("role_has_permissions.role_id", Auth::user()->roles()->firstOrFail()->id)
-->leftJoin('permissions', 'role_has_permissions.permission_id', '=', 'permissions.id')
-->groupBy('permissions.title')
-->pluck('name')
-->all();
-        @endphp
-        {{ Menu::renderVerMenu((['items'=>config('menu_aside.items'), 'permissions' => $data, 'role' => Auth::user()->roles()->firstOrFail()->name])) }}
+        {{ Menu::renderVerMenu((['items'=>config('menu_aside.items'), 'permissions' => $permissionUser, 'role' => $roleUser])) }}
       </ul>
     </div>
   </div>

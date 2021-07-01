@@ -16,7 +16,7 @@ class CreateRoadmoneyTypecapacity extends Migration
         Schema::create('roadmoney_typecapacity', function (Blueprint $table) {
             $table->id();
             $table->foreignId('road_money_id')->constrained('road_money')->onDelete('cascade');
-            $table->foreignId('type_capacity_id')->constrained('type_capacities');
+            $table->foreignId('type_capacity_id')->constrained('type_capacities')->onDelete('cascade');
             $table->decimal('road_engkel', 15, 2)->nullable();
             $table->decimal('road_tronton', 15, 2)->nullable();
             $table->string('type')->nullable();

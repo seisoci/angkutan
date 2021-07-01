@@ -17,9 +17,11 @@ class CreateInvoiceReturPurchasesTable extends Migration
           $table->id();
           $table->string('num_bill')->unique();
           $table->string('prefix');
-          $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
+          $table->foreignId('invoice_purchase_id')->constrained('invoice_purchases');
+          $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts')->cascadeOnUpdate();
           $table->date('invoice_date')->nullable();
           $table->decimal('total_payment', 15, 2);
+          $table->decimal('discount', 15, 2)->default('0');
           $table->timestamps();
         });
     }

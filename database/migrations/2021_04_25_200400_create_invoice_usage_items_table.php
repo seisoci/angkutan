@@ -18,8 +18,8 @@ class CreateInvoiceUsageItemsTable extends Migration
       $table->string('num_bill')->unique();
       $table->string('prefix');
       $table->date('invoice_date');
-      $table->foreignId('driver_id')->constrained('drivers');
-      $table->foreignId('transport_id')->constrained('transports');
+      $table->foreignId('driver_id')->constrained('drivers')->cascadeOnUpdate();
+      $table->foreignId('transport_id')->constrained('transports')->cascadeOnUpdate();
       $table->enum('type', ['self', 'outside'])->default('self');
       $table->decimal('total_payment', 15, 2)->nullable();
       $table->timestamps();

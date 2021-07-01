@@ -15,7 +15,10 @@ class CreatePurchasePaymentsTable extends Migration
     {
         Schema::create('purchase_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('invoice_purchase_id')->constrained('invoice_purchases');
+            $table->foreignId('invoice_purchase_id')
+              ->constrained('invoice_purchases')
+              ->onUpdate('cascade')
+              ->onDelete('cascade');
             $table->date('date_payment');
             $table->decimal('payment', 15, 2);
             $table->timestamps();

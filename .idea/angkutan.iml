@@ -152,6 +152,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpoption/phpoption" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/tijsverkoyen/css-to-inline-styles" />
       <excludeFolder url="file://$MODULE_DIR$/storage" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mike42/gfx-php" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mike42/escpos-php" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -15,8 +15,8 @@ class CreateOpnameDetailsTable extends Migration
     {
         Schema::create('opname_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('opname_id')->constrained('opnames');
-            $table->foreignId('sparepart_id')->constrained('spareparts');
+            $table->foreignId('opname_id')->constrained('opnames')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('sparepart_id')->constrained('spareparts')->cascadeOnUpdate();
             $table->integer('qty');
             $table->integer('qty_system');
             $table->integer('qty_difference');

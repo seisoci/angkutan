@@ -15,7 +15,8 @@ class CreatePaymentCostumersTable extends Migration
   {
     Schema::create('payment_costumers', function (Blueprint $table) {
       $table->id();
-      $table->foreignId('invoice_costumer_id')->references('id')->on('invoice_costumers');
+      $table->foreignId('invoice_costumer_id')->references('id')->on('invoice_costumers')->cascadeOnDelete();
+      $table->foreignId('coa_id')->references('coas')->on('coas')->cascadeOnUpdate();
       $table->date('date_payment');
       $table->decimal('payment', 15, 2);
       $table->string('description')->nullable();

@@ -17,8 +17,12 @@ class CreateInvoiceSalariesTable extends Migration
             $table->id();
             $table->string('num_bill')->unique();
             $table->string('prefix');
-            $table->foreignId('driver_id')->constrained('drivers');
-            $table->foreignId('transport_id')->constrained('transports');
+            $table->foreignId('driver_id')
+              ->constrained('drivers')
+              ->onUpdate('cascade');
+            $table->foreignId('transport_id')
+              ->constrained('transports')
+              ->onUpdate('cascade');
             $table->date('invoice_date');
             $table->decimal('grandtotal',15,2);
             $table->text('description')->nullable();

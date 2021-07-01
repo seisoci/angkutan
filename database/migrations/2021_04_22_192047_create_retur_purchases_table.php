@@ -15,9 +15,9 @@ class CreateReturPurchasesTable extends Migration
   {
     Schema::create('retur_purchases', function (Blueprint $table) {
       $table->id();
-      $table->foreignId('invoice_retur_purchase_id')->constrained('invoice_retur_purchases')->onDelete('cascade');
-      $table->foreignId('sparepart_id')->constrained('spareparts');
-      $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts');
+      $table->foreignId('invoice_retur_purchase_id')->constrained('invoice_retur_purchases')->cascadeOnDelete();
+      $table->foreignId('sparepart_id')->constrained('spareparts')->cascadeOnUpdate();
+      $table->foreignId('supplier_sparepart_id')->constrained('supplier_spareparts')->cascadeOnUpdate();
       $table->bigInteger('qty');
       $table->decimal('price', 15, 2);
       $table->timestamps();

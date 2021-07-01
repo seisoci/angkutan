@@ -15,8 +15,8 @@ class CreateOperationalExpensesTable extends Migration
     {
         Schema::create('operational_expenses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('job_order_id')->constrained('job_orders');
-            $table->foreignId('expense_id')->constrained('expenses');
+            $table->foreignId('job_order_id')->constrained('job_orders')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('expense_id')->constrained('expenses')->cascadeOnUpdate();
             $table->decimal('amount',15, 2);
             $table->string('description')->nullable();
             $table->timestamps();

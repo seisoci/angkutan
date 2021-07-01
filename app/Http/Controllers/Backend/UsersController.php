@@ -5,51 +5,51 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Fileupload;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
-use DataTables;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\File;
-use Spatie\Permission\Models\Role;
 use App\Rules\MatchOldPassword;
-use Validator;
 use Auth;
+use DataTables;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Validator;
 
 class UsersController extends Controller
 {
   function __construct()
   {
     $this->middleware('permission:user-list|user-create|user-edit|user-delete', ['only' => ['index']]);
-    $this->middleware('permission:user-create', ['only' => ['create','store']]);
-    $this->middleware('permission:user-edit', ['only' => ['edit','update']]);
+    $this->middleware('permission:user-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:user-edit', ['only' => ['edit', 'update']]);
     $this->middleware('permission:user-delete', ['only' => ['destroy']]);
   }
 
   public function index(Request $request)
   {
-    $config['page_title']       = "Users";
+    $config['page_title'] = "Users";
     $config['page_description'] = "Manage Users list";
     $page_breadcrumbs = [
-      ['page' => '#','title' => "List Users"],
+      ['page' => '#', 'title' => "List Users"],
     ];
 
     if ($request->ajax()) {
       $data = User::whereHas('roles', function ($query) {
-          return $query->where('name', '<>','super-admin');
+        return $query->where('name', '<>', 'super-admin');
       });
       return DataTables::of($data)
         ->addIndexColumn()
-        ->addColumn('action', function($row){
-            $actionBtn = '<a href="users/'.$row->id.'/edit" class="edit btn btn-success btn-sm">Edit</a>
-            <a href="#" data-toggle="modal" data-target="#modalReset" data-id="'. $row->id.'" class="btn btn-info btn-sm">Reset Password</a>
-            <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="'. $row->id.'" class="delete btn btn-danger btn-sm">Delete</a>';
-            return $actionBtn;
+        ->addColumn('action', function ($row) {
+          $actionBtn = '<a href="users/' . $row->id . '/edit" class="edit btn btn-success btn-sm">Edit</a>
+            <a href="#" data-toggle="modal" data-target="#modalReset" data-id="' . $row->id . '" class="btn btn-info btn-sm">Reset Password</a>
+            <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete btn btn-danger btn-sm">Delete</a>';
+          return $actionBtn;
         })
-        ->addColumn('roles', function($row){
-            return $row->getRoleNames()[0];
+        ->addColumn('roles', function ($row) {
+          return $row->getRoleNames()[0];
         })
-        ->editColumn('image', function(User $user){
-            return !empty($user->image) ? asset("/images/thumbnail/$user->image") : asset('media/users/blank.png');
+        ->editColumn('image', function (User $user) {
+          return !empty($user->image) ? asset("/images/thumbnail/$user->image") : asset('media/users/blank.png');
         })->make(true);
     }
     return view('backend.users.index', compact('config', 'page_breadcrumbs'));
@@ -59,8 +59,8 @@ class UsersController extends Controller
   {
     $config['page_title'] = "Create Users";
     $page_breadcrumbs = [
-      ['page' => '/backend/users','title' => "List Users"],
-      ['page' => '#','title' => "Create User"],
+      ['page' => '/backend/users', 'title' => "List Users"],
+      ['page' => '#', 'title' => "Create User"],
     ];
 
     $data = array(
@@ -72,29 +72,30 @@ class UsersController extends Controller
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'name'      => 'required',
-      'email'     => 'required|email',
-      'active'    => 'required|between:0,1',
-      'password'  => 'required|confirmed',
-      'role'      => 'required|string',
-      'profile_avatar'         => 'image|mimes:jpg,png,jpeg|max:2048',
-      'profile_avatar_remove'  => 'between:0,1,NULL'
+      'name' => 'required',
+      'email' => 'required|email',
+      'active' => 'required|between:0,1',
+      'password' => 'required|confirmed',
+      'role' => 'required|string',
+      'profile_avatar' => 'image|mimes:jpg,png,jpeg|max:2048',
+      'profile_avatar_remove' => 'between:0,1,NULL'
     ]);
 
-    if($validator->passes()){
+    if ($validator->passes()) {
       $image = NULL;
       $dimensions = [array('300', '300', 'thumbnail')];
       DB::beginTransaction();
       try {
-        if(isset($request->profile_avatar) && !empty($request->profile_avatar)){
+        if (isset($request->profile_avatar) && !empty($request->profile_avatar)) {
           $image = Fileupload::uploadImagePublic('profile_avatar', $dimensions, 'public');
         }
+
         $user = User::create([
-          'name'      => $request->input('name'),
-          'password'  => Hash::make($request->password),
-          'email'     => $request->input('email'),
-          'active'    => $request->input('active'),
-          'image'     => $image,
+          'name' => $request->input('name'),
+          'password' => Hash::make($request->password),
+          'email' => $request->input('email'),
+          'active' => $request->input('active'),
+          'image' => $image,
         ]);
 
         $user->assignRole($request->role);
@@ -113,8 +114,8 @@ class UsersController extends Controller
         ]);
 
       }
-    }else{
-      $response = response()->json(['error'=>$validator->errors()->all()]);
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
     }
     return $response;
   }
@@ -123,17 +124,17 @@ class UsersController extends Controller
   {
     $config['page_title'] = "Edit Users";
     $page_breadcrumbs = [
-      ['page' => '/backend/users','title' => "List Users"],
-      ['page' => '#','title' => "Edit User"],
+      ['page' => '/backend/users', 'title' => "List Users"],
+      ['page' => '#', 'title' => "Edit User"],
     ];
     $user = User::findOrFail($id);
     $userRole = $user->roles->first();
     $roles = Role::query()->select('name');
-    $roles->when($userRole->name == 'super-admin', function($q){
-      return $q->where('name', '=', 'super-admin')->pluck('name','name');
+    $roles->when($userRole->name == 'super-admin', function ($q) {
+      return $q->where('name', '=', 'super-admin')->pluck('name', 'name');
     });
-    $roles->when($userRole->name != 'super-admin', function($q){
-      return $q->where('name', '!=', 'super-admin')->pluck('name','name');
+    $roles->when($userRole->name != 'super-admin', function ($q) {
+      return $q->where('name', '!=', 'super-admin')->pluck('name', 'name');
     });
     $data = array(
       'user' => $user,
@@ -141,44 +142,44 @@ class UsersController extends Controller
       'userRole' => $userRole
     );
 
-    return view('backend.users.edit',compact('config', 'page_breadcrumbs', 'data'));
+    return view('backend.users.edit', compact('config', 'page_breadcrumbs', 'data'));
   }
 
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
-      'name'      => 'required',
-      'email'     => 'required|email',
-      'active'    => 'required|between:0,1',
-      'role'      => 'required|string',
-      'profile_avatar'         => 'image|mimes:jpg,png,jpeg|max:2048',
-      'profile_avatar_remove'  => 'between:0,1,NULL'
+      'name' => 'required',
+      'email' => 'required|email',
+      'active' => 'required|between:0,1',
+      'role' => 'required|string',
+      'profile_avatar' => 'image|mimes:jpg,png,jpeg|max:2048',
+      'profile_avatar_remove' => 'between:0,1,NULL'
     ]);
 
     $data = User::findOrFail($id);
     $userRole = $data->roles->first();
-    if($validator->passes()){
+    if ($validator->passes()) {
       $image = NULL;
       $dimensions = [array('300', '300', 'thumbnail')];
       DB::beginTransaction();
       try {
-        if(isset($request->profile_avatar) && !empty($request->profile_avatar)){
+        if (isset($request->profile_avatar) && !empty($request->profile_avatar)) {
           $image = Fileupload::uploadImagePublic('profile_avatar', $dimensions, 'public');
           File::delete(["images/original/$data->image", "images/thumbnail/$data->image"]);
         }
         $data->update([
-          'name'      => $request->input('name'),
-          'email'     => $request->input('email'),
-          'active'    => $request->input('active'),
-          'image'     => $image,
+          'name' => $request->input('name'),
+          'email' => $request->input('email'),
+          'active' => $request->input('active'),
+          'image' => $image,
         ]);
         $data->removeRole($userRole->name);
         $data->assignRole($request->role);
         DB::commit();
         $response = response()->json([
-            'status'   => 'success',
-            'message'  => 'Data has been saved',
-            'redirect' => '/backend/users'
+          'status' => 'success',
+          'message' => 'Data has been saved',
+          'redirect' => '/backend/users'
         ]);
       } catch (\Exception $e) {
         DB::rollback();
@@ -189,8 +190,8 @@ class UsersController extends Controller
         ]);
 
       }
-    }else{
-      $response = response()->json(['error'=>$validator->errors()->all()]);
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
     }
     return $response;
   }
@@ -199,53 +200,55 @@ class UsersController extends Controller
   {
     $data = User::find($id);
     File::delete(["images/original/$data->image", "images/thumbnail/$data->image"]);
-    if($data->delete()){
-        $response = response()->json([
-          'status' => 'success',
-          'message' => 'Data has been deleted',
-        ]);
+    if ($data->delete()) {
+      $response = response()->json([
+        'status' => 'success',
+        'message' => 'Data has been deleted',
+      ]);
     }
     return $response;
   }
 
-  public function resetpassword(Request $request){
+  public function resetpassword(Request $request)
+  {
     $validator = Validator::make($request->all(), [
-      'id'        => 'required|integer',
+      'id' => 'required|integer',
     ]);
 
-    if($validator->passes()){
+    if ($validator->passes()) {
       $data = User::find($request->id);
       $data->password = Hash::make($data->email);
-      if($data->save()){
+      if ($data->save()) {
         $response = response()->json([
           'status' => 'success',
           'message' => 'Data has been saved'
         ]);
       }
-    }else{
-      $response = response()->json(['error'=>$validator->errors()->all()]);
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
     }
     return $response;
   }
 
-  public function changepassword(Request $request){
+  public function changepassword(Request $request)
+  {
     $id = Auth::id();
     $validator = Validator::make($request->all(), [
       'old_password' => ['required', new MatchOldPassword($id)],
-      'password'     => 'required|between:6,255|confirmed',
+      'password' => 'required|between:6,255|confirmed',
     ]);
 
-    if($validator->passes()){
+    if ($validator->passes()) {
       $data = User::find($id);
       $data->password = Hash::make($request->password);
-      if($data->save()){
-          $response = response()->json([
-            'status' => 'success',
-            'message' => 'Data has been saved'
-          ]);
+      if ($data->save()) {
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been saved'
+        ]);
       }
-    }else{
-      $response = response()->json(['error'=>$validator->errors()->all()]);
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
     }
     return $response;
   }

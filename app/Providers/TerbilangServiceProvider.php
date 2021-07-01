@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App;
-use Illuminate\Support\ServiceProvider;
 use App\Helpers\Terbilang;
+use Illuminate\Support\ServiceProvider;
 
 class TerbilangServiceProvider extends ServiceProvider
 {

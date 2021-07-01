@@ -17,7 +17,9 @@ class CreateInvoiceLdosTable extends Migration
       $table->id();
       $table->string('num_bill')->unique();
       $table->string('prefix');
-      $table->foreignId('another_expedition_id')->constrained('another_expeditions');
+      $table->foreignId('another_expedition_id')
+        ->constrained('another_expeditions')
+        ->onUpdate('cascade');
       $table->date('invoice_date');
       $table->date('due_date');
       $table->decimal('total_bill', 15, 2);

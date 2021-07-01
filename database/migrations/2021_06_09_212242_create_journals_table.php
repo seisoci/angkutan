@@ -15,7 +15,7 @@ class CreateJournalsTable extends Migration
   {
     Schema::create('journals', function (Blueprint $table) {
       $table->id();
-      $table->foreignId('coa_id')->references('id')->on('coas');
+      $table->foreignId('coa_id')->references('id')->on('coas')->cascadeOnUpdate();
       $table->date('date_journal');
       $table->decimal('debit', 15, 2)->default(0);
       $table->decimal('kredit', 15, 2)->default(0);

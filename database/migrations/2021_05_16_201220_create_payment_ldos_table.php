@@ -15,7 +15,8 @@ class CreatePaymentLdosTable extends Migration
   {
     Schema::create('payment_ldos', function (Blueprint $table) {
       $table->id();
-      $table->foreignId('invoice_ldo_id')->references('id')->on('invoice_ldos');
+      $table->foreignId('invoice_ldo_id')->references('id')->on('invoice_ldos')->cascadeOnDelete();
+      $table->foreignId('coa_id')->references('id')->on('coas')->cascadeOnUpdate();
       $table->date('date_payment');
       $table->decimal('payment', 15, 2);
       $table->string('description')->nullable();

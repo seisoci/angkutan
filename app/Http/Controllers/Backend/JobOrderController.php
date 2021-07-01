@@ -19,6 +19,7 @@ use DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Validator;
+use App\Helpers\ContinousPaper;
 
 class JobOrderController extends Controller
 {
@@ -306,6 +307,38 @@ class JobOrderController extends Controller
       return [$item['name'] => $item['value']];
     });
     $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
+    $header = [[]
+    ];
+
+
+    $paper = array (
+      'panjang' 	=> 80,
+      'baris' 	=> 28,
+      'spasi' 	=> 1,
+      'column_width' => [
+        'header' 	=> [50,30],
+        'table'		=> [3, 40, 17, 20],
+        'footer' 	=> [20, 30, 30]
+      ],
+      'header' 	=> [
+        'title'		=> 'DELIVERY ORDER',
+        'kode'		=> $data->detail->kode,
+        'kode2'		=> 'KODE SO : ' . $data->detail->so_kode,
+        'tanggal' 	=> $data->detail->tanggal,
+        'pengirim'	=> $res->supplier->nama,
+        'kepada'	=> $res->customer->nama
+      ],
+      'table' 	=> [
+        'header' 	=> ['No', 'Nama Barang', 'Packing', 'Qty'],
+        'produk'	=> $item,
+        'footer'	=> array(
+          'catatan'	=> ''
+        )
+      ]
+    );
+    $data = new ContinousPaper($paper);
+
+    dd($header);
     return view('backend.operational.joborders.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 

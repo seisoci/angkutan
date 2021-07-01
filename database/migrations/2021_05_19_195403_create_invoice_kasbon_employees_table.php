@@ -17,7 +17,7 @@ class CreateInvoiceKasbonEmployeesTable extends Migration
       $table->id();
       $table->string('num_bill')->unique();
       $table->string('prefix');
-      $table->foreignId('employee_id')->constrained('employees');
+      $table->foreignId('employee_id')->constrained('employees')->cascadeOnUpdate();
       $table->decimal('total_kasbon', 15, 2);
       $table->decimal('total_payment', 15, 2);
       $table->decimal('rest_payment', 15, 2);
