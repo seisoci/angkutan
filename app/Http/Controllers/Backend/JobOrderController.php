@@ -336,9 +336,9 @@ class JobOrderController extends Controller
         )
       ]
     );
-    $data = new ContinousPaper($paper);
-
-    dd($header);
+//    $data = new ContinousPaper($paper);
+//
+//    dd($header);
     return view('backend.operational.joborders.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
