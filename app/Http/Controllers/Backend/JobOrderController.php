@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Validator;
 use App\Helpers\ContinousPaper;
 
@@ -302,44 +303,48 @@ class JobOrderController extends Controller
       ['page' => '/backend/drivers', 'title' => "List Job Order"],
       ['page' => '#', 'title' => "Detail Job Order"],
     ];
+    $item = array();
     $collection = Setting::all();
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
     $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
-    $header = [[]
-    ];
 
-
-    $paper = array (
-      'panjang' 	=> 80,
-      'baris' 	=> 28,
-      'spasi' 	=> 1,
+    $item[] = ['no' => 1, 'nama' => 'Uang Jalan', 'nominal' => number_format($data->road_money, 2, '.', ',')];
+    $result = '';
+    $paper = array(
+      'panjang' => 80,
+      'baris' => 28,
+      'spasi' => 1,
       'column_width' => [
-        'header' 	=> [50,30],
-        'table'		=> [3, 40, 17, 20],
-        'footer' 	=> [20, 30, 30]
+        'header' => [40, 40],
+        'table' => [3, 40, 37],
+        'footer' => [20, 30, 30]
       ],
-      'header' 	=> [
-        'title'		=> 'DELIVERY ORDER',
-        'kode'		=> $data->detail->kode,
-        'kode2'		=> 'KODE SO : ' . $data->detail->so_kode,
-        'tanggal' 	=> $data->detail->tanggal,
-        'pengirim'	=> $res->supplier->nama,
-        'kepada'	=> $res->customer->nama
+      'header' => [
+        'left' => [
+          'JOB ORDER',
+          'NO. JO: ' . $data->num_prefix,
+          'KODE JOB ORDER : ' . $data->num_prefix,
+          'TGL. MUAT: ' . $data->date_begin,
+          'SUPPLIER : ' . $data->costumer->name,
+        ],
+        'right' => [
+          "tes"
+        ]
       ],
-      'table' 	=> [
-        'header' 	=> ['No', 'Nama Barang', 'Packing', 'Qty'],
-        'produk'	=> $item,
-        'footer'	=> array(
-          'catatan'	=> ''
+      'table' => [
+        'header' => ['No', 'Nama', 'Nominal'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
         )
       ]
     );
-//    $data = new ContinousPaper($paper);
-//
-//    dd($header);
-    return view('backend.operational.joborders.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    $printed = new ContinousPaper($paper);
+    $result .= $printed->output() . "\n";
+    print_r($result);
+//    return view('backend.operational.joborders.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
   public function update(Request $request, $id)

@@ -70,18 +70,8 @@ class ContinousPaper {
   }
 
   private function set_header_data($config_column, $data = null){
-    $left_column_temp = array(
-      ($data['title']),
-      ('NO : ' . $data['kode'] ),
-      ('Tanggal : ' . $data['tanggal']),
-      ('Pengirim : ' . $data['pengirim'])
-    );
-    $right_column_temp = array(
-      "",
-      (isset($data['kode2']) ? $data['kode2'] : ''),
-      "Kepada Yth,",
-      $data['kepada']
-    );
+    $left_column_temp = $data['left'] ?? array();
+    $right_column_temp = $data['right'] ?? array();
     $left_column = [];
     foreach($left_column_temp AS $text){
       $length = $config_column[0];
@@ -119,6 +109,7 @@ class ContinousPaper {
     }
     return $output;
   }
+
   private function set_body_data($config_column, $data = null){
     $output = [];
     foreach($data AS $row){
@@ -129,8 +120,8 @@ class ContinousPaper {
     }
     return $output;
   }
-  private function set_footer_data($config_column, $data = null){
 
+  private function set_footer_data($config_column, $data = null){
     $rows = array(
       array('Menyiapkan','Mengetahui','Meminta : '),
       array('','',''),
