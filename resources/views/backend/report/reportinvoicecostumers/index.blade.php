@@ -216,37 +216,37 @@
           {
             data: 'total_bill',
             name: 'total_bill',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'total_payment',
             name: 'total_payment',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'total_cut',
             name: 'total_cut',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'total_tax',
             name: 'total_tax',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'total_fee_thanks',
             name: 'total_fee_thanks',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'rest_payment',
             name: 'rest_payment',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {data: 'created_at', name: 'created_at'},
@@ -302,7 +302,7 @@
             {
               data: 'fee_thanks',
               name: 'fee_thanks',
-              render: $.fn.dataTable.render.number('.', '.', 2),
+              render: $.fn.dataTable.render.number(',', '.', 2),
               orderable: false,
               searchable: false,
               className: 'dt-right',
@@ -311,7 +311,7 @@
             {
               data: 'total_basic_price_after_tax',
               name: 'total_basic_price_after_tax',
-              render: $.fn.dataTable.render.number('.', '.', 2),
+              render: $.fn.dataTable.render.number(',', '.', 2),
               orderable: false,
               searchable: false,
               className: 'dt-right'

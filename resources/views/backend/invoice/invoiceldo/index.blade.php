@@ -106,25 +106,25 @@
           {
             data: 'total_bill',
             name: 'total_bill',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'total_payment',
             name: 'total_payment',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'total_cut',
             name: 'total_cut',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'rest_payment',
             name: 'rest_payment',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {data: 'created_at', name: 'created_at'},
@@ -162,7 +162,7 @@
             {
               data: 'total_netto_ldo',
               name: 'total_netto_ldo',
-              render: $.fn.dataTable.render.number('.', '.', 2),
+              render: $.fn.dataTable.render.number(',', '.', 2),
               orderable: false,
               searchable: false,
               className: 'dt-right'

@@ -103,19 +103,19 @@
           {
             data: 'total_kasbon',
             name: 'total_kasbon',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'total_payment',
             name: 'total_payment',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {
             data: 'rest_payment',
             name: 'rest_payment',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
           {data: 'memo', name: 'memo'},
@@ -153,7 +153,7 @@
             {
               data: 'amount',
               name: 'amount',
-              render: $.fn.dataTable.render.number('.', '.', 2),
+              render: $.fn.dataTable.render.number(',', '.', 2),
               orderable: false,
               searchable: false,
               className: 'dt-right'

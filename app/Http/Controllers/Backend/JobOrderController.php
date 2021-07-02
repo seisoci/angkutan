@@ -8,6 +8,7 @@ use App\Models\ConfigCoa;
 use App\Models\Costumer;
 use App\Models\JobOrder;
 use App\Models\Journal;
+use App\Models\OperationalExpense;
 use App\Models\Prefix;
 use App\Models\RoadMoney;
 use App\Models\Route;
@@ -17,6 +18,7 @@ use App\Models\TypeCapacity;
 use Carbon\Carbon;
 use DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Validator;
@@ -310,16 +312,22 @@ class JobOrderController extends Controller
     });
     $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
 
-    $item[] = ['no' => 1, 'nama' => 'Uang Jalan', 'nominal' => number_format($data->road_money, 2, '.', ',')];
+    $item[] = ['no' => 1, 'nama' => 'Uang Jalan', 'nominal' => number_format($data->road_money, 0, '.', ',')];
+
+    $operationalExpense = OperationalExpense::with('expense')->where('job_order_id', $id)->get();
+    $no = 1;
+    foreach ($operationalExpense as $val):
+      $item[] = ['no' => ++$no, 'nama' => $val->expense->name, 'nominal' => number_format($val->amount, 0, '.', ',')];
+    endforeach;
     $result = '';
     $paper = array(
-      'panjang' => 80,
+      'panjang' => 40,
       'baris' => 28,
       'spasi' => 1,
       'column_width' => [
-        'header' => [40, 40],
-        'table' => [3, 40, 37],
-        'footer' => [20, 30, 30]
+        'header' => [40, 0],
+        'table' => [3, 20, 17],
+        'footer' => [20, 20]
       ],
       'header' => [
         'left' => [
@@ -328,19 +336,28 @@ class JobOrderController extends Controller
           'KODE JOB ORDER : ' . $data->num_prefix,
           'TGL. MUAT: ' . $data->date_begin,
           'SUPPLIER : ' . $data->costumer->name,
+          'DARI : ' . $data->routefrom->name,
+          'TUJUAN : ' . $data->routeto->name,
         ],
-        'right' => [
-          "tes"
-        ]
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
       ],
       'table' => [
-        'header' => ['No', 'Nama', 'Nominal'],
+        'header' => ['No', 'Keterangan', 'Nominal'],
         'produk' => $item,
         'footer' => array(
           'catatan' => ''
         )
       ]
     );
+    $paper['footer'][] = [
+      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
+    ];
     $printed = new ContinousPaper($paper);
     $result .= $printed->output() . "\n";
     print_r($result);

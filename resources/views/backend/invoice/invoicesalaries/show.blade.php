@@ -82,7 +82,7 @@
                 {{ ucwords(Terbilang::terbilang($data->grandtotal)) }}
               </td>
               <td class="text-right font-weight-bolder text-uppercase">TOTAL DITERIMA:</td>
-              <td class="text-right font-weight-bolder">{{ number_format($data->grandtotal ?? 0, 2, '.', '.') }}</td>
+              <td class="text-right font-weight-bolder">{{ number_format($data->grandtotal ?? 0, 2, '.', ',') }}</td>
             </tr>
           </tbody>
         </table>

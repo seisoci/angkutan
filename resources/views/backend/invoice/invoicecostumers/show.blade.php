@@ -90,8 +90,8 @@
                   <td>{{ $item->routefrom->name }}</td>
                   <td>{{ $item->routeto->name }}</td>
                   <td>{{ $item->cargo->name }}</td>
-                  <td class="text-right currency">{{ $item->basic_price }}</td>
                   <td class="text-center">{{ $item->payload }}</td>
+                  <td class="text-right currency">{{ $item->basic_price }}</td>
                   <td class="text-center">{{ $item->tax_percent ?? 0 }}</td>
                   <td class="text-right currency">{{ $item->tax_amount }}</td>
                   <td class="text-right currency">{{ $item->fee_thanks }}</td>

@@ -19,7 +19,7 @@ class ContinousPaper {
 
     $this->component->header 	= $this->set_header_data($config['column_width']['header'],$config['header']);
     $this->component->body 		= $this->set_body_data($config['column_width']['table'],$config['table']['produk']);
-    $this->component->footer 	= $this->set_footer_data($config['column_width']['footer'],$config['table']['footer']);
+    $this->component->footer 	= $this->set_footer_data($config['column_width']['footer'],$config['footer'],$config['table']['footer']);
   }
 
   private function text_align($text, $length = 0, $align = ''){
@@ -37,10 +37,10 @@ class ContinousPaper {
     $lines = [];
     foreach( $config_column AS $column_index => $length ){
       $length = $column_index > 0 ? $length - 1 : $length;
-      $align 	= in_array($column_index,array(0,3,5,7)) ? 'right':'left';
+      $align 	= in_array($column_index,array(0,2,4,8)) ? 'right':'left';
 
       $text = isset($data_row[$column_index]) ? $data_row[$column_index] : '';
-      $text = in_array($column_index,array(0,3,5,7)) ?$text : $text;
+      $text = in_array($column_index,array(0,2,4,8)) ?$text : $text;
       $text = preg_replace("/\s++/"," ", $text);
       $text_split = explode("<--xx_SPLIT_xx-->", wordwrap($text, $length, "<--xx_SPLIT_xx-->"));
 
@@ -55,7 +55,7 @@ class ContinousPaper {
       for($column_index = 0; $column_index < $total_column; $column_index++){
 
         $length = $column_index > 0 ? $config_column[$column_index] - 1 : $config_column[$column_index];
-        $align = in_array($column_index,array(0,3,5,7)) ? 'right':'left';
+        $align = in_array($column_index,array(0,2,4,8)) ? 'right':'left';
 
         $content = isset($lines[$row_index][$column_index]) ? $lines[$row_index][$column_index] : " ";
 
@@ -121,24 +121,21 @@ class ContinousPaper {
     return $output;
   }
 
-  private function set_footer_data($config_column, $data = null){
-    $rows = array(
-      array('Menyiapkan','Mengetahui','Meminta : '),
-      array('','',''),
-      array('','','',''),
-      array(str_pad('.',$config_column[0] - 10,'.',STR_PAD_RIGHT),str_pad('.',$config_column[0] - 10,'.',STR_PAD_RIGHT),str_pad('.',$config_column[0] - 10,'.',STR_PAD_RIGHT)),
-      array('Catatan :','','','')
-    );
-
-    //
-
+  private function set_footer_data($config_column, $rows, $note = null){
+//    $rows = array(
+//      array('Mengetahui','Meminta : '),
+//      array('',''),
+//      array('',''),
+//      array(str_pad('.',$config_column[0] - 20,'.',STR_PAD_RIGHT),str_pad('.',$config_column[0] - 20,'.',STR_PAD_RIGHT)),
+//    );
+//    dd($rows);
     $lines = [];
     foreach($config_column AS $column_index => $length){
       $length = $column_index < 1 ? $length : $length - 1;
-      $align 	= in_array($column_index, array(2,3)) ? 'right':'left';
+      $align 	= in_array($column_index, array(1,2)) ? 'center':'center';
 
-      foreach( $rows AS $row_index => $row ){
-        $lines[$row_index][$column_index] = $this->text_align($row[$column_index], $length, $align);
+      foreach($rows AS $row_index => $row){
+        $lines[$row_index][$column_index] = $this->text_align($row['data'][$column_index], $length, $row['align']);
       }
     }
 
@@ -147,7 +144,7 @@ class ContinousPaper {
       array_push($output,implode(" ",$line));
     }
 
-    $text 			= preg_replace("/\s++/"," ", (isset($data['catatan']) ? $data['catatan'] : ''));
+    $text 			= preg_replace("/\s++/"," ", ($note['catatan'] ?? ''));
     $text_split 	= explode("<--xx_SPLIT_xx-->", wordwrap($text, $this->config->length, "<--xx_SPLIT_xx-->"));
     foreach($text_split AS $line){
       array_push($output,$line);
@@ -156,7 +153,6 @@ class ContinousPaper {
   }
 
   public function output(){
-
     $rows_per_page = $this->config->rows_page;
     $line = str_pad('-',$this->config->length,'-');
 
@@ -171,7 +167,7 @@ class ContinousPaper {
     $heading = [];
     foreach($this->config->table_heading AS $column_index => $title){
       $length = $column_index > 0 ? $this->config->table_column_length[$column_index] - 1: $this->config->table_column_length[$column_index];
-      $align 	= in_array($column_index,array(0,3,5,7)) ? 'right':'left';
+      $align 	= in_array($column_index,array(0,2,4,8)) ? 'right':'left';
       $heading[$column_index] = $this->text_align($title, $length, $align);
     }
     array_push($table_header, implode(" ",$heading));

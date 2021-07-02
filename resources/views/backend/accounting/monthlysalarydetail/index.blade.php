@@ -112,7 +112,7 @@
           {
             data: 'monthlysalarydetailemployees_sum_amount',
             name: 'monthlysalarydetailemployees_sum_amount',
-            render: $.fn.dataTable.render.number('.', '.', 2),
+            render: $.fn.dataTable.render.number(',', '.', 2),
             orderable: false,
             searchable: false,
             className: 'dt-right',
@@ -216,7 +216,7 @@
             {
               data: 'amount',
               name: 'amount',
-              render: $.fn.dataTable.render.number('.', '.', 2),
+              render: $.fn.dataTable.render.number(',', '.', 2),
               orderable: false,
               searchable: false,
               className: 'dt-right'

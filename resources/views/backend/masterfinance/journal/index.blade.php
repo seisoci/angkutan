@@ -163,8 +163,8 @@
           {data: 'date_journal', name: 'date_journal'},
           {data: 'coa.kode_akun', name: 'coa.kode_akun'},
           {data: 'description', name: 'description'},
-          {data: 'debit', name: 'debit', render: $.fn.dataTable.render.number('.', '.', 2), className: 'dt-right'},
-          {data: 'kredit', name: 'kredit', render: $.fn.dataTable.render.number('.', '.', 2), className: 'dt-right'},
+          {data: 'debit', name: 'debit', render: $.fn.dataTable.render.number(',', '.', 2), className: 'dt-right'},
+          {data: 'kredit', name: 'kredit', render: $.fn.dataTable.render.number(',', '.', 2), className: 'dt-right'},
           {data: 'action', name: 'action'},
         ],
         footerCallback: function (row, data, start, end, display) {
@@ -228,7 +228,7 @@
         $('#dateRangePicker .form-control').val('');
         dataTable.draw();
       });
-      
+
       $('#modalDelete').on('show.bs.modal', function (event) {
         let id = $(event.relatedTarget).data('id');
         $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.journals.index") }}/' + id);

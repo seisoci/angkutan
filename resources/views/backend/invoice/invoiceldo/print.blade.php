@@ -119,12 +119,12 @@
           <td>{{ $item->costumer->name }}</td>
           <td>{{ $item->routefrom->name }}</td>
           <td>{{ $item->routeto->name }}</td>
+          <td>{{ number_format($item->basic_price_ldo ?? 0, 2, '.', ',') }}</td>
           <td>{{ $item->cargo->name }}</td>
-          <td>{{ number_format($item->basic_price_ldo ?? 0, 2, '.', '.') }}</td>
           <td>{{ $item->payload }}</td>
-          <td>{{ number_format($item->total_basic_price_ldo ?? 0, 2, '.', '.') }}</td>
-          <td>{{ number_format($item->total_operational ?? 0, 2, '.', '.') }}</td>
-          <td>{{ number_format($item->total_netto_ldo ?? 0, 2, '.', '.')}}</td>
+          <td>{{ number_format($item->total_basic_price_ldo ?? 0, 2, '.', ',') }}</td>
+          <td>{{ number_format($item->total_operational ?? 0, 2, '.', ',') }}</td>
+          <td>{{ number_format($item->total_netto_ldo ?? 0, 2, '.', ',')}}</td>
         </tr>
       @endforeach
       <tr>
@@ -132,7 +132,7 @@
           {{ ucwords(Terbilang::terbilang($data->total_bill)) }}
         </td>
         <td class="text-right font-weight-bolder text-uppercase">TOTAL DITERIMA:</td>
-        <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0, 2, '.', '.') }}</td>
+        <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0, 2, '.', ',') }}</td>
       </tr>
       </tbody>
     </table>

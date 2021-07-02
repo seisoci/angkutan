@@ -535,7 +535,7 @@
         let id = $(event.relatedTarget).data('id');
         let status_cargo = $(event.relatedTarget).data('status_cargo');
         let date_end = $(event.relatedTarget).data('date_end');
-        $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/' + id)
+        $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/' + id);
         $(this).find('.modal-body').find('select[name="status_cargo"]').val(status_cargo);
         $("#dateEndModal").parent().css("display", "none");
         $("#dateEndModal").parent().find('label').css("display", "none");

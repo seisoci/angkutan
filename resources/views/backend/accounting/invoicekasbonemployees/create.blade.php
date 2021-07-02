@@ -227,7 +227,7 @@
         columns: [
           {data: 'id', name: 'id'},
           {data: 'employee.name', name: 'employee.name'},
-          {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number('.', '.', 2), className: 'dt-right'},
+          {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number(',', '.', 2), className: 'dt-right'},
           {data: 'memo', name: 'memo'},
           {data: 'created_at', name: 'created_at'},
         ],
