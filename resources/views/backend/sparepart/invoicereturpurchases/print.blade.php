@@ -65,18 +65,21 @@
       <tr>
         <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
         </td>
+        <td scope="col" class="text-left" style="width:10%">No. Retur</td>
+        <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
+        <td scope="col" class="text-left" style="width:20%"> {{ $data->num_invoice }}</td>
+      </tr>
+      <tr>
+        <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
         <td scope="col" class="text-left" style="width:10%">Tanggal Nota</td>
         <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
         <td scope="col" class="text-left" style="width:20%"> {{ $data->invoice_date }}</td>
       </tr>
       <tr>
-        <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
+        <td scope="col">{{ $profile['telp'] ?? ''}}</td>
         <td scope="col" class="text-left" style="width:10%">Supplier</td>
         <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
         <td scope="col" class="text-left" style="width:20%"> {{ $data->supplier->name }}</td>
-      </tr>
-      <tr>
-        <td scope="col">{{ $profile['telp'] ?? ''}}</td>
       </tr>
       <tr>
         <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
@@ -105,7 +108,7 @@
         </tr>
       @endforeach
       <tr class="font-weight-normal">
-        <td colspan="4" class="text-right font-weight-bolder text-uppercase">Diskon Tepotong</td>
+        <td colspan="4" class="text-right font-weight-bolder text-uppercase">Diskon Terpotong</td>
         <td class="text-right font-weight-bolder">
           {{ number_format($data->discount ?? 0,2, ',', '.') }}</td>
       </tr>

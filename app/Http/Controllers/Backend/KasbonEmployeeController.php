@@ -190,7 +190,7 @@ class KasbonEmployeeController extends Controller
       ],
       'header' => [
         'left' => [
-          'ALUSINDO',
+          strtoupper($profile['name']),
           $profile['address'],
           'KASBON KARYAWAAN',
           'Nama: '. $data->employee->name,

@@ -113,6 +113,12 @@
               <input type="hidden" name="basic_price" class="form-control currency basicprice"/>
               <input type="text" class="form-control currency basicprice" disabled/>
             </div>
+            @else
+              <div class="form-group" style="display: none;">
+                <label>Harga Dasar</label>
+                <input type="hidden" name="basic_price" class="form-control currency basicprice"/>
+                <input type="text" class="form-control currency basicprice" disabled/>
+              </div>
             @endhasanyrole
             <div class="form-group" style="display: none">
               <label>Harga Dasar LDO</label>
@@ -157,7 +163,6 @@
               <label>Total Ongkosan Dasar (Setelah Pajak)</label>
               <input type="text" id="totalPayloadAfterTax" class="form-control currency" disabled/>
             </div>
-
             <div class="form-group">
               <label>Fee Pemberian</label>
               <input type="text" id="fee_thanks" class="form-control currency" disabled/>
@@ -167,6 +172,45 @@
               <label>Total Ongkosan Dasar (Setelah Pemberian)</label>
               <input type="text" id="totalPayloadAfterThanks" class="form-control currency" disabled/>
             </div>
+              @else
+                <div class="form-group" style="display: none">
+                  <label>Total Ongkosan Dasar</label>
+                  <input id="totalPayload" type="text" class="form-control currency" disabled/>
+                </div>
+                <div class="row"  style="display: none">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Tax PPH %</label>
+                      <div class="input-group">
+                        <input type="text" class="form-control" id="taxPercent" disabled/>
+                        <input type="hidden" class="form-control" name="tax_percent"/>
+                        <div class="input-group-append"><span class="input-group-text">%</span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group" style="display: none">
+                      <label>Pajak PPH</label>
+                      <div class="input-group">
+                        <input type="text" class="form-control currency" id="taxFee" disabled/>
+                        <div class="input-group-append"><span class="input-group-text">Rp.</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group" style="display: none">
+                  <label>Total Ongkosan Dasar (Setelah Pajak)</label>
+                  <input type="text" id="totalPayloadAfterTax" class="form-control currency" disabled/>
+                </div>
+                <div class="form-group" style="display: none">
+                  <label>Fee Pemberian</label>
+                  <input type="text" id="fee_thanks" class="form-control currency" disabled/>
+                  <input type="hidden" class="form-control" name="fee_thanks" class="currency"/>
+                </div>
+                <div class="form-group" style="display: none">
+                  <label>Total Ongkosan Dasar (Setelah Pemberian)</label>
+                  <input type="text" id="totalPayloadAfterThanks" class="form-control currency" disabled/>
+                </div>
             @endhasanyrole
             <div class="form-group">
               <label>Uang Jalan</label>
@@ -234,6 +278,9 @@
               <label>Grand Total Bersih</label>
               <input name="grandtotalnetto" type="text" class="form-control currency" disabled>
             </div>
+          </div>
+          @endhasanyrole
+          <div class="offset-md-8 col-md-4">
             <div class="form-group">
               <select name="coa_id" class="form-control">
                 @foreach($selectCoa->coa as $item)
@@ -246,7 +293,6 @@
               <textarea class="form-control" name="description" rows="5"></textarea>
             </div>
           </div>
-          @endhasanyrole
         </div>
       </div>
       <div class="card-footer d-flex justify-content-end">

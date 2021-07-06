@@ -13,6 +13,12 @@
             class="fa fa-arrow-left"></i> Back</button>
         <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i
             class="fa fa-print"></i> Print</a>
+{{--        <a href="#" id="btn_print" class="btn btn-outline-secondary font-weight-bold" target="_blank">--}}
+{{--                  <span class="navi-icon">--}}
+{{--                    <i class="la la-print"></i>--}}
+{{--                  </span>--}}
+{{--          <span class="navi-text">Print</span>--}}
+{{--        </a>--}}
       </div>
     </div>
   </div>
@@ -27,18 +33,21 @@
             <tr>
               <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
               </td>
+              <td scope="col" class="text-left" style="width:10%">No. Retur</td>
+              <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
+              <td scope="col" class="text-left" style="width:20%"> {{ $data->num_invoice }}</td>
+            </tr>
+            <tr>
+              <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
               <td scope="col" class="text-left" style="width:10%">Tanggal Nota</td>
               <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
               <td scope="col" class="text-left" style="width:20%"> {{ $data->invoice_date }}</td>
             </tr>
             <tr>
-              <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
+              <td scope="col">{{ $profile['telp'] ?? ''}}</td>
               <td scope="col" class="text-left" style="width:10%">Supplier</td>
               <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
               <td scope="col" class="text-left" style="width:20%"> {{ $data->supplier->name }}</td>
-            </tr>
-            <tr>
-              <td scope="col">{{ $profile['telp'] ?? ''}}</td>
             </tr>
             <tr>
               <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
@@ -67,6 +76,11 @@
             </tr>
             @endforeach
             <tr class="font-weight-normal">
+              <td colspan="4" class="text-right font-weight-bolder text-uppercase">Diskon Terpotong</td>
+              <td class="text-right font-weight-bolder">
+                {{ number_format($data->discount ?? 0,2, ',', '.') }}</td>
+            </tr>
+            <tr class="font-weight-normal">
               <td colspan="2" class="text-left font-weight-bolder">
                 {{ ucwords(Terbilang::terbilang($data->total_payment)) }}
               </td>
@@ -76,7 +90,6 @@
             </tr>
           </tbody>
         </table>
-
       </div>
     </div>
   </div>
@@ -96,6 +109,25 @@
 {{-- Scripts Section --}}
 @section('scripts')
 {{-- vendors --}}
-
+<script>
+  $(document).ready(function () {
+    $('#btn_print').on('click', function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: "{{ $config['print_url'] }}",
+        success: function (text) {
+          console.log(text);
+          $.post('http://localhost/dotmatrix/', JSON.stringify({
+            printer: 'DotMatrix',
+            data: text,
+            autocut: true
+          }), function (response) {
+            console.log(response);
+          });
+        }
+      });
+    });
+  });
+</script>
 {{-- page scripts --}}
 @endsection

@@ -169,7 +169,7 @@ class KasbonController extends Controller
       ],
       'header' => [
         'left' => [
-          'ALUSINDO',
+          strtoupper($profile['name']),
           $profile['address'],
           'KASBON SUPIR',
           'Nama: '. $data->driver->name,

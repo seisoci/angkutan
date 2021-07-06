@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ContinousPaperLong;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
@@ -13,13 +14,16 @@ use App\Models\ReturPurchase;
 use App\Models\Setting;
 use App\Models\Stock;
 use App\Models\SupplierSparepart;
+use App\Traits\CarbonTrait;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class InvoiceReturPurchaseController extends Controller
 {
+  use CarbonTrait;
   function __construct()
   {
     $this->middleware('permission:invoicereturpurchases-list|invoicereturpurchases-create|invoicereturpurchases-edit|invoicereturpurchases-delete', ['only' => ['index']]);
@@ -206,6 +210,61 @@ class InvoiceReturPurchaseController extends Controller
       return [$item['name'] => $item['value']];
     });
     $data = InvoiceReturPurchase::with(['returpurchases.sparepart', 'supplier'])->findOrFail($id);
+    $result = '';
+    $no = 1;
+    foreach ($data->returpurchases as $val):
+      $item[] = [
+        'no' => $no++,
+        'nama' => $val->sparepart->name,
+        'item' => $val->qty,
+        'price' => number_format($val->price, 0, '.', ','),
+        'total' => number_format($val->total_price, 0, '.', ',')
+      ];
+    endforeach;
+    $item[] = ['no' => '--------------------------------------------------------------------------------'];
+    $item[] = ['1' => '', '2' => '', '3' => '', 'name' => 'Diskon Terpotong', 'nominal' => number_format($data->discount, 0, '.', ',')];
+    $item[] = ['1' => '', '2' => '', '3' => '', 'name' => 'Total Retur', 'nominal' => number_format($data->total_payment, 0, '.', ',')];
+    $paper = array(
+      'panjang' => 80,
+      'baris' => 29,
+      'spasi' => 3,
+      'column_width' => [
+        'header' => [40, 40],
+        'table' => [3, 40, 6, 19, 12],
+        'footer' => [40, 40]
+      ],
+      'header' => [
+        'left' => [
+          $profile['name'],
+          $profile['address'],
+          'Telp: ' . $profile['telp'],
+          'Fax: ' . $profile['fax'],
+          'INVOICE RETUR PURCHASE ORDER',
+
+        ],
+        'right' => [
+          'No. Retur: ' . $data->num_invoice,
+          'Supplier: ' . $data->supplier->name,
+          'Tanggal: ' . $this->convertToDate($data->created_at),
+        ]
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data->supplier->name]],
+      ],
+      'table' => [
+        'header' => ['No', 'Nama Produk', 'Unit', 'Harga', 'Total'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
+        )
+      ]
+    );
+    $printed = new ContinousPaperLong($paper);
+    $result .= $printed->output() . "\n";
+//    return response($result, 200)->header('Content-Type', 'text/plain');
     return view('backend.sparepart.invoicereturpurchases.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 

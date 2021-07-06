@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ContinousPaperLong;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
@@ -13,6 +14,7 @@ use App\Models\PurchasePayment;
 use App\Models\Setting;
 use App\Models\Stock;
 use App\Models\SupplierSparepart;
+use App\Traits\CarbonTrait;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -20,6 +22,8 @@ use Validator;
 
 class InvoicePurchaseController extends Controller
 {
+  use CarbonTrait;
+
   function __construct()
   {
     $this->middleware('permission:invoicepurchases-list|invoicepurchases-create|invoicepurchases-edit|invoicepurchases-delete', ['only' => ['index']]);
@@ -273,6 +277,81 @@ class InvoicePurchaseController extends Controller
       return [$item['name'] => $item['value']];
     });
     $data = InvoicePurchase::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['purchases', 'supplier'])->firstOrFail();
+    $no = 1;
+    foreach ($data->purchases as $val):
+      $item[] = [
+        'no' => $no++,
+        'nama' => $val->sparepart->name,
+        'item' => $val->qty,
+        'price' => number_format($val->price, 0, '.', ','),
+        'total' => number_format($val->qty * $val->price, 0, '.', ',')
+      ];
+    endforeach;
+    $item[] = ['no' => '--------------------------------------------------------------------------------'];
+    $item[] = ['1' => '', '2' => '', '3' => '', 'name' => 'Diskon', 'nominal' => number_format($data->discount, 0, '.', ',')];
+    $item[] = ['1' => '', '2' => '', '3' => ' ', 'name' => 'Total Tagihan', 'nominal' => number_format($data->total_bill, 0, '.', ',')];
+    $item[] = ['no' => str_pad('Pembayaran', 80, '-', STR_PAD_BOTH)];
+    $item[] = ['no' => 'No', 'nama' => 'Tgl Pembayaran', '1' => '', '2' => '', 'nominal' => 'Nominal'];
+    $item[] = ['no' => '--------------------------------------------------------------------------------'];
+    $noPayment = 1;
+    foreach ($data->purchasepayments as $val):
+      $item[] = [
+        'no' => $noPayment++,
+        'nama' => $val->date_payment,
+        '1' => '',
+        '2' => '',
+        'price' => number_format($val->payment, 0, '.', ',')
+      ];
+    endforeach;
+    $item[] = ['no' => '--------------------------------------------------------------------------------'];
+    $item[] = ['no' => '', '1' => '', '2' => '', 'nama' => 'Total Tagihan', 'nominal' => number_format($data->total_bill, 0, '.', ',')];
+    $item[] = ['no' => '', '1' => '', '2' => '', 'nama' => 'Total Pembayaran', 'nominal' => number_format($data->total_payment, 0, '.', ',')];
+    $item[] = ['no' => '', '1' => '', '2' => '', 'nama' => 'Sisa Tagihan', 'nominal' => number_format($data->rest_payment, 0, '.', ',')];
+    $result = '';
+    $paper = array(
+      'panjang' => 80,
+      'baris' => 29,
+      'spasi' => 3,
+      'column_width' => [
+        'header' => [40, 40],
+        'table' => [3, 40, 6, 19, 12],
+        'footer' => [40, 40]
+      ],
+      'header' => [
+        'left' => [
+          $profile['name'],
+          $profile['address'],
+          'Telp: ' . $profile['telp'],
+          'Fax: ' . $profile['fax'],
+          'INVOICE PURCHASE ORDER',
+
+        ],
+        'right' => [
+          'No. Invoice: ' . $data->num_invoice,
+          'Supplier: ' . $data->supplier->name,
+          'Tanggal: ' . $this->convertToDate($data->created_at),
+          'Metode Pembayaran: ' . $data->method_payment,
+          'Tgl Jth Tempo: ' . $data->due_date,
+
+        ]
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['...................', '...................']],
+      ],
+      'table' => [
+        'header' => ['No', 'Nama Produk', 'Unit', 'Harga', 'Total'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
+        )
+      ]
+    );
+    $printed = new ContinousPaperLong($paper);
+    $result .= $printed->output() . "\n";
+//    return response($result, 200)->header('Content-Type', 'text/plain');
     return view('backend.sparepart.invoicepurchases.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 

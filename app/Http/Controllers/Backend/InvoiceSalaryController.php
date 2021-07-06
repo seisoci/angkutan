@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ContinousPaperLong;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
@@ -11,13 +12,16 @@ use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\Prefix;
 use App\Models\Setting;
+use App\Traits\CarbonTrait;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class InvoiceSalaryController extends Controller
 {
+  use CarbonTrait;
   function __construct()
   {
     $this->middleware('permission:invoicesalaries-list|invoicesalaries-create|invoicesalaries-edit|invoicesalaries-delete', ['only' => ['index']]);
@@ -213,6 +217,61 @@ class InvoiceSalaryController extends Controller
       $q->withSum('operationalexpense', 'amount');
     }])->findOrFail($id);
 
+    $result = '';
+    $no = 1;
+    foreach ($data->joborders as $val):
+      $item[] = [
+        'no' => $no++,
+        'no_jo' => $val->num_prefix,
+        'keterangan' => 'Gaji',
+        'costumer' => $val->costumer->name,
+        'route' => $val->routefrom->name . '->' . $val->routeto->name,
+        'Nominal' => number_format($val->total_salary, 0, '.', ',')
+      ];
+    endforeach;
+      $item[] = ['no' => '--------------------------------------------------------------------------------'];
+    $item[] = ['1' => '', '2' => '', '3' => '','4'=>'', 'name' => 'Total', 'nominal' => number_format($data->grandtotal, 0, '.', ',')];
+    $paper = array(
+      'panjang' => 80,
+      'baris' => 29,
+      'spasi' => 3,
+      'column_width' => [
+        'header' => [40, 40],
+        'table' => [3, 14, 10, 19, 23, 11],
+        'footer' => [40, 40]
+      ],
+      'header' => [
+        'left' => [
+          $profile['name'],
+          $profile['address'],
+          'Telp: ' . $profile['telp'],
+          'Fax: ' . $profile['fax'],
+          'INVOICE GAJI SUPIR',
+
+        ],
+        'right' => [
+          'No. Gaji: ' . $data->num_invoice,
+          'Supir: ' . $data->driver->name,
+          'Tanggal: ' . $this->convertToDate($data->created_at),
+        ]
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
+      ],
+      'table' => [
+        'header' => ['No', 'No Job Order', 'Keterangan', 'Pelanggan', 'Rute', 'Total'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
+        )
+      ]
+    );
+    $printed = new ContinousPaperLong($paper);
+    $result .= $printed->output() . "\n";
+//    return response($result, 200)->header('Content-Type', 'text/plain');
     return view('backend.invoice.invoicesalaries.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 

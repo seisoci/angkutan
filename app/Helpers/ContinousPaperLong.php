@@ -3,7 +3,7 @@ namespace App\Helpers;
 
 use stdClass;
 
-class ContinousPaper {
+class ContinousPaperLong {
 
   private $config, $component;
 
@@ -201,7 +201,7 @@ class ContinousPaper {
       array_push($pages[$page], $row);
       $item_number++;
       $row_number++;
-      if( $row_number >= ($this->config->rows_page - $total_rows_footer -  $this->config->page_margin) ){
+      if( $row_number >= ($this->config->rows_page - $total_rows_footer - 1 -  $this->config->page_margin) ){
         array_push($pages[$page], $line);
         $row_number = 0;
         $last_page = $page;

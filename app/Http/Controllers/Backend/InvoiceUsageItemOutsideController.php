@@ -222,7 +222,7 @@ class InvoiceUsageItemOutsideController extends Controller
       ],
       'header' => [
         'left' => [
-          'ALUSINDO',
+          strtoupper($profile['name']),
           $profile['address'],
           'PEMBELIAN BARANG DILUAR',
           'No. Refrensi: ' . $data->num_invoice,

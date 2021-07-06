@@ -246,7 +246,7 @@ class InvoiceKasbonEmployeeController extends Controller
       ],
       'header' => [
         'left' => [
-          'ALUSINDO',
+          strtoupper($profile['name']),
           $profile['address'],
           'PEMBAYARAN KASBON KARYAWAAN',
           'No. Kasbon: '. $data->num_invoice,

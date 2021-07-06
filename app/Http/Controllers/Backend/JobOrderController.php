@@ -310,8 +310,10 @@ class JobOrderController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
-
+    $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])
+      ->withSum('operationalexpense', 'amount')
+      ->findOrFail($id);
+    $totalRoadMoney = ($data->road_money ?? 0) + ($data->operationalexpense_sum_amount ?? 0);
     $item[] = ['no' => 1, 'nama' => 'Uang Jalan', 'nominal' => number_format($data->road_money, 0, '.', ',')];
 
     $operationalExpense = OperationalExpense::with('expense')->where('job_order_id', $id)->get();
@@ -319,6 +321,8 @@ class JobOrderController extends Controller
     foreach ($operationalExpense as $val):
       $item[] = ['no' => ++$no, 'nama' => $val->expense->name, 'nominal' => number_format($val->amount, 0, '.', ',')];
     endforeach;
+    $item[] = ['no' => '------------------------------------'];
+    $item[] = ['1'=>'','name'=>'Total','nominal' => number_format($totalRoadMoney, 0, '.', ',')];
     $result = '';
     $paper = array(
       'panjang' => 35,
@@ -331,7 +335,7 @@ class JobOrderController extends Controller
       ],
       'header' => [
         'left' => [
-          'ALUSINDO',
+          strtoupper($profile['name']),
           'JOB ORDER',
           'NO. JO: ' . $data->num_prefix,
           'KODE JOB ORDER : ' . $data->num_prefix,
@@ -356,9 +360,6 @@ class JobOrderController extends Controller
         )
       ]
     );
-//    $paper['footer'][] = [
-//      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
-//    ];
     $printed = new ContinousPaper($paper);
     $result .= $printed->output() . "\n";
      return response($result, 200)->header('Content-Type', 'text/plain');
