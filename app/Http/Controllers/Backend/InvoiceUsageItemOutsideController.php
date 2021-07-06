@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
@@ -11,13 +12,17 @@ use App\Models\Prefix;
 use App\Models\Setting;
 use App\Models\Stock;
 use App\Models\UsageItem;
+use App\Traits\CarbonTrait;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class InvoiceUsageItemOutsideController extends Controller
 {
+  use CarbonTrait;
+
   function __construct()
   {
     $this->middleware('permission:invoiceusageitemsoutside-list|invoiceusageitemsoutside-create|invoiceusageitemsoutside-edit|invoiceusageitemsoutside-delete', ['only' => ['index']]);
@@ -192,7 +197,61 @@ class InvoiceUsageItemOutsideController extends Controller
       return [$item['name'] => $item['value']];
     });
     $data = InvoiceUsageItem::where('type', 'outside')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
-    return view('backend.invoice.invoiceusageitemsoutside.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+
+    $result = '';
+    $no = 1;
+    foreach ($data->usageitem as $val):
+      $item[] = [
+        'no' => $no++,
+        'nama' => $val->name,
+        'qty' => $val->qty,
+        'price' => number_format($val->price, 0, '.', ','),
+        'total_price' => number_format($val->total_price, 0, '.', ',')
+      ];
+    endforeach;
+    $item[] = ['no' => '------------------------------------'];
+    $item[] = ['no' => '', '1' => '', '2'=>'','name'=>'Total','nominal' => number_format($data->total_payment, 0, '.', ',')];
+    $paper = array(
+      'panjang' => 36,
+      'baris' => 31,
+      'spasi' => 2,
+      'column_width' => [
+        'header' => [36, 0],
+        'table' => [3, 10, 3, 10, 10],
+        'footer' => [18, 18]
+      ],
+      'header' => [
+        'left' => [
+          'ALUSINDO',
+          $profile['address'],
+          'PEMBELIAN BARANG DILUAR',
+          'No. Refrensi: ' . $data->num_invoice,
+          'Nama: ' . $data->driver->name,
+          'No Polisi: ' . $data->transport->num_pol,
+          'Tgl Pembelian: ' . $this->convertToDate($data->created_at),
+        ],
+        'right' => [
+          ''
+        ]
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
+      ],
+      'table' => [
+        'header' => ['No', 'Nama', 'Jml', 'Harga', 'Total'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => $data->memo,
+        )
+      ]
+    );
+    $printed = new ContinousPaper($paper);
+    $result .= $printed->output() . "\n";
+    return response($result, 200)->header('Content-Type', 'text/plain');
+//    return view('backend.invoice.invoiceusageitemsoutside.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
   }
 
 }

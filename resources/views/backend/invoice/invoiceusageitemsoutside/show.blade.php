@@ -11,8 +11,14 @@
       <div class="btn-group btn-group-md" role="group" aria-label="Large button group">
         <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
             class="fa fa-arrow-left"></i> Back</button>
-        <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i
-            class="fa fa-print"></i> Print</a>
+{{--        <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i--}}
+        {{--            class="fa fa-print"></i> Print</a>--}}
+        <a href="#" id="btn_print" class="btn btn-outline-secondary font-weight-bold" target="_blank">
+                  <span class="navi-icon">
+                    <i class="la la-print"></i>
+                  </span>
+          <span class="navi-text">Print</span>
+        </a>
       </div>
     </div>
   </div>
@@ -102,5 +108,24 @@
 @endsection
 
 @section('scripts')
-}
+  <script>
+    $(document).ready(function () {
+      $('#btn_print').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+          url: "{{ $config['print_url'] }}",
+          success: function (text) {
+            console.log(text);
+            $.post('http://localhost/dotmatrix/', JSON.stringify({
+              printer: 'DotMatrix',
+              data: text,
+              autocut: true
+            }), function (response) {
+              console.log(response);
+            });
+          }
+        });
+      });
+    });
+  </script>
 @endsection

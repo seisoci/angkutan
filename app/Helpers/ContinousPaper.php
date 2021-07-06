@@ -37,10 +37,10 @@ class ContinousPaper {
     $lines = [];
     foreach( $config_column AS $column_index => $length ){
       $length = $column_index > 0 ? $length - 1 : $length;
-      $align 	= in_array($column_index,array(0,2,4,8)) ? 'right':'left';
+      $align 	= in_array($column_index,array(0,2,3,4,8)) ? 'right':'left';
 
       $text = isset($data_row[$column_index]) ? $data_row[$column_index] : '';
-      $text = in_array($column_index,array(0,2,4,8)) ?$text : $text;
+      $text = in_array($column_index,array(0,2,3,4,8)) ?$text : $text;
       $text = preg_replace("/\s++/"," ", $text);
       $text_split = explode("<--xx_SPLIT_xx-->", wordwrap($text, $length, "<--xx_SPLIT_xx-->"));
 
@@ -155,7 +155,6 @@ class ContinousPaper {
   public function output(){
     $rows_per_page = $this->config->rows_page;
     $line = str_pad('-',$this->config->length,'-');
-
     $space = [];
     for($i = 0; $i < $this->config->page_margin; $i++){
       array_push($space, str_pad(' ',$this->config->length,' '));
@@ -167,7 +166,7 @@ class ContinousPaper {
     $heading = [];
     foreach($this->config->table_heading AS $column_index => $title){
       $length = $column_index > 0 ? $this->config->table_column_length[$column_index] - 1: $this->config->table_column_length[$column_index];
-      $align 	= in_array($column_index,array(0,2,4,8)) ? 'right':'left';
+      $align 	= in_array($column_index,array(0,2,3,4,8)) ? 'right':'left';
       $heading[$column_index] = $this->text_align($title, $length, $align);
     }
     array_push($table_header, implode(" ",$heading));
@@ -202,7 +201,7 @@ class ContinousPaper {
       array_push($pages[$page], $row);
       $item_number++;
       $row_number++;
-      if( $row_number >= ($this->config->rows_page - $total_rows_footer - 1 - $this->config->page_margin) ){
+      if( $row_number >= ($this->config->rows_page - $total_rows_footer - $this->config->page_margin) ){
         array_push($pages[$page], $line);
         $row_number = 0;
         $last_page = $page;
@@ -220,7 +219,7 @@ class ContinousPaper {
         $page_content = array_merge($lines,$footer);
       } else {
         $footline = [];
-        for($i = 0; $i < $total_rows_footer; $i++){
+        for($i = 0; $i < ($total_rows_footer -1); $i++){
           array_push($footline, str_pad(' ',$this->config->length,' '));
         }
         $page_content = array_merge($lines,$footline);

@@ -133,9 +133,9 @@
   window.onload = function(e){
     window.print();
   }
-  // window.setTimeout(function(){
-  //   window.close();
-  // }, 2000);
+  window.setTimeout(function(){
+    window.close();
+  }, 2000);
 </script>
 @endforeach
 

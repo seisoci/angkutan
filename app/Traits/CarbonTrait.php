@@ -52,4 +52,8 @@ trait CarbonTrait {
   public function convertToMonth($date){
     return Carbon::parse($date)->timezone('Asia/Jakarta')->format('m');
   }
+
+  public function convertToDate($date){
+    return Carbon::parse($date)->timezone('Asia/Jakarta')->format('Y-m-d');
+  }
 }

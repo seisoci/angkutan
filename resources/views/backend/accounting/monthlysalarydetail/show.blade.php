@@ -12,8 +12,14 @@
           <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
               class="fa fa-arrow-left"></i> Back
           </button>
-          <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i
-              class="fa fa-print"></i> Print</a>
+          {{--          <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i--}}
+          {{--              class="fa fa-print"></i> Print</a>--}}
+          <a href="#" id="btn_print" class="btn btn-outline-secondary font-weight-bold" target="_blank">
+                  <span class="navi-icon">
+                    <i class="la la-print"></i>
+                  </span>
+            <span class="navi-text">Print</span>
+          </a>
         </div>
       </div>
     </div>
@@ -76,7 +82,8 @@
                 {{ ucwords(Terbilang::terbilang($data->monthlysalarydetailemployees->sum('amount'))) }}
               </td>
               <td
-                class="text-right font-weight-bolder">Total Nominal:  {{ number_format($data->monthlysalarydetailemployees->sum('amount') ?? 0,2, ',', '.') }}</td>
+                class="text-right font-weight-bolder">Total
+                Nominal: {{ number_format($data->monthlysalarydetailemployees->sum('amount') ?? 0,2, ',', '.') }}</td>
             </tr>
             </tbody>
           </table>
@@ -99,6 +106,25 @@
 {{-- Scripts Section --}}
 @section('scripts')
   {{-- vendors --}}
-
+  <script>
+    $(document).ready(function () {
+      $('#btn_print').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+          url: "{{ $config['print_url'] }}",
+          success: function (text) {
+            console.log(text);
+            $.post('http://localhost/dotmatrix/', JSON.stringify({
+              printer: 'DotMatrix',
+              data: text,
+              autocut: true
+            }), function (response) {
+              console.log(response);
+            });
+          }
+        });
+      });
+    });
+  </script>
   {{-- page scripts --}}
 @endsection

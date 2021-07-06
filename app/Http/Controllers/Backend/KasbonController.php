@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
@@ -14,6 +15,7 @@ use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
 
@@ -154,7 +156,47 @@ class KasbonController extends Controller
       return [$item['name'] => $item['value']];
     });
     $data = Kasbon::with('driver')->findOrFail($id);
-    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    $result = '';
+    $item[] = ['no' => 1, 'nama' => $data->memo, 'nominal' => number_format($data->amount, 0, '.', ',')];
+    $paper = array(
+      'panjang' => 35,
+      'baris' => 31,
+      'spasi' => 2,
+      'column_width' => [
+        'header' => [35, 0],
+        'table' => [3, 21, 11],
+        'footer' => [18, 17]
+      ],
+      'header' => [
+        'left' => [
+          'ALUSINDO',
+          $profile['address'],
+          'KASBON SUPIR',
+          'Nama: '. $data->driver->name,
+          'Tgl Kasbon: '. $this->convertToDate($data->created_at),
+        ],
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
+      ],
+      'table' => [
+        'header' => ['No', 'Keterangan', 'Nominal'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
+        )
+      ]
+    );
+//    $paper['footer'][] = [
+//      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
+//    ];
+    $printed = new ContinousPaper($paper);
+    $result .= $printed->output() . "\n";
+    return response($result, 200)->header('Content-Type', 'text/plain');
+//    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
 }

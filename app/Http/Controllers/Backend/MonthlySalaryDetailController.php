@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
@@ -12,6 +13,7 @@ use App\Models\MonthlySalaryDetailEmployee;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -44,7 +46,7 @@ class MonthlySalaryDetailController extends Controller
         ->addColumn('details_url', function (MonthlySalaryDetail $monthlySalaryDetail) {
           return route('backend.monthlysalarydetail.datatabledetail', $monthlySalaryDetail->id);
         })
-        ->addColumn('action', function ($row) use($id) {
+        ->addColumn('action', function ($row) use ($id) {
           $btnEditStatus = $row->status == '0' ? '<a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" class="dropdown-item">Edit Status</a>' : NULL;
           $actionBtn = '
              <div class="dropdown">
@@ -79,7 +81,7 @@ class MonthlySalaryDetailController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = MonthlySalaryDetail::with(['monthlysalary','employee', 'monthlysalarydetailemployees.employeemaster'])->findOrFail($id);
+    $data = MonthlySalaryDetail::with(['monthlysalary', 'employee', 'monthlysalarydetailemployees.employeemaster'])->findOrFail($id);
     return view('backend.accounting.monthlysalarydetail.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
@@ -96,8 +98,59 @@ class MonthlySalaryDetailController extends Controller
     $profile = collect($collection)->mapWithKeys(function ($item) {
       return [$item['name'] => $item['value']];
     });
-    $data = MonthlySalaryDetail::with(['monthlysalary','employee', 'monthlysalarydetailemployees.employeemaster'])->findOrFail($id);
-    return view('backend.accounting.monthlysalarydetail.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    $data = MonthlySalaryDetail::with(['monthlysalary', 'employee', 'monthlysalarydetailemployees.employeemaster'])->findOrFail($id);
+    $result = '';
+    $no = 1;
+    $total = 0;
+    foreach ($data->monthlysalarydetailemployees as $val):
+      $total += $val->amount;
+      $item[] = ['no' => $no++, 'nama' => $val->employeemaster->name, 'nominal' => number_format($val->amount, 0, '.', ',')];
+    endforeach;
+    $paper = array(
+      'panjang' => 35,
+      'baris' => 31,
+      'spasi' => 2,
+      'column_width' => [
+        'header' => [35, 0],
+        'table' => [3, 21, 11],
+        'footer' => [18, 17]
+      ],
+      'header' => [
+        'left' => [
+          'ALUSINDO',
+          $profile['address'],
+          'KASBON SUPIR',
+          'Nama: ' . $data->employee->name,
+          'Gaji Bln: ' . $data->monthlysalary->name,
+          'Tgl Kasbon: ' . $this->convertToDate($data->created_at),
+        ],
+      ],
+      'footer' => [
+        ['align' => 'right', 'data' => ['Total', number_format($total,0,'.',',')]],
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data->employee->name]],
+      ],
+      'table' => [
+        'header' => ['No', 'Keterangan', 'Nominal'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
+        )
+      ]
+    );
+    $paper['footer'][] = [
+      'align' => 'center', 'data' => [
+        str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT),
+        str_pad('_', strlen($data->employee->name) + 2, '_', STR_PAD_RIGHT)
+      ]
+    ];
+    $printed = new ContinousPaper($paper);
+    $result .= $printed->output() . "\n";
+    return response($result, 200)->header('Content-Type', 'text/plain');
+//    return view('backend.accounting.monthlysalarydetail.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
   public function update(Request $request, $id)
@@ -130,7 +183,7 @@ class MonthlySalaryDetailController extends Controller
             'kredit' => $data->monthlysalarydetailemployees_sum_amount,
             'table_ref' => 'monthlysalarydetail',
             'code_ref' => $id,
-            'description' => "Pembayaran gaji karyawaan $employee->name bulan ". $data->monthlysalary->name
+            'description' => "Pembayaran gaji karyawaan $employee->name bulan " . $data->monthlysalary->name
           ]);
 
           Journal::create([
@@ -140,7 +193,7 @@ class MonthlySalaryDetailController extends Controller
             'kredit' => 0,
             'table_ref' => 'monthlysalarydetail',
             'code_ref' => $id,
-            'description' => "Beban gaji karyawaan $employee->name dengan $coa->name bulan ". $data->monthlysalary->name
+            'description' => "Beban gaji karyawaan $employee->name dengan $coa->name bulan " . $data->monthlysalary->name
           ]);
 
           $data->update([
@@ -172,8 +225,7 @@ class MonthlySalaryDetailController extends Controller
     return $response;
   }
 
-  public
-  function datatabledetail($id)
+  public function datatabledetail($id)
   {
     $data = MonthlySalaryDetailEmployee::with(['employeemaster'])->where('monthly_salary_detail_id', $id);
 

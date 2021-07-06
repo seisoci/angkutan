@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
@@ -15,6 +16,7 @@ use App\Models\Prefix;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -213,7 +215,66 @@ class InvoiceKasbonEmployeeController extends Controller
       return [$item['name'] => $item['value']];
     });
     $data = InvoiceKasbonEmployee::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['employee:id,name', 'kasbonemployees', 'paymentkasbonemployes'])->firstOrFail();
-    return view('backend.accounting.invoicekasbonemployees.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+
+    $result = '';
+    $no = 1;
+    foreach ($data->kasbonemployees as $val):
+      $item[] = ['no' => $no++, 'nama' => $val->memo, 'nominal' => number_format($val->amount, 0, '.', ',')];
+    endforeach;
+
+    $item[] = ['no' => str_pad('Pembayaran', 36, '-', STR_PAD_BOTH)];
+    $item[] = ['no' => 'No', 'nama' => 'Tgl Pembayaran', 'nominal' => 'Nominal'];
+    $item[] = ['no' => '------------------------------------'];
+
+    $noPay = 1;
+    foreach ($data->paymentkasbonemployes as $val):
+      $item[] = ['no' => $noPay++, 'nama' => $val->date_payment, 'nominal' => number_format($val->payment, 0, '.', ',')];
+    endforeach;
+    $item[] = ['no' => '------------------------------------'];
+    $item[] = ['no' => '', 'nama' => 'Total Kasbon', 'nominal' => number_format($data->total_kasbon, 0, '.', ',')];
+    $item[] = ['no' => '', 'nama' => 'Total Pembayaran', 'nominal' => number_format($data->total_payment, 0, '.', ',')];
+    $item[] = ['no' => '', 'nama' => 'Sisa Tagihan', 'nominal' => number_format($data->rest_payment, 0, '.', ',')];
+
+    $paper = array(
+      'panjang' => 36,
+      'baris' => 31,
+      'spasi' => 2,
+      'column_width' => [
+        'header' => [36, 0],
+        'table' => [3, 22, 11],
+        'footer' => [18, 18]
+      ],
+      'header' => [
+        'left' => [
+          'ALUSINDO',
+          $profile['address'],
+          'PEMBAYARAN KASBON KARYAWAAN',
+          'No. Kasbon: '. $data->num_invoice,
+          'Nama: ' . $data->employee->name,
+          'Tgl Pembayaran: ' . $this->convertToDate($data->created_at),
+        ],
+        'right' => [
+          ''
+        ]
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data->employee->name]],
+      ],
+      'table' => [
+        'header' => ['No', 'Keterangan', 'Nominal'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
+        )
+      ]
+    );
+    $printed = new ContinousPaper($paper);
+    $result .= $printed->output() . "\n";
+    return response($result, 200)->header('Content-Type', 'text/plain');
+//    return view('backend.accounting.invoicekasbonemployees.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
   public function edit($id)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Driver;
 use App\Models\InvoiceUsageItem;
@@ -10,13 +11,17 @@ use App\Models\Prefix;
 use App\Models\Setting;
 use App\Models\Stock;
 use App\Models\UsageItem;
+use App\Traits\CarbonTrait;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class InvoiceUsageItemController extends Controller
 {
+  use CarbonTrait;
+
   function __construct()
   {
     $this->middleware('permission:invoiceusageitems-list|invoiceusageitems-create|invoiceusageitems-edit|invoiceusageitems-delete', ['only' => ['index']]);
@@ -179,7 +184,54 @@ class InvoiceUsageItemController extends Controller
       return [$item['name'] => $item['value']];
     });
     $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
-    return view('backend.invoice.invoiceusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+    $result = '';
+    $no = 1;
+    foreach ($data->usageitem as $val):
+      $item[] = ['no' => $no++, 'nama' => $val->sparepart->name, 'nominal' => $val->qty];
+    endforeach;
+
+
+    $paper = array(
+      'panjang' => 35,
+      'baris' => 31,
+      'spasi' => 2,
+      'column_width' => [
+        'header' => [35, 0],
+        'table' => [3, 28, 4],
+        'footer' => [18, 17]
+      ],
+      'header' => [
+        'left' => [
+          'ALUSINDO',
+          $profile['address'],
+          'PEMAKAIAN BARANG',
+          'No. Pemakaian: ' . $data->num_invoice,
+          'Nama: ' . $data->driver->name,
+          'No Polisi: ' . $data->transport->num_pol,
+          'Tgl Pengambilan: ' . $this->convertToDate($data->created_at),
+        ],
+        'right' => [
+          ''
+        ]
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
+      ],
+      'table' => [
+        'header' => ['No', 'Nama Barang', 'Jml'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
+        )
+      ]
+    );
+    $printed = new ContinousPaper($paper);
+    $result .= $printed->output() . "\n";
+    return response($result, 200)->header('Content-Type', 'text/plain');
+//    return view('backend.invoice.invoiceusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
   }
 
 

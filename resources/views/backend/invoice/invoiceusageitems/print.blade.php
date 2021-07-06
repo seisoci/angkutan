@@ -74,7 +74,7 @@
           <tr>
             <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
             <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" colspan="2" class="text-left" style="width:15%">No. Referensi</td>
+            <td scope="col" colspan="2" class="text-left" style="width:15%">No. Pemakaian</td>
             <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
             <td scope="col" class="text-left" style="width:23%"> {{ $data->num_invoice }}</td>
           </tr>
@@ -99,7 +99,7 @@
         <thead>
           <tr>
             <th scope="col" style="width:5%">#</th>
-            <th scope="col">Produk</th>
+            <th scope="col">Nama Barang</th>
             <th scope="col" style="width:5%" class="text-center">Jumlah</th>
           </tr>
         </thead>

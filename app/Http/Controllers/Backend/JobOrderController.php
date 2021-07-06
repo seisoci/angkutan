@@ -321,16 +321,17 @@ class JobOrderController extends Controller
     endforeach;
     $result = '';
     $paper = array(
-      'panjang' => 40,
-      'baris' => 28,
-      'spasi' => 1,
+      'panjang' => 35,
+      'baris' => 31,
+      'spasi' => 2,
       'column_width' => [
-        'header' => [40, 0],
-        'table' => [3, 20, 17],
-        'footer' => [20, 20]
+        'header' => [35, 0],
+        'table' => [3, 22, 10],
+        'footer' => [18, 17]
       ],
       'header' => [
         'left' => [
+          'ALUSINDO',
           'JOB ORDER',
           'NO. JO: ' . $data->num_prefix,
           'KODE JOB ORDER : ' . $data->num_prefix,
@@ -344,7 +345,7 @@ class JobOrderController extends Controller
         ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
         ['align' => 'center', 'data' => ['', '']],
         ['align' => 'center', 'data' => ['', '']],
-        ['align' => 'center', 'data' => ['', '']],
+//        ['align' => 'center', 'data' => ['', '']],
         ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
       ],
       'table' => [
@@ -355,13 +356,12 @@ class JobOrderController extends Controller
         )
       ]
     );
-    $paper['footer'][] = [
-      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
-    ];
+//    $paper['footer'][] = [
+//      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
+//    ];
     $printed = new ContinousPaper($paper);
     $result .= $printed->output() . "\n";
-    print_r($result);
-//    return view('backend.operational.joborders.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+     return response($result, 200)->header('Content-Type', 'text/plain');
   }
 
   public function update(Request $request, $id)

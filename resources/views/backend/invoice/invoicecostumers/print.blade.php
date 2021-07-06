@@ -146,7 +146,7 @@
         </tbody>
       </table>
     </div>
-    <h4><u>Pembayaran</u></h4>
+    <h4 class="text-dark"><u>Pembayaran</u></h4>
     <table class="table">
       <thead>
       <tr>

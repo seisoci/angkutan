@@ -68,6 +68,10 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
+        <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+        </td>
+      </tr>
+      <tr>
         <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Supir</td>
@@ -82,7 +86,7 @@
         <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
       </tr>
       <tr>
-        <td scope="col">Memo : {{ $data->memo ?? ''}}</td>
+        <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
       </tr>
       </tbody>
     </table>
@@ -90,12 +94,14 @@
     <table class="table">
       <thead>
       <tr>
+        <th scope="col" class="text-left">Keterangan</th>
         <th scope="col" class="text-right">Nominal</th>
       </tr>
       </thead>
       <tbody>
       <tr>
-        <td class="text-right">{{ number_format($data->amount, 2, ',', '.') }}</td>
+        <td class="text-left">{{ $data->memo }}</td>
+        <td class="text-right">{{ number_format($data->amount, 2, '.', ',') }}</td>
       </tr>
       </tbody>
     </table>
@@ -105,7 +111,7 @@
         <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  auth()->user()->name }}</u></h5>
       </div>
       <div class="ml-20">
-        <h4  class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+        <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
         <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  $data->driver->name }}</u></h5>
       </div>
     </div>

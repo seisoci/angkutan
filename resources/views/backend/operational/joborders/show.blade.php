@@ -21,12 +21,12 @@
             </div>
             <div class="d-flex flex-column align-items-md-end px-0">
               <!--begin::Logo-->
-{{--              <a href="#" class="mb-5">--}}
-{{--                <img--}}
-{{--                  src="{{ $profile['logo_url'] != NULL ? asset("/images/thumbnail/".$profile['logo_url']) : asset('media/bg/no-content.svg') }}"--}}
-{{--                  width="75px" height="75px"/>--}}
-{{--              </a>--}}
-              <!--end::Logo-->
+            {{--              <a href="#" class="mb-5">--}}
+            {{--                <img--}}
+            {{--                  src="{{ $profile['logo_url'] != NULL ? asset("/images/thumbnail/".$profile['logo_url']) : asset('media/bg/no-content.svg') }}"--}}
+            {{--                  width="75px" height="75px"/>--}}
+            {{--              </a>--}}
+            <!--end::Logo-->
             </div>
           </div>
           <div class="border-bottom w-100"></div>
@@ -114,7 +114,7 @@
                 <tr class="font-weight-boldest py-1" style="height: 50px">
                   <td width="30%" class="pr-7">{{ $item->expense->name }}</td>
                   <td width="45%" class="pr-7">{{ $item->description  }}</td>
-                  <td width="100%" class="currency pr-7 text-right">{{ $item->amount }}</td>
+                  <td width="100%" class="currency pr-7 text-right">{{ number_format($item->amount, 0,'.',',') }}</td>
                   @if ($data->status_cargo != 'selesai' && $data->status_cargo != 'batal')
                     <td width="20%">
                       <button href="#" data-toggle="modal" data-target="#modalDelete"
@@ -134,10 +134,12 @@
                       <select class="form-control select2Expense" name="expense_id" style="width: 200px"></select>
                     </td>
                     <td class="d-print-none pr-7" style="width: 250px">
-                      <input type="text" class="form-control" name="description" placeholder="Keterangan"  style="width: 250px"/>
+                      <input type="text" class="form-control" name="description" placeholder="Keterangan"
+                             style="width: 250px"/>
                     </td>
                     <td class="d-print-none pr-7" style="width: 150px">
-                      <input type="text" class="form-control currency text-right" name="amount" placeholder="Biaya"  style="width: 150px"/>
+                      <input type="text" class="form-control currency text-right" name="amount" placeholder="Biaya"
+                             style="width: 150px"/>
                     </td>
                     <td class="d-print-none pr-7" style="width: 250px">
                       <select name="coa_id" class="form-control" style="width: 250px;">
@@ -164,9 +166,15 @@
       <div class="row justify-content-center py-8 px-8 py-md-10 px-md-0 d-print-none">
         <div class="col-md-9">
           <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-primary font-weight-bold" onclick="window.print();">Print
-              Job Order
-            </button>
+            {{--            <button type="button" class="btn btn-primary font-weight-bold" onclick="window.print();">Print--}}
+            {{--              Job Order--}}
+            {{--            </button>--}}
+            <a href="#" id="btn_print" class="btn btn-primary font-weight-bold" target="_blank">
+                  <span class="navi-icon">
+                    <i class="la la-print"></i>
+                  </span>
+              <span class="navi-text">Print</span>
+            </a>
           </div>
         </div>
       </div>
@@ -207,6 +215,23 @@
   {{-- vendors --}}
   <script>
     $(document).ready(function () {
+      $('#btn_print').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+          url: "{{ $config['print_url'] }}",
+          success: function (text) {
+            $.post('http://localhost/dotmatrix/', JSON.stringify({
+              printer: 'DotMatrix',
+              data: text,
+              autocut: true
+            }), function (response) {
+              console.log(response);
+            });
+
+          }
+        });
+      });
+
       $('body').addClass('print-content-only');
       $(".currency").inputmask('decimal', {
         groupSeparator: '.',
