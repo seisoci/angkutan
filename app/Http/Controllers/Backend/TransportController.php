@@ -16,9 +16,9 @@ class TransportController extends Controller
   function __construct()
   {
     $this->middleware('permission:transports-list|transports-create|transports-edit|transports-delete', ['only' => ['index']]);
-    $this->middleware('permission:transports-create', ['only' => ['create', 'store']]);
-    $this->middleware('permission:transports-edit', ['only' => ['edit', 'update']]);
-    $this->middleware('permission:transports-delete', ['only' => ['destroy']]);
+    $this->middleware('permission:transports-create|anotherexpedition-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:transports-edit|anotherexpedition-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:transports-delete|anotherexpedition-delete', ['only' => ['destroy']]);
   }
 
   public function index(Request $request)

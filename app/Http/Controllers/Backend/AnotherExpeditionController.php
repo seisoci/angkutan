@@ -15,7 +15,7 @@ class AnotherExpeditionController extends Controller
   function __construct()
   {
     $this->middleware('permission:anotherexpedition-list|anotherexpedition-create|anotherexpedition-edit|anotherexpedition-delete', ['only' => ['index']]);
-    $this->middleware('permission:anotherexpedition-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:anotherexpedition-create', ['only' => ['create', 'store', 'create_transport', 'create_driver']]);
     $this->middleware('permission:anotherexpedition-edit', ['only' => ['edit', 'update']]);
     $this->middleware('permission:anotherexpedition-delete', ['only' => ['destroy']]);
   }
@@ -116,12 +116,6 @@ class AnotherExpeditionController extends Controller
     return view('backend.masteroperational.drivers.create', compact('config', 'page_breadcrumbs', 'another_expedition_id'));
   }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @return \Illuminate\Http\Response
-   */
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
@@ -143,13 +137,6 @@ class AnotherExpeditionController extends Controller
     return $response;
   }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @param \App\Models\AnotherExpedition $anotherExpedition
-   * @return \Illuminate\Http\Response
-   */
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
@@ -172,12 +159,6 @@ class AnotherExpeditionController extends Controller
     return $response;
   }
 
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param \App\Models\AnotherExpedition $anotherExpedition
-   * @return \Illuminate\Http\Response
-   */
   public function destroy($id)
   {
     $response = response()->json([

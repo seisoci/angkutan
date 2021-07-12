@@ -101,8 +101,8 @@
             <div class="form-group">
               <label>Tipe Ongkosan<span class="text-danger">*</span></label>
               <select class="form-control" id="select2Type" name="type">
-                <option value="fix">Fix</option>
-                <option value="calculate">Kalkulasi (Ongkosan * Kapasistas (KG/KUBIK/DLL) )</option>
+                <option value="fix">Fix (Borongan)</option>
+                <option value="calculate">Kalkulasi (Ongkosan * Kapasistas (KG/KUBIK/TON/DLL) )</option>
               </select>
             </div>
             <div class="form-group">
@@ -283,13 +283,13 @@
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             if (response.status == "success") {
               toastr.success(response.message, 'Success !');
-              setTimeout(function () {
-                if (response.redirect == "" || response.redirect == "reload") {
-                  location.reload();
-                } else {
-                  location.href = response.redirect;
-                }
-              }, 1000);
+              // setTimeout(function () {
+              //   if (response.redirect == "" || response.redirect == "reload") {
+              //     location.reload();
+              //   } else {
+              //     location.href = response.redirect;
+              //   }
+              // }, 1000);
             } else {
               $("[role='alert']").parent().removeAttr("style");
               $(".alert-text").html('');

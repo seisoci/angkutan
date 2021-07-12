@@ -71,8 +71,8 @@ class SparepartController extends Controller
     $validator = Validator::make($request->all(), [
       'brand_id' => 'required|integer',
       'name' => 'required|string',
-      'categories.*' => 'required|array',
-      'categories' => 'required|distinct',
+      'categories' => 'required|array',
+      'categories.*' => 'required|distinct',
       'photo' => 'image|mimes:jpg,png,jpeg|max:2048',
     ]);
 
@@ -117,8 +117,8 @@ class SparepartController extends Controller
     $validator = Validator::make($request->all(), [
       'brand_id' => 'required|integer',
       'name' => 'required|string',
-      'categories.*' => 'required|array',
-      'categories' => 'required|distinct',
+      'categories' => 'required|array',
+      'categories.*' => 'required|distinct',
       'photo' => 'image|mimes:jpg,png,jpeg|max:2048',
     ]);
 

@@ -10,15 +10,16 @@ use DataTables;
 use DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Request as Req;
 
 class DriverController extends Controller
 {
   function __construct()
   {
     $this->middleware('permission:drivers-list|drivers-create|drivers-edit|drivers-delete', ['only' => ['index']]);
-    $this->middleware('permission:drivers-create', ['only' => ['create', 'store']]);
-    $this->middleware('permission:drivers-edit', ['only' => ['edit', 'update']]);
-    $this->middleware('permission:drivers-delete', ['only' => ['destroy']]);
+    $this->middleware('permission:drivers-create|anotherexpedition-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:drivers-edit|anotherexpedition-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:drivers-delete|anotherexpedition-delete', ['only' => ['destroy']]);
   }
 
   public function index(Request $request)

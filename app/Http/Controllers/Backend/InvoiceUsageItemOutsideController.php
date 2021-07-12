@@ -28,7 +28,6 @@ class InvoiceUsageItemOutsideController extends Controller
     $this->middleware('permission:invoiceusageitemsoutside-list|invoiceusageitemsoutside-create|invoiceusageitemsoutside-edit|invoiceusageitemsoutside-delete', ['only' => ['index']]);
     $this->middleware('permission:invoiceusageitemsoutside-create', ['only' => ['create', 'store']]);
     $this->middleware('permission:invoiceusageitemsoutside-edit', ['only' => ['edit', 'update']]);
-    $this->middleware('permission:invoiceusageitemsoutside-delete', ['only' => ['destroy']]);
   }
 
   public function index(Request $request)
@@ -210,7 +209,7 @@ class InvoiceUsageItemOutsideController extends Controller
       ];
     endforeach;
     $item[] = ['no' => '------------------------------------'];
-    $item[] = ['no' => '', '1' => '', '2'=>'','name'=>'Total','nominal' => number_format($data->total_payment, 0, '.', ',')];
+    $item[] = ['no' => '', '1' => '', '2' => '', 'name' => 'Total', 'nominal' => number_format($data->total_payment, 0, '.', ',')];
     $paper = array(
       'panjang' => 36,
       'baris' => 31,

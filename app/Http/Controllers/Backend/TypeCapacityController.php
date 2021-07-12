@@ -10,11 +10,15 @@ use Validator;
 
 class TypeCapacityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
+  function __construct()
+  {
+    $this->middleware('permission:typecapacities-list|typecapacities-create|typecapacities-edit|typecapacities-delete', ['only' => ['index']]);
+    $this->middleware('permission:typecapacities-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:typecapacities-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:typecapacities-delete', ['only' => ['destroy']]);
+  }
+
     public function index(Request $request)
     {
       $config['page_title']       = "List Tipe Kapasitas";
@@ -36,12 +40,7 @@ class TypeCapacityController extends Controller
       return view('backend.masteroperational.typecapacities.index', compact('config', 'page_breadcrumbs'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
       $validator = Validator::make($request->all(), [
@@ -62,13 +61,7 @@ class TypeCapacityController extends Controller
       return $response;
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\TypeCapacity  $TypeCapacity
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, $id)
     {
       $validator = Validator::make($request->all(), [

@@ -76,10 +76,10 @@ class RoadMoneyController extends Controller
 
     if($validator->passes()){
       $check = RoadMoney::where([
-        ['costumer_id', '=', $request->costumer_id],
-        ['route_from', '=', $request->route_from],
-        ['route_to', '=', $request->route_to],
-        ['cargo_id', '=', $request->cargo_id]
+        ['costumer_id', '=', $request->input('costumer_id')],
+        ['route_from', '=', $request->input('route_from')],
+        ['route_to', '=', $request->input('route_to')],
+        ['cargo_id', '=', $request->input('cargo_id')]
       ])->count();
       if($check <= 0){
         $data = RoadMoney::create([
@@ -156,7 +156,6 @@ class RoadMoneyController extends Controller
       $response = response()->json([
         'status' => 'success',
         'message' => 'Data has been updated',
-        'redirect' => '/backend/roadmonies'
       ]);
 
     }else{
