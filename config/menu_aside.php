@@ -290,7 +290,7 @@ return [
         'recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
         'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside',
         'reportcostumers', 'reportdrivers', 'reporttransports',
-        'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo',
+        'reportjoborders', 'reportinvoicecustomers', 'reportinvoiceldo',
         'reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees',
         'reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks'
       ],
@@ -374,7 +374,7 @@ return [
           'title' => 'Laporan Job Order & Invoice',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo'],
+          'list' => ['reportjoborders', 'reportinvoicecustomers', 'reportinvoiceldo'],
           'submenu' => [
             [
               'title' => 'Laporan Tagihan Job Order',
