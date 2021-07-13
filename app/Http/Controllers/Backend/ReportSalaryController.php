@@ -22,7 +22,7 @@ class ReportSalaryController extends Controller
 
   function __construct()
   {
-    $this->middleware('permission:reportsalaries-list|reportsalaries-create|reportsalaries-edit|reportsalaries-delete', ['only' => ['index']]);
+    $this->middleware('permission:reportsalarydrivers-list|reportsalarydrivers-create|reportsalarydrivers-edit|reportsalarydrivers-delete', ['only' => ['index']]);
   }
 
   public function index(Request $request)

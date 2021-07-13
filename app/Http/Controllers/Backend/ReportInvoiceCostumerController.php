@@ -19,10 +19,9 @@ use Yajra\DataTables\Facades\DataTables;
 class ReportInvoiceCostumerController extends Controller
 {
   use CarbonTrait;
-
   function __construct()
   {
-    $this->middleware('permission:reportinvoicecostumers-list|reportinvoicecostumers-create|reportinvoicecostumers-edit|reportinvoicecostumers-delete', ['only' => ['index']]);
+    $this->middleware('permission:reportinvoicecustomers-list|reportinvoicecustomers-create|reportinvoicecustomers-edit|reportinvoicecustomers-delete', ['only' => ['index']]);
   }
 
   public function index(Request $request)
