@@ -25,10 +25,10 @@ class InvoiceCostumerController extends Controller
 
   function __construct()
   {
-    $this->middleware('permission:invoicecustomers-list|invoicecustomers-create|invoicecustomers-edit|invoicecustomers-delete', ['only' => ['index']]);
-    $this->middleware('permission:invoicecustomers-create', ['only' => ['create', 'store']]);
-    $this->middleware('permission:invoicecustomers-edit', ['only' => ['edit', 'update']]);
-    $this->middleware('permission:invoicecustomers-delete', ['only' => ['destroy']]);
+    $this->middleware('permission:invoicecostumers-list|invoicecostumers-create|invoicecostumers-edit|invoicecostumers-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoicecostumers-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoicecostumers-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoicecostumers-delete', ['only' => ['destroy']]);
   }
 
   public function index(Request $request)

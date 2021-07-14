@@ -119,7 +119,9 @@ return [
       'icon' => 'media/svg/icons/Home/Book-open.svg',
       'bullet' => 'dot',
       'root' => true,
-      'list' => ['mastercoa', 'journals', 'kasbonemployees', 'invoicekasbonemployees'],
+      'list' => ['mastercoa', 'journals', 'kasbonemployees', 'invoicekasbonemployees',
+        'employees', 'employeesmaster', 'employeessalary', 'monthlymaster'
+      ],
       'arrow' => true,
       'submenu' => [
         [
@@ -290,7 +292,7 @@ return [
         'recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
         'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside',
         'reportcostumers', 'reportdrivers', 'reporttransports',
-        'reportjoborders', 'reportinvoicecustomers', 'reportinvoiceldo',
+        'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo',
         'reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees',
         'reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks'
       ],
@@ -374,7 +376,7 @@ return [
           'title' => 'Laporan Job Order & Invoice',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['reportjoborders', 'reportinvoicecustomers', 'reportinvoiceldo'],
+          'list' => ['reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo'],
           'submenu' => [
             [
               'title' => 'Laporan Tagihan Job Order',

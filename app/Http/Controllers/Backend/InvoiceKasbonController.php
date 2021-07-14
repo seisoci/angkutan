@@ -25,7 +25,13 @@ use Validator;
 class InvoiceKasbonController extends Controller
 {
   use CarbonTrait;
-
+  function __construct()
+  {
+    $this->middleware('permission:invoicekasbons-list|invoicekasbons-create|invoicekasbons-edit|invoicekasbons-delete', ['only' => ['index']]);
+    $this->middleware('permission:invoicekasbons-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:invoicekasbons-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoicekasbons-delete', ['only' => ['destroy']]);
+  }
   public function index(Request $request)
   {
     $config['page_title'] = "List Invoice Kasbon Supir";

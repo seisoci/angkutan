@@ -91,8 +91,8 @@ class RoadMoneyController extends Controller
           'tax_pph'       => $request->input('tax_pph') ?? 0,
           'amount'        => $request->input('amount')
         ]);
-        $type_capacities = TypeCapacity::all();
-        $data->typecapacities()->attach($type_capacities);
+//        $type_capacities = TypeCapacity::all();
+//        $data->typecapacities()->attach($type_capacities);
 
         $response = response()->json([
           'status' => 'success',
@@ -121,7 +121,9 @@ class RoadMoneyController extends Controller
       ['page' => '#','title' => "Edit Uang Jalan"],
     ];
 
-    $data = RoadMoney::with(['costumers', 'routefrom', 'routeto', 'cargo'])->findOrFail($id);
+    $data = RoadMoney::with(['costumers', 'routefrom', 'routeto', 'cargo', 'typecapacities'])->findOrFail($id);
+
+//    dd($data->toArray());
     return view('backend.masteroperational.roadmonies.edit',compact('config', 'page_breadcrumbs', 'data'));
   }
 
