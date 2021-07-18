@@ -152,7 +152,7 @@ class JobOrderController extends Controller
       'route_to' => 'required|integer',
       'cargo_id' => 'required|integer',
       'basic_price' => 'required|gt:0',
-      'road_money' => 'required|gt:0',
+      'road_money' => 'required',
     ]);
     if ($validator->passes()) {
       try {
@@ -177,6 +177,7 @@ class JobOrderController extends Controller
           ->where('journals.coa_id', $request->coa_id)
           ->groupBy('journals.coa_id')
           ->first();
+
         if (($checksaldo->saldo ?? FALSE) && $request->road_money <= $checksaldo->saldo) {
           $data = new JobOrder();
           if ($request->type === 'self') {

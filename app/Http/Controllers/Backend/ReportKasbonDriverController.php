@@ -23,6 +23,7 @@ class ReportKasbonDriverController extends Controller
   {
     $this->middleware('permission:reportkasbondrivers-list|reportkasbondrivers-create|reportkasbondrivers-edit|reportkasbondrivers-delete', ['only' => ['index']]);
   }
+
   public function index(Request $request)
   {
     $config['page_title'] = "Laporan Data Kasbon Supir";
@@ -78,11 +79,11 @@ class ReportKasbonDriverController extends Controller
     $driver = Driver::find($driver_id)->name ?? "All";
 
     if ($status == 'none') {
-      $statusPembayaran = 'Unpiad';
-    } elseif ($status == "1") {
-      $statusPembayaran = 'Paid';
-    } else {
-      $statusPembayaran = "All";
+      $statusPembayaran = 'Belum Lunas';
+    } elseif ($status == '1') {
+      $statusPembayaran = 'Dicicil';
+    } elseif($status == '2') {
+      $statusPembayaran = "Lunas";
     }
 
     $data = Kasbon::join('drivers', 'kasbons.driver_id', '=', 'drivers.id')
@@ -263,11 +264,11 @@ class ReportKasbonDriverController extends Controller
     $date = $request->date;
     $driver = Driver::find($driver_id)->name ?? "All";
     if ($status == 'none') {
-      $statusPembayaran = 'Unpaid';
-    } elseif ($status == "1") {
-      $statusPembayaran = 'Paid';
-    } else {
-      $statusPembayaran = "All";
+      $statusPembayaran = 'Belum Lunas';
+    } elseif ($status == '1') {
+      $statusPembayaran = 'Dicicil';
+    } elseif($status == '2') {
+      $statusPembayaran = "Lunas";
     }
 
     $data = Kasbon::join('drivers', 'kasbons.driver_id', '=', 'drivers.id')

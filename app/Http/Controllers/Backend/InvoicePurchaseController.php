@@ -7,13 +7,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\InvoicePurchase;
+use App\Models\InvoiceReturPurchase;
+use App\Models\InvoiceUsageItem;
 use App\Models\Journal;
 use App\Models\Prefix;
 use App\Models\Purchase;
 use App\Models\PurchasePayment;
+use App\Models\ReturPurchase;
 use App\Models\Setting;
 use App\Models\Stock;
 use App\Models\SupplierSparepart;
+use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
 use DataTables;
 use DB;
@@ -39,6 +43,7 @@ class InvoicePurchaseController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "List Purchase Order"],
     ];
+
     if ($request->ajax()) {
       $data = InvoicePurchase::query()
         ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'));
@@ -46,13 +51,16 @@ class InvoicePurchaseController extends Controller
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
           $restPayment = $row->rest_payment != 0 ? '<a href="invoicepurchases/' . $row->id . '/edit" class="dropdown-item">Bayar Sisa</a>' : NULL;
+          $usageItem = UsageItem::where('invoice_purchase_id', $row->id)->exists();
+          $invoiceReturItem = InvoiceReturPurchase::where('invoice_purchase_id', $row->id)->exists();
+          $deleteBtn = $usageItem || $invoiceReturItem ? NULL : '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
           $actionBtn = '
               <div class="dropdown">
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-eye"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    ' . $restPayment . '
+                    ' . $restPayment . $deleteBtn . '
                     <a href="invoicepurchases/' . $row->id . '" class="dropdown-item">Invoice Detail</a>
                   </div>
               </div>
@@ -482,6 +490,19 @@ class InvoicePurchaseController extends Controller
       } catch (\Throwable $throw) {
         DB::rollBack();
       }
+    }
+    return $response;
+  }
+
+  public function destroy($id)
+  {
+    $data = InvoicePurchase::findOrFail($id);
+    Journal::where('table_ref', 'invoicepurchases')->where('code_ref', $data->id)->delete();
+    if ($data->delete()) {
+      $response = response()->json([
+        'status' => 'success',
+        'message' => 'Data has been deleted',
+      ]);
     }
     return $response;
   }

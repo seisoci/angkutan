@@ -30,7 +30,6 @@ class InvoiceKasbonEmployeeController extends Controller
     $this->middleware('permission:invoicekasbonemployees-list|invoicekasbonemployees-create|invoicekasbonemployees-edit|invoicekasbonemployees-delete', ['only' => ['index']]);
     $this->middleware('permission:invoicekasbonemployees-create', ['only' => ['create', 'store']]);
     $this->middleware('permission:invoicekasbonemployees-edit', ['only' => ['edit', 'update']]);
-    $this->middleware('permission:invoicekasbonemployees-delete', ['only' => ['destroy']]);
   }
 
   public function index(Request $request)
@@ -115,6 +114,8 @@ class InvoiceKasbonEmployeeController extends Controller
         $payments = $request->payment;
         $prefix = Prefix::find($request->prefix);
         $employee = Employee::findOrFail($request->employee_id);
+        $statusPayment = 1;
+
         foreach ($payments['date'] as $key => $item):
           $totalPayment += $payments['payment'][$key];
         endforeach;
@@ -129,10 +130,16 @@ class InvoiceKasbonEmployeeController extends Controller
           'memo' => $request->input('memo'),
         ]);
 
+        if ($restPayment > 0) {
+          $statusPayment = '1';
+        } else {
+          $statusPayment = '2';
+        }
 
         foreach ($request->kasbon_id as $item):
-          KasbonEmployee::where('id', $item)->update(['invoice_kasbon_employee_id' => $data->id, 'status' => '1']);
+          KasbonEmployee::where('id', $item)->update(['invoice_kasbon_employee_id' => $data->id, 'status' => $statusPayment]);
         endforeach;
+
         foreach ($payments['date'] as $key => $item):
           PaymentKasbonEmployee::create([
             'invoice_kasbon_employee_id' => $data->id,
@@ -307,11 +314,14 @@ class InvoiceKasbonEmployeeController extends Controller
         DB::beginTransaction();
         $totalPayment = 0;
         $payments = $request->payment;
-
+        $statusPayment = 1;
         foreach ($payments['date'] as $key => $item):
           $totalPayment += $payments['payment'][$key];
         endforeach;
         $data = InvoiceKasbonEmployee::findOrFail($id);
+        $pluck = KasbonEmployee::whereHas('invoicekasbonemployee', function ($query) use ($id) {
+          return $query->where('id', '=', $id);
+        })->pluck('id');
         $employee = Employee::findOrFail($data->employee_id);
 
         $restPayment = $data->rest_payment;
@@ -321,6 +331,15 @@ class InvoiceKasbonEmployeeController extends Controller
           'total_payment' => $totalPayment,
           'rest_payment' => $restPayment
         ]);
+
+        if ($restPayment > 0) {
+          $statusPayment = '1';
+        } else {
+          $statusPayment = '2';
+        }
+
+        KasbonEmployee::whereIn('id', $pluck)->update(['status' => $statusPayment]);
+
         foreach ($payments['date'] as $key => $item):
           PaymentKasbonEmployee::create([
             'invoice_kasbon_employee_id' => $data->id,
@@ -336,6 +355,7 @@ class InvoiceKasbonEmployeeController extends Controller
             'debit' => $payments['payment'][$key],
             'kredit' => 0,
             'table_ref' => 'invoicekasbonemployees',
+            'code_ref' => $data->id,
             'description' => "Penambahan saldo dari kasbon karyawaan $employee->name"
           ]);
 
@@ -345,6 +365,7 @@ class InvoiceKasbonEmployeeController extends Controller
             'debit' => 0,
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbonemployees',
+            'code_ref' => $data->id,
             'description' => "Pembayaran kasbon karyawaan $employee->name ke $coa->name"
           ]);
         endforeach;

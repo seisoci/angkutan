@@ -26,8 +26,6 @@ class KasbonEmployeeController extends Controller
   {
     $this->middleware('permission:kasbonemployees-list|kasbonemployees-create|kasbonemployees-edit|kasbonemployees-delete', ['only' => ['index']]);
     $this->middleware('permission:kasbonemployees-create', ['only' => ['create', 'store']]);
-    $this->middleware('permission:kasbonemployees-edit', ['only' => ['edit', 'update']]);
-    $this->middleware('permission:kasbonemployees-delete', ['only' => ['destroy']]);
   }
 
   public function index(Request $request)
@@ -106,7 +104,7 @@ class KasbonEmployeeController extends Controller
           ->groupBy('journals.coa_id')
           ->first();
         if (($checksaldo->saldo ?? FALSE) && $request->amount <= $checksaldo->saldo) {
-          KasbonEmployee::create([
+          $kasbon = KasbonEmployee::create([
             'employee_id' => $request->input('employee_id'),
             'coa_id' => $request->input('coa_id'),
             'amount' => $request->input('amount'),
@@ -117,7 +115,8 @@ class KasbonEmployeeController extends Controller
             'date_journal' => $this->dateNow(),
             'debit' => $request->input('amount'),
             'kredit' => 0,
-            'table_ref' => 'kasbon',
+            'table_ref' => 'kasbonemployees',
+            'code_ref' => $kasbon->id,
             'description' => "Karyawaan $employee->name melakukan kasbon dengan $coa->name"
           ]);
           Journal::create([
@@ -126,6 +125,7 @@ class KasbonEmployeeController extends Controller
             'debit' => 0,
             'kredit' => $request->input('amount'),
             'table_ref' => 'kasbonemployees',
+            'code_ref' => $kasbon->id,
             'description' => "Pengeluaran untuk kasbon $employee->name"
           ]);
           $response = response()->json([

@@ -80,11 +80,11 @@ class ReportKasbonEmployeeController extends Controller
     $employee = Driver::find($employee_id)->name ?? "All";
 
     if ($status == 'none') {
-      $statusPembayaran = 'Unpiad';
-    } elseif ($status == "1") {
-      $statusPembayaran = 'Paid';
-    } else {
-      $statusPembayaran = "All";
+      $statusPembayaran = 'Belum Lunas';
+    } elseif ($status == '1') {
+      $statusPembayaran = 'Dicicil';
+    } elseif($status == '2') {
+      $statusPembayaran = "Lunas";
     }
 
     $data = KasbonEmployee::join('employees', 'kasbon_employees.employee_id', '=', 'employees.id')
@@ -265,11 +265,11 @@ class ReportKasbonEmployeeController extends Controller
     $date = $request->date;
     $employee = Employee::find($employee_id)->name ?? "All";
     if ($status == 'none') {
-      $statusPembayaran = 'Unpiad';
-    } elseif ($status == "1") {
-      $statusPembayaran = 'Paid';
-    } else {
-      $statusPembayaran = "All";
+      $statusPembayaran = 'Belum Lunas';
+    } elseif ($status == '1') {
+      $statusPembayaran = 'Dicicil';
+    } elseif($status == '2') {
+      $statusPembayaran = "Lunas";
     }
 
     $data = KasbonEmployee::join('employees', 'kasbon_employees.employee_id', '=', 'employees.id')

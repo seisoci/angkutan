@@ -88,7 +88,8 @@
                   <select class="form-control" id="selectStatus">
                     <option value="">All</option>
                     <option value="none">Belum Lunas</option>
-                    <option value="1">Lunas</option>
+                    <option value="1">Dicicil</option>
+                    <option value="2">Lunas</option>
                   </select>
                 </div>
               </div>
@@ -203,8 +204,9 @@
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
-                0: {'title': 'Unpaid', 'class': ' label-light-danger'},
-                1: {'title': 'Paid', 'class': ' label-light-success'},
+                0: {'title': 'Belum Lunas', 'class': ' label-light-danger'},
+                1: {'title': 'Dicicil', 'class': ' label-light-warning'},
+                2: {'title': 'Lunas', 'class': ' label-light-success'},
               };
               if (typeof status[data] === 'undefined') {
                 return data;

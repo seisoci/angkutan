@@ -119,65 +119,65 @@
                 <input type="hidden" name="basic_price" class="form-control currency basicprice"/>
                 <input type="text" class="form-control currency basicprice" disabled/>
               </div>
-            @endhasanyrole
-            <div class="form-group" style="display: none">
-              <label>Harga Dasar LDO</label>
-              <input type="text" name="basic_price_ldo" class="form-control currencyldo"/>
-            </div>
-            <div class="form-group">
-              <label>Muatan</label>
-              <div class="input-group">
-                <input name="payload" class="form-control text-right ton">
-                <div class="input-group-append">
-                  <span class="input-group-text">TON</span>
-                </div>
+              @endhasanyrole
+              <div class="form-group" style="display: none">
+                <label>Harga Dasar LDO</label>
+                <input type="text" name="basic_price_ldo" class="form-control currencyldo"/>
               </div>
-            </div>
-            @hasanyrole('super-admin|admin|akunting')
-            <div class="form-group">
-              <label>Total Ongkosan Dasar</label>
-              <input id="totalPayload" type="text" class="form-control currency" disabled/>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Tax PPH %</label>
-                  <div class="input-group">
-                    <input type="text" class="form-control" id="taxPercent" disabled/>
-                    <input type="hidden" class="form-control" name="tax_percent"/>
-                    <div class="input-group-append"><span class="input-group-text">%</span></div>
+              <div class="form-group">
+                <label>Muatan</label>
+                <div class="input-group">
+                  <input name="payload" class="form-control text-right ton">
+                  <div class="input-group-append">
+                    <span class="input-group-text">TON</span>
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Pajak PPH</label>
-                  <div class="input-group">
-                    <input type="text" class="form-control currency" id="taxFee" disabled/>
-                    <div class="input-group-append"><span class="input-group-text">Rp.</span></div>
+              @hasanyrole('super-admin|admin|akunting')
+              <div class="form-group">
+                <label>Total Ongkosan Dasar</label>
+                <input id="totalPayload" type="text" class="form-control currency" disabled/>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Tax PPH %</label>
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="taxPercent" disabled/>
+                      <input type="hidden" class="form-control" name="tax_percent"/>
+                      <div class="input-group-append"><span class="input-group-text">%</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Pajak PPH</label>
+                    <div class="input-group">
+                      <input type="text" class="form-control currency" id="taxFee" disabled/>
+                      <div class="input-group-append"><span class="input-group-text">Rp.</span></div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label>Total Ongkosan Dasar (Setelah Pajak)</label>
-              <input type="text" id="totalPayloadAfterTax" class="form-control currency" disabled/>
-            </div>
-            <div class="form-group">
-              <label>Fee Pemberian</label>
-              <input type="text" id="fee_thanks" class="form-control currency" disabled/>
-              <input type="hidden" class="form-control" name="fee_thanks" class="currency"/>
-            </div>
-            <div class="form-group">
-              <label>Total Ongkosan Dasar (Setelah Pemberian)</label>
-              <input type="text" id="totalPayloadAfterThanks" class="form-control currency" disabled/>
-            </div>
+              <div class="form-group">
+                <label>Total Ongkosan Dasar (Setelah Pajak)</label>
+                <input type="text" id="totalPayloadAfterTax" class="form-control currency" disabled/>
+              </div>
+              <div class="form-group">
+                <label>Fee Pemberian</label>
+                <input type="text" id="fee_thanks" class="form-control currency" disabled/>
+                <input type="hidden" class="form-control" name="fee_thanks" class="currency"/>
+              </div>
+              <div class="form-group">
+                <label>Total Ongkosan Dasar (Setelah Pemberian)</label>
+                <input type="text" id="totalPayloadAfterThanks" class="form-control currency" disabled/>
+              </div>
               @else
                 <div class="form-group" style="display: none">
                   <label>Total Ongkosan Dasar</label>
                   <input id="totalPayload" type="text" class="form-control currency" disabled/>
                 </div>
-                <div class="row"  style="display: none">
+                <div class="row" style="display: none">
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Tax PPH %</label>
@@ -211,18 +211,17 @@
                   <label>Total Ongkosan Dasar (Setelah Pemberian)</label>
                   <input type="text" id="totalPayloadAfterThanks" class="form-control currency" disabled/>
                 </div>
-            @endhasanyrole
-            <div class="form-group">
-              <label>Uang Jalan</label>
-              <input type="hidden" name="road_money" class="form-control currency"/>
-              <input type="text" name="road_money" class="form-control currency" disabled/>
-            </div>
-            @hasanyrole('super-admin|admin|akunting')
-            <div class="form-group">
-              <label>Grand Total Kotor</label>
-              <input type="text" name="grandtotalgross" class="form-control currency" disabled/>
-            </div>
-            @endhasanyrole
+                @endhasanyrole
+                <div class="form-group">
+                  <label>Uang Jalan</label>
+                  <input type="text" name="road_money" class="form-control currency" readonly/>
+                </div>
+                @hasanyrole('super-admin|admin|akunting')
+                <div class="form-group">
+                  <label>Grand Total Kotor</label>
+                  <input type="text" name="grandtotalgross" class="form-control currency" disabled/>
+                </div>
+                @endhasanyrole
           </div>
           @hasanyrole('super-admin|admin|akunting')
           <div class="col-md-4">
@@ -320,6 +319,7 @@
         digits: 0,
         rightAlign: true,
         autoUnmask: true,
+        allowMinus: false,
         removeMaskOnSubmit: true
       });
 
@@ -328,15 +328,17 @@
         digits: 0,
         rightAlign: true,
         autoUnmask: true,
+        allowMinus: false,
         removeMaskOnSubmit: true
       });
 
       $(".ton").inputmask({
-        'alias': 'decimal',
-        'autoGroup': true,
-        'digits': 3,
-        'digitsOptional': false,
-        'placeholder': '0.00'
+        alias: 'decimal',
+        autoGroup: true,
+        digits: 3,
+        digitsOptional: false,
+        allowMinus: false,
+        placeholder: '0.00'
       });
 
       $('.datepicker').datepicker({
@@ -364,6 +366,7 @@
 
       $('#selectExpedition').on('change', function (e) {
         if (this.value === 'self') {
+          $('input[name=road_money]').attr('readonly', true);
           $("#select2AnotherExpedition").parent().css("display", "none");
           $('input[name="basic_price_ldo"]').parent().css("display", "none");
           $("#percentSparepart").parent().parent().css("display", "block");
@@ -386,6 +389,7 @@
           $('#totalpayloadldoafterthanks').parent().find('label').css("display", "none");
           callSelf();
         } else {
+          $('input[name=road_money]').attr('readonly', false);
           $("#select2AnotherExpedition").parent().css("display", "block");
           $("#select2AnotherExpedition").parent().find('label').css("display", "block");
           $('input[name="basic_price_ldo"]').parent().css("display", "block");
@@ -406,6 +410,31 @@
           $('input[name="salary"]').parent().css("display", "none");
           callLdo();
         }
+        $("#select2RoadFrom").val("");
+        $("#select2RoadFrom").trigger("change");
+        $("#select2RoadTo").val("");
+        $("#select2RoadTo").trigger("change");
+        $("#select2RoadTo").val("");
+        $("#select2RoadTo").trigger("change");
+        $("#select2TypeCapacity").val("");
+        $("#select2TypeCapacity").trigger("change");
+        $('.basicprice').val('');
+        $('#totalpayloadldo').val('');
+        $('#selectTypeOngkosan').val('');
+        $('#selectTypeOngkosan').val('');
+        $('#convertToTon').val('');
+        $('#totalPayload').val('');
+        $('input[name=basic_price]').val('');
+        $('input[name=basic_price_ldo]').val('');
+        $('input[name=payload]').val('');
+        $('input[name=road_money]').val('');
+        $('input[name=grandtotalgross]').val('');
+        $('input[name=cut_sparepart]').val('');
+        $('input[name=salary]').val('');
+        $('input[name=grandtotalnetto]').val('');
+        $('input[name=tax_percent]').val('');
+        $('#taxPercent').val('');
+        $('.currency').val('');
       });
 
       $("#select2AnotherExpedition").select2({
@@ -612,7 +641,7 @@
             return query
           },
         },
-      }).on('change', function(){
+      }).on('change', function () {
         $("#select2TypeCapacity").val("");
         $("#select2TypeCapacity").trigger("change");
         $('#selectTypeOngkosan').val('');
@@ -761,7 +790,7 @@
         let sumPayloadLDO = basicPriceLDO * payload;
         let convertTo = (payload / 1000);
         let totalGrossLDO = sumPayloadLDO - roadMoney;
-        let totalNetto = sumPayloadAfterThanks - totalGrossLDO;
+        let totalNetto = sumPayloadAfterThanks - sumPayloadLDO;
         $('#convertToTon').val(convertTo);
         $('#totalPayload').val(sumPayload);
         $('#totalpayloadldo').val(sumPayloadLDO);
@@ -772,7 +801,7 @@
         $('input[name="grandtotalnetto"]').val(totalNetto);
       }
 
-      $('input[name=payload],input[name=basic_price_ldo]').on('keyup', function () {
+      $('input[name=payload],input[name=basic_price_ldo],input[name=road_money]').on('keyup', function () {
         let select = $('#selectExpedition').find(":selected").val();
         if (select === 'self') {
           callSelf();
@@ -801,7 +830,7 @@
           success: function (response) {
             if (response.data) {
               let data = response.data.pivot;
-              let taxfee= response.taxfee;
+              let taxfee = response.taxfee;
               let transport = response.type.type_car;
               let type = response.data.pivot.type;
               if (transport === 'engkel') {

@@ -303,7 +303,6 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('activitylog', BackendActivityLogController::class);
 
     //Report
-    Route::resource('reportcostumersldo', BackendReportCostumerLdoController::class);
     Route::resource('reportsparepart', BackendReportSparepartController::class);
     Route::resource('kasbon', BackendKasbonController::class);
     Route::get('reportcostumers', [BackendReportCostumerController::class, 'index'])->name('reportcostumers.index');

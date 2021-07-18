@@ -85,7 +85,7 @@ class KasbonController extends Controller
           ->groupBy('journals.coa_id')
           ->first();
         if (($checksaldo->saldo ?? FALSE) && $request->amount <= $checksaldo->saldo) {
-          Kasbon::create([
+          $kasbon = Kasbon::create([
             'driver_id' => $request->input('driver_id'),
             'coa_id' => $request->input('coa_id'),
             'amount' => $request->input('amount'),
@@ -97,6 +97,7 @@ class KasbonController extends Controller
             'debit' => $request->input('amount'),
             'kredit' => 0,
             'table_ref' => 'kasbon',
+            'code_ref' => $kasbon->id,
             'description' => "Supir $driver->name melakukan kasbon dengan $coa->name"
           ]);
           Journal::create([
@@ -105,6 +106,7 @@ class KasbonController extends Controller
             'debit' => 0,
             'kredit' => $request->input('amount'),
             'table_ref' => 'kasbon',
+            'code_ref' => $kasbon->id,
             'description' => "Pengeluaran untuk kasbon $driver->name"
           ]);
           $response = response()->json([

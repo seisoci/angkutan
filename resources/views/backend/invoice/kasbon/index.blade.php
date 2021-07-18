@@ -146,7 +146,8 @@
           render: function(data, type, full, meta) {
             let status = {
               0: {'title': 'Belum Dibayar', 'class': ' label-light-danger'},
-              1: {'title': 'Lunas', 'class': ' label-light-success'},
+              1: {'title': 'Dicicil', 'class': ' label-light-warning'},
+              2: {'title': 'Lunas', 'class': ' label-light-success'},
             };
             if (typeof status[data] === 'undefined') {
               return data;

@@ -25,13 +25,14 @@ use Validator;
 class InvoiceKasbonController extends Controller
 {
   use CarbonTrait;
+
   function __construct()
   {
     $this->middleware('permission:invoicekasbons-list|invoicekasbons-create|invoicekasbons-edit|invoicekasbons-delete', ['only' => ['index']]);
     $this->middleware('permission:invoicekasbons-create', ['only' => ['create', 'store']]);
     $this->middleware('permission:invoicekasbons-edit', ['only' => ['edit', 'update']]);
-    $this->middleware('permission:invoicekasbons-delete', ['only' => ['destroy']]);
   }
+
   public function index(Request $request)
   {
     $config['page_title'] = "List Invoice Kasbon Supir";
@@ -115,6 +116,7 @@ class InvoiceKasbonController extends Controller
         $prefix = Prefix::findOrFail($request->prefix);
         $totalPayment = 0;
         $payments = $request->payment;
+        $statusPayment = 1;
         $driver = Driver::findOrFail($request->driver_id);
 
         foreach ($payments['date'] as $key => $item):
@@ -131,9 +133,16 @@ class InvoiceKasbonController extends Controller
           'memo' => $request->input('memo'),
         ]);
 
+        if ($restPayment > 0) {
+          $statusPayment = '1';
+        } else {
+          $statusPayment = '2';
+        }
+
         foreach ($request->job_order_id as $item):
-          Kasbon::where('id', $item)->update(['invoice_kasbon_id' => $data->id, 'status' => '1']);
+          Kasbon::where('id', $item)->update(['invoice_kasbon_id' => $data->id, 'status' => $statusPayment]);
         endforeach;
+
         foreach ($payments['date'] as $key => $item):
           PaymentKasbon::create([
             'invoice_kasbon_id' => $data->id,
@@ -149,6 +158,7 @@ class InvoiceKasbonController extends Controller
             'debit' => $payments['payment'][$key],
             'kredit' => 0,
             'table_ref' => 'invoicekasbons',
+            'code_ref' => $data->id,
             'description' => "Penambahan saldo dari kasbon supir $driver->name"
           ]);
 
@@ -158,6 +168,7 @@ class InvoiceKasbonController extends Controller
             'debit' => 0,
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbons',
+            'code_ref' => $data->id,
             'description' => "Pembayaran kasbon supir $driver->name ke $coa->name"
           ]);
         endforeach;
@@ -249,7 +260,7 @@ class InvoiceKasbonController extends Controller
           strtoupper($profile['name']),
           $profile['address'],
           'PEMBAYARAN KASBON SUPIR',
-          'No. Kasbon: '. $data->num_invoice,
+          'No. Kasbon: ' . $data->num_invoice,
           'Nama: ' . $data->driver->name,
           'Tgl Pembayaran: ' . $this->convertToDate($data->created_at),
         ],
@@ -292,7 +303,6 @@ class InvoiceKasbonController extends Controller
     return view('backend.invoice.invoicekasbons.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
   }
 
-
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
@@ -309,10 +319,14 @@ class InvoiceKasbonController extends Controller
         DB::beginTransaction();
         $totalPayment = 0;
         $payments = $request->payment;
+        $statusPayment = 1;
         foreach ($payments['date'] as $key => $item):
           $totalPayment += $payments['payment'][$key];
         endforeach;
         $data = InvoiceKasbon::findOrFail($id);
+        $pluck = Kasbon::whereHas('invoicekasbon', function ($query) use ($id) {
+          return $query->where('id', '=', $id);
+        })->pluck('id');
         $driver = Driver::findOrFail($data->driver_id);
         $restPayment = $data->rest_payment;
         $restPayment -= $totalPayment;
@@ -321,6 +335,14 @@ class InvoiceKasbonController extends Controller
           'total_payment' => $totalPayment,
           'rest_payment' => $restPayment
         ]);
+
+        if ($restPayment > 0) {
+          $statusPayment = '1';
+        } else {
+          $statusPayment = '2';
+        }
+        Kasbon::whereIn('id', $pluck)->update(['status' => $statusPayment]);
+
         foreach ($payments['date'] as $key => $item):
           PaymentKasbon::create([
             'invoice_kasbon_id' => $data->id,
@@ -336,6 +358,7 @@ class InvoiceKasbonController extends Controller
             'debit' => $payments['payment'][$key],
             'kredit' => 0,
             'table_ref' => 'invoicekasbons',
+            'code_ref' => $data->id,
             'description' => "Penambahan saldo dari kasbon supir $driver->name"
           ]);
 
@@ -345,6 +368,7 @@ class InvoiceKasbonController extends Controller
             'debit' => 0,
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbons',
+            'code_ref' => $data->id,
             'description' => "Pembayaran kasbon supir $driver->name ke $coa->name"
           ]);
         endforeach;

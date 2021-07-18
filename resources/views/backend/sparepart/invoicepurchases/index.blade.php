@@ -72,6 +72,29 @@
     </div>
   </div>
 </div>
+<div class="modal fade text-left" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDeleteLabel">Delete</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <i aria-hidden="true" class="ki ki-close"></i>
+        </button>
+      </div>
+      <meta name="csrf-token" content="{{ csrf_token() }}">
+      @method('DELETE')
+      <div class="modal-body">
+        <a href="" type="hidden" name="id" disabled></a>
+        Are you sure you want to delete this item?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="formDelete" type="button" class="btn btn-danger">Accept</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 {{-- Styles Section --}}
@@ -88,7 +111,7 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
-    var dataTable = $('#Datatable').DataTable({
+    let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
@@ -111,8 +134,8 @@
     });
 
     $('#modalDelete').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
-      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.roles.index") }}/'+ id);
+      let id = $(event.relatedTarget).data('id');
+      $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.invoicepurchases.index") }}/'+ id);
     });
 
     $('#modalDelete').on('hidden.bs.modal', function (event) {
@@ -121,10 +144,10 @@
 
     $("#formDelete").click(function(e){
       e.preventDefault();
-      var form 	    = $(this);
-      var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
+      let form 	    = $(this);
+      let url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
       $.ajax({
         beforeSend:function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");

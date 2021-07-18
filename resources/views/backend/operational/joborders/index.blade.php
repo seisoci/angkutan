@@ -101,7 +101,7 @@
                 <div class="form-group">
                   <label>Tanggal Selesai:</label>
                   <input id="dateEnd" type="text" class="form-control datepicker" placeholder="Cari Tanggal"
-                         style="width:100% !important" readonl>
+                         style="width:100% !important" readonly>
                 </div>
               </div>
               <div class="col-md-3 my-md-0">
