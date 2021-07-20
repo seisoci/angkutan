@@ -103,7 +103,7 @@
               <label for="activeSelect">Tipe Ongkosan<span class="text-danger">*</span></label>
               <select id="selectTypeOngkosan" name="type_payload" class="form-control">
                 <option>-- Pilih Ongkosan --</option>
-                <option value="calculate">Kalkulasi (Uang Jalan Master * TON)</option>
+                <option value="calculate">Kalkulasi (Uang Jalan Master * KG)</option>
                 <option value="fix">FIX</option>
               </select>
             </div>
@@ -127,9 +127,9 @@
               <div class="form-group">
                 <label>Muatan</label>
                 <div class="input-group">
-                  <input name="payload" class="form-control text-right ton">
+                  <input type="text" name="payload" class="form-control text-right currency">
                   <div class="input-group-append">
-                    <span class="input-group-text">TON</span>
+                    <span class="input-group-text">KG</span>
                   </div>
                 </div>
               </div>
@@ -314,14 +314,17 @@
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
-      $(".currency").inputmask('decimal', {
-        groupSeparator: '.',
-        digits: 0,
-        rightAlign: true,
-        autoUnmask: true,
-        allowMinus: false,
-        removeMaskOnSubmit: true
-      });
+      function initCurrency(){
+        $(".currency").inputmask('decimal', {
+          groupSeparator: '.',
+          digits: 0,
+          rightAlign: true,
+          autoUnmask: true,
+          allowMinus: false,
+          removeMaskOnSubmit: true
+        });
+      }
+      initCurrency();
 
       $(".currencyldo").inputmask('decimal', {
         groupSeparator: '.',
@@ -422,7 +425,6 @@
         $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
         $('#selectTypeOngkosan').val('');
-        $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');
         $('input[name=basic_price_ldo]').val('');
@@ -524,7 +526,6 @@
         $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
         $('#selectTypeOngkosan').val('');
-        $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');
         $('input[name=basic_price_ldo]').val('');
@@ -566,7 +567,6 @@
         $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
         $('#selectTypeOngkosan').val('');
-        $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');
         $('input[name=basic_price_ldo]').val('');
@@ -607,7 +607,6 @@
         $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
         $('#selectTypeOngkosan').val('');
-        $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');
         $('input[name=basic_price_ldo]').val('');
@@ -648,7 +647,6 @@
         $('#selectTypeOngkosan').val('');
         $('.basicprice').val('');
         $('#totalpayloadldo').val('');
-        $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');
         $('input[name=basic_price_ldo]').val('');
@@ -683,7 +681,6 @@
         $('#selectTypeOngkosan').val('');
         $('.basicprice').val('');
         $('#totalpayloadldo').val('');
-        $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');
         $('input[name=basic_price_ldo]').val('');
@@ -698,7 +695,6 @@
       $('#selectTypeOngkosan').on('change', function () {
         $('.basicprice').val('');
         $('#totalpayloadldo').val('');
-        $('#convertToTon').val('');
         $('#totalPayload').val('');
         $('input[name=basic_price]').val('');
         $('input[name=basic_price_ldo]').val('');
@@ -726,14 +722,12 @@
         let taxPPH = sumPayload * tax_pph;
         let sumPayloadAfterTax = sumPayload - taxPPH;
         let sumPayloadAfterThanks = sumPayloadAfterTax - fee_thanks;
-        let convertTo = (payload / 1000);
         let totalGross = sumPayloadAfterThanks - roadMoney;
         let pecentSparePart = parseFloat('{{ $sparepart->value }}') / 100;
         let pecentSalary = parseFloat('{{ $gaji->value }}') / 100;
         let sparepart = totalGross * pecentSparePart;
         let salary = (totalGross - sparepart) * pecentSalary;
         let totalNetto = totalGross - sparepart - salary;
-        $('#convertToTon').val(convertTo);
         $('#totalPayload').val(sumPayload);
         $('#taxFee').val(taxPPH);
         $('#totalPayloadAfterTax').val(sumPayloadAfterTax);
@@ -746,8 +740,7 @@
 
       function callSelf() {
         let basicPrice = parseFloat($('.basicprice').val()) || 0;
-        let payload = parseFloat($('input[name=payload]').val()) || 0;
-        console.log(payload);
+        let payload = (parseFloat($('input[name=payload]').val()) /1000) || 0;
         let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
         let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
         let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
@@ -755,14 +748,12 @@
         let taxPPH = sumPayload * tax_pph;
         let sumPayloadAfterTax = sumPayload - taxPPH;
         let sumPayloadAfterThanks = sumPayloadAfterTax - fee_thanks;
-        let convertTo = (payload / 1000);
         let totalGross = sumPayloadAfterThanks - roadMoney;
         let pecentSparePart = parseFloat('{{ $sparepart->value }}') / 100;
         let pecentSalary = parseFloat('{{ $gaji->value }}') / 100;
         let sparepart = totalGross * pecentSparePart;
         let salary = (totalGross - sparepart) * pecentSalary;
         let totalNetto = totalGross - sparepart - salary;
-        $('#convertToTon').val(convertTo);
         $('#totalPayload').val(sumPayload);
         $('#taxFee').val(taxPPH);
         $('#totalPayloadAfterTax').val(sumPayloadAfterTax);
@@ -776,7 +767,7 @@
       function callLdo() {
         let basicPrice = parseFloat($('.basicprice').val()) || 0;
         let basicPriceLDO = parseFloat($('input[name="basic_price_ldo"]').val()) || 0;
-        let payload = parseFloat($('input[name=payload]').val()) || 0;
+        let payload = (parseFloat($('input[name=payload]').val()) /1000) || 0;
         let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
         let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
         let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
@@ -788,10 +779,8 @@
         let sumPayloadAfterThanks = sumPayloadAfterTax - fee_thanks;
         //ldo
         let sumPayloadLDO = basicPriceLDO * payload;
-        let convertTo = (payload / 1000);
         let totalGrossLDO = sumPayloadLDO - roadMoney;
         let totalNetto = sumPayloadAfterThanks - sumPayloadLDO;
-        $('#convertToTon').val(convertTo);
         $('#totalPayload').val(sumPayload);
         $('#totalpayloadldo').val(sumPayloadLDO);
         $('#taxFee').val(taxPPH);
@@ -856,6 +845,7 @@
       }
 
       $("#formStore").submit(function (e) {
+        $('.currency').inputmask('remove');
         e.preventDefault();
         let form = $(this);
         let btnSubmit = form.find("[type='submit']");
@@ -873,6 +863,7 @@
           url: url,
           data: data,
           success: function (response) {
+            initCurrency();
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             if (response.status === "success") {
               toastr.success(response.message, 'Success !');
@@ -893,6 +884,7 @@
             }
           },
           error: function (response) {
+            initCurrency();
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             toastr.error(response.responseJSON.message, 'Failed !');
           }

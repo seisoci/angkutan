@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Backend;
 use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Driver;
+use App\Models\InvoicePurchase;
+use App\Models\InvoiceReturPurchase;
 use App\Models\InvoiceUsageItem;
 use App\Models\Journal;
 use App\Models\Prefix;
@@ -44,6 +46,7 @@ class InvoiceUsageItemController extends Controller
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
+          $deleteBtn ='<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
           $actionBtn = '
               <div class="dropdown">
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -51,6 +54,7 @@ class InvoiceUsageItemController extends Controller
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a href="invoiceusageitems/' . $row->id . '" class="dropdown-item">Detail Pemakaian</a>
+                    '.$deleteBtn.'
                   </div>
               </div>
             ';
@@ -234,5 +238,16 @@ class InvoiceUsageItemController extends Controller
 //    return view('backend.invoice.invoiceusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
   }
 
-
+  public function destroy($id)
+  {
+    $data = InvoiceUsageItem::findOrFail($id);
+    Journal::where('table_ref', 'invoiceusageitems')->where('code_ref', $data->id)->delete();
+    if ($data->delete()) {
+      $response = response()->json([
+        'status' => 'success',
+        'message' => 'Data has been deleted',
+      ]);
+    }
+    return $response;
+  }
 }

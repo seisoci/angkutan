@@ -183,7 +183,7 @@ class JobOrderController extends Controller
           if ($request->type === 'self') {
             //CALCULATE
             $basicPrice = $request->basic_price;
-            $payload = $request->payload ?? 1;
+            $payload = ($request->payload / 1000) ?? 1;
             $sumPayload = $basicPrice * $payload;
             //MODEL DB
             $data->date_begin = $request->date_begin;
@@ -212,7 +212,7 @@ class JobOrderController extends Controller
           } elseif ($request->type == 'ldo') {
             //CALCULATE
             $basicPrice = $request->basic_price;
-            $payload = $request->payload ?? 1;
+            $payload = ($request->payload / 1000) ?? 1;
             $sumPayload = $basicPrice * $payload;
             //MODEL DB
             $data->date_begin = $request->date_begin;

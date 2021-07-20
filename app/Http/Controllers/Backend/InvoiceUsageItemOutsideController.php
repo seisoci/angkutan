@@ -28,6 +28,8 @@ class InvoiceUsageItemOutsideController extends Controller
     $this->middleware('permission:invoiceusageitemsoutside-list|invoiceusageitemsoutside-create|invoiceusageitemsoutside-edit|invoiceusageitemsoutside-delete', ['only' => ['index']]);
     $this->middleware('permission:invoiceusageitemsoutside-create', ['only' => ['create', 'store']]);
     $this->middleware('permission:invoiceusageitemsoutside-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:invoiceusageitemsoutside-delete', ['only' => ['destroy']]);
+
   }
 
   public function index(Request $request)
@@ -44,6 +46,7 @@ class InvoiceUsageItemOutsideController extends Controller
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
+          $deleteBtn ='<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
           $actionBtn = '
               <div class="dropdown">
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -51,6 +54,7 @@ class InvoiceUsageItemOutsideController extends Controller
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a href="invoiceusageitemsoutside/' . $row->id . '" class="dropdown-item">Detail Pembelian diluar</a>
+                    '.$deleteBtn.'
                   </div>
               </div>
             ';
@@ -131,7 +135,7 @@ class InvoiceUsageItemOutsideController extends Controller
             'date_journal' => $request->input('invoice_date'),
             'debit' => 0,
             'kredit' => $totalPayment,
-            'table_ref' => 'invoiceldo',
+            'table_ref' => 'invoiceusageitemsoutside',
             'code_ref' => $invoiceUsageItem->id,
             'description' => "Pembayaran invoice ldo"
           ]);
@@ -141,7 +145,7 @@ class InvoiceUsageItemOutsideController extends Controller
             'date_journal' => $request->input('invoice_date'),
             'debit' => $totalPayment,
             'kredit' => 0,
-            'table_ref' => 'invoiceldo',
+            'table_ref' => 'invoiceusageitemsoutside',
             'code_ref' => $invoiceUsageItem->id,
             'description' => "Beban invoice ldo dengan $coa->name"
           ]);
@@ -251,6 +255,19 @@ class InvoiceUsageItemOutsideController extends Controller
     $result .= $printed->output() . "\n";
     return response($result, 200)->header('Content-Type', 'text/plain');
 //    return view('backend.invoice.invoiceusageitemsoutside.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+  }
+
+  public function destroy($id)
+  {
+    $data = InvoiceUsageitem::findOrFail($id);
+    Journal::where('table_ref', 'invoiceusageitemsoutside')->where('code_ref', $data->id)->delete();
+    if ($data->delete()) {
+      $response = response()->json([
+        'status' => 'success',
+        'message' => 'Data has been deleted',
+      ]);
+    }
+    return $response;
   }
 
 }

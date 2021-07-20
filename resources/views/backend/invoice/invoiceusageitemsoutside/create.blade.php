@@ -90,7 +90,7 @@
                 <td></td>
                 <td>
                   <input type="hidden" name="items[stock_id][]">
-                  <input type="text" class="form-control rounded-0" name="items[name][]" style="width: 300px">
+                  <input type="text" class="form-control rounded-0" name="items[name][]" style="min-width: 300px">
                 </td>
                 <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" style="max-width: 50px"/>
                 </td>

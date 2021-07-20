@@ -35,7 +35,6 @@ use App\Http\Controllers\Backend\InvoiceUsageItemController as BackendInvoiceUsa
 use App\Http\Controllers\Backend\InvoiceUsageItemOutsideController as BackendInvoiceUsageItemOutsideController;
 use App\Http\Controllers\Backend\OpnameController as BackendOpnameController;
 use App\Http\Controllers\Backend\InvoiceReturPurchaseController as BackendInvoiceReturPurchaseController;
-use App\Http\Controllers\Backend\ReportCostumerLdoController as BackendReportCostumerLdoController;
 use App\Http\Controllers\Backend\DashboardController as BackendDashboardController;
 use App\Http\Controllers\Backend\KasbonController as BackendKasbonController;
 use App\Http\Controllers\Backend\ReportSparepartController as BackendReportSparepartController;
