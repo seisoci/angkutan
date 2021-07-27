@@ -740,7 +740,7 @@
 
       function callSelf() {
         let basicPrice = parseFloat($('.basicprice').val()) || 0;
-        let payload = (parseFloat($('input[name=payload]').val()) /1000) || 0;
+        let payload = parseFloat($('input[name=payload]').val()) || 0;
         let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
         let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
         let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
@@ -767,7 +767,7 @@
       function callLdo() {
         let basicPrice = parseFloat($('.basicprice').val()) || 0;
         let basicPriceLDO = parseFloat($('input[name="basic_price_ldo"]').val()) || 0;
-        let payload = (parseFloat($('input[name=payload]').val()) /1000) || 0;
+        let payload = parseFloat($('input[name=payload]').val()) || 0;
         let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
         let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
         let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
