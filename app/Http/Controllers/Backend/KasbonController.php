@@ -25,10 +25,10 @@ class KasbonController extends Controller
 
   function __construct()
   {
-    $this->middleware('permission:kasbons-list|kasbons-create|kasbons-edit|kasbons-delete', ['only' => ['index']]);
-    $this->middleware('permission:kasbons-create', ['only' => ['create', 'store']]);
-    $this->middleware('permission:kasbons-edit', ['only' => ['edit', 'update']]);
-    $this->middleware('permission:kasbons-delete', ['only' => ['destroy']]);
+    $this->middleware('permission:kasbon-list|kasbon-create|kasbon-edit|kasbon-delete', ['only' => ['index']]);
+    $this->middleware('permission:kasbon-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:kasbon-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:kasbon-delete', ['only' => ['destroy']]);
   }
 
   public function index(Request $request)
