@@ -270,7 +270,7 @@
           </div>
           @endhasanyrole
           @hasanyrole('super-admin|admin|akunting')
-          <div class="col-md-4">
+          <div class="col-md-4 offset-md-8">
             <div class="form-group" style="display: none">
               <label>Grand Total Bersih LDO</label>
               <input name="grandtotalnettoldo" type="text" class="form-control currency" disabled>
