@@ -223,7 +223,7 @@
                 </div>
                 @endhasanyrole
           </div>
-          @hasanyrole('super-admin|admin|akunting')
+          @hasanyrole('super-admin|admin')
           <div class="col-md-4">
             <div class="row">
               <div class="col-md-6">
@@ -268,6 +268,8 @@
               </div>
             </div>
           </div>
+          @endhasanyrole
+          @hasanyrole('super-admin|admin|akunting')
           <div class="col-md-4">
             <div class="form-group" style="display: none">
               <label>Grand Total Bersih LDO</label>
