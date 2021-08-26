@@ -39,6 +39,23 @@ class KasbonController extends Controller
       ['page' => '#', 'title' => "List Kasbon"],
     ];
 
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'kasbon')->sole();
+
+    $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
+      return [
+        'name'  => $coa->name ?? NULL,
+        'balance' => DB::table('journals')
+            ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+            ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+            ->where('journals.coa_id', $coa->id)
+            ->groupBy('journals.coa_id')
+            ->first()->saldo ?? 0,
+      ];
+    });
+
     if ($request->ajax()) {
       $data = Kasbon::with('driver:id,name');
       return DataTables::of($data)
@@ -57,8 +74,7 @@ class KasbonController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
-    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'kasbon')->sole();
-    return view('backend.invoice.kasbon.index', compact('config', 'page_breadcrumbs', 'selectCoa'));
+    return view('backend.invoice.kasbon.index', compact('config', 'page_breadcrumbs', 'selectCoa', 'saldoGroup'));
   }
 
   public function store(Request $request)

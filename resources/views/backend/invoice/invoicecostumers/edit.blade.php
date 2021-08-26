@@ -161,9 +161,10 @@
                                               disabled></td>
               </tr>
               <tr>
+                <input type="hidden" name="total_cut_old" value="{{ $data->total_cut }}">
                 <td colspan="4" class="text-right">Total Pemotongan Klaim</td>
                 <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control"
-                                              value="{{ $data->total_cut }}" disabled>
+                                              value="{{ $data->total_cut }}">
                 </td>
               </tr>
               <tr>
@@ -239,7 +240,7 @@
       function initCalculate() {
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
         let total_fee = parseFloat($('input[name="total_fee"]').val()) || 0;
-        let total_cut =  parseFloat('{{ $data->total_cut }}');
+        let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
         let totalPayment = parseFloat('{{ $data->total_payment }}');
         let totalTax = parseFloat('{{ $data->total_tax }}');
         let payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;

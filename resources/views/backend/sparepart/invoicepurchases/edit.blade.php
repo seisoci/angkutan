@@ -42,7 +42,7 @@
                            value="{{ $data->prefix }}" disabled>
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row mb-lg-35">
                   <label class="col-lg-5 col-form-label">No. Invoice Pembelian:</label>
                   <div class="col-lg-6">
                     <input class="form-control rounded-0" value="{{ $data->num_bill }}" disabled>
@@ -70,7 +70,13 @@
                 <div class="form-group row">
                   <label class="col-lg-4 offset-md-2 col-form-label">Metode Pembayaran</label>
                   <div class="col-lg-6">
-                    <input class="form-control rounded-0" value="{{ $data->method_payment }}" disabled>
+                    <input class="form-control rounded-0" value="{{ $data->method_payment == 'cash' ? 'Tunai' : 'Kredit' }}" disabled>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-lg-4 offset-lg-2 col-form-label">Memo:</label>
+                  <div class="col-lg-6">
+                    <textarea name="memo" class="form-control rounded-0" disabled>{{ $data->memo ?? '' }}</textarea>
                   </div>
                 </div>
               </div>

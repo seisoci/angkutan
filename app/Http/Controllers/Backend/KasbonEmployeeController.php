@@ -36,6 +36,23 @@ class KasbonEmployeeController extends Controller
       ['page' => '#', 'title' => "List Kasbon Karyawaan"],
     ];
 
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'kasbonemployees')->sole();
+
+    $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
+      return [
+        'name'  => $coa->name ?? NULL,
+        'balance' => DB::table('journals')
+            ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+            ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+            ->where('journals.coa_id', $coa->id)
+            ->groupBy('journals.coa_id')
+            ->first()->saldo ?? 0,
+      ];
+    });
+
     if ($request->ajax()) {
       $data = KasbonEmployee::with('employee:id,name');
       return DataTables::of($data)
@@ -54,9 +71,8 @@ class KasbonEmployeeController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
-    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'kasbonemployees')->sole();
 
-    return view('backend.accounting.kasbonemployee.index', compact('config', 'page_breadcrumbs', 'selectCoa'));
+    return view('backend.accounting.kasbonemployee.index', compact('config', 'page_breadcrumbs', 'selectCoa', 'saldoGroup'));
   }
 
   public function create(Request $request)

@@ -40,6 +40,23 @@ class InvoiceUsageItemOutsideController extends Controller
       ['page' => '#', 'title' => "List Pembelian Barang Diluar"],
     ];
 
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoiceusageitemsoutside')->sole();
+
+    $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
+      return [
+        'name'  => $coa->name ?? NULL,
+        'balance' => DB::table('journals')
+            ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+            ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+            ->where('journals.coa_id', $coa->id)
+            ->groupBy('journals.coa_id')
+            ->first()->saldo ?? 0,
+      ];
+    });
+
     if ($request->ajax()) {
       $type = $request->type;
       $data = InvoiceUsageItem::where('type', 'outside');
@@ -62,7 +79,7 @@ class InvoiceUsageItemOutsideController extends Controller
         })
         ->make(true);
     }
-    return view('backend.invoice.invoiceusageitemsoutside.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.invoice.invoiceusageitemsoutside.index', compact('config', 'page_breadcrumbs', 'saldoGroup'));
   }
 
   public function create()

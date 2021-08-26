@@ -34,6 +34,23 @@ class InvoiceLdoController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "List Invoice LDO"],
     ];
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoiceldo')->sole();
+
+    $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
+      return [
+        'name'  => $coa->name ?? NULL,
+        'balance' => DB::table('journals')
+            ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+            ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+            ->where('journals.coa_id', $coa->id)
+            ->groupBy('journals.coa_id')
+            ->first()->saldo ?? 0,
+      ];
+    });
+
     if ($request->ajax()) {
       $data = InvoiceLdo::with(['anotherexpedition:id,name']);
       return DataTables::of($data)
@@ -59,7 +76,7 @@ class InvoiceLdoController extends Controller
         ->make(true);
 
     }
-    return view('backend.invoice.invoiceldo.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.invoice.invoiceldo.index', compact('config', 'page_breadcrumbs', 'saldoGroup'));
   }
 
   public function create(Request $request)

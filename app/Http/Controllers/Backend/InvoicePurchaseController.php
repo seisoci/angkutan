@@ -44,6 +44,23 @@ class InvoicePurchaseController extends Controller
       ['page' => '#', 'title' => "List Purchase Order"],
     ];
 
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicepurchases')->sole();
+
+    $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
+      return [
+        'name' => $coa->name ?? NULL,
+        'balance' => DB::table('journals')
+            ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+            ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+            ->where('journals.coa_id', $coa->id)
+            ->groupBy('journals.coa_id')
+            ->first()->saldo ?? 0,
+      ];
+    });
+
     if ($request->ajax()) {
       $data = InvoicePurchase::query()
         ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'));
@@ -68,7 +85,7 @@ class InvoicePurchaseController extends Controller
           return $actionBtn;
         })->make(true);
     }
-    return view('backend.sparepart.invoicepurchases.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.sparepart.invoicepurchases.index', compact('config', 'page_breadcrumbs', 'saldoGroup'));
   }
 
   public function create()
@@ -95,12 +112,12 @@ class InvoicePurchaseController extends Controller
       'items.qty.*' => 'required|integer',
       'items.price' => 'required|array',
       'items.price.*' => 'required|integer',
-      'payment.date' => 'required|array',
-      'payment.date.*' => 'required|date_format:Y-m-d',
-      'payment.payment' => 'required|array',
-      'payment.payment.*' => 'required|integer',
-      'payment.coa' => 'required|array',
-      'payment.coa.*' => 'required|integer',
+//      'payment.date' => 'required|array',
+//      'payment.date.*' => 'required|date_format:Y-m-d',
+//      'payment.payment' => 'required|array',
+//      'payment.payment.*' => 'required|integer',
+//      'payment.coa' => 'required|array',
+//      'payment.coa.*' => 'required|integer',
     ]);
 
     if ($validator->passes()) {
@@ -150,6 +167,7 @@ class InvoicePurchaseController extends Controller
             'invoice_purchase_id' => $invoice->id,
             'qty' => $items['qty'][$key]
           ]);
+
 //          $stockSummary = Stock::firstOrCreate(
 //            ['sparepart_id' => $items['sparepart_id'][$key]],
 //            ['qty' => $items['qty'][$key]]
@@ -161,40 +179,42 @@ class InvoicePurchaseController extends Controller
 
         foreach ($payments['date'] as $key => $item):
           $coa = Coa::findOrFail($payments['coa'][$key]);
-          $checksaldo = DB::table('journals')
-            ->select(DB::raw('
+          if ($item) {
+            $checksaldo = DB::table('journals')
+              ->select(DB::raw('
           IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
           (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
           '))
-            ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
-            ->where('journals.coa_id', $payments['coa'][$key])
-            ->groupBy('journals.coa_id')
-            ->first();
+              ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+              ->where('journals.coa_id', $payments['coa'][$key])
+              ->groupBy('journals.coa_id')
+              ->first();
 
-          if (($checksaldo->saldo ?? FALSE) && $payments['payment'][$key] <= $checksaldo->saldo) {
-            PurchasePayment::create([
-              'invoice_purchase_id' => $invoice->id,
-              'date_payment' => $payments['date'][$key],
-              'coa_id' => $payments['coa'][$key],
-              'payment' => $payments['payment'][$key],
-            ]);
+            if (($checksaldo->saldo ?? FALSE) && $payments['payment'][$key] <= $checksaldo->saldo && $payments['payment'][$key] != NULL) {
+              PurchasePayment::create([
+                'invoice_purchase_id' => $invoice->id,
+                'date_payment' => $payments['date'][$key],
+                'coa_id' => $payments['coa'][$key],
+                'payment' => $payments['payment'][$key],
+              ]);
 
-            Journal::create([
-              'coa_id' => $payments['coa'][$key],
-              'date_journal' => $payments['date'][$key],
-              'debit' => 0,
-              'kredit' => $payments['payment'][$key],
-              'table_ref' => 'invoicepurchases',
-              'code_ref' => $invoice->id,
-              'description' => "Pembayaran barang supplier $supplier->name"
-            ]);
+              Journal::create([
+                'coa_id' => $payments['coa'][$key],
+                'date_journal' => $payments['date'][$key],
+                'debit' => 0,
+                'kredit' => $payments['payment'][$key],
+                'table_ref' => 'invoicepurchases',
+                'code_ref' => $invoice->id,
+                'description' => "Pembayaran barang supplier $supplier->name"
+              ]);
 
-          } else {
-            DB::rollBack();
-            return response()->json([
-              'status' => 'errors',
-              'message' => "Saldo $coa->name tidak ada/kurang",
-            ]);
+            } else {
+              DB::rollBack();
+              return response()->json([
+                'status' => 'errors',
+                'message' => "Saldo $coa->name tidak ada/kurang",
+              ]);
+            }
           }
         endforeach;
 

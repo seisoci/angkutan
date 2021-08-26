@@ -57,7 +57,7 @@
               <td scope="col" class="text-left" style="width:10%"></td>
               <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Metode Pembayaran</td>
               <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ ucwords($data->method_payment) }}</td>
+              <td scope="col" class="text-left" style="width:18%"> {{ $data->method_payment == 'cash' ? 'Tunai' : 'Kredit' }}</td>
             </tr>
             <tr>
               <td scope="col">Deskripsi : {{ $data->description ?? ''}}</td>

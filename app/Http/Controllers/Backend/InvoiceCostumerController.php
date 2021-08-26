@@ -121,12 +121,12 @@ class InvoiceCostumerController extends Controller
       'due_date' => 'required|date_format:Y-m-d',
       'coa_id' => 'required|integer',
     ]);
+
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
         $prefix = Prefix::findOrFail($request->prefix);
         $costumer = Costumer::findOrFail($request->input('costumer_id'));
-        $total = ($request->input('payment.payment') ?? 0) + ($request->input('total_cut') ?? 0);
         $data = InvoiceCostumer::create([
           'prefix' => $prefix->name,
           'num_bill' => $request->input('num_bill'),
@@ -170,9 +170,10 @@ class InvoiceCostumerController extends Controller
 //            'kredit' => 0,
 //            'table_ref' => 'invoicecostumers',
 //            'code_ref' => $data->id,
-//            'description' => "Beban pembayaran pajak jo pelanggan $costumer->name"
+//            'description' => "Beban pembayaran pajak JO pelanggan $costumer->name"
 //          ]);
-          if ($request->input('total_cut')) {
+
+          if (($request->input('total_cut') ?? 0) > 0) {
             Journal::create([
               'coa_id' => 46,
               'date_journal' => $request->input('payment.date_payment'),
@@ -191,20 +192,30 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari tagihan jo pelanggan $costumer->name"
+            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name"
           ]);
 
           Journal::create([
             'coa_id' => 43,
             'date_journal' => $request->input('payment.date_payment'),
             'debit' => 0,
-            'kredit' => $total,
+            'kredit' => ($request->input('payment.payment') ?? 0),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Pembayaran tagihan jo pelanggan $costumer->name"
+            'description' => "Pembayaran tagihan JO pelanggan $costumer->name"
           ]);
 
-
+          if (($request->input('total_cut') ?? 0) > 0) {
+            Journal::create([
+              'coa_id' => 43,
+              'date_journal' => $request->input('payment.date_payment'),
+              'debit' => 0,
+              'kredit' => ($request->input('total_cut') ?? 0),
+              'table_ref' => 'invoicecostumers',
+              'code_ref' => $data->id,
+              'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name"
+            ]);
+          }
         }
         if ($request->rest_payment <= -1) {
           return response()->json([
@@ -301,6 +312,12 @@ class InvoiceCostumerController extends Controller
           'total_payment' => $payment,
         ]);
 
+        $deleteKlaim = Journal::where([
+          ['table_ref', 'invoicecostumers'],
+          ['code_ref', $id],
+          ['description', 'like', '%Potongan%']
+        ])->delete();
+
         if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
           PaymentCostumer::create([
             'invoice_costumer_id' => $data->id,
@@ -317,7 +334,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari tagihan jo pelanggan $costumer->name"
+            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name"
           ]);
 
           Journal::create([
@@ -327,8 +344,32 @@ class InvoiceCostumerController extends Controller
             'kredit' => $request->input('payment.payment'),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Pembayaran tagihan jo pelanggan $costumer->name"
+            'description' => "Pembayaran tagihan JO pelanggan $costumer->name"
           ]);
+
+          if (($request->input('total_cut') ?? 0) > 0) {
+            Journal::create([
+              'coa_id' => 46,
+              'date_journal' => $request->input('payment.date_payment'),
+              'debit' => $request->input('total_cut'),
+              'kredit' => 0,
+              'table_ref' => 'invoicecostumers',
+              'code_ref' => $data->id,
+              'description' => "Potongan Pendapatan untuk Potongan Klaim"
+            ]);
+          }
+
+          if (($request->input('total_cut') ?? 0) > 0) {
+            Journal::create([
+              'coa_id' => 43,
+              'date_journal' => $request->input('payment.date_payment'),
+              'debit' => 0,
+              'kredit' => ($request->input('total_cut') ?? 0),
+              'table_ref' => 'invoicecostumers',
+              'code_ref' => $data->id,
+              'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name"
+            ]);
+          }
         }
 
         if ($request->rest_payment <= -1) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
@@ -20,9 +21,7 @@ use DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Validator;
-use App\Helpers\ContinousPaper;
 
 class JobOrderController extends Controller
 {
@@ -40,6 +39,23 @@ class JobOrderController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "List Job Order"],
     ];
+
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'joborders')->sole();
+
+    $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
+      return [
+        'name'  => $coa->name ?? NULL,
+        'balance' => DB::table('journals')
+          ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+          ->where('journals.coa_id', $coa->id)
+          ->groupBy('journals.coa_id')
+          ->first()->saldo,
+      ];
+    });
 
     $another_expedition_id = $request->another_expedition_id;
     $driver_id = $request->driver_id;
@@ -124,7 +140,7 @@ class JobOrderController extends Controller
         })
         ->make(true);
     }
-    return view('backend.operational.joborders.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.operational.joborders.index', compact('config', 'page_breadcrumbs', 'saldoGroup'));
   }
 
   public function create()

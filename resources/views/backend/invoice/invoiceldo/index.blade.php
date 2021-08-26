@@ -33,6 +33,21 @@
     </div>
 
     <div class="card-body">
+      <div>
+        <div class="row align-items-center">
+          <div class="col-12 mb-10">
+            <div class="alert alert-custom alert-outline-primary fade show mb-5" role="alert">
+              <div class="alert-icon"><i class="flaticon-warning"></i></div>
+              <div class="d-flex flex-column">
+                <h4>Sisa Saldo</h4>
+                @foreach($saldoGroup as $item)
+                  <div><b>{{ $item['name'] }} : <span class="text-success">{{ number_format($item['balance'], 2,'.',',') }}</span></b></div>
+                @endforeach
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!--begin: Datatable-->
       <table class="table table-bordered table-hover" id="Datatable">
         <thead>
@@ -99,7 +114,7 @@
             "data": null,
             "defaultContent": ''
           },
-          {data: 'num_invoice', name: 'num_invoice'},
+          {data: 'num_invoice', name: 'num_bill'},
           {data: 'invoice_date', name: 'invoice_date', orderable: false},
           {data: 'due_date', name: 'due_date'},
           {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},

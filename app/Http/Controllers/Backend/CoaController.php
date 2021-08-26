@@ -43,7 +43,6 @@ class CoaController extends Controller
     $data = Coa::with('children')->whereNull('parent_id')->orderBy('code', 'asc')->get();
     $collection = collect($data)->groupBy('type');
     return view('backend.masterfinance.coa.index', compact('config', 'page_breadcrumbs', 'collection'));
-
   }
 
   public function create()

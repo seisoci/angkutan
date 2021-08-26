@@ -34,25 +34,25 @@
 
     <div class="card-body">
       <!--begin: Datatable-->
-      <table class="table table-bordered table-hover" id="Datatable">
-        <thead>
-        <tr>
-          <th></th>
-          <th>Invoice Number</th>
-          <th>Tgl Invoice</th>
-          <th>Tgl Jth. Tempo Invoice</th>
-          <th>Nama Pelanggan</th>
-          <th>Total Tagihan</th>
-          <th>Total Pembayaran</th>
-          <th>Pajak (Rp.)</th>
-          <th>Potongan Klaim</th>
-          <th>Potongan Fee</th>
-          <th>Sisa Tagihan</th>
-          <th>Created At</th>
-          <th>Action</th>
-        </tr>
-        </thead>
-      </table>
+        <table class="table table-bordered table-hover" id="Datatable">
+          <thead>
+          <tr>
+            <th></th>
+            <th>Invoice Number</th>
+            <th>Tgl Invoice</th>
+            <th>Tgl Jth. Tempo Invoice</th>
+            <th>Nama Pelanggan</th>
+            <th>Total Tagihan</th>
+            <th>Total Pembayaran</th>
+            <th>Pajak (Rp.)</th>
+            <th>Potongan Klaim</th>
+            <th>Potongan Fee</th>
+            <th>Sisa Tagihan</th>
+            <th>Created At</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+        </table>
     </div>
     <div class="modal fade" id="modalEditTax" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-md" role="document">
@@ -175,7 +175,7 @@
             "data": null,
             "defaultContent": ''
           },
-          {data: 'num_invoice', name: 'num_invoice', orderable: false},
+          {data: 'num_invoice', name: 'num_bill', orderable: false},
           {data: 'invoice_date', name: 'invoice_date'},
           {data: 'due_date', name: 'due_date'},
           {data: 'costumer.name', name: 'costumer.name'},

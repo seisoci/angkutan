@@ -357,10 +357,13 @@ return [
           'title' => 'Laporan Data',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['reportcostumers', 'reportdrivers', 'reporttransports'],
+          'list' => ['reportcostumers', 'reportdrivers', 'reporttransports', 'reportcustomerroadmoney'],
           'submenu' => [
             ['title' => 'Laporan Data Pelanggan',
               'page' => 'backend/reportcostumers'
+            ],
+            ['title' => 'Laporan Data Uang Jalan Pelanggan',
+              'page' => 'backend/reportcustomerroadmoney'
             ],
             [
               'title' => 'Laporan Data Supir',

@@ -76,6 +76,8 @@ use App\Http\Controllers\Backend\ReportLedgerController as BackendReportLedgerCo
 use App\Http\Controllers\Backend\ReportFinanceController as BackendReportFinanceController;
 use App\Http\Controllers\Backend\ReportNeracaBalanceController as BackendReportNeracaBalanceController;
 use App\Http\Controllers\Backend\ReportProfitLossController as BackendReportProfitLossController;
+use App\Http\Controllers\Backend\ReportCustomerRoadMoneyController as BackendReportCustomerRoadMoneyController;
+use App\Http\Controllers\Backend\ReportLdoNetProfitController as BackendReportLdoNetProfitController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -196,6 +198,9 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('ledger/document', [BackendReportLedgerController::class, 'document']);
     Route::get('profitloss/print', [BackendReportProfitLossController::class, 'print']);
     Route::get('profitloss/document', [BackendReportProfitLossController::class, 'document']);
+    Route::get('reportcustomerroadmoney/print', [BackendReportCustomerRoadMoneyController::class, 'print']);
+    Route::get('reportcustomerroadmoney/document', [BackendReportCustomerRoadMoneyController::class, 'document']);
+
 
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
@@ -214,6 +219,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('invoicekasbonemployees/datatabledetail/{id}', [BackendInvoiceKasbonEmployeeController::class, 'datatabledetail'])->name('invoicekasbonemployees.datatabledetail');
     Route::get('reportinvoicecostumers/datatabledetail/{id}', [BackendReportInvoiceCostumer::class, 'datatabledetail'])->name('reportinvoicecostumers.datatabledetail');
     Route::get('reportinvoiceldo/datatabledetail/{id}', [BackendReportInvoiceLdoController::class, 'datatabledetail'])->name('reportinvoiceldo.datatabledetail');
+    Route::get('reportcustomerroadmoney/datatabledetail/{id}', [BackendReportCustomerRoadMoneyController::class, 'datatabledetail'])->name('reportcustomerroadmoney.datatabledetail');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function () {
@@ -233,6 +239,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::post('invoiceldo/findbypk', [BackendInvoiceLdoController::class, 'findbypk'])->name('invoiceldo.findbypk');
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
     Route::post('invoicekasbonemployees/findbypk', [BackendInvoiceKasbonEmployeeController::class, 'findbypk'])->name('invoicekasbonemployees.findbypk');
+    Route::get('reportcustomerroadmoney/findbypk/{id}', [BackendReportCustomerRoadMoneyController::class, 'findbypk'])->name('reportcustomerroadmoney.findbypk');
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -325,6 +332,8 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('reportusageitemoutside', [BackendReportUsageItemOutsideController::class, 'index'])->name('reportusageitemoutside.index');
     Route::get('reportrecapusageitemoutside', [BackendReportRecapUsageItemOutsideController::class, 'index'])->name('reportrecapusageitemoutside.index');
     Route::get('reportstocks', [BackendReportStockController::class, 'index'])->name('reportstocks.index');
+    Route::get('reportcustomerroadmoney', [BackendReportCustomerRoadMoneyController::class, 'index'])->name('reportcustomerroadmoney.index');
+    Route::get('reportldonetprofit', [BackendReportLdoNetProfitController::class, 'index'])->name('reportldonetprofit.index');
     Route::resource('mastercoa', BackendCoaController::class);
     Route::resource('journals', BackendJournalController::class);
     Route::resource('configcoa', BackendConfigCoaController::class);

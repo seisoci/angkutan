@@ -41,12 +41,12 @@ class RoadMoney extends Model
 
   public function routefrom()
   {
-    return $this->belongsTo(Route::class, 'route_from');
+    return $this->belongsTo(Route::class, 'route_from')->orderBy('name', 'asc');
   }
 
   public function routeto()
   {
-    return $this->belongsTo(Route::class, 'route_to');
+    return $this->belongsTo(Route::class, 'route_to')->orderBy('name', 'asc');
   }
 
   public function cargo()

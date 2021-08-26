@@ -31,10 +31,21 @@
         <!--end::Button-->
       </div>
     </div>
-
     <div class="card-body">
       <div class="mb-10">
         <div class="row align-items-center">
+          <div class="col-12 mb-10">
+            <div class="alert alert-custom alert-outline-primary fade show mb-5" role="alert">
+              <div class="alert-icon"><i class="flaticon-warning"></i></div>
+              <div class="d-flex flex-column">
+                <h4>Sisa Saldo</h4>
+                @foreach($saldoGroup as $item)
+                  <div><b>{{ $item['name'] }} : <span
+                        class="text-success">{{ number_format($item['balance'], 2,'.',',') }}</span></b></div>
+                @endforeach
+              </div>
+            </div>
+          </div>
           <div class="col-12">
             <div class="row align-items-center">
               <div class="col-md-3 my-md-0">
@@ -84,7 +95,7 @@
               <div class="col-md-3 my-md-0">
                 <div class="form-group">
                   <label>Muatan:</label>
-                  <select class="form-control" id="select2Cargo">
+                  <select class="form-control" id="select2Cargo" style="width: 100%">
                   </select>
                 </div>
               </div>
@@ -129,30 +140,6 @@
           </div>
         </div>
       </div>
-{{--      <div class="mb-10">--}}
-{{--        <div class="dropdown d-flex justify-content-end">--}}
-{{--          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"--}}
-{{--                  aria-haspopup="true" aria-expanded="false">--}}
-{{--            Hidden Column--}}
-{{--          </button>--}}
-{{--          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">--}}
-{{--            <a class="dropdown-item" data-column="0">Prefix</a>--}}
-{{--            <a class="dropdown-item" data-column="1">No. Job Order</a>--}}
-{{--            <a class="dropdown-item" data-column="2">LDO</a>--}}
-{{--            <a class="dropdown-item" data-column="3">Supir</a>--}}
-{{--            <a class="dropdown-item" data-column="4">No. Pol</a>--}}
-{{--            <a class="dropdown-item" data-column="6">Pelanggan</a>--}}
-{{--            <a class="dropdown-item" data-column="7">Rute Dari</a>--}}
-{{--            <a class="dropdown-item" data-column="8">Rute Ke</a>--}}
-{{--            <a class="dropdown-item" data-column="9">Muatan</a>--}}
-{{--            <a class="dropdown-item" data-column="10">Tanggal Mulai</a>--}}
-{{--            <a class="dropdown-item" data-column="11">Tanggal Selesai</a>--}}
-{{--            <a class="dropdown-item" data-column="12">Status JO</a>--}}
-{{--            <a class="dropdown-item" data-column="13">Status Dokumen</a>--}}
-{{--            <a class="dropdown-item" data-column="14">Created At</a>--}}
-{{--          </div>--}}
-{{--        </div>--}}
-{{--      </div>--}}
       <!--begin: Datatable-->
       <table class="table table-hover" id="Datatable">
         <thead>
@@ -289,6 +276,10 @@
         order: [[13, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
+        dom: 'Bfrtip',
+        buttons: [
+          'colvis'
+        ],
         ajax: {
           url: "{{ route('backend.joborders.index') }}",
           data: function (d) {

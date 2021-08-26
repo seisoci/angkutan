@@ -42,12 +42,11 @@
                     </select>
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row mb-lg-35">
                   <label class="col-lg-5 col-form-label">No. Invoice Pembelian:</label>
                   <div class="col-lg-6">
                     <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                     <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
-                    </select>
                   </div>
                 </div>
               </div>
@@ -72,12 +71,18 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-lg-4 offset-2 col-form-label">Metode Pembayaran</label>
+                  <label class="col-lg-4 offset-lg-2 col-form-label">Metode Pembayaran:</label>
                   <div class="col-lg-6">
                     <select id="method_payment" name="method_payment" class="form-control rounded-0">
                       <option value="cash">Tunai</option>
                       <option value="credit">Kredit</option>
                     </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-lg-4 offset-lg-2 col-form-label">Memo:</label>
+                  <div class="col-lg-6">
+                    <textarea name="memo" class="form-control rounded-0"></textarea>
                   </div>
                 </div>
               </div>
@@ -184,7 +189,7 @@
             <tr>
               <td class="pt-6 text-right">Total Tagihan</td>
               <td style="width: 175px"><input id="totalTagihan" type="text" class="currency form-control rounded-0"
-                                               disabled style="width: 175px;"/>
+                                              disabled style="width: 175px;"/>
               </td>
             </tr>
             <tr>
