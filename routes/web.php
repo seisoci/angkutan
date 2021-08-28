@@ -137,7 +137,6 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('invoicereturpurchases/select2Invoice', [BackendInvoiceReturPurchaseController::class, 'select2Invoice'])->name('invoicereturpurchases.select2Invoice');
     Route::get('invoicereturpurchases/select2SparePart', [BackendInvoiceReturPurchaseController::class, 'select2SparePart'])->name('invoicereturpurchases.select2SparePart');
 
-
     //Print
     Route::get('invoicesalaries/{id}/print', [BackendInvoiceSalaryController::class, 'print']);
     Route::get('invoiceldo/{id}/print', [BackendInvoiceLdoController::class, 'print']);
@@ -200,7 +199,8 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('profitloss/document', [BackendReportProfitLossController::class, 'document']);
     Route::get('reportcustomerroadmoney/print', [BackendReportCustomerRoadMoneyController::class, 'print']);
     Route::get('reportcustomerroadmoney/document', [BackendReportCustomerRoadMoneyController::class, 'document']);
-
+    Route::get('reportldonetprofit/print', [BackendReportLdoNetProfitController::class, 'print']);
+    Route::get('reportldonetprofit/document', [BackendReportLdoNetProfitController::class, 'document']);
 
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);

@@ -16,6 +16,7 @@ use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
 
@@ -52,6 +53,11 @@ class InvoiceCostumerController extends Controller
           $restPayment = $row->rest_payment != 0 ? '<a href="invoicecostumers/' . $row->id . '/edit" class="dropdown-item">Input Pembayaran</a>' : NULL;
           $tax_coa_id = !$row->tax_coa_id && $row->total_tax > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditTax" data-id="' . $row->id . '"  data-tax="' . $row->total_tax . '" class="edit dropdown-item">Bayar Pajak</a>' : NULL;
           $fee_coa_id = !$row->fee_coa_id && $row->total_fee_thanks > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditFee" data-id="' . $row->id . '"  class="edit dropdown-item">Bayar Fee</a>' : NULL;
+          if(Auth::user()->can('delete invoicecostumers')){
+            $deleteBtn = '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
+          }else{
+            $deleteBtn = '';
+          }
           $actionBtn = '
             <div class="dropdown">
                   <button class="btn btn-secondary dropdown-toggle" type = "button" id = "dropdownMenuButton" data-toggle = "dropdown" aria-haspopup = "true" aria-expanded = "false" >
@@ -60,6 +66,7 @@ class InvoiceCostumerController extends Controller
                   <div class="dropdown-menu" aria-labelledby = "dropdownMenuButton" >
                     ' . $restPayment . $tax_coa_id . $fee_coa_id . '
                     <a href = "invoicecostumers/' . $row->id . '" class="dropdown-item" > Invoice Detail </a >
+                    '.$deleteBtn.'
                   </div >
               </div >
           ';
@@ -80,7 +87,6 @@ class InvoiceCostumerController extends Controller
       ['page' => '#', 'title' => "Create Invoice Pelanggan"],
     ];
     $costumer_id = $request->costumer_id;
-    $route_from = $request->route_from;
     $route_to = $request->route_to;
     $route_from = $request->route_from;
     $cargo_id = $request->cargo_id;
@@ -89,6 +95,7 @@ class InvoiceCostumerController extends Controller
         ->withSum('operationalexpense', 'amount')
         ->where('status_payment', '0')
         ->where('status_cargo', 'selesai')
+        ->where('status_document', '1')
         ->when($costumer_id, function ($query, $costumer_id) {
           return $query->where('costumer_id', $costumer_id);
         })
@@ -394,6 +401,28 @@ class InvoiceCostumerController extends Controller
     } else {
       $response = response()->json(['error' => $validator->errors()->all()]);
     }
+    return $response;
+  }
+
+  public function destroy($id)
+  {
+    $response = response()->json([
+      'status' => 'error',
+      'message' => 'Data cannot be deleted',
+    ]);
+    try {
+      DB::transaction(function () use ($id) {
+        Journal::where('table_ref', 'invoicecostumers')->where('code_ref', $id)->delete();
+        JobOrder::where('invoice_costumer_id', $id)->update(['status_payment' => '0']);
+        InvoiceCostumer::find($id)->delete();
+      });
+      $response = response()->json([
+        'status' => 'success',
+        'message' => 'Data has been deleted',
+      ]);
+    } catch (\Throwable $e) {
+    }
+
     return $response;
   }
 

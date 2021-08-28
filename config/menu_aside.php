@@ -292,7 +292,7 @@ return [
         'recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
         'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside',
         'reportcostumers', 'reportdrivers', 'reporttransports',
-        'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo',
+        'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo','reportldonetprofit',
         'reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees',
         'reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks'
       ],
@@ -301,6 +301,7 @@ return [
           'title' => 'Laporan Akutansi',
           'bullet' => 'dot',
           'arrow' => true,
+          'list' => ['ledger', 'finance', 'profitloss'],
           'submenu' => [
             [
               'title' => 'Laporan Buku Besar',
@@ -321,7 +322,7 @@ return [
           'bullet' => 'dot',
           'arrow' => true,
           'list' => ['recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
-            'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside'],
+            'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportcustomerroadmoney'],
           'submenu' => [
             [
               'title' => 'Laporan Rekapitulasi',
@@ -379,7 +380,7 @@ return [
           'title' => 'Laporan Job Order & Invoice',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo'],
+          'list' => ['reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo', 'reportldonetprofit'],
           'submenu' => [
             [
               'title' => 'Laporan Tagihan Job Order',
@@ -392,6 +393,10 @@ return [
             [
               'title' => 'Laporan Invoice LDO',
               'page' => 'backend/reportinvoiceldo'
+            ],
+            [
+              'title' => 'Laporan Rekap Laba LDO',
+              'page' => 'backend/reportldonetprofit'
             ],
           ]
         ],
