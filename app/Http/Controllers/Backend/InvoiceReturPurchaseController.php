@@ -6,6 +6,7 @@ use App\Helpers\ContinousPaperLong;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\InvoicePurchase;
 use App\Models\InvoiceReturPurchase;
 use App\Models\Journal;
@@ -24,6 +25,7 @@ use Validator;
 class InvoiceReturPurchaseController extends Controller
 {
   use CarbonTrait;
+
   function __construct()
   {
     $this->middleware('permission:invoicereturpurchases-list|invoicereturpurchases-create|invoicereturpurchases-edit|invoicereturpurchases-delete', ['only' => ['index']]);
@@ -189,12 +191,10 @@ class InvoiceReturPurchaseController extends Controller
       ['page' => '/backend/invoicereturpurchases', 'title' => "List Invoice Retur Pembelian"],
       ['page' => '#', 'title' => "Detail Invoice Retur Pembelian"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceReturPurchase::with(['returpurchases.sparepart', 'supplier'])->findOrFail($id);
-    return view('backend.sparepart.invoicereturpurchases.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.sparepart.invoicereturpurchases.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function print($id)
@@ -205,10 +205,8 @@ class InvoiceReturPurchaseController extends Controller
       ['page' => '/backend/invoicereturpurchases', 'title' => "List Invoice Retur Pembelian"],
       ['page' => '#', 'title' => "Detail Invoice Retur Pembelian"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceReturPurchase::with(['returpurchases.sparepart', 'supplier'])->findOrFail($id);
     $result = '';
     $no = 1;
@@ -235,10 +233,10 @@ class InvoiceReturPurchaseController extends Controller
       ],
       'header' => [
         'left' => [
-          $profile['name'],
-          $profile['address'],
-          'Telp: ' . $profile['telp'],
-          'Fax: ' . $profile['fax'],
+          $cooperationDefault['nickname'],
+          $cooperationDefault['address'],
+          'Telp: ' . $cooperationDefault['phone'],
+          'Fax: ' . $cooperationDefault['fax'],
           'INVOICE RETUR PURCHASE ORDER',
 
         ],

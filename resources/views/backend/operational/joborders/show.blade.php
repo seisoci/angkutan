@@ -14,9 +14,9 @@
             <div class="d-flex justify-content-between pt-6">
               <div class="d-flex flex-column flex-root">
                 <h1 class="display-4 font-weight-boldest mb-10">JOB ORDER</h1>
-                <span class="font-weight-bolder mb-2">{{ $profile['name'] ?? '' }}</span>
-                <span class="opacity-70">{{ $profile['address'] ?? '' }}
-                <br/>{{ $profile['telp'] ?? '' }} <br/>{{ $profile['fax'] ?? '' }}</span>
+                <span class="font-weight-bolder mb-2">{{ $data->costumer->cooperation->nickname ?? '' }}</span>
+                <span class="opacity-70">{{ $data->costumer->cooperation->address ?? '' }}
+                <br/>{{ $data->costumer->cooperation->phone ?? '' }} <br/>{{ $data->costumer->cooperation->fax ?? '' }}</span>
               </div>
             </div>
             <div class="d-flex flex-column align-items-md-end px-0">
@@ -81,6 +81,8 @@
                 <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Tipe Barang</th>
                 <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Unit (Qty)</th>
                 <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Uang Jalan</th>
+                <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Potongan UJ</th>
+                <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Tambahan UJ Real</th>
               </tr>
               </thead>
               <tbody>
@@ -92,6 +94,10 @@
                 <td class="pr-0 pt-7 text-right">{{ $data->type_capacity ?? '' }}</td>
                 <td class="pr-0 pt-7 text-right">{{ $data->payload ?? '' }}</td>
                 <td class="pr-0 pt-7 text-right">{{ number_format($data->road_money ?? 0,0, '.', '.') }}</td>
+                <td
+                  class="pr-0 pt-7 text-right text-danger">{{ number_format($data->road_money_prev ?? 0,0, '.', '.') }}</td>
+                <td
+                  class="pr-0 pt-7 text-right text-success">{{ number_format($data->road_money_extra ?? 0,0, '.', '.') }}</td>
               </tr>
               </tbody>
             </table>
@@ -112,11 +118,11 @@
               <tbody>
               @foreach ($data->operationalexpense as $item)
                 <tr class="font-weight-boldest py-1" style="height: 50px">
-                  <td width="30%" class="pr-7">{{ $item->expense->name }}</td>
-                  <td width="45%" class="pr-7">{{ $item->description  }}</td>
-                  <td width="100%" class="currency pr-7 text-right">{{ number_format($item->amount, 0,'.',',') }}</td>
+                  <td style="width: 30%" class="pr-7">{{ $item->expense->name }}</td>
+                  <td style="width: 30%" class="pr-7">{{ $item->description  }}</td>
+                  <td class="currency pr-7 text-right">{{ number_format($item->amount, 0,'.',',') }}</td>
                   @if ($data->status_cargo != 'selesai' && $data->status_cargo != 'batal')
-                    <td width="20%">
+                    <td style="width: 20%">
                       <button href="#" data-toggle="modal" data-target="#modalDelete"
                               data-id="{{ $item->id }}" class="delete btn btn-danger btn-sm d-print-none">X
                       </button>
@@ -124,7 +130,7 @@
                   @endif
                 </tr>
               @endforeach
-              @if ($data->status_cargo != 'selesai' && $data->status_cargo != 'batal')
+              @if ($data->status_document != 1 && $data->status_cargo != 'batal')
                 <form id="formStore" action="{{ route('backend.operationalexpenses.store') }}" method="post"
                       class="d-print-none">
                   @csrf

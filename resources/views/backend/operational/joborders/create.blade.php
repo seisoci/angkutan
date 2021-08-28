@@ -166,7 +166,7 @@
               <div class="form-group">
                 <label>Fee Pemberian</label>
                 <input type="text" id="fee_thanks" class="form-control currency" disabled/>
-                <input type="hidden" class="form-control" name="fee_thanks" class="currency"/>
+                <input type="hidden" class="form-control currency" name="fee_thanks"/>
               </div>
               <div class="form-group">
                 <label>Total Ongkosan Dasar (Setelah Pemberian)</label>
@@ -216,6 +216,18 @@
                   <label>Uang Jalan</label>
                   <input type="text" name="road_money" class="form-control currency" readonly/>
                 </div>
+                <div class="form-group" style="display: none">
+                  <label>Uang Jalan Sebelumnya</label>
+                  <input type="text" name="road_money_prev" class="form-control currency" readonly/>
+                </div>
+                <div class="form-group" style="display: none">
+                  <label>Uang Jalan Tambahan</label>
+                  <input type="text" name="road_money_extra" class="form-control currency"/>
+                </div>
+                <div class="form-group" style="display: none">
+                  <label>Uang Jalan Real</label>
+                  <input type="text" name="road_money_real" class="form-control currency" readonly/>
+                </div>
                 @hasanyrole('super-admin|admin|akunting')
                 <div class="form-group">
                   <label>Grand Total Kotor</label>
@@ -228,7 +240,7 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group" style="display: none">
-                  <label>Potongan Spare Part</label>
+                  <label>Pot. Spare Part</label>
                   <div class="input-group">
                     <input id="percentSparepart" name="cut_sparepart_percent" type="text" class="form-control"
                            value="{{ $sparepart->value }}" disabled>
@@ -256,7 +268,7 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group" style="display: none">
-                  <label>Potongan SparePart (Est)</label>
+                  <label>Pot. SparePart (Est)</label>
                   <input name="cut_sparepart" type="text" class="form-control currency" disabled>
                 </div>
               </div>
@@ -270,7 +282,7 @@
           </div>
           @endhasanyrole
           @hasanyrole('super-admin|admin|akunting')
-          <div class="col-md-4 offset-md-8">
+          <div class="col-md-4">
             <div class="form-group" style="display: none">
               <label>Grand Total Bersih LDO</label>
               <input name="grandtotalnettoldo" type="text" class="form-control currency" disabled>
@@ -316,7 +328,7 @@
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
-      function initCurrency(){
+      function initCurrency() {
         $(".currency").inputmask('decimal', {
           groupSeparator: '.',
           digits: 0,
@@ -326,7 +338,9 @@
           removeMaskOnSubmit: true
         });
       }
+
       initCurrency();
+      initTransportDriverSelf();
 
       $(".currencyldo").inputmask('decimal', {
         groupSeparator: '.',
@@ -371,6 +385,7 @@
 
       $('#selectExpedition').on('change', function (e) {
         if (this.value === 'self') {
+          initTransportDriverSelf();
           $('input[name=road_money]').attr('readonly', true);
           $("#select2AnotherExpedition").parent().css("display", "none");
           $('input[name="basic_price_ldo"]').parent().css("display", "none");
@@ -386,14 +401,19 @@
           $('input[name="grandtotalgross"]').parent().find('label').css("display", "block");
           $('input[name="grandtotalnettoldo"]').parent().css("display", "none");
           $('input[name="grandtotalnettoldo"]').parent().find('label').css("display", "none");
+          $('input[name="road_money_prev"]').parent().css("display", "block");
+          $('input[name="road_money_extra"]').parent().css("display", "block");
+          $('input[name="road_money_real"]').parent().css("display", "block");
           $('#totalpayloadldo').parent().css("display", "none");
           $('#totalpayloadldo').parent().find('label').css("display", "none");
           $('#totalpayloadldoaftertax').parent().css("display", "none");
           $('#totalpayloadldoaftertax').parent().find('label').css("display", "none");
           $('#totalpayloadldoafterthanks').parent().css("display", "none");
           $('#totalpayloadldoafterthanks').parent().find('label').css("display", "none");
+
           callSelf();
         } else {
+          initTransportDriverLDO();
           $('input[name=road_money]').attr('readonly', false);
           $("#select2AnotherExpedition").parent().css("display", "block");
           $("#select2AnotherExpedition").parent().find('label').css("display", "block");
@@ -413,6 +433,9 @@
           $("#percentSalary").parent().parent().css("display", "none");
           $('input[name="cut_sparepart"]').parent().css("display", "none");
           $('input[name="salary"]').parent().css("display", "none");
+          $('input[name="road_money_prev"]').parent().css("display", "none");
+          $('input[name="road_money_extra"]').parent().css("display", "none");
+          $('input[name="road_money_real"]').parent().css("display", "none");
           callLdo();
         }
         $("#select2RoadFrom").val("");
@@ -463,42 +486,173 @@
         $("#select2Drivers").trigger("change");
       });
 
-      $("#select2Transport").select2({
-        placeholder: "Search No. Pol",
-        allowClear: true,
-        ajax: {
-          url: "{{ route('backend.transports.select2joborder') }}",
-          dataType: "json",
-          delay: 250,
-          cache: true,
-          data: function (e) {
-            return {
-              type: $('#select2AnotherExpedition').find(":selected").val() || null,
-              q: e.term || '',
-              page: e.page || 1
-            }
-          },
-        },
-      });
+      function initTransportDriverSelf() {
+        $("#select2Transport").select2({
+          placeholder: "Search No. Pol",
+          allowClear: true,
+          ajax: {
+            url: "{{ route('backend.transports.select2joborder') }}",
+            dataType: "json",
+            delay: 250,
+            cache: true,
+            data: function (e) {
+              return {
+                type: $('#select2AnotherExpedition').find(":selected").val() || null,
+                q: e.term || '',
+                page: e.page || 1
+              }
+            },
+          }
+        }).on('change', function(){
+          $("#select2TypeCapacity").val("");
+          $("#select2TypeCapacity").trigger("change");
+          $('.basicprice').val('');
+          $('#totalpayloadldo').val('');
+          $('#selectTypeOngkosan').val('');
+          $('#selectTypeOngkosan').val('');
+          $('#totalPayload').val('');
+          $('input[name=basic_price]').val('');
+          $('input[name=basic_price_ldo]').val('');
+          $('input[name=payload]').val('');
+          $('input[name=road_money]').val('');
+          $('input[name=grandtotalgross]').val('');
+          $('input[name=cut_sparepart]').val('');
+          $('input[name=salary]').val('');
+          $('input[name=grandtotalnetto]').val('');
+          $('input[name=tax_percent]').val('');
+          $('#taxPercent').val('');
+          $('.currency').val('');
+        });
 
-      $("#select2Drivers").select2({
-        placeholder: "Search Supir",
-        allowClear: true,
-        ajax: {
-          url: "{{ route('backend.drivers.select2joborder') }}",
-          dataType: "json",
-          delay: 250,
-          cache: true,
-          data: function (e) {
-            return {
-              status: 'active',
-              type: $('#select2AnotherExpedition').find(":selected").val(),
-              q: e.term || '',
-              page: e.page || 1
-            }
+        $("#select2Drivers").select2({
+          placeholder: "Search Supir",
+          allowClear: true,
+          ajax: {
+            url: "{{ route('backend.drivers.select2joborder') }}",
+            dataType: "json",
+            cache: true,
+            data: function (e) {
+              return {
+                status: 'active',
+                type: $('#select2AnotherExpedition').find(":selected").val(),
+                q: e.term || '',
+                page: e.page || 1
+              }
+            },
+          }
+        }).on('change', function(){
+          $("#select2TypeCapacity").val("");
+          $("#select2TypeCapacity").trigger("change");
+          $('.basicprice').val('');
+          $('#totalpayloadldo').val('');
+          $('#selectTypeOngkosan').val('');
+          $('#selectTypeOngkosan').val('');
+          $('#totalPayload').val('');
+          $('input[name=basic_price]').val('');
+          $('input[name=basic_price_ldo]').val('');
+          $('input[name=payload]').val('');
+          $('input[name=road_money]').val('');
+          $('input[name=grandtotalgross]').val('');
+          $('input[name=cut_sparepart]').val('');
+          $('input[name=salary]').val('');
+          $('input[name=grandtotalnetto]').val('');
+          $('input[name=tax_percent]').val('');
+          $('#taxPercent').val('');
+          $('.currency').val('');
+        });
+      }
+
+      function initTransportDriverLDO() {
+        $("#select2Transport").select2({
+          placeholder: "Search No. Pol",
+          allowClear: true,
+          ajax: {
+            url: "{{ route('backend.transports.select2joborder') }}",
+            dataType: "json",
+            delay: 250,
+            cache: true,
+            data: function (e) {
+              return {
+                type: $('#select2AnotherExpedition').find(":selected").val() || null,
+                q: e.term || '',
+                page: e.page || 1
+              }
+            },
           },
-        },
-      });
+          tags: true,
+          createTag: function (params) {
+            return {
+              id: params.term,
+              text: params.term,
+              newOption: true
+            }
+          }
+        }).on('change', function(){
+          $("#select2TypeCapacity").val("");
+          $("#select2TypeCapacity").trigger("change");
+          $('.basicprice').val('');
+          $('#totalpayloadldo').val('');
+          $('#selectTypeOngkosan').val('');
+          $('#selectTypeOngkosan').val('');
+          $('#totalPayload').val('');
+          $('input[name=basic_price]').val('');
+          $('input[name=basic_price_ldo]').val('');
+          $('input[name=payload]').val('');
+          $('input[name=road_money]').val('');
+          $('input[name=grandtotalgross]').val('');
+          $('input[name=cut_sparepart]').val('');
+          $('input[name=salary]').val('');
+          $('input[name=grandtotalnetto]').val('');
+          $('input[name=tax_percent]').val('');
+          $('#taxPercent').val('');
+          $('.currency').val('');
+        });
+
+        $("#select2Drivers").select2({
+          placeholder: "Search Supir",
+          allowClear: true,
+          ajax: {
+            url: "{{ route('backend.drivers.select2joborder') }}",
+            dataType: "json",
+            cache: true,
+            data: function (e) {
+              return {
+                status: 'active',
+                type: $('#select2AnotherExpedition').find(":selected").val(),
+                q: e.term || '',
+                page: e.page || 1
+              }
+            },
+          },
+          tags: true,
+          createTag: function (params) {
+            return {
+              id: params.term,
+              text: params.term,
+              newOption: true
+            }
+          }
+        }).on('change', function(){
+          $("#select2TypeCapacity").val("");
+          $("#select2TypeCapacity").trigger("change");
+          $('.basicprice').val('');
+          $('#totalpayloadldo').val('');
+          $('#selectTypeOngkosan').val('');
+          $('#selectTypeOngkosan').val('');
+          $('#totalPayload').val('');
+          $('input[name=basic_price]').val('');
+          $('input[name=basic_price_ldo]').val('');
+          $('input[name=payload]').val('');
+          $('input[name=road_money]').val('');
+          $('input[name=grandtotalgross]').val('');
+          $('input[name=cut_sparepart]').val('');
+          $('input[name=salary]').val('');
+          $('input[name=grandtotalnetto]').val('');
+          $('input[name=tax_percent]').val('');
+          $('#taxPercent').val('');
+          $('.currency').val('');
+        });
+      }
 
       $("#select2Costumers").select2({
         placeholder: "Search Pelanggan",
@@ -718,6 +872,8 @@
         let payload = 1;
         let basicPrice = parseFloat($('.basicprice').val()) || 0;
         let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
+        let roadMoneyPrev = parseFloat($('input[name=road_money_prev]').val()) || 0;
+        let roadMoneyExtra = parseFloat($('input[name=road_money_extra]').val()) || 0;
         let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
         let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
         let sumPayload = basicPrice * payload;
@@ -730,6 +886,7 @@
         let sparepart = totalGross * pecentSparePart;
         let salary = (totalGross - sparepart) * pecentSalary;
         let totalNetto = totalGross - sparepart - salary;
+        let totalRoadMoneyReal = (roadMoney - roadMoneyPrev) + roadMoneyExtra;
         $('#totalPayload').val(sumPayload);
         $('#taxFee').val(taxPPH);
         $('#totalPayloadAfterTax').val(sumPayloadAfterTax);
@@ -738,12 +895,15 @@
         $('input[name="cut_sparepart"]').val(sparepart);
         $('input[name="salary"]').val(salary);
         $('input[name="grandtotalnetto"]').val(totalNetto);
+        $('input[name="road_money_real"]').val(totalRoadMoneyReal);
       }
 
       function callSelf() {
         let basicPrice = parseFloat($('.basicprice').val()) || 0;
         let payload = parseFloat($('input[name=payload]').val()) || 0;
         let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
+        let roadMoneyPrev = parseFloat($('input[name=road_money_prev]').val()) || 0;
+        let roadMoneyExtra = parseFloat($('input[name=road_money_extra]').val()) || 0;
         let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
         let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
         let sumPayload = basicPrice * payload;
@@ -756,6 +916,7 @@
         let sparepart = totalGross * pecentSparePart;
         let salary = (totalGross - sparepart) * pecentSalary;
         let totalNetto = totalGross - sparepart - salary;
+        let totalRoadMoneyReal = (roadMoney - roadMoneyPrev) + roadMoneyExtra;
         $('#totalPayload').val(sumPayload);
         $('#taxFee').val(taxPPH);
         $('#totalPayloadAfterTax').val(sumPayloadAfterTax);
@@ -764,6 +925,7 @@
         $('input[name="cut_sparepart"]').val(sparepart);
         $('input[name="salary"]').val(salary);
         $('input[name="grandtotalnetto"]').val(totalNetto);
+        $('input[name="road_money_real"]').val(totalRoadMoneyReal);
       }
 
       function callLdo() {
@@ -792,7 +954,7 @@
         $('input[name="grandtotalnetto"]').val(totalNetto);
       }
 
-      $('input[name=payload],input[name=basic_price_ldo],input[name=road_money]').on('keyup', function () {
+      $('input[name=payload],input[name=basic_price_ldo],input[name=road_money],input[name=road_money_extra]').on('keyup', function () {
         let select = $('#selectExpedition').find(":selected").val();
         if (select === 'self') {
           callSelf();
@@ -810,6 +972,7 @@
           transport_id: $('#select2Transport').find(":selected").val(),
           type_capacity_id: $('#select2TypeCapacity').find(":selected").val(),
           type: $('#selectTypeOngkosan').find(":selected").val(),
+          driver_id: $('#select2Drivers').find(":selected").val(),
         }
         $.ajax({
           headers: {
@@ -822,6 +985,7 @@
             if (response.data) {
               let data = response.data.pivot;
               let taxfee = response.taxfee;
+              let roadmoney_prev = response.road_money_prev;
               let transport = response.type.type_car;
               let type = response.data.pivot.type;
               if (transport === 'engkel') {
@@ -829,6 +993,7 @@
                 $('.basicprice').val(data.expense);
                 $('input[name=tax_percent],#taxPercent').val(taxfee.tax_pph);
                 $('input[name=fee_thanks],#fee_thanks').val(taxfee.fee_thanks);
+                $('input[name=road_money_prev]').val(roadmoney_prev);
                 if (type === 'fix') {
                   callBorongan();
                 }

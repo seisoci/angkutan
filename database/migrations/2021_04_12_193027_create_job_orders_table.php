@@ -43,7 +43,7 @@ class CreateJobOrdersTable extends Migration
       $table->decimal('fee_thanks', 15, 2)->nullable();
       $table->decimal('invoice_bill', 15, 0);
       $table->enum('status_salary', [1, 0])->default(0);
-      $table->enum('status_cargo', ['mulai', 'selesai', 'batal'])->default('mulai');
+      $table->enum('status_cargo', ['mulai', 'transfer', 'selesai', 'batal'])->default('mulai');
       $table->enum('status_payment_ldo', [1, 0])->default(0);
       $table->enum('status_payment', [1, 0])->default(0);
       $table->enum('status_document', [1, 0])->default(0);

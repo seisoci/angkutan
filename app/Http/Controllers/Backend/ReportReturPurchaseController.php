@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Setting;
 use App\Models\SupplierSparepart;
 use App\Traits\CarbonTrait;
@@ -72,10 +73,7 @@ class ReportReturPurchaseController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $supplier_id = $request->supplier_id;
@@ -182,13 +180,13 @@ class ReportReturPurchaseController extends Controller
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Nama Supplier: ' . $supplier);
     $sheet->mergeCells('F1:H1');
-    $sheet->setCellValue('F1', $profile['name']);
+    $sheet->setCellValue('F1', $cooperationDefault['nickname']);
     $sheet->mergeCells('F2:H2');
-    $sheet->setCellValue('F2', $profile['address']);
+    $sheet->setCellValue('F2', $cooperationDefault['address']);
     $sheet->mergeCells('F3:H3');
-    $sheet->setCellValue('F3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('F3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('F4:H4');
-    $sheet->setCellValue('F4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('F4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -272,10 +270,7 @@ class ReportReturPurchaseController extends Controller
       ['page' => '#', 'title' => "Laporan Retur Purchase Order"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $supplier_id = $request->supplier_id;
     $date = $request->date;
@@ -305,6 +300,6 @@ class ReportReturPurchaseController extends Controller
       })
       ->orderBy('invoice_retur_purchases.invoice_date')
       ->get();
-    return view('backend.report.reportreturpurchases.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'supplier', 'date',));
+    return view('backend.report.reportreturpurchases.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'supplier', 'date',));
   }
 }

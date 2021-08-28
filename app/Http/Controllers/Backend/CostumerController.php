@@ -26,14 +26,15 @@ class CostumerController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "List Pelanggan"],
     ];
+
     if ($request->ajax()) {
-      $data = Costumer::query();
+      $data = Costumer::with('cooperation');
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
           $actionBtn = '
-            <a href="#" data-toggle="modal" data-target="#modalShow" data-name="' . $row->name . '" data-emergency_name="' . $row->emergency_name . '" data-emergency_phone="' . $row->emergency_phone . '" data-phone="' . $row->phone . '" data-address="' . $row->address . '" data-description="' . $row->description . '" data-cooperation="' . $row->cooperation . '"  class="btn btn-info btn-sm">Show Detail</a>
-            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" data-name="' . $row->name . '" data-emergency_name="' . $row->emergency_name . '" data-emergency_phone="' . $row->emergency_phone . '" data-phone="' . $row->phone . '" data-address="' . $row->address . '" data-description="' . $row->description . '" data-cooperation="' . $row->cooperation . '" class="edit btn btn-warning btn-sm">Edit</a>
+            <a href="#" data-toggle="modal" data-target="#modalShow" data-name="' . $row->name . '" data-emergency_name="' . $row->emergency_name . '" data-emergency_phone="' . $row->emergency_phone . '" data-phone="' . $row->phone . '" data-address="' . $row->address . '" data-description="' . $row->description . '" data-cooperation="' . $row->cooperation->nickname . '"  class="btn btn-info btn-sm">Show Detail</a>
+            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" data-name="' . $row->name . '" data-emergency_name="' . $row->emergency_name . '" data-emergency_phone="' . $row->emergency_phone . '" data-phone="' . $row->phone . '" data-address="' . $row->address . '" data-description="' . $row->description . '" data-cooperation_id="' . $row->cooperation_id . '" data-cooperation_name="' . $row->cooperation->name . '" class="edit btn btn-warning btn-sm">Edit</a>
             <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete btn btn-danger btn-sm">Delete</a>';
           return $actionBtn;
         })->make(true);
@@ -42,18 +43,12 @@ class CostumerController extends Controller
     return view('backend.masteroperational.costumers.index', compact('config', 'page_breadcrumbs'));
   }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @return \Illuminate\Http\Response
-   */
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
       'name' => 'required|string',
       'phone' => 'required|string',
-      'cooperation' => 'required|in:alusindo,triel',
+      'cooperation_id' => 'required|integer',
     ]);
 
     if ($validator->passes()) {
@@ -64,7 +59,7 @@ class CostumerController extends Controller
         'phone' => $request->input('phone'),
         'address' => $request->input('address'),
         'description' => $request->input('description'),
-        'cooperation' => $request->input('cooperation'),
+        'cooperation_id' => $request->input('cooperation_id'),
       ]);
       $response = response()->json([
         'status' => 'success',
@@ -76,19 +71,12 @@ class CostumerController extends Controller
     return $response;
   }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @param \App\Models\Costumer $costumer
-   * @return \Illuminate\Http\Response
-   */
   public function update(Request $request, Costumer $costumer)
   {
     $validator = Validator::make($request->all(), [
       'name' => 'required|string',
       'phone' => 'required|string',
-      'cooperation' => 'required|in:alusindo,triel',
+      'cooperation_id' => 'required|integer',
     ]);
 
     if ($validator->passes()) {
@@ -99,7 +87,7 @@ class CostumerController extends Controller
         'phone' => $request->input('phone'),
         'address' => $request->input('address'),
         'description' => $request->input('description'),
-        'cooperation' => $request->input('cooperation'),
+        'cooperation_id' => $request->input('cooperation_id'),
       ]);
       $response = response()->json([
         'status' => 'success',

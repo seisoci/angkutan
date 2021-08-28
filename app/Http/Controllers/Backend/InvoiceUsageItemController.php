@@ -4,13 +4,11 @@ namespace App\Http\Controllers\Backend;
 
 use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
-use App\Models\InvoicePurchase;
-use App\Models\InvoiceReturPurchase;
 use App\Models\InvoiceUsageItem;
 use App\Models\Journal;
 use App\Models\Prefix;
-use App\Models\Setting;
 use App\Models\Stock;
 use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
@@ -46,7 +44,7 @@ class InvoiceUsageItemController extends Controller
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
-          $deleteBtn ='<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
+          $deleteBtn = '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
           $actionBtn = '
               <div class="dropdown">
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -54,7 +52,7 @@ class InvoiceUsageItemController extends Controller
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a href="invoiceusageitems/' . $row->id . '" class="dropdown-item">Detail Pemakaian</a>
-                    '.$deleteBtn.'
+                    ' . $deleteBtn . '
                   </div>
               </div>
             ';
@@ -168,12 +166,10 @@ class InvoiceUsageItemController extends Controller
       ['page' => '/backend/invoiceusageitems', 'title' => "List Pemakaian Barang"],
       ['page' => '#', 'title' => "Detail Pemakaian Barang"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
-    return view('backend.invoice.invoiceusageitems.show', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+    return view('backend.invoice.invoiceusageitems.show', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 
   public function print($id)
@@ -183,10 +179,8 @@ class InvoiceUsageItemController extends Controller
       ['page' => '/backend/invoiceusageitems', 'title' => "List Pemakaian Barang"],
       ['page' => '#', 'title' => "Detail Pemakaian Barang"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
     $result = '';
     $no = 1;
@@ -206,8 +200,8 @@ class InvoiceUsageItemController extends Controller
       ],
       'header' => [
         'left' => [
-          strtoupper($profile['name']),
-          $profile['address'],
+          strtoupper($cooperationDefault['nickname']),
+          $cooperationDefault['address'],
           'PEMAKAIAN BARANG',
           'No. Pemakaian: ' . $data->num_invoice,
           'Nama: ' . $data->driver->name,

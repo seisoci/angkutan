@@ -32,30 +32,30 @@
           <table class="table table-borderless table-title">
             <tbody>
             <tr>
-              <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+              <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['nickname'] ?? '' }}
               </td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Nama</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ $data->employee->name }}</td>
+              <td class="text-left" style="width:10%"></td>
+              <td class="text-left" style="padding-left:4rem;width:20%">Nama</td>
+              <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td class="text-left" style="width:18%"> {{ $data->employee->name }}</td>
             </tr>
             <tr>
-              <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Bulan</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ $data->monthlysalary->name }}</td>
+              <td style="width:50%">{{ $profile['address'] ?? '' }}</td>
+              <td class="text-left" style="width:10%"></td>
+              <td class="text-left" style="padding-left:4rem;width:20%">Bulan</td>
+              <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td class="text-left" style="width:18%"> {{ $data->monthlysalary->name }}</td>
             </tr>
             <tr>
-              <td scope="col">{{ $profile['telp'] ?? ''}}</td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at ?? '' }}</td>
+              <td>Telp: {{ $profile['phone'] ?? ''}}</td>
+              <td class="text-left" style="width:10%"></td>
+              <td class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
+              <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td class="text-left" style="width:18%"> {{ $data->created_at ?? '' }}</td>
             </tr>
             <tr>
-              <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
-              <td scope="col" class="text-left" style="width:10%"></td>
+              <td>Fax: {{ $profile['fax'] ?? ''}}</td>
+              <td class="text-left" style="width:10%"></td>
             </tr>
             </tbody>
           </table>
@@ -63,9 +63,9 @@
           <table class="table">
             <thead>
             <tr>
-              <th scope="col" class="text-center" width="2%">#</th>
-              <th scope="col">Keterangan</th>
-              <th scope="col" class="text-right">Total</th>
+              <th class="text-center" width="2%">#</th>
+              <th>Keterangan</th>
+              <th class="text-right">Total</th>
             </tr>
             </thead>
             <tbody>

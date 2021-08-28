@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\Setting;
 use App\Models\Sparepart;
@@ -86,10 +87,7 @@ class ReportUsageItemsController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $driver_id = $request->driver_id;
@@ -212,13 +210,13 @@ class ReportUsageItemsController extends Controller
     $sheet->mergeCells('A6:C6');
     $sheet->setCellValue('A6', 'Nama Sparepart: ' . $sparepart);
     $sheet->mergeCells('G1:I1');
-    $sheet->setCellValue('G1', $profile['name']);
+    $sheet->setCellValue('G1', $cooperationDefault['nickname']);
     $sheet->mergeCells('G2:I2');
-    $sheet->setCellValue('G2', $profile['address']);
+    $sheet->setCellValue('G2', $cooperationDefault['address']);
     $sheet->mergeCells('G3:I3');
-    $sheet->setCellValue('G3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('G3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('G4:I4');
-    $sheet->setCellValue('G4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('G4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -307,10 +305,7 @@ class ReportUsageItemsController extends Controller
       ['page' => '#', 'title' => "Laporan Pemakaian Barang"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $driver_id = $request->driver_id;
     $transport_id = $request->transport_id;
@@ -353,6 +348,6 @@ class ReportUsageItemsController extends Controller
       ->orderBy('invoice_usage_items.invoice_date', 'asc')
       ->get();
 
-    return view('backend.report.reportusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'transport', 'driver', 'sparepart'));
+    return view('backend.report.reportusageitems.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'transport', 'driver', 'sparepart'));
   }
 }

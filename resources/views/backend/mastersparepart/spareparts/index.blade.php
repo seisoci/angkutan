@@ -111,7 +111,7 @@
       rightAlign: true,
       removeMaskOnSubmit: true
     });
-    var dataTable = $('#Datatable').DataTable({
+    let dataTable = $('#Datatable').DataTable({
       responsive: false,
       scrollX: true,
       processing: true,
@@ -166,7 +166,7 @@
     });
 
     $('#modalDelete').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
+      let id = $(event.relatedTarget).data('id');
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.spareparts.index") }}/'+ id);
     });
     $('#modalDelete').on('hidden.bs.modal', function (event) {
@@ -175,10 +175,10 @@
 
     $("#formDelete").click(function(e){
       e.preventDefault();
-      var form 	    = $(this);
-      var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
-      var btnHtml   = form.html();
-      var spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      let form 	    = $(this);
+      let url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
+      let btnHtml   = form.html();
+      let spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
       $.ajax({
         beforeSend:function() {
           form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");

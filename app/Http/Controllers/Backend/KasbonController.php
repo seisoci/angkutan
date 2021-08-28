@@ -7,11 +7,10 @@ use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\Journal;
 use App\Models\Kasbon;
-use App\Models\Opname;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use DataTables;
 use Illuminate\Http\Request;
@@ -43,7 +42,7 @@ class KasbonController extends Controller
 
     $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
       return [
-        'name'  => $coa->name ?? NULL,
+        'name' => $coa->name ?? NULL,
         'balance' => DB::table('journals')
             ->select(DB::raw('
           IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
@@ -147,32 +146,29 @@ class KasbonController extends Controller
     return $response;
   }
 
-  public function show($id){
+  public function show($id)
+  {
     $config['page_title'] = "Detail Kasbon";
     $config['print_url'] = "/backend/kasbon/$id/print";
     $page_breadcrumbs = [
       ['page' => '/backend/kasbon', 'title' => "Kasbon"],
       ['page' => '#', 'title' => "Detail Kasbon"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+
     $data = Kasbon::with('driver')->findOrFail($id);
     return view('backend.invoice.kasbon.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
   }
 
-  public function print($id){
+  public function print($id)
+  {
     $config['page_title'] = "Detail Kasbon";
     $config['print_url'] = "/backend/kasbon/$id/print";
     $page_breadcrumbs = [
       ['page' => '/backend/kasbon', 'title' => "Kasbon"],
       ['page' => '#', 'title' => "Detail Kasbon"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = Kasbon::with('driver')->findOrFail($id);
     $result = '';
     $item[] = ['no' => 1, 'nama' => $data->memo, 'nominal' => number_format($data->amount, 0, '.', ',')];
@@ -187,11 +183,11 @@ class KasbonController extends Controller
       ],
       'header' => [
         'left' => [
-          strtoupper($profile['name']),
-          $profile['address'],
+          strtoupper($cooperationDefault['nickname']),
+          $cooperationDefault['address'],
           'KASBON SUPIR',
-          'Nama: '. $data->driver->name,
-          'Tgl Kasbon: '. $this->convertToDate($data->created_at),
+          'Nama: ' . $data->driver->name,
+          'Tgl Kasbon: ' . $this->convertToDate($data->created_at),
         ],
       ],
       'footer' => [

@@ -26,29 +26,30 @@
           <table class="table table-borderless table-title">
             <tbody>
             <tr>
-              <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+              <td class="font-weight-bolder text-uppercase"
+                  style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
               </td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" colspan="2" class="text-left" style="width:15%">Tanggal</td>
-              <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-              <td scope="col" class="text-left" style="width:23%"> {{ $data->created_at }}</td>
+              <td class="text-left" style="width:10%"></td>
+              <td colspan="2" class="text-left" style="width:15%">Tanggal</td>
+              <td class="text-left" style="width:2%">: &ensp;</td>
+              <td class="text-left" style="width:23%"> {{ $data->created_at }}</td>
             </tr>
             <tr>
-              <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" colspan="2" class="text-left" style="width:15%">No. Referensi</td>
-              <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-              <td scope="col" class="text-left" style="width:23%"> {{ $data->num_invoice }}</td>
+              <td style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
+              <td class="text-left" style="width:10%"></td>
+              <td colspan="2" class="text-left" style="width:15%">No. Referensi</td>
+              <td class="text-left" style="width:2%">: &ensp;</td>
+              <td class="text-left" style="width:23%"> {{ $data->num_invoice }}</td>
             </tr>
             <tr>
-              <td scope="col">{{ $profile['telp'] ?? ''}}</td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" colspan="2" class="text-left" style="width:15%">LDO</td>
-              <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-              <td scope="col" class="text-left" style="width:23%"> {{ $data->anotherexpedition->name }}</td>
+              <td>Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
+              <td class="text-left" style="width:10%"></td>
+              <td colspan="2" class="text-left" style="width:15%">LDO</td>
+              <td class="text-left" style="width:2%">: &ensp;</td>
+              <td class="text-left" style="width:23%"> {{ $data->anotherexpedition->name }}</td>
             </tr>
             <tr>
-              <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
+              <td>Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
             </tr>
             </tbody>
           </table>
@@ -57,19 +58,19 @@
             <table class="table" style="font-size: 11px !important">
               <thead>
               <tr>
-                <th scope="col" class="text-center">#</th>
-                <th scope="col">Tanggal</th>
-                <th scope="col">S. Jalan</th>
-                <th scope="col">LDO</th>
-                <th scope="col">Pelanggan</th>
-                <th scope="col">Rute Dari</th>
-                <th scope="col">Rute Ke</th>
-                <th scope="col">Jenis Barang</th>
-                <th scope="col">Tarif LDO (Rp.)</th>
-                <th scope="col">Qty (Unit)</th>
-                <th scope="col">Total Harga Dasar</th>
-                <th scope="col">Total Operasional</th>
-                <th scope="col">Tagihan Bersih</th>
+                <th class="text-center">#</th>
+                <th>Tanggal</th>
+                <th>S. Jalan</th>
+                <th>LDO</th>
+                <th>Pelanggan</th>
+                <th>Rute Dari</th>
+                <th>Rute Ke</th>
+                <th>Jenis Barang</th>
+                <th>Tarif LDO (Rp.)</th>
+                <th>Qty (Unit)</th>
+                <th>Total Harga Dasar</th>
+                <th>Total Operasional</th>
+                <th>Tagihan Bersih</th>
               </tr>
               </thead>
               <tbody>
@@ -104,10 +105,10 @@
           <table class="table">
             <thead>
             <tr>
-              <th scope="col" width="20%">Tanggal Pembayaran</th>
-              <th scope="col" width="30%">Keterangan</th>
-              <th scope="col" width="25%" class="text-right">Nominal</th>
-              <th scope="col" width="25%" class="text-right">Total Dibayar</th>
+              <th width="20%">Tanggal Pembayaran</th>
+              <th width="30%">Keterangan</th>
+              <th width="25%" class="text-right">Nominal</th>
+              <th width="25%" class="text-right">Total Dibayar</th>
             </tr>
             </thead>
             <tbody>

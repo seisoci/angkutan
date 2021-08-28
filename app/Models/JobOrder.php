@@ -14,6 +14,9 @@ class JobOrder extends Model
   use HasFactory;
 
   protected $fillable = [
+    'no_sj',
+    'no_shipment',
+    'payload',
     'status_cargo',
     'status_document',
     'date_end',

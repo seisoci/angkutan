@@ -1,220 +1,311 @@
 <!DOCTYPE html>
 <html>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css"/>
 <head>
-  @foreach(config('layout.resources.css') as $style)
-    <link href="{{ config('layout.self.rtl') ? asset(Metronic::rtlCssPath($style)) : asset($style) }}" rel="stylesheet"
-          type="text/css"/>
-  @endforeach
-  <style type="text/css">
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      -webkit-print-color-adjust: exact !important;
+    }
+
     .table-title tbody tr td {
       padding-top: 0;
       padding-bottom: 0;
       line-height: 10px;
     }
 
+    table {
+      page-break-after: auto;
+    }
+
+    tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    td {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    thead {
+      display: table-row-group;
+    }
+
+    tfoot {
+      display: table-row-group;
+    }
+
+    .divider {
+      width: 100%;
+      display: block;
+      border: 1px solid #36298e !important;
+      color: #36298e !important;
+      background-color: #36298e;
+    }
+
+    body {
+      font-size: 10px;
+
+    }
+
+    .tableTagihan {
+      font-size: 11px;
+      border: black 1px solid;
+      border-collapse: collapse;
+      padding: 4px;
+    }
+
+    .tableTagihan th {
+      border: black 1px solid;
+      padding: 4px;
+    }
+
+    .tableTagihan td {
+      border: black 1px solid;
+      padding: 4px;
+    }
+
+    .tableRekening {
+      font-size: 12px;
+      font-weight: bold;
+      border-collapse: collapse;
+      border: 1px solid black;
+    }
+
+    .tableRekening td:nth-child(1) {
+      padding-left: 4px;
+    }
+
+    .tableRekening td:nth-child(2) {
+      padding-right: 4px;
+    }
+
+    .headerTagihan div {
+      padding-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .ttdPembayaran {
+      margin-top: 50px;
+    }
+
+    footer {
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+
+    header {
+      position: fixed; /* Display only on print page (each) */
+      top: 0; /* Because it's header */
+    }
+
+    .tableKwitansi {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .tableKwitansi td {
+      padding-top: 10px;
+    }
+
+    .tableKwitansiRekening {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .tableKwitansiRekening td {
+      padding-top: 4px;
+      font-weight: bold;
+    }
+
+
     @media print {
-      .table-title tbody tr td {
-        padding-top: 0;
-        padding-bottom: 0;
-        line-height: 10px;
-      }
-
-      table {
-        page-break-after: auto;
-      }
-
-      tr {
-        page-break-inside: avoid;
-        page-break-after: auto;
-      }
-
-      td {
-        page-break-inside: avoid;
-        page-break-after: auto;
-      }
-
-      thead {
-        display: table-row-group;
-      }
-
-      tfoot {
-        display: table-row-group;
-      }
-
-      body {
-        padding: 4em;
-        color: #fff;
-        background-color: #000;
-      }
-
-      hr {
-        border: 1px #000 solid;
-        width: 100%;
-        display: block;
-      }
-
       @page {
-        size: A4 potrait;
+        size: A4 portrait;
       }
     }
   </style>
 </head>
 
 <body>
-<div class="row justify-content-center py-8 px-8 px-md-0">
-  <div class="col-md-11">
-    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Invoice Pelanggan</u></h2>
-    <table class="table table-borderless table-title">
-      <tbody>
-      <tr>
-        <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
-        </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="padding-left:4rem;width:20%">No. Invoice</td>
-        <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
-      </tr>
-      <tr>
-        <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Supplier</td>
-        <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $data->costumer->name }}</td>
-      </tr>
-      <tr>
-        <td scope="col">{{ $profile['telp'] ?? ''}}</td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
-        <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
-      </tr>
-      <tr>
-        <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal Jth Tempo</td>
-        <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $data->due_date }}</td>
-      </tr>
-      <tr>
-        <td scope="col">Memo : {{ $data->memo ?? ''}}</td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-      </tr>
-      </tbody>
-    </table>
-    <div class="separator separator-solid separator-border-1"></div>
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-        <tr>
-          <th scope="col" class="text-center">#</th>
-          <th scope="col">Tanggal</th>
-          <th scope="col">S. Jalan</th>
-          <th scope="col">Pelanggan</th>
-          <th scope="col">Rute Dari</th>
-          <th scope="col">Rute Ke</th>
-          <th scope="col">Jenis Barang</th>
-          <th scope="col">Qty (Unit)</th>
-          <th scope="col">Harga Dasar</th>
-          <th scope="col">Pajak (%)</th>
-          <th scope="col">Pajak (Rp.)</th>
-          <th scope="col" class="text-right">Total Tagihan (Rp.)</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($data->joborders as $item)
-          <tr>
-            <td class="text-center">{{ $loop->iteration }}</td>
-            <td>{{  $item->date_begin }}</td>
-            <td>{{ $item->prefix . '-' . $item->num_bill  }}</td>
-            <td>{{ $item->costumer->name }}</td>
-            <td>{{ $item->routefrom->name }}</td>
-            <td>{{ $item->routeto->name }}</td>
-            <td>{{ $item->cargo->name }}</td>
-            <td class="text-center">{{ $item->payload }}</td>
-            <td class="text-right currency">{{ $item->basic_price }}</td>
-            <td class="text-center">{{ $item->tax_percent ?? 0 }}</td>
-            <td class="text-right currency">{{ number_format($item->tax_amount, 2, '.', ',') }}</td>
-            <td class="text-right currency">{{ $item->total_basic_price }}</td>
-          </tr>
-        @endforeach
-        <tr>
-          <td colspan="10" class="text-right font-weight-bolder">Total</td>
-          <td class="text-right font-weight-bolder currency">{{ $data->total_tax }}</td>
-          <td class="text-right font-weight-bolder currency">{{ $data->total_bill  }}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    <h4 class="text-dark"><u>Pembayaran</u></h4>
-    <table class="table">
-      <thead>
-      <tr>
-        <th scope="col" width="20%">Tanggal Pembayaran</th>
-        <th scope="col" width="30%">Keterangan</th>
-        <th scope="col" width="25%" class="text-right">Nominal</th>
-        <th scope="col" width="25%" class="text-right">Total Dibayar</th>
-      </tr>
-      </thead>
-      <tbody>
-      @foreach($data->paymentcostumers as $item)
-        <tr>
-          <td>{{ $item->date_payment }}</td>
-          <td>{{ $item->description }}</td>
-          <td class="text-right">{{ number_format($item->payment ?? 0,2, ',', '.') }}</td>
-          <td class="text-right">{{ number_format($item->payment ?? 0,2, ',', '.') }}</td>
-        </tr>
-      @endforeach
-      <tr>
-        <td colspan="3" class="text-right font-weight-bolder">Total Tagihan</td>
-        <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
-      </tr>
-      <tr>
-        <td colspan="3" class="text-right font-weight-bolder">Total Pemotongan Klaim</td>
-        <td class="text-right font-weight-bolder">{{ number_format($data->total_cut ?? 0,2, ',', '.') }}</td>
-      </tr>
-      <tr>
-        <td colspan="3" class="text-right font-weight-bolder">Total Pembayaran</td>
-        <td class="text-right font-weight-bolder">{{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
-      </tr>
-      <tr>
-        <td colspan="3" class="text-right font-weight-bolder">Sisa Pembayaran</td>
-        <td class="text-right font-weight-bolder">{{ number_format($data->rest_payment ?? 0,2, ',', '.') }}</td>
-      </tr>
-      </tbody>
-    </table>
-    <div class="d-flex justify-content-around mt-20">
-      <div class="mr-20">
-        <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
-        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  auth()->user()->name }}</u></h5>
-      </div>
-      <div class="ml-20">
-        <h4  class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
-        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  $data->costumer->name }}</u></h5>
-      </div>
-    </div>
+<div style="display: flex; flex-direction: row">
+  <img height="100px" width="100px"
+       src="{{ $data->costumer->cooperation->image ? asset("/images/thumbnail/".$data->costumer->cooperation->image) : asset('media/bg/no-content.svg') }}"
+       alt="">
+  <div style="display: flex; flex-direction: column; margin-top: 30px">
+    <div style="font-weight: bold; font-size: 14px">{{ $data->costumer->cooperation->name }}</div>
+    <div style="font-weight: bold; font-size: 10px">{{ $data->costumer->cooperation->address }}</div>
   </div>
 </div>
+<div style="display: flex; flex-direction: column; align-items: end">
+  <div class="ttdPembayaran" style="font-size: 12px; display: flex; flex-direction: column; width: 300px;">
+    <div style="text-align: center; font-weight: bold">Kwitansi</div>
+    <div style="text-align: center;">No: {{ $data->num_invoice }}</div>
+  </div>
+</div>
+<table class="tableKwitansi">
+  <tbody>
+  <tr>
+    <td style="width: 175px;">Telah diterima dari</td>
+    <td>: {{ $data->costumer->name }}</td>
+  </tr>
+  <tr>
+    <td style="width: 175px;">Uang Sejumlah</td>
+    <td>: {{ ucwords(Terbilang::terbilang($data->total_bill)) }}</td>
+  </tr>
+  <tr>
+    <td style="width: 175px;">Untuk Keperluan</td>
+    <td>: Ongkos Angkut: {{ count($data->joborders) ?? 0 }} Surat Jalan</td>
+  </tr>
+  <tr>
+    <td style="width: 175px;">Jumlah IDR</td>
+    <td>: Rp. {{ number_format($data->total_bill, 2,',','.') }}</td>
+  </tr>
+  <tr style="border-top: 1px solid black; height: 10px">
+    <td colspan="2"></td>
+  </tr>
+  </tbody>
+</table>
+<table class="tableKwitansiRekening">
+  <tbody>
+  <tr>
+    <td colspan="2" style="font-weight: bold">PEMBAYARAN DI TRANSFER KE REKENING:</td>
+  </tr>
+  <tr>
+    <td style="width: 150px; font-weight: bold">NOMOR REKENING</td>
+    <td style="font-weight: bold">: {{ $bank->no_account }}</td>
+  </tr>
+  <tr>
+    <td style="width: 150px; font-weight: bold">ATAS NAMA</td>
+    <td style="font-weight: bold">: {{ $bank->name }}</td>
+  </tr>
+  <tr>
+    <td style="width: 150px; font-weight: bold">BANK</td>
+    <td style="font-weight: bold">: {{ $bank->name_bank }}</td>
+  </tr>
+  <tr>
+    <td style="width: 150px; font-weight: bold">CABANG</td>
+    <td style="font-weight: bold">: {{ $bank->branch }}</td>
+  </tr>
+  </tbody>
+</table>
+<div style="float: right;">
+  <div class="ttdPembayaran" style="font-size: 12px; display: flex; flex-direction: column; width: 300px;">
+    <div style="text-align: center">Bandar Lampung, {{ \Carbon\Carbon::now()->format('d F Y') }}</div>
+    <div style="margin-top: 130px; text-align: center; font-weight: bold">{{ $data->costumer->cooperation->owner }}</div>
+    <div style="text-align: center; font-weight: bold">{{ $data->costumer->cooperation->name }}</div>
+  </div>
+</div>
+<p style="page-break-after: always;">&nbsp;</p>
+<div class="headerTagihan">
+  <div>Bandar Lampung, {{ \Carbon\Carbon::now()->format('d M Y') }}</div>
+  <div>Kepada Yang Terhormat,</div>
+  <div>{{ $data->costumer->name }}</div>
+  <div>No. Surat: {{ $data->num_invoice }}</div>
+  <div>Perihal: Tagihan Jasa Expedisi</div>
+  <div>Dengan Hormat,</div>
+  <div>Kami lampirkan tagihan jasa ekspedisi dengan rute sebagai berikut:</div>
+</div>
+<table class="tableTagihan">
+  <thead>
+  <tr>
+    <th>#</th>
+    <th>Tanggal</th>
+    <th>No. Surat Jalan</th>
+    <th>Muat Dari</th>
+    <th>Tujuan</th>
+    <th>Customer</th>
+    <th>No Pol</th>
+    <th>No Shipment</th>
+    <th>Biaya (Rp)</th>
+  </tr>
+  </thead>
+  <tbody>
+  @foreach($data->joborders as $item)
+    <tr>
+      <td>{{ $loop->iteration }}</td>
+      <td>{{ $item->date_begin }}</td>
+      <td>{{ $item->no_sj  }}</td>
+      <td>{{ $item->routefrom->name }}</td>
+      <td>{{ $item->routeto->name }}</td>
+      <td>{{ $item->costumer->name }}</td>
+      <td>{{ $item->transport->num_pol }}</td>
+      <td>{{ $item->transport->no_shipment }}</td>
+      <td>{{ number_format($item->total_basic_price , 2, ',','.') }}</td>
+    </tr>
+  @endforeach
+  <tr>
+    <td colspan="8" style="text-align: right">Total</td>
+    <td style="font-weight: bold">{{ number_format($data->total_bill , 2, ',','.') }}</td>
+  </tr>
+  </tbody>
+</table>
+<table class="tableRekening">
+  <tbody>
+  <tr>
+    <td colspan="2">PEMBAYARAN DI TRANSFER KE REKENING:</td>
+  </tr>
+  <tr>
+    <td style="width: 150px">NOMOR REKENING</td>
+    <td>: {{ $bank->no_account }}</td>
+  </tr>
+  <tr>
+    <td style="width: 150px">ATAS NAMA</td>
+    <td>: {{ $bank->name }}</td>
+  </tr>
+  <tr>
+    <td style="width: 150px">BANK</td>
+    <td>: {{ $bank->name_bank }}</td>
+  </tr>
+  <tr>
+    <td style="width: 150px">CABANG</td>
+    <td>: {{ $bank->branch }}</td>
+  </tr>
+  <tr>
+    <td style="width: 150px">EXPEDISI</td>
+    <td>: {{ $data->costumer->cooperation->nickname ?? '' }}</td>
+  </tr>
+  <tr style="border-top: 1px solid black; height: 10px">
+    <td colspan="2"></td>
+  </tr>
+  </tbody>
+</table>
+<div class="ttdPembayaran" style="font-size: 12px; display: flex; flex-direction: column; width: 330px">
+  <div>Atas perhatian dan kerjasamanya kami ucapkan terima kasih</div>
+  <div style="margin-top: 15px; text-align: center">Regards</div>
+  <div style="margin-top: 130px; text-align: center; font-weight: bold">{{ $data->costumer->cooperation->owner }}</div>
+  <div style="text-align: center; font-weight: bold">{{ $data->costumer->cooperation->name }}</div>
+</div>
+<footer>
+  <hr class="divider">
+  <div style="display: inline-block">
+    <div style="display: inline-flex; align-items: center; padding-left: 30px; padding-right: 30px">
+      <i class="far fa-building fa-3x"
+         style="padding-right: 4px;  color: #36298e"></i>
+      <div style="font-size: 12px; color: #36298e">{{ $data->costumer->cooperation->address }}</div>
+    </div>
+    <div style="display: inline-flex; align-items: center; padding-right: 30px">
+      <i class="fas fa-phone fa-3x"
+         style="padding-right: 4px;  color: #36298e"></i>
+      <div style="font-size: 12px; color: #36298e">{{ $data->costumer->cooperation->phone }}</div>
+    </div>
+    <div style="display: inline-flex; align-items: center; padding-right: 30px">
+      <i class="fas fa-envelope-open fa-3x"
+         style="padding-right: 4px; color: #36298e"></i>
+      <div style="font-size: 12px; color: #36298e">{{ $data->costumer->cooperation->email }}</div>
+    </div>
+  </div>
+</footer>
 </body>
-@foreach(config('layout.resources.js') as $script)
-  <script src="{{ asset($script) }}" type="text/javascript"></script>
-  <script>
-    window.onload = function (e) {
-      window.print();
-    }
-    window.setTimeout(function () {
-      window.close();
-    }, 2000);
-  </script>
-  <script type="text/javascript">
-    $(document).ready(function () {
-      $(".currency").inputmask('decimal', {
-        groupSeparator: '.',
-        digits: 2,
-        rightAlign: true,
-        removeMaskOnSubmit: true,
-        autoUnmask: true,
-      });
-    });
-  </script>
-@endforeach
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+<script type="text/javascript">
+  window.onload = function (e) {
+    window.print();
+  }
+  window.setTimeout(function () {
+    window.close();
+  }, 2000);
+</script>

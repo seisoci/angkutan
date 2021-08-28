@@ -3,7 +3,7 @@
 
 <head>
 
-  <style type="text/css">
+  <style>
     table {
       width: 100%;
       page-break-after: auto;
@@ -83,27 +83,27 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
+        <td class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:20%">{{ $profile['name'] ?? '' }}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:20%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Priode: {{ $date ?? 'All' }}
+        <td class="font-weight-normal" style="width:50%">Priode: {{ $date ?? 'All' }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">{{ $profile['address'] ?? '' }}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">{{ $cooperationDefault['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Status Pembayaran: {{ !empty($status_pembayaran) ? ucwords($status_pembayaran) : 'All' }}
+        <td class="font-weight-normal" style="width:50%">Status Pembayaran: {{ !empty($status_pembayaran) ? ucwords($status_pembayaran) : 'All' }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
       </tr>
       <tr>
         <td></td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">FAX {{ $profile['fax'] ?? ''}}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
       </tr>
       </tbody>
     </table>
@@ -114,41 +114,41 @@
              border-right: 1px solid #000 !important;border-top: 1px solid #000 !important;font-family: monospace; font-size:12px;">
         <tbody>
         <tr>
-          <td scope="col" class="font-weight-normal" style="width:10%; font-weight: bold;">Invoice Number
+          <td class="font-weight-normal" style="width:10%; font-weight: bold;">Invoice Number
           </td>
           <td width="1%">:</td>
-          <td scope="col" class="text-left" style="width:30%">{{ $item->num_invoice }}</td>
-          <td scope="col" class="text-left" style="width:20%"></td>
-          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Total Tagihan</td>
-          <td scope="col" class="text-left" style="width:1%">:</td>
-          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_bill, 2, ',', '.') }}</td>
+          <td class="text-left" style="width:30%">{{ $item->num_invoice }}</td>
+          <td class="text-left" style="width:20%"></td>
+          <td class="text-left" style="width:21%; font-weight: bold;">Total Tagihan</td>
+          <td class="text-left" style="width:1%">:</td>
+          <td class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_bill, 2, ',', '.') }}</td>
         </tr>
         <tr>
-          <td scope="col" class="font-weight-normal" style="width:10%; font-weight: bold;">Tgl Invoice</td>
+          <td class="font-weight-normal" style="width:10%; font-weight: bold;">Tgl Invoice</td>
           <td width="1%">:</td>
-          <td scope="col" class="text-left" style="width:30%">{{ $item->date_invoice }}</td>
-          <td scope="col" class="text-left" style="width:10%"></td>
-          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Total Pembayaran</td>
-          <td scope="col" class="text-left" style="width:1%">:</td>
-          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_payment, 2, ',', '.') }}</td>
+          <td class="text-left" style="width:30%">{{ $item->date_invoice }}</td>
+          <td class="text-left" style="width:10%"></td>
+          <td class="text-left" style="width:21%; font-weight: bold;">Total Pembayaran</td>
+          <td class="text-left" style="width:1%">:</td>
+          <td class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_payment, 2, ',', '.') }}</td>
         </tr>
         <tr>
-          <td scope="col" class="font-weight-normal" style="width:10%; font-weight: bold;">Tgl Jth. Tempo Invoice</td>
+          <td class="font-weight-normal" style="width:10%; font-weight: bold;">Tgl Jth. Tempo Invoice</td>
           <td width="1%">:</td>
-          <td scope="col" class="text-left" style="width:30%">{{ $item->due_date }}</td>
-          <td scope="col" class="text-left" style="width:10%"></td>
-          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Potongan</td>
-          <td scope="col" class="text-left" style="width:1%">:</td>
-          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_cut, 2, ',', '.') }}</td>
+          <td class="text-left" style="width:30%">{{ $item->due_date }}</td>
+          <td class="text-left" style="width:10%"></td>
+          <td class="text-left" style="width:21%; font-weight: bold;">Potongan</td>
+          <td class="text-left" style="width:1%">:</td>
+          <td class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->total_cut, 2, ',', '.') }}</td>
         </tr>
         <tr>
-          <td scope="col" class="font-weight-normal" style="width:15%; font-weight: bold;">Nama LDO</td>
+          <td class="font-weight-normal" style="width:15%; font-weight: bold;">Nama LDO</td>
           <td width="1%">:</td>
-          <td scope="col" class="text-left" style="width:30%">{{ $item->anotherexpedition->name }}</td>
-          <td scope="col" class="text-left" style="width:10%"></td>
-          <td scope="col" class="text-left" style="width:21%; font-weight: bold;">Sisa Tagihan</td>
-          <td scope="col" class="text-left" style="width:1%">:</td>
-          <td scope="col" class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->rest_payment, 2, ',', '.') }}</td>
+          <td class="text-left" style="width:30%">{{ $item->anotherexpedition->name }}</td>
+          <td class="text-left" style="width:10%"></td>
+          <td class="text-left" style="width:21%; font-weight: bold;">Sisa Tagihan</td>
+          <td class="text-left" style="width:1%">:</td>
+          <td class="text-left" style="width:25%; text-align: right !important;">{{ number_format($item->rest_payment, 2, ',', '.') }}</td>
         </tr>
         </tbody>
       </table>

@@ -364,7 +364,7 @@ class DriverController extends Controller
       ->when($status, function ($q, $status) {
         return $q->where('status', $status);
       })
-      ->whereNotIn('id', [DB::raw('SELECT driver_id FROM job_orders WHERE `status_cargo`= "mulai"')])
+      ->whereNotIn('id', [DB::raw('SELECT driver_id FROM job_orders WHERE `status_cargo` IN ("mulai", "transfer")')])
       ->orderBy('name')
       ->skip($offset)
       ->take($resultCount)
@@ -376,7 +376,7 @@ class DriverController extends Controller
       ->when($status, function ($q, $status) {
         return $q->where('status', $status);
       })
-      ->whereNotIn('id', [DB::raw('SELECT driver_id FROM job_orders WHERE `status_cargo`= "mulai"')])
+      ->whereNotIn('id', [DB::raw('SELECT driver_id FROM job_orders WHERE `status_cargo`  IN ("mulai", "transfer")')])
       ->get()
       ->count();
 

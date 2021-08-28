@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Costumer;
 use App\Models\JobOrder;
 use App\Models\RoadMoney;
@@ -97,19 +98,14 @@ class ReportCustomerRoadMoneyController extends Controller
       ['page' => '#', 'title' => "Laporan Invoice Ldo"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
-    return view('backend.report.reportcustomerroadmoney.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
+    return view('backend.report.reportcustomerroadmoney.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $status_payment = $request->status_payment;
@@ -239,13 +235,13 @@ class ReportCustomerRoadMoneyController extends Controller
 //    $sheet->mergeCells('A4:C4');
 //    $sheet->setCellValue('A4', 'Status Pembayaran: ' . (!empty($status_pembayaran) ? ucwords($status_pembayaran) : 'All'));
 //    $sheet->mergeCells('H1:J1');
-//    $sheet->setCellValue('H1', $profile['name']);
+//    $sheet->setCellValue('H1', $cooperationDefault['nickname']);
 //    $sheet->mergeCells('H2:J2');
-//    $sheet->setCellValue('H2', $profile['address']);
+//    $sheet->setCellValue('H2', $cooperationDefault['address']);
 //    $sheet->mergeCells('H3:J3');
-//    $sheet->setCellValue('H3', 'Telp: ' . $profile['telp']);
+//    $sheet->setCellValue('H3', 'Telp: ' . $cooperationDefault['phone']);
 //    $sheet->mergeCells('H4:J4');
-//    $sheet->setCellValue('H4', 'Fax: ' . $profile['fax']);
+//    $sheet->setCellValue('H4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(20);

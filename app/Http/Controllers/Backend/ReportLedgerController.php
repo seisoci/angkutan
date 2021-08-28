@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
+use App\Models\Cooperation;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
@@ -78,10 +79,7 @@ class ReportLedgerController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->input('type');
     $date = $request->input('date_begin') ?? NULL;
@@ -211,13 +209,13 @@ class ReportLedgerController extends Controller
     $sheet->mergeCells('A3:C3');
     $sheet->setCellValue('A3', 'Priode: ' . (!empty($date) ? $date : 'None'));
     $sheet->mergeCells('D1:F1');
-    $sheet->setCellValue('D1', $profile['name']);
+    $sheet->setCellValue('D1', $cooperationDefault['nickname']);
     $sheet->mergeCells('D2:F2');
-    $sheet->setCellValue('D2', $profile['address']);
+    $sheet->setCellValue('D2', $cooperationDefault['address']);
     $sheet->mergeCells('D3:F3');
-    $sheet->setCellValue('D3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('D3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('D4:F4');
-    $sheet->setCellValue('D4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('D4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(10);
     $sheet->getColumnDimension('B')->setWidth(45);
@@ -225,7 +223,6 @@ class ReportLedgerController extends Controller
     $sheet->getColumnDimension('D')->setWidth(17);
     $sheet->getColumnDimension('E')->setWidth(17);
     $sheet->getColumnDimension('F')->setWidth(17);
-
 
     $startCell = 6;
     $merge = 6;
@@ -332,6 +329,5 @@ class ReportLedgerController extends Controller
     $writer->save('php://output');
     exit();
   }
-
 
 }

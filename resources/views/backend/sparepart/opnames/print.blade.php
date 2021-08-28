@@ -6,7 +6,7 @@
   <link href="{{ config('layout.self.rtl') ? asset(Metronic::rtlCssPath($style)) : asset($style) }}" rel="stylesheet"
     type="text/css" />
   @endforeach
-  <style type="text/css">
+  <style>
     @media print {
 
       .table-title td,
@@ -50,7 +50,7 @@
       }
 
       @page {
-        size: A4 potrait;
+        size: A4 portrait;
       }
     }
   </style>
@@ -63,24 +63,24 @@
       <table class="table table-borderless table-title">
         <tbody>
           <tr>
-            <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+            <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
             </td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" class="text-right" style="width:20%">Tanggal</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
+            <td class="text-left" style="width:10%"></td>
+            <td class="text-right" style="width:20%">Tanggal</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:18%"> {{ $data->created_at }}</td>
           </tr>
           <tr>
-            <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
+            <td style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
           </tr>
           <tr>
-            <td scope="col">{{ $profile['telp'] ?? ''}}</td>
+            <td>{{ $cooperationDefault['phone'] ?? ''}}</td>
           </tr>
           <tr>
-            <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
+            <td>FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
           </tr>
           <tr>
-            <td scope="col" colspan="5">Deskripsi : {{ $data->description ?? ''}}</td>
+            <td colspan="5">Deskripsi : {{ $data->description ?? ''}}</td>
           </tr>
         </tbody>
       </table>
@@ -88,11 +88,11 @@
       <table class="table" style="font-size: 11px !important">
         <thead>
           <tr>
-            <th scope="col" style="width:5%">#</th>
-            <th scope="col" style="width:65%">Produk</th>
-            <th scope="col" class="text-center" style="width:10%">Stok Sistem</th>
-            <th scope="col" class="text-center" style="width:10%">Stok Fisik</th>
-            <th scope="col" class="text-center" style="width:10%">Selisih</th>
+            <th style="width:5%">#</th>
+            <th style="width:65%">Produk</th>
+            <th class="text-center" style="width:10%">Stok Sistem</th>
+            <th class="text-center" style="width:10%">Stok Fisik</th>
+            <th class="text-center" style="width:10%">Selisih</th>
           </tr>
         </thead>
         <tbody>

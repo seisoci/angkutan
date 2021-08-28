@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Journal;
 use App\Models\Opname;
 use App\Models\OpnameDetail;
@@ -144,12 +145,10 @@ class OpnameController extends Controller
       ['page' => '/backend/opnames', 'title' => "List Opname"],
       ['page' => '#', 'title' => "Detail Opname"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = Opname::with(['opnamedetail.sparepart:id,name'])->findOrFail($id);
-    return view('backend.sparepart.opnames.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.sparepart.opnames.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function print($id)
@@ -159,12 +158,10 @@ class OpnameController extends Controller
       ['page' => '/backend/opnames', 'title' => "List Opname"],
       ['page' => '#', 'title' => "Detail Opname"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = Opname::with(['opnamedetail.sparepart:id,name'])->findOrFail($id);
-    return view('backend.sparepart.opnames.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.sparepart.opnames.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
 }

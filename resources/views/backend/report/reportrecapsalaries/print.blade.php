@@ -7,7 +7,7 @@
           type="text/css"/>
   @endforeach
 
-  <style type="text/css">
+  <style>
     @media print {
 
       .table-title td,
@@ -51,7 +51,7 @@
       }
 
       @page {
-        size: A4 potrait;
+        size: A4 portrait;
       }
     }
   </style>
@@ -64,27 +64,27 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
+        <td class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:20%">{{ $profile['name'] ?? '' }}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:20%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Priode: {{ $date ?? 'All' }}
+        <td class="font-weight-normal" style="width:50%">Priode: {{ $date ?? 'All' }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">{{ $profile['address'] ?? '' }}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:25%">{{ $cooperationDefault['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Supir: {{ $driver->name ?? 'All' }}
+        <td class="font-weight-normal" style="width:50%">Supir: {{ $driver->name ?? 'All' }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">Telp: {{ $cooperationDefault['telp'] ?? ''}}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Status Gaji: {{ $status_salary}} </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">FAX {{ $profile['fax'] ?? ''}}</td>
+        <td class="font-weight-normal" style="width:50%">Status Gaji: {{ $status_salary}} </td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
       </tr>
       </tbody>
     </table>
@@ -92,7 +92,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th scope="col">#</th>
+        <th>#</th>
         <th>Nama Pelanggan</th>
         <th class="text-center">Jml</th>
         <th class="text-right">Sub Total (Inc. Tax, Fee)</th>

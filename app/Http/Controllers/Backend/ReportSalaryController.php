@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\JobOrder;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yajra\DataTables\Facades\DataTables;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 
 class ReportSalaryController extends Controller
 {
@@ -105,10 +104,8 @@ class ReportSalaryController extends Controller
       $status_salary = "All";
     }
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->getPageSetup()
@@ -168,13 +165,13 @@ class ReportSalaryController extends Controller
     $sheet->mergeCells('A5:C5');
     $sheet->setCellValue('A5', 'Status Gaji: ' . $status_salary);
     $sheet->mergeCells('G1:I1');
-    $sheet->setCellValue('G1', $profile['name']);
+    $sheet->setCellValue('G1', $cooperationDefault['nickname']);
     $sheet->mergeCells('G2:I2');
-    $sheet->setCellValue('G2', $profile['address']);
+    $sheet->setCellValue('G2', $cooperationDefault['address']);
     $sheet->mergeCells('G3:I3');
-    $sheet->setCellValue('G3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('G3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('G4:I4');
-    $sheet->setCellValue('G4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('G4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(20);
@@ -297,11 +294,8 @@ class ReportSalaryController extends Controller
       ['page' => '#', 'title' => "Laporan Gaji Supir"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    return view('backend.report.reportsalarydrivers.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'driver', 'status_salary'));
+    return view('backend.report.reportsalarydrivers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'driver', 'status_salary'));
   }
 }

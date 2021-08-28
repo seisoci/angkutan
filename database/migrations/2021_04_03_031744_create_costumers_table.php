@@ -6,33 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateCostumersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-        Schema::create('costumers', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('emergency_name')->nullable();
-            $table->string('emergency_phone')->nullable();
-            $table->string('phone')->nullable();
-            $table->text('address')->nullable();
-            $table->text('description')->nullable();
-            $table->enum('cooperation', ['alusindo','triel'])->default('alusindo');
-            $table->timestamps();
-        });
-    }
+  /**
+   * Run the migrations.
+   *
+   * @return void
+   */
+  public function up()
+  {
+    Schema::create('costumers', function (Blueprint $table) {
+      $table->id();
+      $table->foreignId('cooperation_id')->references('id')->on('cooperations')->cascadeOnDelete()->cascadeOnUpdate();
+      $table->string('name');
+      $table->string('emergency_name')->nullable();
+      $table->string('emergency_phone')->nullable();
+      $table->string('phone')->nullable();
+      $table->text('address')->nullable();
+      $table->text('description')->nullable();
+      $table->timestamps();
+    });
+  }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('costumers');
-    }
+  /**
+   * Reverse the migrations.
+   *
+   * @return void
+   */
+  public function down()
+  {
+    Schema::dropIfExists('costumers');
+  }
 }

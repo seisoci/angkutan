@@ -121,6 +121,7 @@
                   <select class="form-control" id="selectStatus">
                     <option value="">Pilih Status</option>
                     <option value="mulai">Mulai</option>
+                    <option value="transfer">Transfer</option>
                     <option value="selesai">Selesai</option>
                     <option value="batal">Batal</option>
                   </select>
@@ -146,6 +147,7 @@
         <tr>
           <th>Prefix</th>
           <th>No. Job Order</th>
+          <th>No. Surat Jalan</th>
           <th>LDO</th>
           <th>Supir</th>
           <th>No. Pol</th>
@@ -211,6 +213,7 @@
               <label>Status Job Order:</label>
               <select id="statusCargoModal" class="form-control" name="status_cargo">
                 <option value="selesai">Selesai</option>
+                <option value="transfer">Transfer</option>
                 <option value="batal">Batal</option>
               </select>
             </div>
@@ -223,7 +226,54 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" type="button" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="modalEditTonase" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit {{ $config['page_title'] }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <i aria-hidden="true" class="ki ki-close"></i>
+          </button>
+        </div>
+        <form class="formUpdate" action="#">
+          @method('PUT')
+          <meta name="csrf-token" content="{{ csrf_token() }}">
+          <div class="modal-body">
+            <div class="form-group" style="display:none;">
+              <div class="alert alert-custom alert-light-danger" role="alert">
+                <div class="alert-icon"><i class="flaticon-danger text-danger"></i></div>
+                <div class="alert-text">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>No Surat Jalan:</label>
+              <input type="text" class="form-control" name="no_sj">
+            </div>
+            <div class="form-group">
+              <label>No Shipment:</label>
+              <input type="text" class="form-control" name="no_shipment">
+            </div>
+            <div class="form-group">
+              <label>Kubiknasi / Tonase:</label>
+              <div class="input-group">
+                <input id="tonaseModal" type="text" name="payload" class="form-control text-right currency"
+                       inputmode="numeric" style="text-align: right;">
+                <div class="input-group-append">
+                  <span class="input-group-text">KG</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
           </div>
         </form>
       </div>
@@ -247,7 +297,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Belum</button>
-            <button type="submit" type="button" class="btn btn-primary">Sudah</button>
+            <button type="submit" class="btn btn-primary">Sudah</button>
           </div>
         </form>
       </div>
@@ -268,12 +318,13 @@
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
+      initCurrency();
       let dataTable = $('#Datatable').DataTable({
         responsive: true,
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[13, 'desc']],
+        order: [[14, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         dom: 'Bfrtip',
@@ -299,6 +350,7 @@
         columns: [
           {data: 'prefix', name: 'prefix'},
           {data: 'num_bill', name: 'num_bill'},
+          {data: 'no_sj', name: 'no_sj'},
           {data: 'anotherexpedition.name', name: 'anotherexpedition.name', defaultContent: ''},
           {data: 'driver.name', name: 'driver.name'},
           {data: 'transport.num_pol', name: 'transport.num_pol'},
@@ -316,11 +368,12 @@
         columnDefs: [
           {
             className: 'dt-center',
-            targets: 11,
+            targets: 12,
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
                 'mulai': {'title': 'Mulai', 'class': ' label-light-info'},
+                'transfer': {'title': 'Transfer', 'class': ' label-light-dark'},
                 'selesai': {'title': 'Selesai', 'class': ' label-light-success'},
                 'batal': {'title': 'Batal', 'class': ' label-light-danger'},
               };
@@ -333,7 +386,7 @@
           },
           {
             className: 'dt-center',
-            targets: 12,
+            targets: 13,
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -350,6 +403,17 @@
         ],
       });
 
+      function initCurrency() {
+        $(".currency").inputmask('decimal', {
+          groupSeparator: '.',
+          digits: 0,
+          rightAlign: true,
+          autoUnmask: true,
+          allowMinus: false,
+          removeMaskOnSubmit: true
+        });
+      }
+
       $('a.dropdown-item').on('click', function (e) {
         e.preventDefault();
         let column = dataTable.column($(this).attr('data-column'));
@@ -360,12 +424,16 @@
         if (this.value == 'selesai') {
           $("#dateEndModal").parent().css("display", "block");
           $("#dateEndModal").parent().find('label').css("display", "block");
+          if ($('input[name=type_payload]').val() == 'calculate') {
+            $("#tonaseModal").prop('disabled', false);
+          } else {
+            $("#tonaseModal").prop('disabled', true);
+          }
         } else {
           $("#dateEndModal").parent().css("display", "none");
           $("#dateEndModal").parent().find('label').css("display", "none");
         }
       });
-
 
       $('input[name="date_end"]').datetimepicker({
         format: 'YYYY-MM-DD'
@@ -506,11 +574,9 @@
       }).on('change', function (e) {
         dataTable.draw();
       });
-
       $('#selectStatus').on('change', function () {
         dataTable.draw();
       });
-
       $('#selectDocument').on('change', function () {
         dataTable.draw();
       });
@@ -525,14 +591,42 @@
       $('#modalEdit').on('show.bs.modal', function (event) {
         let id = $(event.relatedTarget).data('id');
         let status_cargo = $(event.relatedTarget).data('status_cargo');
-        let date_end = $(event.relatedTarget).data('date_end');
+        let payload = $(event.relatedTarget).data('payload');
+        let type_payload = $(event.relatedTarget).data('type_payload');
         $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/' + id);
         $(this).find('.modal-body').find('select[name="status_cargo"]').val(status_cargo);
+        $(this).find('.modal-body').find('input[name="payload"]').val(payload);
+        $(this).find('.modal-body').find('input[name="type_payload"]').val(type_payload);
         $("#dateEndModal").parent().css("display", "none");
         $("#dateEndModal").parent().find('label').css("display", "none");
       });
       $('#modalEdit').on('hidden.bs.modal', function (event) {
         $(this).find('.modal-body').find('select[name="status_cargo"]').val('');
+        $(this).find('.modal-body').find('input[name="payload"]').val('');
+        $(this).find('.modal-body').find('input[name="type_payload"]').val('');
+      });
+      $('#modalEditTonase').on('show.bs.modal', function (event) {
+        let id = $(event.relatedTarget).data('id');
+        let payload = $(event.relatedTarget).data('payload');
+        let type_payload = $(event.relatedTarget).data('type_payload');
+        let no_sj = $(event.relatedTarget).data('no_sj');
+        let no_shipment = $(event.relatedTarget).data('no_shipment');
+        if (type_payload === 'fix') {
+          $('#tonaseModal').prop('disabled', true);
+        } else {
+          $('#tonaseModal').prop('disabled', false);
+        }
+        $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/' + id);
+        $(this).find('.modal-body').find('input[name="payload"]').val(payload);
+        $(this).find('.modal-body').find('input[name="type_payload"]').val(type_payload);
+        $(this).find('.modal-body').find('input[name="no_sj"]').val(no_sj);
+        $(this).find('.modal-body').find('input[name="no_shipment"]').val(no_shipment);
+      });
+      $('#modalEditTonase').on('hidden.bs.modal', function (event) {
+        $(this).find('.modal-body').find('input[name="payload"]').val('');
+        $(this).find('.modal-body').find('input[name="type_payload"]').val('');
+        $(this).find('.modal-body').find('input[name="no_sj"]').val('');
+        $(this).find('.modal-body').find('input[name="no_shipment"]').val('');
       });
       $('#modalEditDocument').on('show.bs.modal', function (event) {
         let id = $(event.relatedTarget).data('id');
@@ -541,6 +635,7 @@
       $('#modalEditDocument').on('hidden.bs.modal', function (event) {
       });
       $(".formUpdate").submit(function (e) {
+        $('.currency').inputmask('remove');
         e.preventDefault();
         let form = $(this);
         let btnSubmit = form.find("[type='submit']");
@@ -562,10 +657,12 @@
           url: url,
           data: data,
           success: function (response) {
+            initCurrency();
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             if (response.status === "success") {
               toastr.success(response.message, 'Success !');
               $('#modalEdit').modal('hide');
+              $('#modalEditTonase').modal('hide');
               $('#modalEditDocument').modal('hide');
               dataTable.draw();
               $("[role='alert']").parent().css("display", "none");
@@ -578,10 +675,13 @@
               toastr.error("Please complete your form", 'Failed !');
             }
           }, error: function (response) {
+            initCurrency();
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             toastr.error(response.responseJSON.message, 'Failed !');
             $('#modalEdit').modal('hide');
             $('#modalEdit').find('a[name="id"]').attr('href', '');
+            $('#modalEditTonase').modal('hide');
+            $('#modalEditTonase').find('a[name="id"]').attr('href', '');
             $('#modalEditDocument').modal('hide');
             $('#modalEditDocument').find('a[name="id"]').attr('href', '');
           }

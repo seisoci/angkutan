@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\InvoicePurchase;
-use App\Models\Setting;
 use App\Models\SupplierSparepart;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -61,10 +60,7 @@ class ReportRecapPurchaseOrderController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $supplier_id = $request->supplier_id;
@@ -159,13 +155,13 @@ class ReportRecapPurchaseOrderController extends Controller
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Nama Supplier: ' . $supplier);
     $sheet->mergeCells('G1:J1');
-    $sheet->setCellValue('G1', $profile['name']);
+    $sheet->setCellValue('G1', $cooperationDefault['nickname']);
     $sheet->mergeCells('G2:J2');
-    $sheet->setCellValue('G2', $profile['address']);
+    $sheet->setCellValue('G2', $cooperationDefault['address']);
     $sheet->mergeCells('G3:J3');
-    $sheet->setCellValue('G3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('G3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('G4:J4');
-    $sheet->setCellValue('G4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('G4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -254,10 +250,7 @@ class ReportRecapPurchaseOrderController extends Controller
       ['page' => '#', 'title' => "Laporan Rekap Purchase Order"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $supplier_id = $request->supplier_id;
     $date = $request->date;
@@ -275,6 +268,6 @@ class ReportRecapPurchaseOrderController extends Controller
       })
       ->orderBy('invoice_date')
       ->get();
-    return view('backend.report.reportrecappurchaseorders.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'supplier',));
+    return view('backend.report.reportrecappurchaseorders.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'supplier',));
   }
 }

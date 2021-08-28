@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\JobOrder;
 use App\Models\Setting;
@@ -38,10 +39,8 @@ class RecapitulationController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "Laporan Rekapitulasi"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = array();
     $transport = NULL;
     $driver = NULL;
@@ -69,7 +68,7 @@ class RecapitulationController extends Controller
     } else {
       return redirect()->back()->withErrors($validator->errors());
     }
-    return view('backend.operational.recapitulation.index', compact('config', 'page_breadcrumbs', 'data', 'profile', 'date_begin', 'date_end', 'transport_id', 'driver_id', 'driver', 'transport'));
+    return view('backend.operational.recapitulation.index', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault', 'date_begin', 'date_end', 'transport_id', 'driver_id', 'driver', 'transport'));
   }
 
   public function print(Request $request)
@@ -86,10 +85,8 @@ class RecapitulationController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "Laporan Rekapitulasi"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = array();
     $transport = NULL;
     $driver = NULL;
@@ -144,10 +141,8 @@ class RecapitulationController extends Controller
 
   public function toDocument($driver_id = NULL, $transport_id = NULL, $date_begin, $date_end, $type)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense'])
       ->withSum('operationalexpense', 'amount')
       ->where('type', 'self')
@@ -253,13 +248,13 @@ class RecapitulationController extends Controller
     $sheet->setCellValue('A2', 'No. Polisi:');
     $sheet->setCellValue('B2', $transport->num_pol);
     $sheet->mergeCells('G1:J1');
-    $sheet->setCellValue('G1', $profile['name']);
+    $sheet->setCellValue('G1', $cooperationDefault['nickname']);
     $sheet->mergeCells('G2:J2');
-    $sheet->setCellValue('G2', $profile['address']);
+    $sheet->setCellValue('G2', $cooperationDefault['address']);
     $sheet->mergeCells('G3:J3');
-    $sheet->setCellValue('G3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('G3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('G4:J4');
-    $sheet->setCellValue('G4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('G4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getStyle('A6')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A6', 'No.');
@@ -324,12 +319,12 @@ class RecapitulationController extends Controller
     $startCell += 3;
     $sheet->mergeCells('A' . $startCell . ':C' . $startCell . '');
     $sheet->setCellValue('A' . $startCell, 'Laporan Biaya Operasional');
-    $sheet->setCellValue('E' . $startCell, $profile['name']);
+    $sheet->setCellValue('E' . $startCell, $cooperationDefault['nickname']);
     $sheet->mergeCells('E' . $startCell . ':G' . $startCell . '');
-    $sheet->setCellValue('E' . ++$startCell, $profile['address']);
+    $sheet->setCellValue('E' . ++$startCell, $cooperationDefault['address']);
     $sheet->mergeCells('E' . $startCell . ':G' . $startCell . '');
-    $sheet->setCellValue('E' . ++$startCell, 'Telp: ' . $profile['telp']);
-    $sheet->setCellValue('E' . ++$startCell, 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('E' . ++$startCell, 'Telp: ' . $cooperationDefault['phone']);
+    $sheet->setCellValue('E' . ++$startCell, 'Fax: ' . $cooperationDefault['fax']);
     $startCell++;
 
     //-----------------Operasional-----------------
@@ -402,12 +397,12 @@ class RecapitulationController extends Controller
     $arraySparepart = [];
     $sheet->mergeCells('A' . $startCell . ':C' . $startCell . '');
     $sheet->setCellValue('A' . $startCell, 'Laporan Pemakaian SparePart');
-    $sheet->setCellValue('E' . $startCell, $profile['name']);
+    $sheet->setCellValue('E' . $startCell, $cooperationDefault['nickname']);
     $sheet->mergeCells('E' . $startCell . ':G' . $startCell . '');
-    $sheet->setCellValue('E' . ++$startCell, $profile['address']);
+    $sheet->setCellValue('E' . ++$startCell, $cooperationDefault['address']);
     $sheet->mergeCells('E' . $startCell . ':G' . $startCell . '');
-    $sheet->setCellValue('E' . ++$startCell, 'Telp: ' . $profile['telp']);
-    $sheet->setCellValue('E' . ++$startCell, 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('E' . ++$startCell, 'Telp: ' . $cooperationDefault['phone']);
+    $sheet->setCellValue('E' . ++$startCell, 'Fax: ' . $cooperationDefault['fax']);
     $no = 1;
     $endForSum = $startCell;
     $startForSum = ($startCell) + 2;
@@ -451,12 +446,12 @@ class RecapitulationController extends Controller
     $startCell += 3;
     $sheet->mergeCells('A' . $startCell . ':B' . $startCell . '');
     $sheet->setCellValue('A' . $startCell, 'Laporan Gaji');
-    $sheet->setCellValue('E' . $startCell, $profile['name']);
+    $sheet->setCellValue('E' . $startCell, $cooperationDefault['nickname']);
     $sheet->mergeCells('E' . $startCell . ':G' . $startCell . '');
-    $sheet->setCellValue('E' . ++$startCell, $profile['address']);
+    $sheet->setCellValue('E' . ++$startCell, $cooperationDefault['address']);
     $sheet->mergeCells('E' . $startCell . ':G' . $startCell . '');
-    $sheet->setCellValue('E' . ++$startCell, 'Telp: ' . $profile['telp']);
-    $sheet->setCellValue('E' . ++$startCell, 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('E' . ++$startCell, 'Telp: ' . $cooperationDefault['phone']);
+    $sheet->setCellValue('E' . ++$startCell, 'Fax: ' . $cooperationDefault['fax']);
     $no = 1;
     $endForSum = $startCell;
     $startForSum = ($startCell) + 2;

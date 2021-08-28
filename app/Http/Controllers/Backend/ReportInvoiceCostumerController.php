@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\InvoiceCostumer;
 use App\Models\JobOrder;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -19,6 +19,7 @@ use Yajra\DataTables\Facades\DataTables;
 class ReportInvoiceCostumerController extends Controller
 {
   use CarbonTrait;
+
   function __construct()
   {
     $this->middleware('permission:reportinvoicecostumers-list|reportinvoicecostumers-create|reportinvoicecostumers-edit|reportinvoicecostumers-delete', ['only' => ['index']]);
@@ -66,10 +67,7 @@ class ReportInvoiceCostumerController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $date = $request->date;
@@ -180,13 +178,13 @@ class ReportInvoiceCostumerController extends Controller
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Status Pembayaran: ' . (!empty($status_pembayaran) ? ucwords($status_pembayaran) : 'All'));
     $sheet->mergeCells('H1:J1');
-    $sheet->setCellValue('H1', $profile['name']);
+    $sheet->setCellValue('H1', $cooperationDefault['nickname']);
     $sheet->mergeCells('H2:J2');
-    $sheet->setCellValue('H2', $profile['address']);
+    $sheet->setCellValue('H2', $cooperationDefault['address']);
     $sheet->mergeCells('H3:J3');
-    $sheet->setCellValue('H3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('H3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('H4:J4');
-    $sheet->setCellValue('H4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('H4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(14.45);
@@ -205,7 +203,7 @@ class ReportInvoiceCostumerController extends Controller
     foreach ($data as $item):
       $startCell++;
       $sheet->getStyle('A' . $startCell)->applyFromArray($borderLeft);
-      $sheet->getStyle('A' . $startCell.':K' . $startCell)->applyFromArray($borderTop);
+      $sheet->getStyle('A' . $startCell . ':K' . $startCell)->applyFromArray($borderTop);
       $sheet->getStyle('K' . $startCell)->applyFromArray($borderRight);
       $sheet->getStyle('A' . $startCell)->getAlignment()->setHorizontal('left');
       $sheet->getStyle('K' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
@@ -297,7 +295,7 @@ class ReportInvoiceCostumerController extends Controller
 
         $startCell++;
       endforeach;
-      $sheet->getStyle('A' . $startCell.':K' . $startCell)->applyFromArray($borderTop);
+      $sheet->getStyle('A' . $startCell . ':K' . $startCell)->applyFromArray($borderTop);
     endforeach;
     $filename = 'Laporan Invoice Pelanggan & Fee ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
@@ -346,12 +344,9 @@ class ReportInvoiceCostumerController extends Controller
       ['page' => '#', 'title' => "Laporan Invoice Pelanggan & Fee"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    return view('backend.report.reportinvoicecostumers.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'status_payment'));
+    return view('backend.report.reportinvoicecostumers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'status_payment'));
   }
 
 

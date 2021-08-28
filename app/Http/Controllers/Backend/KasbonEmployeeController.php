@@ -6,11 +6,10 @@ use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\Journal;
-use App\Models\Kasbon;
 use App\Models\KasbonEmployee;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +39,7 @@ class KasbonEmployeeController extends Controller
 
     $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
       return [
-        'name'  => $coa->name ?? NULL,
+        'name' => $coa->name ?? NULL,
         'balance' => DB::table('journals')
             ->select(DB::raw('
           IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
@@ -166,32 +165,30 @@ class KasbonEmployeeController extends Controller
     return $response;
   }
 
-  public function show($id){
+  public function show($id)
+  {
     $config['page_title'] = "Detail Kasbon Karyawaan";
     $config['print_url'] = "/backend/kasbonemployees/$id/print";
     $page_breadcrumbs = [
       ['page' => '/backend/kasbonemployees', 'title' => "Kasbon Karyawaan"],
       ['page' => '#', 'title' => "Detail Kasbon Karyawaan"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = KasbonEmployee::with('employee')->findOrFail($id);
-    return view('backend.accounting.kasbonemployee.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.accounting.kasbonemployee.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
-  public function print($id){
+  public function print($id)
+  {
     $config['page_title'] = "Detail Kasbon Karyawaan";
     $config['print_url'] = "/backend/kasbonemployees/$id/print";
     $page_breadcrumbs = [
       ['page' => '/backend/kasbonemployees', 'title' => "Kasbon Karyawaan"],
       ['page' => '#', 'title' => "Detail Kasbon Karyawaan"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = KasbonEmployee::with('employee')->findOrFail($id);
     $result = '';
     $item[] = ['no' => 1, 'nama' => $data->memo, 'nominal' => number_format($data->amount, 0, '.', ',')];
@@ -206,11 +203,11 @@ class KasbonEmployeeController extends Controller
       ],
       'header' => [
         'left' => [
-          strtoupper($profile['name']),
-          $profile['address'],
+          strtoupper($cooperationDefault['nickname']),
+          $cooperationDefault['address'],
           'KASBON KARYAWAAN',
-          'Nama: '. $data->employee->name,
-          'Tgl Kasbon: '. $this->convertToDate($data->created_at),
+          'Nama: ' . $data->employee->name,
+          'Tgl Kasbon: ' . $this->convertToDate($data->created_at),
         ],
       ],
       'footer' => [

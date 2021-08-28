@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\InvoiceUsageItem;
 use App\Models\Setting;
@@ -67,10 +68,7 @@ class ReportRecapUsageItemsController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $date = $request->date;
@@ -174,13 +172,13 @@ class ReportRecapUsageItemsController extends Controller
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'No. Polisi: ' . $transport);
     $sheet->mergeCells('F1:G1');
-    $sheet->setCellValue('F1', $profile['name']);
+    $sheet->setCellValue('F1', $cooperationDefault['nickname']);
     $sheet->mergeCells('F2:G2');
-    $sheet->setCellValue('F2', $profile['address']);
+    $sheet->setCellValue('F2', $cooperationDefault['address']);
     $sheet->mergeCells('F3:G3');
-    $sheet->setCellValue('F3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('F3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('F4:G4');
-    $sheet->setCellValue('F4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('F4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -262,10 +260,7 @@ class ReportRecapUsageItemsController extends Controller
       ['page' => '#', 'title' => "Laporan Rekap Pemakaian Barang"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $date = $request->date;
     $driver_id = $request->driver_id;
@@ -290,6 +285,6 @@ class ReportRecapUsageItemsController extends Controller
       })
       ->orderBy('invoice_date', 'asc')
       ->get();
-    return view('backend.report.reportrecapusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'driver', 'transport'));
+    return view('backend.report.reportrecapusageitems.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'driver', 'transport'));
   }
 }

@@ -221,7 +221,8 @@ class UsersController extends Controller
       if ($data->save()) {
         $response = response()->json([
           'status' => 'success',
-          'message' => 'Data has been saved'
+          'message' => 'Data has been saved',
+          'redirect' => 'reload'
         ]);
       }
     } else {

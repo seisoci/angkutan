@@ -17,6 +17,7 @@ class CreateConfigCoasTable extends Migration
             $table->id();
             $table->string('name_page')->unique();
             $table->string('name');
+            $table->string('type');
             $table->timestamps();
         });
     }

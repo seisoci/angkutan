@@ -7,7 +7,7 @@
           type="text/css"/>
   @endforeach
 
-  <style type="text/css">
+  <style>
     @media print {
 
       .table-title td,
@@ -51,7 +51,7 @@
       }
 
       @page {
-        size: A4 potrait;
+        size: A4 portrait;
       }
     }
   </style>
@@ -64,25 +64,25 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
+        <td class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:20%">{{ $profile['name'] ?? '' }}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:20%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" style="width:50%"></td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">{{ $profile['address'] ?? '' }}</td>
+        <td style="width:50%"></td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">{{ $cooperationDefault['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col"></td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
+        <td></td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
       </tr>
       <tr>
-        <td scope="col"></td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">FAX {{ $profile['fax'] ?? ''}}</td>
+        <td></td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
       </tr>
       </tbody>
     </table>
@@ -90,13 +90,13 @@
     <table class="table">
       <thead>
       <tr>
-        <th scope="col">#</th>
-        <th scope="col">Nama Pelanggan</th>
-        <th scope="col">Alamat</th>
-        <th scope="col">No. Telp</th>
-        <th scope="col">Expired SIM</th>
-        <th scope="col">Status</th>
-        <th scope="col">Foto</th>
+        <th>#</th>
+        <th>Nama Pelanggan</th>
+        <th>Alamat</th>
+        <th>No. Telp</th>
+        <th>Expired SIM</th>
+        <th>Status</th>
+        <th>Foto</th>
       </tr>
       </thead>
       <tbody>

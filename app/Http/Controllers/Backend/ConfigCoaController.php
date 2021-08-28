@@ -22,7 +22,7 @@ class ConfigCoaController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "Config COA"],
     ];
-    $data = ConfigCoa::with('coa')->get();
+    $data = ConfigCoa::with('coa')->where('type', 'configcoa')->get();
     return view('backend.settings.configcoa.index', compact('config', 'page_breadcrumbs', 'data'));
   }
 
@@ -36,7 +36,7 @@ class ConfigCoaController extends Controller
       $itemCategories = Coa::find($coa[$key]);
       $data->coa()->sync($itemCategories);
     endforeach;
-    $idNotIn = ConfigCoa::whereNotIn('id', $idIn)->pluck('id') ?? [];
+    $idNotIn = ConfigCoa::whereNotIn('id', $idIn)->where('type', 'configcoa')->pluck('id') ?? [];
     foreach ($idNotIn as $item):
       $data = ConfigCoa::find($item);
       $data->coa()->detach();

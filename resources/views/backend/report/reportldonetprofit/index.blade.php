@@ -78,11 +78,8 @@
             <div class="row align-items-center">
               <div class="col-md-3 my-md-0">
                 <div class="form-group">
-                  <label>Status Pembayaran:</label>
-                  <select class="form-control" id="statusPayment">
-                    <option value="">Pilih Status</option>
-                    <option value="unpaid">Unpaid</option>
-                    <option value="paid">Paid</option>
+                  <label>LDO:</label>
+                  <select class="form-control" id="select2AnotherExpedition">
                   </select>
                 </div>
               </div>
@@ -118,6 +115,8 @@
           <th>Total Harga Dasar</th>
           <th>Total Harga Dasar(Inc. Tax & FEE)</th>
           <th>Total Harga Dasar LDO</th>
+          <th>Pendapatan Kotor</th>
+          <th>Pendapatan Bersih(Inc. Tax & FEE)</th>
           <th>Created At</th>
         </tr>
         </thead>
@@ -142,7 +141,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           date: $("input[name=date]").val(),
-          status_payment: $('#statusPayment').find(':selected').val() || '',
+          another_expedition_id: $('#select2AnotherExpedition').find(':selected').val() || ''
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
@@ -151,7 +150,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           date: $("input[name=date]").val(),
-          status_payment: $('#statusPayment').find(':selected').val() || '',
+          another_expedition_id: $('#select2AnotherExpedition').find(':selected').val() || ''
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
@@ -160,7 +159,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           date: $("input[name=date]").val(),
-          status_payment: $('#statusPayment').find(':selected').val() || '',
+          another_expedition_id: $('#select2AnotherExpedition').find(':selected').val() || ''
         });
         window.open('{{ $config['print_url'] }}?' + params.toString());
       });
@@ -171,7 +170,7 @@
         processing: true,
         serverSide: true,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        order: [12, 'desc'],
+        order: [14, 'desc'],
         pageLength: 10,
         dom: 'Bfrtip',
         buttons: [
@@ -180,7 +179,7 @@
         ajax: {
           url: "{{ route('backend.reportldonetprofit.index') }}",
           data: function (d) {
-            d.status_payment = $('#statusPayment').find(':selected').val();
+            d.another_expedition_id = $('#select2AnotherExpedition').find(':selected').val();
             d.date = $("input[name=date]").val();
           }
         },
@@ -218,8 +217,34 @@
             orderable: false,
             searchable: false
           },
+          {
+            className: 'dt-right',
+            orderable: false,
+            searchable: false
+          },
+          {
+            className: 'dt-right',
+            orderable: false,
+            searchable: false
+          },
           {data: 'created_at', name: 'created_at'},
         ],
+        columnDefs: [
+          {
+            targets: 12,
+            render: function (data, type, row) {
+              let sum = row['total_basic_price'] - row['total_basic_price_ldo'];
+              return $.fn.dataTable.render.number(',', '.', 2).display(sum);
+            }
+          },
+          {
+            targets: 13,
+            render: function (data, type, row) {
+              let sum = row['total_basic_price_after_thanks'] - row['total_basic_price_ldo'];
+              return $.fn.dataTable.render.number(',', '.', 2).display(sum);
+            }
+          },
+        ]
       });
 
       $('#dateRangePicker').daterangepicker({
@@ -235,6 +260,25 @@
       });
 
       $('#statusPayment').on('change', function () {
+        dataTable.draw();
+      });
+
+      $("#select2AnotherExpedition").select2({
+        placeholder: "Search LDO",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.anotherexpedition.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
         dataTable.draw();
       });
 

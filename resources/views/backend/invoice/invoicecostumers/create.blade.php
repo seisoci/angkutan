@@ -126,6 +126,11 @@
                                                   disabled></td>
                   </tr>
                   <tr>
+                    <td colspan="4" class="text-right">Total Piutang Klaim</td>
+                    <td class="text-right"><input type="text" name="total_piutang" class="currency rounded-0 form-control">
+                    </td>
+                  </tr>
+                  <tr>
                     <td colspan="4" class="text-right">Total Pemotongan Klaim</td>
                     <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control">
                     </td>
@@ -318,15 +323,16 @@
       function initCalculate() {
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
         let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
+        let total_piutang = parseFloat($('input[name="total_piutang"]').val()) || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
-        let rest_payment = total_bill - total_payment - total_cut;
+        let rest_payment = total_bill - total_payment - total_cut + total_piutang;
         $('.total_payment').val(total_payment);
         $('.rest_payment').val(rest_payment);
         $('input[name=total_bill]').val(total_bill);
         $('input[name=total_basic_price_after_thanks]').val(total_basic_price_after_thanks);
       }
 
-      $('input[name="payment[payment]"],input[name="total_cut"],#diskon').on('keyup', function () {
+      $('input[name="payment[payment]"],input[name="total_cut"],input[name="total_piutang"],#diskon').on('keyup', function () {
         initCalculate();
       });
 

@@ -12,8 +12,10 @@
           <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
               class="fa fa-arrow-left"></i> Back
           </button>
-          <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i
-              class="fa fa-print"></i> Print</a>
+          <select class="form-control" id="select2Bank" style="width: 200px">
+          </select>
+          <button id="btn_print" class="btn btn-outline-secondary"><i
+              class="fa fa-print"></i> Print</button>
         </div>
       </div>
     </div>
@@ -26,7 +28,7 @@
           <table class="table table-borderless table-title">
             <tbody>
             <tr>
-              <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+              <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $data->costumer->cooperation->nickname ?? '' }}
               </td>
               <td class="text-left" style="width:10%"></td>
               <td class="text-left" style="padding-left:4rem;width:20%">No. Invoice</td>
@@ -34,21 +36,21 @@
               <td class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
             </tr>
             <tr>
-              <td style="width:50%">{{ $profile['address'] ?? '' }}</td>
+              <td style="width:50%">{{ $data->costumer->cooperation->address ?? '' }}</td>
               <td class="text-left" style="width:10%"></td>
               <td class="text-left" style="padding-left:4rem;width:20%">Supplier</td>
               <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
               <td class="text-left" style="width:18%"> {{ $data->costumer->name }}</td>
             </tr>
             <tr>
-              <td>{{ $profile['telp'] ?? ''}}</td>
+              <td>{{ $data->costumer->cooperation->phone ?? ''}}</td>
               <td class="text-left" style="width:10%"></td>
               <td class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
               <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
               <td class="text-left" style="width:18%"> {{ $data->created_at }}</td>
             </tr>
             <tr>
-              <td>FAX {{ $profile['fax'] ?? ''}}</td>
+              <td>FAX {{ $data->costumer->cooperation->fax ?? ''}}</td>
               <td class="text-left" style="width:10%"></td>
               <td class="text-left" style="padding-left:4rem;width:20%">Tanggal Jth Tempo</td>
               <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
@@ -131,8 +133,12 @@
               <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
             </tr>
             <tr>
+              <td colspan="3" class="text-right font-weight-bolder">Total Piutang Klaim</td>
+              <td class="text-right font-weight-bolder">{{ number_format($data->total_piutang ?? 0,2, ',', '.') }}</td>
+            </tr>
+            <tr>
               <td colspan="3" class="text-right font-weight-bolder">Total Pemotongan Klaim</td>
-              <td class="text-right font-weight-bolder">{{ number_format($data->total_cut ?? 0,2, ',', '.') }}</td>
+              <td class="text-right font-weight-bolder text-danger">{{ number_format($data->total_cut ?? 0,2, ',', '.') }}</td>
             </tr>
             <tr>
               <td colspan="3" class="text-right font-weight-bolder">Total Pembayaran</td>
@@ -158,6 +164,9 @@
     th {
       padding: 0;
     }
+    .select2-container--default .select2-selection--single {
+      border-radius: 0 !important;
+    }
   </style>
 @endsection
 
@@ -172,6 +181,30 @@
         rightAlign: true,
         removeMaskOnSubmit: true,
         autoUnmask: true,
+      });
+
+      $('#btn_print').on('click', function (e) {
+        e.preventDefault();
+        let params = new URLSearchParams({
+          bank_id: $('#select2Bank').find(':selected').val() || '',
+        });
+        window.location.href = '{{ $config['print_url'] }}?' + params.toString();
+      });
+
+      $("#select2Bank").select2({
+        placeholder: "Search Bank",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.banks.select2') }}",
+          dataType: "json",
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
       });
     });
   </script>

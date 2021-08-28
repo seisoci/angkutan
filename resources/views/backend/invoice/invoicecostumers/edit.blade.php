@@ -131,7 +131,8 @@
                   <td><input type="text" class="form-control rounded-0 datepicker w-100" placeholder="Tanggal Invoice"
                              disabled value="{{ $item->date_payment }}"></td>
                   <td><input class="form-control rounded-0" value="{{ $item->description }}" disabled></td>
-                  <td><input type="text" class="form-control rounded-0" value="{{ $item->coa->code." - ".$item->coa->name }}" disabled></td>
+                  <td><input type="text" class="form-control rounded-0"
+                             value="{{ $item->coa->code." - ".$item->coa->name }}" disabled></td>
                   <td><input type="text" class="currency rounded-0 form-control" value="{{ $item->payment }}" disabled>
                   </td>
                   <td><input type="text" class="currency rounded-0 form-control"
@@ -149,7 +150,8 @@
                     @endforeach
                   </select></td>
                 <td><input type="text" name="payment[payment]" class="currency rounded-0 form-control"></td>
-                <td><input type="text" name="payment[total_payment]" class="currency rounded-0 form-control totalPayment" disabled>
+                <td><input type="text" name="payment[total_payment]"
+                           class="currency rounded-0 form-control totalPayment" disabled>
                 </td>
               </tr>
               </tbody>
@@ -159,6 +161,11 @@
                 <td class="text-right"><input type="text" name="total_bill" class="currency rounded-0 form-control"
                                               value="{{ $data->total_bill }}"
                                               disabled></td>
+              </tr>
+              <tr>
+                <td colspan="4" class="text-right">Total Piutang Klaim</td>
+                <td class="text-right"><input type="text" name="total_piutang" class="currency rounded-0 form-control" value="{{ $data->total_piutang }}">
+                </td>
               </tr>
               <tr>
                 <input type="hidden" name="total_cut_old" value="{{ $data->total_cut }}">
@@ -241,18 +248,19 @@
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
         let total_fee = parseFloat($('input[name="total_fee"]').val()) || 0;
         let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
+        let total_piutang = parseFloat($('input[name="total_piutang"]').val()) || 0;
         let totalPayment = parseFloat('{{ $data->total_payment }}');
         let totalTax = parseFloat('{{ $data->total_tax }}');
         let payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
         let grandTotal = totalPayment + payment;
-        let rest_payment = total_bill - total_cut - totalPayment - payment;
+        let rest_payment = total_bill - total_cut - totalPayment - payment + total_piutang;
         $('.totalPayment').val(payment);
         $('.total_payment').val(grandTotal);
         $('.rest_payment').val(rest_payment);
         $('input[name=total_bill]').val(total_bill);
       }
 
-      $('input[name="payment[payment]"],input[name="total_cut"],#diskon').on('keyup', function () {
+      $('input[name="payment[payment]"],input[name="total_cut"],input[name="total_piutang"],#diskon').on('keyup', function () {
         initCalculate();
       });
 

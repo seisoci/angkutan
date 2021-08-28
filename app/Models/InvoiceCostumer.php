@@ -30,6 +30,7 @@ class InvoiceCostumer extends Model
     'total_tax',
     'total_fee_thanks',
     'total_cut',
+    'total_piutang',
     'total_payment',
     'rest_payment',
     'tax_coa_id',

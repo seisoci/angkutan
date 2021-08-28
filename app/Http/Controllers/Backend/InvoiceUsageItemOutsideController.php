@@ -6,6 +6,7 @@ use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\InvoiceUsageItem;
 use App\Models\Journal;
 use App\Models\Prefix;
@@ -197,12 +198,10 @@ class InvoiceUsageItemOutsideController extends Controller
       ['page' => '/backend/invoiceusageitemsoutside', 'title' => "List Pembelian Barang Diluar"],
       ['page' => '#', 'title' => "Detail Pembelian Barang Diluar"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceUsageItem::where('type', 'outside')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
-    return view('backend.invoice.invoiceusageitemsoutside.show', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+    return view('backend.invoice.invoiceusageitemsoutside.show', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 
   public function print($id)
@@ -212,10 +211,8 @@ class InvoiceUsageItemOutsideController extends Controller
       ['page' => '/backend/invoiceusageitemsoutside', 'title' => "List Pembelian Barang Diluar"],
       ['page' => '#', 'title' => "Detail Pembelian Barang Diluar"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceUsageItem::where('type', 'outside')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
 
     $result = '';
@@ -242,8 +239,8 @@ class InvoiceUsageItemOutsideController extends Controller
       ],
       'header' => [
         'left' => [
-          strtoupper($profile['name']),
-          $profile['address'],
+          strtoupper($cooperationDefault['nickname']),
+          $cooperationDefault['address'],
           'PEMBELIAN BARANG DILUAR',
           'No. Refrensi: ' . $data->num_invoice,
           'Nama: ' . $data->driver->name,

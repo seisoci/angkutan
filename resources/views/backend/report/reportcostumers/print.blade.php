@@ -64,25 +64,25 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
+        <td class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:20%">{{ $profile['name'] ?? '' }}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:20%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" style="width:50%"></td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">{{ $profile['address'] ?? '' }}</td>
+        <td style="width:50%"></td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">{{ $cooperationDefault['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col"></td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
+        <td></td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
       </tr>
       <tr>
-        <td scope="col"></td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">FAX {{ $profile['fax'] ?? ''}}</td>
+        <td></td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
       </tr>
       </tbody>
     </table>
@@ -90,13 +90,13 @@
     <table class="table">
       <thead>
       <tr>
-        <th scope="col" style="width:5%">#</th>
-        <th scope="col" style="width:25%">Nama Pelanggan</th>
-        <th scope="col" style="width:20%">Alamat</th>
-        <th scope="col" style="width:15%">No. Telp</th>
-        <th scope="col" style="width:15%">Nama Darurat</th>
-        <th scope="col" style="width:10%">No. Telp Darurat</th>
-        <th scope="col" style="width:10%">Kerjasama</th>
+        <th style="width:5%">#</th>
+        <th style="width:25%">Nama Pelanggan</th>
+        <th style="width:20%">Alamat</th>
+        <th style="width:15%">No. Telp</th>
+        <th style="width:15%">Nama Darurat</th>
+        <th style="width:10%">No. Telp Darurat</th>
+        <th style="width:10%">Kerjasama</th>
       </tr>
       </thead>
       <tbody>

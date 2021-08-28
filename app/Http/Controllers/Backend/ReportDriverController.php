@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -50,10 +50,8 @@ class ReportDriverController extends Controller
   public function document(Request $request)
   {
     $type = $request->type;
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = Driver::where('another_expedition_id', NULL)
       ->orderBy('name', 'asc')
       ->get();
@@ -128,13 +126,13 @@ class ReportDriverController extends Controller
     $sheet->mergeCells('A2:B2');
     $sheet->setCellValue('A2', 'Printed: ' . $this->dateTimeNow());
     $sheet->mergeCells('E1:G1');
-    $sheet->setCellValue('E1', $profile['name']);
+    $sheet->setCellValue('E1', $cooperationDefault['nickname']);
     $sheet->mergeCells('E2:G2');
-    $sheet->setCellValue('E2', $profile['address']);
+    $sheet->setCellValue('E2', $cooperationDefault['address']);
     $sheet->mergeCells('E3:G3');
-    $sheet->setCellValue('E3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('E3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('E4:G4');
-    $sheet->setCellValue('E4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('E4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(20);
@@ -215,14 +213,11 @@ class ReportDriverController extends Controller
       ['page' => '#', 'title' => "Laporan Data Supir"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $data = Driver::where('another_expedition_id', NULL)
       ->orderBy('name', 'asc')
       ->get();
-    return view('backend.report.reportdrivers.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+    return view('backend.report.reportdrivers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 }

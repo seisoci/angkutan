@@ -31,26 +31,26 @@
         <table class="table table-borderless table-title">
           <tbody>
             <tr>
-              <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+              <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
               </td>
-              <td scope="col" class="text-left" style="width:10%">No. Retur</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
-              <td scope="col" class="text-left" style="width:20%"> {{ $data->num_invoice }}</td>
+              <td class="text-left" style="width:10%">No. Retur</td>
+              <td class="text-left" style="width:2%">&ensp; :</td>
+              <td class="text-left" style="width:20%"> {{ $data->num_invoice }}</td>
             </tr>
             <tr>
-              <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
-              <td scope="col" class="text-left" style="width:10%">Tanggal Nota</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
-              <td scope="col" class="text-left" style="width:20%"> {{ $data->invoice_date }}</td>
+              <td style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
+              <td class="text-left" style="width:10%">Tanggal Nota</td>
+              <td class="text-left" style="width:2%">&ensp; :</td>
+              <td class="text-left" style="width:20%"> {{ $data->invoice_date }}</td>
             </tr>
             <tr>
-              <td scope="col">{{ $profile['telp'] ?? ''}}</td>
-              <td scope="col" class="text-left" style="width:10%">Supplier</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp; :</td>
-              <td scope="col" class="text-left" style="width:20%"> {{ $data->supplier->name }}</td>
+              <td>Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
+              <td class="text-left" style="width:10%">Supplier</td>
+              <td class="text-left" style="width:2%">&ensp; :</td>
+              <td class="text-left" style="width:20%"> {{ $data->supplier->name }}</td>
             </tr>
             <tr>
-              <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
+              <td>Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
             </tr>
           </tbody>
         </table>
@@ -58,11 +58,11 @@
         <table class="table" style="font-size: 11px !important">
           <thead>
             <tr>
-              <th scope="col" style="width:5%">#</th>
-              <th scope="col" style="width:65%">Produk</th>
-              <th scope="col" class="text-center" style="width:10%">Unit</th>
-              <th scope="col" class="text-right" style="width:10%">Harga</th>
-              <th scope="col" class="text-right" style="width:10%">Total</th>
+              <th style="width:5%">#</th>
+              <th style="width:65%">Produk</th>
+              <th class="text-center" style="width:10%">Unit</th>
+              <th class="text-right" style="width:10%">Harga</th>
+              <th class="text-right" style="width:10%">Total</th>
             </tr>
           </thead>
           <tbody>

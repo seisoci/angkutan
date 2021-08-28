@@ -6,10 +6,10 @@ use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\Employee;
 use App\Models\InvoiceKasbonEmployee;
 use App\Models\Journal;
-use App\Models\Kasbon;
 use App\Models\KasbonEmployee;
 use App\Models\PaymentKasbonEmployee;
 use App\Models\Prefix;
@@ -202,12 +202,10 @@ class InvoiceKasbonEmployeeController extends Controller
       ['page' => '/backend/invoicekasbonemployees', 'title' => "List Invoice Kasbon Karyawaan"],
       ['page' => '#', 'title' => "Invoice Kasbon Karyawaan"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceKasbonEmployee::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['employee:id,name', 'kasbonemployees', 'paymentkasbonemployes'])->firstOrFail();
-    return view('backend.accounting.invoicekasbonemployees.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.accounting.invoicekasbonemployees.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function print($id)
@@ -217,10 +215,8 @@ class InvoiceKasbonEmployeeController extends Controller
       ['page' => '/backend/invoicekasbonemployees', 'title' => "List Invoice Kasbon Karyawaan"],
       ['page' => '#', 'title' => "Invoice Kasbon Karyawaan"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceKasbonEmployee::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['employee:id,name', 'kasbonemployees', 'paymentkasbonemployes'])->firstOrFail();
 
     $result = '';
@@ -253,10 +249,10 @@ class InvoiceKasbonEmployeeController extends Controller
       ],
       'header' => [
         'left' => [
-          strtoupper($profile['name']),
-          $profile['address'],
+          strtoupper($cooperationDefault['nickname']),
+          $cooperationDefault['address'],
           'PEMBAYARAN KASBON KARYAWAAN',
-          'No. Kasbon: '. $data->num_invoice,
+          'No. Kasbon: ' . $data->num_invoice,
           'Nama: ' . $data->employee->name,
           'Tgl Pembayaran: ' . $this->convertToDate($data->created_at),
         ],

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\InvoiceReturPurchase;
-use App\Models\Setting;
 use App\Models\SupplierSparepart;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
@@ -60,10 +60,7 @@ class ReportRecapReturPurchaseController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $supplier_id = $request->supplier_id;
@@ -158,13 +155,13 @@ class ReportRecapReturPurchaseController extends Controller
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Nama Supplier: ' . $supplier);
     $sheet->mergeCells('D1:E1');
-    $sheet->setCellValue('D1', $profile['name']);
+    $sheet->setCellValue('D1', $cooperationDefault['nickname']);
     $sheet->mergeCells('D2:E2');
-    $sheet->setCellValue('D2', $profile['address']);
+    $sheet->setCellValue('D2', $cooperationDefault['address']);
     $sheet->mergeCells('D3:E3');
-    $sheet->setCellValue('D3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('D3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('D4:E4');
-    $sheet->setCellValue('D4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('D4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -201,8 +198,8 @@ class ReportRecapReturPurchaseController extends Controller
     $startCell++;
     $startCellFilter++;
     $sheet->getStyle('A' . $startCell . ':E' . $startCell . '')->applyFromArray($borderTop)->applyFromArray(($borderBottom));
-    $sheet->getStyle( 'E' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
-    $sheet->getStyle('A' . $startCell )->getAlignment()->setHorizontal('right');
+    $sheet->getStyle('E' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell)->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('E' . $startCell, 'Total Rp.');
     $sheet->mergeCells('A' . $startCell . ':D' . $startCell . '');
     $sheet->getStyle('A' . $startCell . ':E' . $startCell)->getFont()->setBold(true);
@@ -235,10 +232,7 @@ class ReportRecapReturPurchaseController extends Controller
       ['page' => '#', 'title' => "Laporan Rekap Retur Purchase Order"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $supplier_id = $request->supplier_id;
     $date = $request->date;
@@ -256,6 +250,6 @@ class ReportRecapReturPurchaseController extends Controller
       })
       ->orderBy('invoice_date')
       ->get();
-    return view('backend.report.reportrecapreturpurchases.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'supplier', 'date',));
+    return view('backend.report.reportrecapreturpurchases.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'supplier', 'date',));
   }
 }

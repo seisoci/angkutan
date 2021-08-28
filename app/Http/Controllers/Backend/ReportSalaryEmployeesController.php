@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Employee;
 use App\Models\MonthlySalaryDetail;
 use App\Models\Setting;
@@ -100,10 +101,7 @@ class ReportSalaryEmployeesController extends Controller
       $date = "All";
     }
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $data = MonthlySalaryDetail::select(DB::raw('
        monthly_salary_details.id,
@@ -195,13 +193,13 @@ class ReportSalaryEmployeesController extends Controller
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Supir: ' . (!empty($employee) ? $employee->name : 'ALL'));
     $sheet->mergeCells('D1:E1');
-    $sheet->setCellValue('D1', $profile['name']);
+    $sheet->setCellValue('D1', $cooperationDefault['nickname']);
     $sheet->mergeCells('D2:E2');
-    $sheet->setCellValue('D2', $profile['address']);
+    $sheet->setCellValue('D2', $cooperationDefault['address']);
     $sheet->mergeCells('D3:E3');
-    $sheet->setCellValue('D3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('D3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('D4:E4');
-    $sheet->setCellValue('D4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('D4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(20);
@@ -289,11 +287,7 @@ class ReportSalaryEmployeesController extends Controller
       ['page' => '#', 'title' => "Laporan Gaji Karyawaan"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
-
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $driver = Employee::find($employee_id);
     $data = MonthlySalaryDetail::select(DB::raw('
@@ -329,6 +323,6 @@ class ReportSalaryEmployeesController extends Controller
       ->get();
 
 
-    return view('backend.report.reportsalaryemployees.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'driver'));
+    return view('backend.report.reportsalaryemployees.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'driver'));
   }
 }

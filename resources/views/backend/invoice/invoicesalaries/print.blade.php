@@ -64,33 +64,33 @@
       <table class="table table-borderless table-title">
         <tbody>
           <tr>
-            <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+            <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
             </td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" class="text-left pl-20" style="width:20%">Tanggal</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
+            <td class="text-left" style="width:10%"></td>
+            <td class="text-left pl-20" style="width:20%">Tanggal</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:18%"> {{ $data->created_at }}</td>
           </tr>
           <tr>
-            <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" class="text-left pl-20" style="width:20%">No. Referensi</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
+            <td style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
+            <td class="text-left" style="width:10%"></td>
+            <td class="text-left pl-20" style="width:20%">No. Referensi</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
           </tr>
           <tr>
-            <td scope="col">{{ $profile['telp'] ?? ''}}</td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" class="text-left pl-20" style="width:20%">Nama Supir</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:18%"> {{ $data->driver->name }}</td>
+            <td>{{ $cooperationDefault['phone'] ?? ''}}</td>
+            <td class="text-left" style="width:10%"></td>
+            <td class="text-left pl-20" style="width:20%">Nama Supir</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:18%"> {{ $data->driver->name }}</td>
           </tr>
           <tr>
-            <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" class="text-left pl-20" style="width:20%">No. Polisi</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:18%"> {{ $data->transport->num_pol }}</td>
+            <td>FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
+            <td class="text-left" style="width:10%"></td>
+            <td class="text-left pl-20" style="width:20%">No. Polisi</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:18%"> {{ $data->transport->num_pol }}</td>
           </tr>
         </tbody>
       </table>
@@ -98,12 +98,12 @@
       <table class="table">
         <thead>
           <tr>
-            <th scope="col" style="width:5%">#</th>
-            <th scope="col" style="width:15%">No. Job Order</th>
-            <th scope="col" style="width:5%">KETERANGAN</th>
-            <th scope="col" style="width:30%">PELANGGAN</th>
-            <th scope="col" style="width:30%">RUTE</th>
-            <th scope="col" class="text-right" style="width:15%">JUMLAH</th>
+            <th style="width:5%">#</th>
+            <th style="width:15%">No. Job Order</th>
+            <th style="width:5%">KETERANGAN</th>
+            <th style="width:30%">PELANGGAN</th>
+            <th style="width:30%">RUTE</th>
+            <th class="text-right" style="width:15%">JUMLAH</th>
           </tr>
         </thead>
         <tbody>

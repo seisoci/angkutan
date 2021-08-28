@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Costumer;
+use App\Models\Driver;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\OperationalExpense;
@@ -25,6 +26,7 @@ use Validator;
 
 class JobOrderController extends Controller
 {
+
   function __construct()
   {
     $this->middleware('permission:joborders-list|joborders-create|joborders-edit|joborders-delete', ['only' => ['index']]);
@@ -44,16 +46,16 @@ class JobOrderController extends Controller
 
     $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
       return [
-        'name'  => $coa->name ?? NULL,
+        'name' => $coa->name ?? NULL,
         'balance' => DB::table('journals')
-          ->select(DB::raw('
+            ->select(DB::raw('
           IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
           (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
           '))
-          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
-          ->where('journals.coa_id', $coa->id)
-          ->groupBy('journals.coa_id')
-          ->first()->saldo,
+            ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+            ->where('journals.coa_id', $coa->id)
+            ->groupBy('journals.coa_id')
+            ->first()->saldo ?? 0,
       ];
     });
 
@@ -69,6 +71,7 @@ class JobOrderController extends Controller
     $status_cargo = $request->status_cargo;
     $status_salary = $request->status_salary;
     $status_document = $request->status_document;
+
     if ($request->ajax()) {
       $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
         ->when($another_expedition_id, function ($query, $another_expedition_id) {
@@ -116,26 +119,31 @@ class JobOrderController extends Controller
         ->addColumn('action', function ($row) {
           $btnEdit = '';
           $btnEditDocument = '';
+          $btnShowTonase = '';
           if ($row->status_cargo != 'selesai' && $row->status_cargo != 'batal') {
             $btnEdit = '
-                  <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" data-status_cargo="' . $row->status_cargo . '" data-date_end="' . $row->date_end . '" class="edit dropdown-item">Edit</a>';
+            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" data-type_payload="' . $row->type_payload . '" data-payload="' . $row->payload . '"  data-status_cargo="' . $row->status_cargo . '" data-date_end="' . $row->date_end . '" class="edit dropdown-item">Edit</a>';
           }
           if ($row->status_document != 1 && $row->status_cargo === 'selesai') {
             $btnEditDocument = '
-                  <a href="#" data-toggle="modal" data-target="#modalEditDocument" data-id="' . $row->id . '" class="edit dropdown-item">Edit Dokumen</a>';
+            <a href="#" data-toggle="modal" data-target="#modalEditDocument" data-id="' . $row->id . '" class="edit dropdown-item">Edit Dokumen</a>';
+          }
+          if ($row->status_cargo == 'selesai' && $row->status_document == 1 && !$row->invoice_costumer_id) {
+            $btnShowTonase = '
+            <a href="#" data-toggle="modal" data-target="#modalEditTonase" data-id="' . $row->id . '" data-type_payload="' . $row->type_payload . '" data-payload="' . $row->payload . '" data-no_sj="' . $row->no_sj . '"   data-no_shipment="' . $row->no_shipment . '"  class="edit dropdown-item">Input Tonase</a>';
           }
           $actionBtn = '<div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-                    <div class="btn-group" role="group">
-                        <button id="btnGroupVerticalDrop1" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop1">
-                      <a href="joborders/' . $row->id . '" class="dropdown-item">Show Detail</a>
-                      ' . $btnEdit . ' ' . $btnEditDocument . '
-                        </div>
-                    </div>
+            <div class="btn-group" role="group">
+                <button id="btnGroupVerticalDrop1" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop1">
+              <a href="joborders/' . $row->id . '" class="dropdown-item">Show Detail</a>
+              ' . $btnEdit . $btnEditDocument . $btnShowTonase . '
                 </div>
-              ';
+            </div>
+          </div>
+          ';
           return $actionBtn;
         })
         ->make(true);
@@ -147,7 +155,7 @@ class JobOrderController extends Controller
   {
     $config['page_title'] = "Create Job Order";
     $page_breadcrumbs = [
-      ['page' => '/backend/driver', 'title' => "List Job Order"],
+      ['page' => '/backend/joborders', 'title' => "List Job Order"],
       ['page' => '#', 'title' => "Create Job Order"],
     ];
     $sparepart = Setting::where('name', 'potongan sparepart')->first();
@@ -161,8 +169,8 @@ class JobOrderController extends Controller
     $validator = Validator::make($request->all(), [
       'prefix' => 'required|integer',
       'type' => 'required|in:self,ldo',
-      'transport_id' => 'required|integer',
-      'driver_id' => 'required|integer',
+      'transport_id' => 'required',
+      'driver_id' => 'required',
       'costumer_id' => 'required|integer',
       'route_from' => 'required|integer',
       'route_to' => 'required|integer',
@@ -170,6 +178,7 @@ class JobOrderController extends Controller
       'basic_price' => 'required|gt:0',
       'road_money' => 'required',
     ]);
+
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
@@ -184,6 +193,7 @@ class JobOrderController extends Controller
         $routefrom = Route::findOrFail($request->route_from);
         $routeto = Route::findOrFail($request->route_to);
         $coa = Coa::findOrFail($request->coa_id);
+        $roadMoney = 0;
         $checksaldo = DB::table('journals')
           ->select(DB::raw('
           IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
@@ -218,6 +228,8 @@ class JobOrderController extends Controller
             $data->payload = $request->payload ?? 1;
             $data->basic_price = $request->basic_price;
             $data->road_money = $request->road_money;
+            $data->road_money_prev = $request->road_money_prev;
+            $data->road_money_extra = $request->road_money_extra;
             $data->cut_sparepart_percent = $qsparepart->value;
             $data->salary_percent = $qsalary->value;
             $data->tax_percent = $request->tax_percent ?? 0;
@@ -225,7 +237,29 @@ class JobOrderController extends Controller
             $data->invoice_bill = $sumPayload;
             $data->description = $request->description;
             $data->save();
+            $roadMoney = ($request->road_money - $request->road_money_prev) + $request->road_money_extra;
+
           } elseif ($request->type == 'ldo') {
+            if (is_numeric($request->driver_id)) {
+              $driverId = Driver::findOrFail($request->driver_id)->id;
+            } else {
+              $driverId = Driver::create([
+                'another_expedition_id' => $request->another_expedition_id,
+                'name' => $request->driver_id,
+                'status' => 'active'
+              ])->id;
+            }
+
+            if (is_numeric($request->transport_id)) {
+              $transportId = Transport::findOrFail($request->transport_id)->id;
+            } else {
+              $transportId = Transport::create([
+                'another_expedition_id' => $request->another_expedition_id,
+                'num_pol' => $request->transport_id,
+                'type_car' => 'engkel'
+              ])->id;
+            }
+
             //CALCULATE
             $basicPrice = $request->basic_price;
             $payload = $request->payload ?? 1;
@@ -236,8 +270,8 @@ class JobOrderController extends Controller
             $data->num_bill = $jo_date . "-" . $jo_num;
             $data->prefix = $prefix->name;
             $data->another_expedition_id = $request->another_expedition_id ?? NULL;
-            $data->driver_id = $request->driver_id;
-            $data->transport_id = $request->transport_id;
+            $data->driver_id = $driverId;
+            $data->transport_id = $transportId;
             $data->costumer_id = $request->costumer_id;
             $data->cargo_id = $request->cargo_id;
             $data->route_from = $request->route_from;
@@ -253,13 +287,14 @@ class JobOrderController extends Controller
             $data->invoice_bill = $sumPayload;
             $data->description = $request->description;
             $data->save();
+            $roadMoney = $request->road_money;
           }
 
           Journal::create([
             'coa_id' => $request->input('coa_id'),
             'date_journal' => $request->input('date_begin'),
             'debit' => 0,
-            'kredit' => $request->input('road_money'),
+            'kredit' => $roadMoney,
             'table_ref' => 'joborders',
             'code_ref' => $data->id,
             'description' => "Pengurangan saldo untuk uang jalan $costumer->name dari $routefrom->name ke $routeto->name"
@@ -268,7 +303,7 @@ class JobOrderController extends Controller
           Journal::create([
             'coa_id' => 50,
             'date_journal' => $request->input('date_begin'),
-            'debit' => $request->input('road_money'),
+            'debit' => $roadMoney,
             'kredit' => 0,
             'table_ref' => 'joborders',
             'code_ref' => $data->id,
@@ -305,13 +340,9 @@ class JobOrderController extends Controller
       ['page' => '/backend/drivers', 'title' => "List Job Order"],
       ['page' => '#', 'title' => "Detail Job Order"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
-    $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
+    $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer.cooperation', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'joborders')->sole();
-    return view('backend.operational.joborders.show', compact('config', 'page_breadcrumbs', 'data', 'profile', 'selectCoa'));
+    return view('backend.operational.joborders.show', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
   }
 
   public function print($id)
@@ -319,27 +350,40 @@ class JobOrderController extends Controller
     $config['page_title'] = "Detail Job Order";
     $config['print_url'] = "/backend/joborders/$id/print";
     $page_breadcrumbs = [
-      ['page' => '/backend/drivers', 'title' => "List Job Order"],
+      ['page' => '/backend/joborders', 'title' => "List Job Order"],
       ['page' => '#', 'title' => "Detail Job Order"],
     ];
     $item = array();
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
-    $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])
+    $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer.cooperation', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])
       ->withSum('operationalexpense', 'amount')
       ->findOrFail($id);
-    $totalRoadMoney = ($data->road_money ?? 0) + ($data->operationalexpense_sum_amount ?? 0);
-    $item[] = ['no' => 1, 'nama' => 'Uang Jalan', 'nominal' => number_format($data->road_money, 0, '.', ',')];
+    $totalRoadMoney = ($data->road_money ?? 0) - ($data->road_money_prev) + ($data->operationalexpense_sum_amount ?? 0) + ($data->road_money_extra ?? 0);
+    $item [] = [
+      'no' => 1,
+      'nama' => 'Uang jalan standart',
+      'nominal' => number_format($data->road_money, 0, '.', ',')
+    ];
+    if ($data->road_money_prev > 0) {
+      $item [] = [
+        'no' => count($item)+1,
+        'nama' => 'Pot. uang jalan telah diambil sebelumnya',
+        'nominal' => '-' . number_format($data->road_money_prev, 0, '.', ',')
+      ];
+    }
+    if ($data->road_money_extra > 0) {
+      $item [] = [
+        'no' => count($item)+1,
+        'nama' => 'Uang Jalan Tambahan',
+        'nominal' => number_format($data->road_money_extra, 0, '.', ',')
+      ];
+    }
 
     $operationalExpense = OperationalExpense::with('expense')->where('job_order_id', $id)->get();
-    $no = 1;
     foreach ($operationalExpense as $val):
-      $item[] = ['no' => ++$no, 'nama' => $val->expense->name, 'nominal' => number_format($val->amount, 0, '.', ',')];
+      $item[] = ['no' => count($item)+1, 'nama' => $val->expense->name, 'nominal' => number_format($val->amount, 0, '.', ',')];
     endforeach;
     $item[] = ['no' => '------------------------------------'];
-    $item[] = ['1'=>'','name'=>'Total','nominal' => number_format($totalRoadMoney, 0, '.', ',')];
+    $item[] = ['1' => '', 'name' => 'Total', 'nominal' => number_format($totalRoadMoney, 0, '.', ',')];
     $result = '';
     $paper = array(
       'panjang' => 35,
@@ -352,7 +396,7 @@ class JobOrderController extends Controller
       ],
       'header' => [
         'left' => [
-          strtoupper($profile['name']),
+          strtoupper($data->costumer->cooperation->nickname),
           'JOB ORDER',
           'NO. JO: ' . $data->num_prefix,
           'KODE JOB ORDER : ' . $data->num_prefix,
@@ -366,20 +410,21 @@ class JobOrderController extends Controller
         ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
         ['align' => 'center', 'data' => ['', '']],
         ['align' => 'center', 'data' => ['', '']],
-//        ['align' => 'center', 'data' => ['', '']],
         ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
+        ['align' => 'center', 'data' => ['', '']],
       ],
       'table' => [
         'header' => ['No', 'Keterangan', 'Nominal'],
         'produk' => $item,
         'footer' => array(
-          'catatan' => ''
+          'asd' => 'KET: ' . $data->description ?? '',
+          'catatan' => 'KET: ' . $data->description ?? '',
         )
       ]
     );
     $printed = new ContinousPaper($paper);
     $result .= $printed->output() . "\n";
-     return response($result, 200)->header('Content-Type', 'text/plain');
+    return response($result, 200)->header('Content-Type', 'text/plain');
   }
 
   public function update(Request $request, $id)
@@ -394,13 +439,25 @@ class JobOrderController extends Controller
         'message' => 'Failed updated',
       ]);
       $data = JobOrder::with('operationalexpense')->withSum('operationalexpense', 'amount')->find($id);
+
+      if ($request->no_sj || $request->shipement) {
+        $data->update($request->all());
+        return response()->json([
+          'status' => 'success',
+          'message' => 'Data has been updated',
+        ]);
+      }
+
       switch ($request->status_cargo) {
-        case 'batal':
-          $data->update($request->except('date_end'));
+        case 'transfer':
+          $data->update(['status_cargo' => 'transfer']);
           $response = response()->json([
             'status' => 'success',
             'message' => 'Data has been updated',
           ]);
+          break;
+        case 'batal':
+          $data->update($request->except('date_end'));
           foreach ($data->operationalexpense as $item):
             Journal::where('table_ref', 'operationalexpense')->where('code_ref', $item->id)->delete();
           endforeach;
@@ -505,7 +562,7 @@ class JobOrderController extends Controller
       ->selectRaw('routes.id AS id, routes.name as text')
       ->groupBy('road_money.route_from')
       ->get();
-    // dd($data);
+
     $count = DB::table('road_money')
       ->rightJoin('routes', 'routes.id', '=', 'road_money.route_from')
       ->where('routes.name', 'LIKE', '%' . $q . '%')
@@ -622,10 +679,11 @@ class JobOrderController extends Controller
       'route_to' => 'integer',
       'cargo_id' => 'integer',
       'type_capacity_id' => 'integer',
-      'transport_id' => 'integer',
+      'transport_id' => 'nullable',
+      'driver_id' => 'nullable',
     ]);
     if ($validator->passes()) {
-      $transport = Transport::select('type_car')->firstOrFail($request->transport_id);
+      $transport = Transport::select('type_car')->firstOrFail($request->transport_id) ?? 0;
       $taxfee = RoadMoney::where('costumer_id', $request->costumer_id)
         ->where('route_from', $request->route_from)
         ->where('route_to', $request->route_to)
@@ -642,10 +700,16 @@ class JobOrderController extends Controller
         ->where('type', $request->type)
         ->first();
 
+      $roadmoneyPrev = 0;
+      if (is_numeric($request->transport_id) && is_numeric($request->driver_id)) {
+        $roadmoneyPrev = JobOrder::orderBy('created_at', 'desc')->first()->road_money_extra ?? 0;
+      }
+
       $response = response()->json([
         'data' => $data,
         'taxfee' => $taxfee,
-        'type' => $transport
+        'type' => $transport,
+        'road_money_prev' => $roadmoneyPrev
       ]);
     }
     return $response;

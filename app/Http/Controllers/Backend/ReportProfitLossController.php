@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
+use App\Models\Cooperation;
 use App\Models\InvoiceLdo;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
@@ -76,10 +77,7 @@ class ReportProfitLossController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $date = $request->input('date_begin') ?? NULL;
@@ -198,13 +196,13 @@ class ReportProfitLossController extends Controller
     ];
 
     $sheet->mergeCells('A1:B1');
-    $sheet->setCellValue('A1', $profile['name']);
+    $sheet->setCellValue('A1', $cooperationDefault['nickname']);
     $sheet->mergeCells('A2:B2');
-    $sheet->setCellValue('A2', $profile['address']);
+    $sheet->setCellValue('A2', $cooperationDefault['address']);
     $sheet->mergeCells('A3:B3');
-    $sheet->setCellValue('A3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('A3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('A4:B4');
-    $sheet->setCellValue('A4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('A4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(50);
     $sheet->getColumnDimension('B')->setWidth(20);

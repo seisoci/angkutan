@@ -6,14 +6,13 @@ use App\Helpers\ContinousPaperLong;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\InvoicePurchase;
 use App\Models\InvoiceReturPurchase;
-use App\Models\InvoiceUsageItem;
 use App\Models\Journal;
 use App\Models\Prefix;
 use App\Models\Purchase;
 use App\Models\PurchasePayment;
-use App\Models\ReturPurchase;
 use App\Models\Setting;
 use App\Models\Stock;
 use App\Models\SupplierSparepart;
@@ -284,12 +283,10 @@ class InvoicePurchaseController extends Controller
       ['page' => '/backend/invoicepurchases', 'title' => "List Purchase Order"],
       ['page' => '#', 'title' => "Detail Purchase Order"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoicePurchase::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['purchases', 'supplier'])->firstOrFail();
-    return view('backend.sparepart.invoicepurchases.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.sparepart.invoicepurchases.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function print($id)
@@ -300,10 +297,8 @@ class InvoicePurchaseController extends Controller
       ['page' => '/backend/invoicepurchases', 'title' => "List Purchase Order"],
       ['page' => '#', 'title' => "Detail Purchase Order"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoicePurchase::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['purchases', 'supplier'])->firstOrFail();
     $no = 1;
     foreach ($data->purchases as $val):
@@ -347,10 +342,10 @@ class InvoicePurchaseController extends Controller
       ],
       'header' => [
         'left' => [
-          $profile['name'],
-          $profile['address'],
-          'Telp: ' . $profile['telp'],
-          'Fax: ' . $profile['fax'],
+          $cooperationDefault['nickname'],
+          $cooperationDefault['address'],
+          'Telp: ' . $cooperationDefault['phone'],
+          'Fax: ' . $cooperationDefault['fax'],
           'INVOICE PURCHASE ORDER',
 
         ],
@@ -390,12 +385,10 @@ class InvoicePurchaseController extends Controller
       ['page' => '/backend/drivers', 'title' => "List Purchase Order Payment"],
       ['page' => '#', 'title' => "Detail Purchase Order Payment"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoicePurchase::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['purchases', 'supplier', 'purchasepayments'])->firstOrFail();
-    return view('backend.sparepart.invoicepurchases.showpayment', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.sparepart.invoicepurchases.showpayment', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function edit($id)

@@ -76,10 +76,8 @@
                   placeholder="Input Nama Pelanggan" />
               </div>
               <div class="form-group">
-                <label>Kerjasama</label>
-                <select name="cooperation" class="form-control form-control-solid">
-                  <option value="alusindo">Alusindo</option>
-                  <option value="triel">Triel</option>
+                <label>Kerjasama :</label>
+                <select name="cooperation_id" class="form-control form-control-solid select2Cooperation" style="width: 100%">
                 </select>
               </div>
               <div class="form-group">
@@ -114,7 +112,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" type="button" class="btn btn-primary">Submit</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
         </div>
       </form>
     </div>
@@ -148,10 +146,8 @@
                   placeholder="Input Nama Pelanggan" />
               </div>
               <div class="form-group">
-                <label>Kerjasama</label>
-                <select name="cooperation" class="form-control form-control-solid">
-                  <option value="alusindo">Alusindo</option>
-                  <option value="triel">Triel</option>
+                <label>Kerjasama :</label>
+                <select name="cooperation_id" class="form-control form-control-solid select2Cooperation" style="width: 100%">
                 </select>
               </div>
               <div class="form-group">
@@ -186,7 +182,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" type="button" class="btn btn-primary">Submit</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
         </div>
       </form>
     </div>
@@ -287,7 +283,7 @@
 {{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
-    var dataTable = $('#Datatable').DataTable({
+    let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
@@ -298,7 +294,7 @@
         ajax: "{{ route('backend.costumers.index') }}",
         columns: [
             {data: 'name', name: 'name'},
-            {data: 'cooperation', name: 'cooperation'},
+            {data: 'cooperation.nickname', name: 'cooperation.nickname'},
             {data: 'phone', name: 'phone'},
             {data: 'address', name: 'address'},
             {data: 'created_at', name: 'created_at'},
@@ -318,8 +314,24 @@
       allowMinus: false
     });
 
+    $(".select2Cooperation").select2({
+      placeholder: "Search Kerjasama",
+      allowClear: true,
+      ajax: {
+        url: "{{ route('backend.cooperation.select2') }}",
+        dataType: "json",
+        cache: true,
+        data: function (e) {
+          return {
+            q: e.term || '',
+            page: e.page || 1
+          }
+        },
+      },
+    });
+
     $('#modalDelete').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
+      let id = $(event.relatedTarget).data('id');
       $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.costumers.index") }}/'+ id);
     });
     $('#modalDelete').on('hidden.bs.modal', function (event) {
@@ -336,14 +348,15 @@
       $(this).find('.modal-body').find('textarea[name="description"]').val('');
     });
     $('#modalEdit').on('show.bs.modal', function (event) {
-      var id = $(event.relatedTarget).data('id');
-      var name = $(event.relatedTarget).data('name');
-      var emergency_name = $(event.relatedTarget).data('emergency_name');
-      var emergency_phone = $(event.relatedTarget).data('emergency_phone');
-      var phone = $(event.relatedTarget).data('phone');
-      var address = $(event.relatedTarget).data('address');
-      var description = $(event.relatedTarget).data('description');
-      var cooperation = $(event.relatedTarget).data('cooperation');
+      let id = $(event.relatedTarget).data('id');
+      let name = $(event.relatedTarget).data('name');
+      let emergency_name = $(event.relatedTarget).data('emergency_name');
+      let emergency_phone = $(event.relatedTarget).data('emergency_phone');
+      let phone = $(event.relatedTarget).data('phone');
+      let address = $(event.relatedTarget).data('address');
+      let description = $(event.relatedTarget).data('description');
+      let cooperation_id = $(event.relatedTarget).data('cooperation_id');
+      let cooperation_name = $(event.relatedTarget).data('cooperation_name');
       $(this).find('#formUpdate').attr('action', '{{ route("backend.costumers.index") }}/'+id)
       $(this).find('.modal-body').find('input[name="name"]').val(name);
       $(this).find('.modal-body').find('input[name="emergency_name"]').val(emergency_name);
@@ -351,7 +364,7 @@
       $(this).find('.modal-body').find('input[name="phone"]').val(phone);
       $(this).find('.modal-body').find('textarea[name="address"]').val(address);
       $(this).find('.modal-body').find('textarea[name="description"]').val(description);
-      $(this).find('.modal-body').find('select[name="cooperation"]').val(cooperation);
+      $(this).find('.modal-body').find('.select2Cooperation').append($('<option>', {value: cooperation_id, text: cooperation_name}));
     });
     $('#modalEdit').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');
@@ -360,24 +373,24 @@
       $(this).find('.modal-body').find('input[name="phone"]').val('');
       $(this).find('.modal-body').find('textarea[name="address"]').val('');
       $(this).find('.modal-body').find('textarea[name="description"]').val('');
-      $(this).find('.modal-body').find('select[name="cooperation"]').val('alusindo');
+      $(this).find('.modal-body').find('select[name="cooperation_id"]').empty();
       $(this).find('#formUpdate').attr('action', '#')
     });
     $('#modalShow').on('show.bs.modal', function (event) {
-      var name = $(event.relatedTarget).data('name');
-      var emergency_name = $(event.relatedTarget).data('emergency_name');
-      var emergency_phone = $(event.relatedTarget).data('emergency_phone');
-      var phone = $(event.relatedTarget).data('phone');
-      var address = $(event.relatedTarget).data('address');
-      var description = $(event.relatedTarget).data('description');
-      var cooperation = $(event.relatedTarget).data('cooperation');
+      let name = $(event.relatedTarget).data('name');
+      let emergency_name = $(event.relatedTarget).data('emergency_name');
+      let emergency_phone = $(event.relatedTarget).data('emergency_phone');
+      let phone = $(event.relatedTarget).data('phone');
+      let address = $(event.relatedTarget).data('address');
+      let description = $(event.relatedTarget).data('description');
+      let cooperation = $(event.relatedTarget).data('cooperation');
       $(this).find('.modal-body').find('input[name="name"]').val(name);
       $(this).find('.modal-body').find('input[name="emergency_name"]').val(emergency_name);
       $(this).find('.modal-body').find('input[name="emergency_phone"]').val(emergency_phone);
       $(this).find('.modal-body').find('input[name="phone"]').val(phone);
       $(this).find('.modal-body').find('textarea[name="address"]').val(address);
       $(this).find('.modal-body').find('textarea[name="description"]').val(description);
-      $(this).find('.modal-body').find('input[name="cooperation"]').val(description);
+      $(this).find('.modal-body').find('input[name="cooperation"]').val(cooperation);
     });
     $('#modalShow').on('hidden.bs.modal', function (event) {
       $(this).find('.modal-body').find('input[name="name"]').val('');
@@ -391,11 +404,11 @@
 
     $("#formStore").submit(function(e) {
       e.preventDefault();
-      var form = $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
+      let form = $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let url = form.attr("action");
+      let data = new FormData(this);
       $.ajax({
         beforeSend: function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
@@ -433,12 +446,12 @@
 
     $("#formUpdate").submit(function(e){
       e.preventDefault();
-      var form 	= $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
-      var url 	= form.attr("action");
-      var data 	= new FormData(this);
+      let form 	= $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      let url 	= form.attr("action");
+      let data 	= new FormData(this);
       $.ajax({
         beforeSend:function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...").prop("disabled","disabled");
@@ -478,10 +491,10 @@
 
     $("#formDelete").click(function(e){
       e.preventDefault();
-      var form 	    = $(this);
-      var url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
-      var btnHtml   = form.html();
-      var spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+      let form 	    = $(this);
+      let url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
+      let btnHtml   = form.html();
+      let spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
       $.ajax({
         beforeSend:function() {
           form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");

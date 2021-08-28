@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
-use App\Models\Setting;
-use App\Models\Sparepart;
 use App\Models\Transport;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
@@ -82,10 +81,7 @@ class ReportUsageItemOutsideController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $driver_id = $request->driver_id;
@@ -202,13 +198,13 @@ class ReportUsageItemOutsideController extends Controller
     $sheet->mergeCells('A5:C5');
     $sheet->setCellValue('A5', 'No. Polisi: ' . $transport);
     $sheet->mergeCells('G1:I1');
-    $sheet->setCellValue('G1', $profile['name']);
+    $sheet->setCellValue('G1', $cooperationDefault['nickname']);
     $sheet->mergeCells('G2:I2');
-    $sheet->setCellValue('G2', $profile['address']);
+    $sheet->setCellValue('G2', $cooperationDefault['address']);
     $sheet->mergeCells('G3:I3');
-    $sheet->setCellValue('G3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('G3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('G4:I4');
-    $sheet->setCellValue('G4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('G4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -297,10 +293,7 @@ class ReportUsageItemOutsideController extends Controller
       ['page' => '#', 'title' => "Laporan Pembelian Barang Diluar"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $driver_id = $request->driver_id;
     $transport_id = $request->transport_id;
@@ -339,6 +332,6 @@ class ReportUsageItemOutsideController extends Controller
       ->orderBy('invoice_usage_items.invoice_date', 'asc')
       ->get();
 
-    return view('backend.report.reportusageitemoutside.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'transport', 'driver'));
+    return view('backend.report.reportusageitemoutside.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'transport', 'driver'));
   }
 }

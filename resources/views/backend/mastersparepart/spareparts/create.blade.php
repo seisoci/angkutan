@@ -71,11 +71,11 @@
     new KTImageInput('kt_image_2');
     $("#formStore").submit(function(e) {
       e.preventDefault();
-      var form = $(this);
-      var btnSubmit = form.find("[type='submit']");
-      var btnSubmitHtml = btnSubmit.html();
-      var url = form.attr("action");
-      var data = new FormData(this);
+      let form = $(this);
+      let btnSubmit = form.find("[type='submit']");
+      let btnSubmitHtml = btnSubmit.html();
+      let url = form.attr("action");
+      let data = new FormData(this);
       $.ajax({
         beforeSend: function() {
           btnSubmit.addClass("disabled").html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading ...").prop("disabled","disabled");
@@ -171,7 +171,7 @@
     $(".image").change(function() {
       let thumb = $(this).parent().find('img');
       if (this.files && this.files[0]) {
-        var reader = new FileReader();
+        let reader = new FileReader();
         reader.onload = function(e) {
           thumb.attr('src', e.target.result);
         }

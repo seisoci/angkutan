@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\InvoiceUsageItem;
-use App\Models\Setting;
 use App\Models\Transport;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
@@ -67,10 +66,7 @@ class ReportRecapUsageItemOutsideController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $date = $request->date;
@@ -174,13 +170,13 @@ class ReportRecapUsageItemOutsideController extends Controller
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'No. Polisi: ' . $transport);
     $sheet->mergeCells('E1:G1');
-    $sheet->setCellValue('E1', $profile['name']);
+    $sheet->setCellValue('E1', $cooperationDefault['nickname']);
     $sheet->mergeCells('E2:G2');
-    $sheet->setCellValue('E2', $profile['address']);
+    $sheet->setCellValue('E2', $cooperationDefault['address']);
     $sheet->mergeCells('E3:G3');
-    $sheet->setCellValue('E3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('E3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('E4:G4');
-    $sheet->setCellValue('E4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('E4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -259,10 +255,8 @@ class ReportRecapUsageItemOutsideController extends Controller
       ['page' => '#', 'title' => "Laporan Rekap Pembelian Baranng Diluar"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $date = $request->date;
     $driver_id = $request->driver_id;
     $transport_id = $request->transport_id;
@@ -286,6 +280,6 @@ class ReportRecapUsageItemOutsideController extends Controller
       })
       ->orderBy('invoice_date', 'asc')
       ->get();
-    return view('backend.report.reportrecapusageitemoutside.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'driver', 'transport'));
+    return view('backend.report.reportrecapusageitemoutside.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'driver', 'transport'));
   }
 }

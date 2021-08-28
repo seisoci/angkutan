@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Driver;
+use App\Models\Cooperation;
 use App\Models\Setting;
-use App\Models\Sparepart;
-use App\Models\Stock;
-use App\Models\Transport;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -58,10 +55,7 @@ class ReportStockController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $data = DB::table('stocks')
@@ -144,10 +138,10 @@ class ReportStockController extends Controller
     $sheet->setCellValue('A1', 'Laporan Stok Barang');
     $sheet->mergeCells('A2:B2');
     $sheet->setCellValue('A2', 'Printed: ' . $this->dateTimeNow());
-    $sheet->setCellValue('C1', $profile['name']);
-    $sheet->setCellValue('C2', $profile['address']);
-    $sheet->setCellValue('C3', 'Telp: ' . $profile['telp']);
-    $sheet->setCellValue('C4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('C1', $cooperationDefault['nickname']);
+    $sheet->setCellValue('C2', $cooperationDefault['address']);
+    $sheet->setCellValue('C3', 'Telp: ' . $cooperationDefault['phone']);
+    $sheet->setCellValue('C4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3);
     $sheet->getColumnDimension('B')->setWidth(60);
@@ -204,10 +198,7 @@ class ReportStockController extends Controller
       ['page' => '#', 'title' => "Laporan Stok Barang"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $data = DB::table('stocks')
       ->select(DB::raw('
@@ -219,6 +210,6 @@ class ReportStockController extends Controller
       ->orderBy('spareparts.name')
       ->get();
 
-    return view('backend.report.reportstocks.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+    return view('backend.report.reportstocks.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 }

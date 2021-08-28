@@ -122,6 +122,7 @@ class ContinousPaper {
   }
 
   private function set_footer_data($config_column, $rows, $note = null){
+//    dd($note);
 //    $rows = array(
 //      array('Mengetahui','Meminta : '),
 //      array('',''),
@@ -147,7 +148,7 @@ class ContinousPaper {
     $text 			= preg_replace("/\s++/"," ", ($note['catatan'] ?? ''));
     $text_split 	= explode("<--xx_SPLIT_xx-->", wordwrap($text, $this->config->length, "<--xx_SPLIT_xx-->"));
     foreach($text_split AS $line){
-      array_push($output,$line);
+      array_push($output, $line);
     }
     return $output;
   }

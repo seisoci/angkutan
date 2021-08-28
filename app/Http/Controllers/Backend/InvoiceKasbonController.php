@@ -6,15 +6,13 @@ use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\Driver;
-use App\Models\Employee;
 use App\Models\InvoiceKasbon;
-use App\Models\InvoiceKasbonEmployee;
 use App\Models\Journal;
 use App\Models\Kasbon;
 use App\Models\PaymentKasbon;
 use App\Models\Prefix;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use DataTables;
 use DB;
@@ -206,12 +204,10 @@ class InvoiceKasbonController extends Controller
       ['page' => '/backend/invoicekasbons', 'title' => "List Invoice Kasbon Supir"],
       ['page' => '#', 'title' => "Invoice Kasbon Supir"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceKasbon::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['driver:id,name', 'kasbons', 'paymentkasbons'])->firstOrFail();
-    return view('backend.invoice.invoicekasbons.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.invoice.invoicekasbons.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function print($id)
@@ -221,10 +217,8 @@ class InvoiceKasbonController extends Controller
       ['page' => '/backend/invoicekasbons', 'title' => "List Invoice Kasbon Supir"],
       ['page' => '#', 'title' => "Invoice Kasbon Supir"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceKasbon::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['driver:id,name', 'kasbons', 'paymentkasbons'])->firstOrFail();
 
     $result = '';
@@ -257,8 +251,8 @@ class InvoiceKasbonController extends Controller
       ],
       'header' => [
         'left' => [
-          strtoupper($profile['name']),
-          $profile['address'],
+          strtoupper($cooperationDefault['nickname']),
+          $cooperationDefault['address'],
           'PEMBAYARAN KASBON SUPIR',
           'No. Kasbon: ' . $data->num_invoice,
           'Nama: ' . $data->driver->name,

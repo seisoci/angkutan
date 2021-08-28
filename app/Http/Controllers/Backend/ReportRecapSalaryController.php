@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
@@ -216,10 +217,8 @@ class ReportRecapSalaryController extends Controller
       $status_salary = "All";
     }
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->getPageSetup()
@@ -276,13 +275,13 @@ class ReportRecapSalaryController extends Controller
     $sheet->mergeCells('A5:C5');
     $sheet->setCellValue('A5', 'Supir: ' . $status_salary);
     $sheet->mergeCells('F1:H1');
-    $sheet->setCellValue('F1', $profile['name']);
+    $sheet->setCellValue('F1', $cooperationDefault['nickname']);
     $sheet->mergeCells('F2:H2');
-    $sheet->setCellValue('F2', $profile['address']);
+    $sheet->setCellValue('F2', $cooperationDefault['address']);
     $sheet->mergeCells('F3:H3');
-    $sheet->setCellValue('F3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('F3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('F4:H4');
-    $sheet->setCellValue('F4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('F4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(35);
@@ -455,12 +454,9 @@ class ReportRecapSalaryController extends Controller
       ['page' => '#', 'title' => "Laporan Rekap Gaji Supir"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    return view('backend.report.reportrecapsalaries.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date', 'status_salary'));
+    return view('backend.report.reportrecapsalaries.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'status_salary'));
   }
 
 }

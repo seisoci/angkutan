@@ -3,7 +3,6 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Backend\UsersController as BackendUsersController;
 use App\Http\Controllers\Backend\RolesController as BackendRolesController;
-use App\Http\Controllers\Backend\MenusController as BackendMenusController;
 use App\Http\Controllers\Backend\CostumerController as BackendCostumerController;
 use App\Http\Controllers\Backend\DriverController as BackendDriverController;
 use App\Http\Controllers\Backend\RouteController as BackendRouteController;
@@ -23,6 +22,7 @@ use App\Http\Controllers\Backend\PrefixController as BackendPrefixController;
 use App\Http\Controllers\Backend\StockController as BackendStockController;
 use App\Http\Controllers\Backend\InvoicePurchaseController as BackendInvoicePurchaseController;
 use App\Http\Controllers\Backend\SettingController as BackendSettingController;
+use App\Http\Controllers\Backend\CooperationController as BackendCooperationController;
 use App\Http\Controllers\Backend\JobOrderController as BackendJobOrderController;
 use App\Http\Controllers\Backend\OperationalExpenseController as BackendOperationalExpenseController;
 use App\Http\Controllers\Backend\SalaryController as BackendSalaryController;
@@ -37,6 +37,7 @@ use App\Http\Controllers\Backend\OpnameController as BackendOpnameController;
 use App\Http\Controllers\Backend\InvoiceReturPurchaseController as BackendInvoiceReturPurchaseController;
 use App\Http\Controllers\Backend\DashboardController as BackendDashboardController;
 use App\Http\Controllers\Backend\KasbonController as BackendKasbonController;
+use App\Http\Controllers\Backend\BankController as BackendBankController;
 use App\Http\Controllers\Backend\ReportSparepartController as BackendReportSparepartController;
 use App\Http\Controllers\Backend\InvoiceKasbonController as BackendInvoiceKasbonController;
 use App\Http\Controllers\Backend\ActivityLogController as BackendActivityLogController;
@@ -71,8 +72,11 @@ use App\Http\Controllers\Backend\ReportStockController as BackendReportStockCont
 use App\Http\Controllers\Backend\CoaController as BackendCoaController;
 use App\Http\Controllers\Backend\JournalController as BackendJournalController;
 use App\Http\Controllers\Backend\ConfigCoaController as BackendConfigCoaController;
+use App\Http\Controllers\Backend\ConfigLedgerController as BackendConfigLedgerController;
 use App\Http\Controllers\Backend\ReportNeracaBalanceController as BackendNeracaBalanceController;
 use App\Http\Controllers\Backend\ReportLedgerController as BackendReportLedgerController;
+use App\Http\Controllers\Backend\ReportLedgerOperationalController as BackendReportLedgerOperationalController;
+use App\Http\Controllers\Backend\ReportLedgerSparePartController as BackendReportLedgerSparePartControllerlController;
 use App\Http\Controllers\Backend\ReportFinanceController as BackendReportFinanceController;
 use App\Http\Controllers\Backend\ReportNeracaBalanceController as BackendReportNeracaBalanceController;
 use App\Http\Controllers\Backend\ReportProfitLossController as BackendReportProfitLossController;
@@ -136,7 +140,8 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('stocks/select2Invoice', [BackendStockController::class, 'select2Invoice'])->name('stocks.select2Invoice');
     Route::get('invoicereturpurchases/select2Invoice', [BackendInvoiceReturPurchaseController::class, 'select2Invoice'])->name('invoicereturpurchases.select2Invoice');
     Route::get('invoicereturpurchases/select2SparePart', [BackendInvoiceReturPurchaseController::class, 'select2SparePart'])->name('invoicereturpurchases.select2SparePart');
-
+    Route::get('cooperation/select2', [BackendCooperationController::class, 'select2'])->name('cooperation.select2');
+    Route::get('banks/select2', [BackendBankController::class, 'select2'])->name('banks.select2');
 
     //Print
     Route::get('invoicesalaries/{id}/print', [BackendInvoiceSalaryController::class, 'print']);
@@ -196,11 +201,16 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('reportstocks/document', [BackendReportStockController::class, 'document']);
     Route::get('ledger/print', [BackendReportLedgerController::class, 'print']);
     Route::get('ledger/document', [BackendReportLedgerController::class, 'document']);
+    Route::get('ledgeroperational/print', [BackendReportLedgerOperationalController::class, 'print']);
+    Route::get('ledgeroperational/document', [BackendReportLedgerOperationalController::class, 'document']);
+    Route::get('ledgersparepart/print', [BackendReportLedgerSparePartControllerlController::class, 'print']);
+    Route::get('ledgersparepart/document', [BackendReportLedgerSparePartControllerlController::class, 'document']);
     Route::get('profitloss/print', [BackendReportProfitLossController::class, 'print']);
     Route::get('profitloss/document', [BackendReportProfitLossController::class, 'document']);
     Route::get('reportcustomerroadmoney/print', [BackendReportCustomerRoadMoneyController::class, 'print']);
     Route::get('reportcustomerroadmoney/document', [BackendReportCustomerRoadMoneyController::class, 'document']);
-
+    Route::get('reportldonetprofit/print', [BackendReportLdoNetProfitController::class, 'print']);
+    Route::get('reportldonetprofit/document', [BackendReportLdoNetProfitController::class, 'document']);
 
     Route::get('invoicekasbons/{id}/print', [BackendInvoiceKasbonController::class, 'print']);
     Route::get('invoicecostumers/{id}/print', [BackendInvoiceCostumerController::class, 'print']);
@@ -243,6 +253,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
+    Route::resource('banks', BackendBankController::class);
     Route::resource('drivers', BackendDriverController::class);
     Route::resource('routes', BackendRouteController::class)->except(['create', 'edit', 'show']);
     Route::resource('cargos', BackendCargoController::class)->except(['create', 'edit', 'show']);
@@ -288,6 +299,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
 
     //Settings
     Route::resource('settings', BackendSettingController::class);
+    Route::resource('cooperation', BackendCooperationController::class);
 
     //Job Order
     Route::resource('joborders', BackendJobOrderController::class);
@@ -337,8 +349,11 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('mastercoa', BackendCoaController::class);
     Route::resource('journals', BackendJournalController::class);
     Route::resource('configcoa', BackendConfigCoaController::class);
+    Route::resource('configledger', BackendConfigLedgerController::class);
     Route::resource('necarabalane', BackendNeracaBalanceController::class);
     Route::resource('ledger', BackendReportLedgerController::class);
+    Route::resource('ledgeroperational', BackendReportLedgerOperationalController::class);
+    Route::resource('ledgersparepart', BackendReportLedgerSparePartControllerlController::class);
     Route::resource('finance', BackendReportFinanceController::class);
     Route::resource('neraca', BackendReportNeracaBalanceController::class);
     Route::resource('profitloss', BackendReportProfitLossController::class);

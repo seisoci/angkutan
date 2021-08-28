@@ -51,7 +51,7 @@
       }
 
       @page {
-        size: A4 potrait;
+        size: A4 portrait;
       }
     }
   </style>
@@ -64,28 +64,28 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
+        <td class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:20%">{{ $profile['name'] ?? '' }}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:20%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Priode: {{ (!empty($date) ? $date : 'All Date') }}
+        <td class="font-weight-normal" style="width:50%">Priode: {{ (!empty($date) ? $date : 'All Date') }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">{{ $profile['address'] ?? '' }}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">{{ $cooperationDefault['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Filter Nama Karyawaan:  {{ $employee }}
+        <td class="font-weight-normal" style="width:50%">Filter Nama Karyawaan:  {{ $employee }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $profile['telp'] ?? ''}}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:50%">Status:  {{ $statusPembayaran }}
+        <td class="font-weight-normal" style="width:50%">Status:  {{ $statusPembayaran }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:18%">FAX {{ $profile['fax'] ?? ''}}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:18%">FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
       </tr>
       </tbody>
     </table>
@@ -93,12 +93,12 @@
     <table class="table">
       <thead>
       <tr>
-        <th scope="col">#</th>
-        <th scope="col">Nama Karyawaan</th>
-        <th scope="col" class="text-right">Nominal</th>
-        <th scope="col">Status</th>
-        <th scope="col">Keterangan</th>
-        <th scope="col">Tanggal Pinjaman</th>
+        <th>#</th>
+        <th>Nama Karyawaan</th>
+        <th class="text-right">Nominal</th>
+        <th>Status</th>
+        <th>Keterangan</th>
+        <th>Tanggal Pinjaman</th>
       </tr>
       </thead>
       <tbody>

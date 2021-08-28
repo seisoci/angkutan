@@ -33,32 +33,32 @@
           <table class="table table-borderless table-title">
             <tbody>
             <tr>
-              <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+              <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
               </td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">No. Kasbon</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
+              <td class="text-left" style="width:10%"></td>
+              <td class="text-left" style="padding-left:4rem;width:20%">No. Kasbon</td>
+              <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
             </tr>
             <tr>
-              <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Nama Karyawaan</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ $data->employee->name }}</td>
+              <td style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
+              <td class="text-left" style="width:10%"></td>
+              <td class="text-left" style="padding-left:4rem;width:20%">Nama Karyawaan</td>
+              <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td class="text-left" style="width:18%"> {{ $data->employee->name }}</td>
             </tr>
             <tr>
-              <td scope="col">{{ $profile['telp'] ?? ''}}</td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
+              <td>{{ $cooperationDefault['phone'] ?? ''}}</td>
+              <td class="text-left" style="width:10%"></td>
+              <td class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
+              <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td class="text-left" style="width:18%"> {{ $data->created_at }}</td>
             </tr>
             <tr>
-              <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
+              <td>FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
             </tr>
             <tr>
-              <td scope="col">Memo : {{ $data->memo ?? ''}}</td>
+              <td>Memo : {{ $data->memo ?? ''}}</td>
             </tr>
             </tbody>
           </table>
@@ -66,11 +66,11 @@
           <table class="table">
             <thead>
             <tr>
-              <th scope="col" style="width:5%">#</th>
-              <th scope="col" class="text-left" style="width:10%">Tanggal</th>
-              <th scope="col" class="text-left" style="width:20%">Nama Supir</th>
-              <th scope="col" class="text-right" style="width:55%">Keterangan</th>
-              <th scope="col" class="text-center" style="width:10%">Nominal</th>
+              <th style="width:5%">#</th>
+              <th class="text-left" style="width:10%">Tanggal</th>
+              <th class="text-left" style="width:20%">Nama Supir</th>
+              <th class="text-right" style="width:55%">Keterangan</th>
+              <th class="text-center" style="width:10%">Nominal</th>
             </tr>
             </thead>
             <tbody>
@@ -93,10 +93,10 @@
           <table class="table">
             <thead>
             <tr>
-              <th scope="col" style="width:5%">#</th>
-              <th scope="col" style="width:65%">Tanggal Pembayaran</th>
-              <th scope="col" class="text-right" style="width:10%">Nominal</th>
-              <th scope="col" class="text-right" style="width:10%">Total</th>
+              <th style="width:5%">#</th>
+              <th style="width:65%">Tanggal Pembayaran</th>
+              <th class="text-right" style="width:10%">Nominal</th>
+              <th class="text-right" style="width:10%">Total</th>
             </tr>
             </thead>
             <tbody>

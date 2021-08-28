@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Setting;
+use App\Models\Cooperation;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -115,10 +115,8 @@ class ReportRecapJobOrderController extends Controller
       })
       ->groupBy('job_orders.costumer_id')
       ->get();
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->getPageSetup()
@@ -174,13 +172,13 @@ class ReportRecapJobOrderController extends Controller
     $sheet->mergeCells('A3:C3');
     $sheet->setCellValue('A3', 'Priode: ' . (!empty($date) ? $date : 'All Date'));
     $sheet->mergeCells('F1:H1');
-    $sheet->setCellValue('F1', $profile['name']);
+    $sheet->setCellValue('F1', $cooperationDefault['nickname']);
     $sheet->mergeCells('F2:H2');
-    $sheet->setCellValue('F2', $profile['address']);
+    $sheet->setCellValue('F2', $cooperationDefault['address']);
     $sheet->mergeCells('F3:H3');
-    $sheet->setCellValue('F3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('F3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('F4:H4');
-    $sheet->setCellValue('F4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('F4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(40);
@@ -301,10 +299,8 @@ class ReportRecapJobOrderController extends Controller
       ['page' => '#', 'title' => "Laporan Rekap Tagihan Job Order"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
-    return view('backend.report.reportrecapjoborders.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'date'));
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
+    return view('backend.report.reportrecapjoborders.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date'));
   }
 }

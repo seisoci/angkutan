@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\Employee;
 use App\Models\KasbonEmployee;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -68,10 +68,7 @@ class ReportKasbonEmployeeController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $employee_id = $request->employee_id;
@@ -83,7 +80,7 @@ class ReportKasbonEmployeeController extends Controller
       $statusPembayaran = 'Belum Lunas';
     } elseif ($status == '1') {
       $statusPembayaran = 'Dicicil';
-    } elseif($status == '2') {
+    } elseif ($status == '2') {
       $statusPembayaran = "Lunas";
     }
 
@@ -185,13 +182,13 @@ class ReportKasbonEmployeeController extends Controller
     $sheet->mergeCells('A5:C5');
     $sheet->setCellValue('A5', 'Status: ' . $statusPembayaran);
     $sheet->mergeCells('E1:F1');
-    $sheet->setCellValue('E1', $profile['name']);
+    $sheet->setCellValue('E1', $cooperationDefault['nickname']);
     $sheet->mergeCells('E2:F2');
-    $sheet->setCellValue('E2', $profile['address']);
+    $sheet->setCellValue('E2', $cooperationDefault['address']);
     $sheet->mergeCells('E3:F3');
-    $sheet->setCellValue('E3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('E3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('E4:F4');
-    $sheet->setCellValue('E4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('E4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -255,10 +252,7 @@ class ReportKasbonEmployeeController extends Controller
       ['page' => '#', 'title' => "Laporan Data Pelanggan"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $employee_id = $request->employee_id;
     $status = $request->status;
@@ -268,7 +262,7 @@ class ReportKasbonEmployeeController extends Controller
       $statusPembayaran = 'Belum Lunas';
     } elseif ($status == '1') {
       $statusPembayaran = 'Dicicil';
-    } elseif($status == '2') {
+    } elseif ($status == '2') {
       $statusPembayaran = "Lunas";
     }
 
@@ -292,6 +286,6 @@ class ReportKasbonEmployeeController extends Controller
       })
       ->orderBy('kasbon_employees.created_at', 'asc')
       ->get();
-    return view('backend.report.reportkasbonemployees.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'employee', 'statusPembayaran',));
+    return view('backend.report.reportkasbonemployees.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'employee', 'statusPembayaran',));
   }
 }

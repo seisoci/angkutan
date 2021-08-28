@@ -6,12 +6,12 @@ use App\Helpers\ContinousPaperLong;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\InvoiceSalary;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\Prefix;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use DataTables;
 use DB;
@@ -22,6 +22,7 @@ use Validator;
 class InvoiceSalaryController extends Controller
 {
   use CarbonTrait;
+
   function __construct()
   {
     $this->middleware('permission:invoicesalaries-list|invoicesalaries-create|invoicesalaries-edit|invoicesalaries-delete', ['only' => ['index']]);
@@ -190,15 +191,13 @@ class InvoiceSalaryController extends Controller
       ['page' => '/backend/invoicesalaries', 'title' => "List Invoice Gaji"],
       ['page' => '#', 'title' => "Invoice Gaji Supir"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name', 'joborders' => function ($q) {
       $q->withSum('operationalexpense', 'amount');
     }])->findOrFail($id);
 
-    return view('backend.invoice.invoicesalaries.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.invoice.invoicesalaries.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function print($id)
@@ -209,10 +208,8 @@ class InvoiceSalaryController extends Controller
       ['page' => '/backend/invoicesalaries', 'title' => "List Invoice Gaji"],
       ['page' => '#', 'title' => "Invoice Gaji Supir"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name', 'joborders' => function ($q) {
       $q->withSum('operationalexpense', 'amount');
     }])->findOrFail($id);
@@ -229,8 +226,8 @@ class InvoiceSalaryController extends Controller
         'Nominal' => number_format($val->total_salary, 0, '.', ',')
       ];
     endforeach;
-      $item[] = ['no' => '--------------------------------------------------------------------------------'];
-    $item[] = ['1' => '', '2' => '', '3' => '','4'=>'', 'name' => 'Total', 'nominal' => number_format($data->grandtotal, 0, '.', ',')];
+    $item[] = ['no' => '--------------------------------------------------------------------------------'];
+    $item[] = ['1' => '', '2' => '', '3' => '', '4' => '', 'name' => 'Total', 'nominal' => number_format($data->grandtotal, 0, '.', ',')];
     $paper = array(
       'panjang' => 80,
       'baris' => 29,
@@ -242,10 +239,10 @@ class InvoiceSalaryController extends Controller
       ],
       'header' => [
         'left' => [
-          $profile['name'],
-          $profile['address'],
-          'Telp: ' . $profile['telp'],
-          'Fax: ' . $profile['fax'],
+          $cooperationDefault['nickname'],
+          $cooperationDefault['address'],
+          'Telp: ' . $cooperationDefault['phone'],
+          'Fax: ' . $cooperationDefault['fax'],
           'INVOICE GAJI SUPIR',
 
         ],
@@ -272,7 +269,7 @@ class InvoiceSalaryController extends Controller
     $printed = new ContinousPaperLong($paper);
     $result .= $printed->output() . "\n";
 //    return response($result, 200)->header('Content-Type', 'text/plain');
-    return view('backend.invoice.invoicesalaries.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.invoice.invoicesalaries.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function findbypk(Request $request)

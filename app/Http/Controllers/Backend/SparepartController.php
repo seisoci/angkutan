@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Sparepart;
-use Illuminate\Http\Request;
 use DataTables;
-use DB;
 use File;
 use Fileupload;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class SparepartController extends Controller

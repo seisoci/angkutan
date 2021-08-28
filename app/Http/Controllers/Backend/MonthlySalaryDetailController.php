@@ -6,11 +6,11 @@ use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\Employee;
 use App\Models\Journal;
 use App\Models\MonthlySalaryDetail;
 use App\Models\MonthlySalaryDetailEmployee;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -77,12 +77,10 @@ class MonthlySalaryDetailController extends Controller
       ['page' => '/backend/monthlysalarydetail', 'title' => "Detail Gaji Bulanan"],
       ['page' => '#', 'title' => "Detail Gaji Bulanan Karyawaan"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = MonthlySalaryDetail::with(['monthlysalary', 'employee', 'monthlysalarydetailemployees.employeemaster'])->findOrFail($id);
-    return view('backend.accounting.monthlysalarydetail.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.accounting.monthlysalarydetail.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function print($id)
@@ -94,10 +92,8 @@ class MonthlySalaryDetailController extends Controller
       ['page' => '/backend/monthlysalarydetail', 'title' => "Detail Gaji Bulanan"],
       ['page' => '#', 'title' => "Detail Gaji Bulanan Karyawaan"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = MonthlySalaryDetail::with(['monthlysalary', 'employee', 'monthlysalarydetailemployees.employeemaster'])->findOrFail($id);
     $result = '';
     $no = 1;
@@ -117,8 +113,8 @@ class MonthlySalaryDetailController extends Controller
       ],
       'header' => [
         'left' => [
-          strtoupper($profile['name']),
-          $profile['address'],
+          strtoupper($cooperationDefault['nickname']),
+          $cooperationDefault['address'],
           'KASBON SUPIR',
           'Nama: ' . $data->employee->name,
           'Gaji Bln: ' . $data->monthlysalary->name,
@@ -126,7 +122,7 @@ class MonthlySalaryDetailController extends Controller
         ],
       ],
       'footer' => [
-        ['align' => 'right', 'data' => ['Total', number_format($total,0,'.',',')]],
+        ['align' => 'right', 'data' => ['Total', number_format($total, 0, '.', ',')]],
         ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
         ['align' => 'center', 'data' => ['', '']],
         ['align' => 'center', 'data' => ['', '']],

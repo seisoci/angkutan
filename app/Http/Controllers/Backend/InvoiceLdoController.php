@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
+use App\Models\Cooperation;
 use App\Models\Costumer;
 use App\Models\InvoiceLdo;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\PaymentLdo;
 use App\Models\Prefix;
-use App\Models\Setting;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -38,7 +38,7 @@ class InvoiceLdoController extends Controller
 
     $saldoGroup = collect($selectCoa->coa)->map(function ($coa) {
       return [
-        'name'  => $coa->name ?? NULL,
+        'name' => $coa->name ?? NULL,
         'balance' => DB::table('journals')
             ->select(DB::raw('
           IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
@@ -242,16 +242,14 @@ class InvoiceLdoController extends Controller
       ['page' => '/backend/invoiceldo', 'title' => "List Invoice Gaji"],
       ['page' => '#', 'title' => "Invoice Tagihan LDO"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
-    $data = InvoiceLdo::with(['joborders' => function($q){
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
+    $data = InvoiceLdo::with(['joborders' => function ($q) {
       $q->withSum('operationalexpense', 'amount');
     }, 'joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])
       ->findOrFail($id);
 
-    return view('backend.invoice.invoiceldo.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.invoice.invoiceldo.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function print($id)
@@ -261,15 +259,13 @@ class InvoiceLdoController extends Controller
       ['page' => '/backend/invoiceldo', 'title' => "List Invoice Gaji"],
       ['page' => '#', 'title' => "Invoice Tagihan LDO"],
     ];
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
-    $data = InvoiceLdo::with(['joborders' => function($q){
-      $q->withSum('operationalexpense', 'amount');
-    },'joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])->findOrFail($id);
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    return view('backend.invoice.invoiceldo.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    $data = InvoiceLdo::with(['joborders' => function ($q) {
+      $q->withSum('operationalexpense', 'amount');
+    }, 'joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])->findOrFail($id);
+
+    return view('backend.invoice.invoiceldo.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function edit($id)

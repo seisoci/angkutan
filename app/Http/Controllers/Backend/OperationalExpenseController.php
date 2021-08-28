@@ -19,6 +19,7 @@ class OperationalExpenseController extends Controller
     $this->middleware('permission:joborders-create', ['only' => ['create', 'store']]);
     $this->middleware('permission:joborders-delete', ['only' => ['destroy']]);
   }
+
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [

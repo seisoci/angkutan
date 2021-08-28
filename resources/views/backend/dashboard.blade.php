@@ -16,7 +16,6 @@
     <div class="card-body">
       <div class="mb-10">
         <div class="row row-eq-height">
-          @hasanyrole('admin|super-admin')
           <div class="col-md-3">
             <div class="bg-light-warning px-6 py-8 rounded-xl mb-7">
               <div class="d-flex justify-content-between px-5">
@@ -77,16 +76,10 @@
               </div>
             </div>
           </div>
-          @else
-          <div class="d-flex justify-content-center align-items-center w-100">
-            <h2>Selamat Datang</h2>
-          </div>
-          @endhasanyrole
         </div>
       </div>
     </div>
   </div>
-  @hasanyrole('admin|super-admin')
   <div class="card card-custom mt-10">
     <div class="card-header flex-wrap py-3">
       <div class="card-title w-100">
@@ -339,7 +332,6 @@
       </div>
     </div>
   </div>
-  @endhasanyrole
 @endsection
 
 {{-- Styles Section --}}

@@ -303,7 +303,7 @@ class TransportController extends Controller
     $offset = ($page - 1) * $resultCount;
     $data = Transport::where('num_pol', 'LIKE', '%' . $request->q . '%')
       ->where('another_expedition_id', $type)
-      ->whereNotIn('id', [DB::raw('SELECT transport_id FROM job_orders WHERE `status_cargo`= "mulai"')])
+      ->whereNotIn('id', [DB::raw('SELECT transport_id FROM job_orders WHERE `status_cargo` IN ("mulai", "transfer")')])
       ->orderBy('num_pol')
       ->skip($offset)
       ->take($resultCount)
@@ -312,7 +312,7 @@ class TransportController extends Controller
 
     $count = Transport::where('num_pol', 'LIKE', '%' . $request->q . '%')
       ->where('another_expedition_id', $type)
-      ->whereNotIn('id', [DB::raw('SELECT transport_id FROM job_orders WHERE `status_cargo`= "mulai"')])
+      ->whereNotIn('id', [DB::raw('SELECT transport_id FROM job_orders WHERE `status_cargo` IN ("mulai", "transfer")')])
       ->get()
       ->count();
 

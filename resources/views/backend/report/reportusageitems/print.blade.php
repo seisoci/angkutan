@@ -65,29 +65,29 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td scope="col" class="font-weight-normal" style="width:10%">Printed: {{ $config['current_time'] }}
+        <td class="font-weight-normal" style="width:10%">Printed: {{ $config['current_time'] }}
         </td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="width:10%">{{ $profile['name'] ?? '' }}</td>
+        <td class="text-left" style="width:10%"></td>
+        <td class="text-left" style="width:10%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal">Priode: {{ $date ?? 'All' }}
+        <td class="font-weight-normal">Priode: {{ $date ?? 'All' }}
         </td>
-        <td scope="col" class="text-left"></td>
-        <td scope="col" class="text-left">{{ $profile['address'] ?? '' }}</td>
+        <td class="text-left"></td>
+        <td class="text-left">{{ $cooperationDefault['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal"">Nama Supir: {{ $driver }}
-        <td scope="col" class="text-left"></td>
-        <td scope="col" class="text-left"> {{ $profile['telp'] ?? ''}}</td>
+        <td class="font-weight-normal">Nama Supir: {{ $driver }}
+        <td class="text-left"></td>
+        <td class="text-left">Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal">No. Polisi: {{ $transport }}
-        <td scope="col" class="text-left"></td>
-        <td scope="col" class="text-left">FAX {{ $profile['fax'] ?? ''}}</td>
+        <td class="font-weight-normal">No. Polisi: {{ $transport }}
+        <td class="text-left"></td>
+        <td class="text-left">Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
       </tr>
       <tr>
-        <td scope="col" class="font-weight-normal">Nama Sparepart: {{ $sparepart }}
+        <td class="font-weight-normal">Nama Sparepart: {{ $sparepart }}
       </tr>
       </tbody>
     </table>

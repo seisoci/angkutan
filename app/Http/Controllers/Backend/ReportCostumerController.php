@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Costumer;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -45,10 +45,8 @@ class ReportCostumerController extends Controller
   public function document(Request $request)
   {
     $type = $request->type;
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = Costumer::orderBy('name', 'asc')->get();
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
@@ -162,13 +160,13 @@ class ReportCostumerController extends Controller
     $sheet->mergeCells('A2:B2');
     $sheet->setCellValue('A2', 'Printed: ' . $this->dateTimeNow());
     $sheet->mergeCells('E1:G1');
-    $sheet->setCellValue('E1', $profile['name']);
+    $sheet->setCellValue('E1', $cooperationDefault['nickname']);
     $sheet->mergeCells('E2:G2');
-    $sheet->setCellValue('E2', $profile['address']);
+    $sheet->setCellValue('E2', $cooperationDefault['address']);
     $sheet->mergeCells('E3:G3');
-    $sheet->setCellValue('E3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('E3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('E4:G4');
-    $sheet->setCellValue('E4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('E4', 'Fax: ' . $cooperationDefault['fax']);
 
     $filename = 'Laporan Pelanggan';
     if ($type == 'EXCEL') {
@@ -186,7 +184,8 @@ class ReportCostumerController extends Controller
     exit();
   }
 
-  public function print(){
+  public function print()
+  {
     $config['page_title'] = "Laporan Data Pelanggan";
     $config['page_description'] = "Data Pelanggan";
     $config['current_time'] = $this->dateTimeNow();
@@ -194,12 +193,10 @@ class ReportCostumerController extends Controller
       ['page' => '#', 'title' => "Laporan Data Pelanggan"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
     $data = Costumer::orderBy('name', 'asc')->get();
-    return view('backend.report.reportcostumers.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+    return view('backend.report.reportcostumers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 
 }

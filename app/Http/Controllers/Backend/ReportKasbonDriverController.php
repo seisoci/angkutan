@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\Kasbon;
 use App\Models\Setting;
@@ -67,10 +68,7 @@ class ReportKasbonDriverController extends Controller
 
   public function document(Request $request)
   {
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $type = $request->type;
     $driver_id = $request->driver_id;
@@ -184,13 +182,13 @@ class ReportKasbonDriverController extends Controller
     $sheet->mergeCells('A5:C5');
     $sheet->setCellValue('A5', 'Status: ' . $statusPembayaran);
     $sheet->mergeCells('E1:F1');
-    $sheet->setCellValue('E1', $profile['name']);
+    $sheet->setCellValue('E1', $cooperationDefault['nickname']);
     $sheet->mergeCells('E2:F2');
-    $sheet->setCellValue('E2', $profile['address']);
+    $sheet->setCellValue('E2', $cooperationDefault['address']);
     $sheet->mergeCells('E3:F3');
-    $sheet->setCellValue('E3', 'Telp: ' . $profile['telp']);
+    $sheet->setCellValue('E3', 'Telp: ' . $cooperationDefault['phone']);
     $sheet->mergeCells('E4:F4');
-    $sheet->setCellValue('E4', 'Fax: ' . $profile['fax']);
+    $sheet->setCellValue('E4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(16);
@@ -254,10 +252,7 @@ class ReportKasbonDriverController extends Controller
       ['page' => '#', 'title' => "Laporan Data Pelanggan"],
     ];
 
-    $collection = Setting::all();
-    $profile = collect($collection)->mapWithKeys(function ($item) {
-      return [$item['name'] => $item['value']];
-    });
+    $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $driver_id = $request->driver_id;
     $status = $request->status;
@@ -291,7 +286,7 @@ class ReportKasbonDriverController extends Controller
       })
       ->orderBy('kasbons.created_at', 'asc')
       ->get();
-    return view('backend.report.reportkasbondrivers.print', compact('config', 'page_breadcrumbs', 'profile', 'data', 'driver', 'statusPembayaran',));
+    return view('backend.report.reportkasbondrivers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'driver', 'statusPembayaran',));
   }
 
 }

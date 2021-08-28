@@ -87,10 +87,10 @@
         <p class="text-dark-75 font-weight-normal my-0">Priode: {{ $date_begin ?? ''}} sd {{ $date_end ?? '' }}</p>
       </div>
       <div>
-        <h4 class="text-dark-75"><u>ALUSINDO</u></h4>
-        <p class="text-muted font-weight-normal my-0">{{ $profile['address'] ?? '' }}</p>
-        <p class="text-muted font-weight-normal my-0">Telp: {{ $profile['telp'] }}</p>
-        <p class="text-muted font-weight-normal my-0">Fax: {{ $profile['fax'] }}</p>
+        <h4 class="text-dark-75"><u>{{ $cooperationDefault['nickname'] ?? '' }}</u></h4>
+        <p class="text-muted font-weight-normal my-0">{{ $cooperationDefault['address'] ?? '' }}</p>
+        <p class="text-muted font-weight-normal my-0">Telp: {{ $cooperationDefault['phone'] }}</p>
+        <p class="text-muted font-weight-normal my-0">Fax: {{ $cooperationDefault['fax'] }}</p>
       </div>
     </div>
     @if(!empty($data))
@@ -143,10 +143,10 @@
         <h4 class="text-dark-75"><u>Laporan Biaya Operasional</u></h4>
       </div>
       <div>
-        <h4 class="text-dark-75"><u>ALUSINDO</u></h4>
-        <p class="text-muted font-weight-normal my-0">{{ $profile['address'] ?? '' }}</p>
-        <p class="text-muted font-weight-normal my-0">Telp: {{ $profile['telp'] }}</p>
-        <p class="text-muted font-weight-normal my-0">Fax: {{ $profile['fax'] }}</p>
+        <h4 class="text-dark-75"><u>{{ $cooperationDefault['nickname'] ?? '' }}</u></h4>
+        <p class="text-muted font-weight-normal my-0">{{ $cooperationDefault['address'] ?? '' }}</p>
+        <p class="text-muted font-weight-normal my-0">Telp: {{ $cooperationDefault['phone'] }}</p>
+        <p class="text-muted font-weight-normal my-0">Fax: {{ $cooperationDefault['fax'] }}</p>
       </div>
     </div>
     @foreach ($data as $item)
@@ -210,10 +210,10 @@
         <h4 class="text-dark-75"><u>Laporan Sparepart</u></h4>
       </div>
       <div>
-        <h4 class="text-dark-75"><u>ALUSINDO</u></h4>
-        <p class="text-muted font-weight-normal my-0">{{ $profile['address'] ?? '' }}</p>
-        <p class="text-muted font-weight-normal my-0">Telp: {{ $profile['telp'] }}</p>
-        <p class="text-muted font-weight-normal my-0">Fax: {{ $profile['fax'] }}</p>
+        <h4 class="text-dark-75"><u>{{ $cooperationDefault['nickname'] ?? '' }}</u></h4>
+        <p class="text-muted font-weight-normal my-0">{{ $cooperationDefault['address'] ?? '' }}</p>
+        <p class="text-muted font-weight-normal my-0">Telp: {{ $cooperationDefault['phone'] }}</p>
+        <p class="text-muted font-weight-normal my-0">Fax: {{ $cooperationDefault['fax'] }}</p>
       </div>
     </div>
     <table class="table w-full small">
@@ -257,10 +257,10 @@
         <h4 class="text-dark-75"><u>Laporan Gaji Supir</u></h4>
       </div>
       <div>
-        <h4 class="text-dark-75"><u>ALUSINDO</u></h4>
-        <p class="text-muted font-weight-normal my-0">{{ $profile['address'] ?? '' }}</p>
-        <p class="text-muted font-weight-normal my-0">Telp: {{ $profile['telp'] }}</p>
-        <p class="text-muted font-weight-normal my-0">Fax: {{ $profile['fax'] }}</p>
+        <h4 class="text-dark-75"><u>{{ $cooperationDefault['nickname'] ?? '' }}</u></h4>
+        <p class="text-muted font-weight-normal my-0">{{ $cooperationDefault['address'] ?? '' }}</p>
+        <p class="text-muted font-weight-normal my-0">Telp: {{ $cooperationDefault['phone'] }}</p>
+        <p class="text-muted font-weight-normal my-0">Fax: {{ $cooperationDefault['fax'] }}</p>
       </div>
     </div>
     <table class="table w-full small">

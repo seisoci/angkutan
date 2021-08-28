@@ -131,6 +131,27 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <i aria-hidden="true" class="ki ki-close"></i>
+          </button>
+        </div>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        @method('DELETE')
+        <div class="modal-body">
+          <a href="" type="hidden" name="id" disabled></a>
+          Are you sure you want to delete this item? </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="formDelete" type="button" class="btn btn-danger">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 
 {{-- Styles Section --}}
@@ -244,8 +265,8 @@
           columns: [
             {data: 'num_prefix', name: 'num_bill', orderable: false},
             {
-              data: 'total_basic_price_after_tax',
-              name: 'total_basic_price_after_tax',
+              data: 'total_basic_price',
+              name: 'total_basic_price',
               render: $.fn.dataTable.render.number(',', '.', 2),
               orderable: false,
               searchable: false,
@@ -323,6 +344,48 @@
         });
       });
 
+      $('#modalDelete').on('show.bs.modal', function (event) {
+        let id = $(event.relatedTarget).data('id');
+        $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.invoicecostumers.index") }}/'+ id);
+      });
+      $('#modalDelete').on('hidden.bs.modal', function (event) {
+        $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
+      });
+
+      $("#formDelete").click(function(e){
+        e.preventDefault();
+        let form 	    = $(this);
+        let url 	    = $('#modalDelete').find('a[name="id"]').attr('href');
+        let btnHtml   = form.html();
+        let spinner   = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+        $.ajax({
+          beforeSend:function() {
+            form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");
+          },
+          type: 'DELETE',
+          url: url,
+          dataType: 'json',
+          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+          success: function (response) {
+            if(response.status == "success"){
+              form.prop('disabled', false).html(btnHtml);
+              toastr.success(response.message,'Success !');
+              $('#modalDelete').modal('hide');
+              dataTable.draw();
+            }else{
+              form.prop('disabled', false).html(btnHtml);
+              toastr.error(response.message,'Failed !');
+              $('#modalDelete').modal('hide');
+            }
+          },
+          error: function (response) {
+            form.prop('disabled', false).text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
+            toastr.error(response.responseJSON.message ,'Failed !');
+            $('#modalDelete').modal('hide');
+            $('#modalDelete').find('a[name="id"]').attr('href', '');
+          }
+        });
+      });
     });
   </script>
 @endsection

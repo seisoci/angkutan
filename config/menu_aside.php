@@ -40,7 +40,7 @@ return [
       ]
     ],
     [
-      'title' => 'Operational',
+      'title' => 'Operasional',
       'desc' => '',
       'icon' => 'media/svg/icons/Communication/Group.svg',
       'bullet' => 'dot',
@@ -114,12 +114,12 @@ return [
       ]
     ],
     [
-      'title' => 'Accounting',
+      'title' => 'Akutansi',
       'desc' => '',
       'icon' => 'media/svg/icons/Home/Book-open.svg',
       'bullet' => 'dot',
       'root' => true,
-      'list' => ['mastercoa', 'journals', 'kasbonemployees', 'invoicekasbonemployees',
+      'list' => ['mastercoa', 'journals', 'kasbonemployees', 'invoicekasbonemployees', 'banks',
         'employees', 'employeesmaster', 'employeessalary', 'monthlymaster'
       ],
       'arrow' => true,
@@ -127,6 +127,10 @@ return [
         [
           'title' => 'Master Akun',
           'page' => 'backend/mastercoa'
+        ],
+        [
+          'title' => 'Master Bank',
+          'page' => 'backend/banks'
         ],
         [
           'title' => 'Jurnal Transaksi',
@@ -202,7 +206,7 @@ return [
       ]
     ],
     [
-      'title' => 'Purchase & Usage',
+      'title' => 'Pembelian & Pemakaian',
       'desc' => '',
       'icon' => 'media/svg/icons/Shopping/Cart2.svg',
       'bullet' => 'dot',
@@ -229,7 +233,7 @@ return [
       ]
     ],
     [
-      'title' => 'Inventory',
+      'title' => 'Gudang',
       'desc' => '',
       'icon' => 'media/svg/icons/Shopping/Bag2.svg',
       'bullet' => 'dot',
@@ -248,7 +252,7 @@ return [
       ]
     ],
     [
-      'title' => 'Payment Operational',
+      'title' => 'Pembayaran Operasional',
       'desc' => '',
       'icon' => 'media/svg/icons/Shopping/Wallet2.svg',
       'bullet' => 'dot',
@@ -282,7 +286,7 @@ return [
       'section' => 'Laporan',
     ],
     [
-      'title' => 'Report',
+      'title' => 'Laporan',
       'desc' => '',
       'icon' => 'media/svg/icons/Communication/Clipboard-list.svg',
       'bullet' => 'dot',
@@ -292,7 +296,7 @@ return [
         'recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
         'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside',
         'reportcostumers', 'reportdrivers', 'reporttransports',
-        'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo',
+        'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo','reportldonetprofit',
         'reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees',
         'reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks'
       ],
@@ -301,10 +305,19 @@ return [
           'title' => 'Laporan Akutansi',
           'bullet' => 'dot',
           'arrow' => true,
+          'list' => ['ledger', 'finance', 'profitloss'],
           'submenu' => [
             [
               'title' => 'Laporan Buku Besar',
               'page' => 'backend/ledger'
+            ],
+            [
+              'title' => 'Laporan Buku Besar Operasional',
+              'page' => 'backend/ledgeroperational'
+            ],
+            [
+              'title' => 'Laporan Buku Besar Spare Part',
+              'page' => 'backend/ledgersparepart'
             ],
             [
               'title' => 'Laporan Keuangan',
@@ -321,7 +334,7 @@ return [
           'bullet' => 'dot',
           'arrow' => true,
           'list' => ['recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
-            'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside'],
+            'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportcustomerroadmoney'],
           'submenu' => [
             [
               'title' => 'Laporan Rekapitulasi',
@@ -379,7 +392,7 @@ return [
           'title' => 'Laporan Job Order & Invoice',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo'],
+          'list' => ['reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo', 'reportldonetprofit'],
           'submenu' => [
             [
               'title' => 'Laporan Tagihan Job Order',
@@ -392,6 +405,10 @@ return [
             [
               'title' => 'Laporan Invoice LDO',
               'page' => 'backend/reportinvoiceldo'
+            ],
+            [
+              'title' => 'Laporan Rekap Laba LDO',
+              'page' => 'backend/reportldonetprofit'
             ],
           ]
         ],
@@ -459,7 +476,7 @@ return [
       'bullet' => 'dot',
       'root' => true,
       'arrow' => true,
-      'list' => ['settings', 'prefixes', 'configcoa'],
+      'list' => ['settings', 'prefixes', 'configcoa', 'configledger'],
       'submenu' => [
         [
           'title' => 'Master Setting Web',
@@ -470,8 +487,16 @@ return [
           'page' => 'backend/prefixes'
         ],
         [
+          'title' => 'Master Kerjasama',
+          'page' => 'backend/cooperation'
+        ],
+        [
           'title' => 'Config Akun COA',
           'page' => 'backend/configcoa'
+        ],
+        [
+          'title' => 'Config Buku Besar COA',
+          'page' => 'backend/configledger'
         ]
       ]
     ]
