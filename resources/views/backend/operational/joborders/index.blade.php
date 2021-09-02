@@ -466,6 +466,7 @@
       }).on('change', function (e) {
         dataTable.draw();
       });
+
       $("#select2Driver").select2({
         placeholder: "Search LDO",
         allowClear: true,
