@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\AnotherExpedition;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Cooperation;
@@ -179,6 +180,8 @@ class InvoiceLdoController extends Controller
               'coa_id' => $request->input('coa_id')
             ]);
 
+            $LDO = AnotherExpedition::findOrFail($request->another_expedition_id);
+
             Journal::create([
               'coa_id' => $request->input('coa_id'),
               'date_journal' => $request->input('payment.date_payment'),
@@ -186,7 +189,7 @@ class InvoiceLdoController extends Controller
               'kredit' => $request->input('payment.payment'),
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Pembayaran invoice ldo"
+              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill').""
             ]);
 
             Journal::create([
@@ -196,7 +199,7 @@ class InvoiceLdoController extends Controller
               'kredit' => 0,
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Beban invoice ldo dengan $coa->name"
+              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill').""
             ]);
           } else {
             DB::rollBack();
@@ -294,7 +297,6 @@ class InvoiceLdoController extends Controller
       try {
         DB::beginTransaction();
         $data = InvoiceLdo::findOrFail($id);
-        $costumer = Costumer::findOrFail($data->another_expedition_id);
         $coa = Coa::findOrFail($request->coa_id);
         $checksaldo = DB::table('journals')
           ->select(DB::raw('
@@ -309,6 +311,7 @@ class InvoiceLdoController extends Controller
         $payment += $request->input('payment.payment');
 
         if (($checksaldo->saldo ?? FALSE) && $request->input('payment.payment') <= $checksaldo->saldo) {
+          $LDO = AnotherExpedition::findOrFail($data->another_expedition_id);
 
           $data->update([
             'total_cut' => $request->input('total_cut'),
@@ -332,7 +335,7 @@ class InvoiceLdoController extends Controller
               'kredit' => $request->input('payment.payment'),
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Pembayaran invoice ldo"
+              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
             ]);
 
             Journal::create([
@@ -342,7 +345,7 @@ class InvoiceLdoController extends Controller
               'kredit' => 0,
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Beban invoice ldo dengan $coa->name"
+              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
             ]);
           }
 

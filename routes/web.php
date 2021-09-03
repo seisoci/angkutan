@@ -143,6 +143,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('invoicereturpurchases/select2SparePart', [BackendInvoiceReturPurchaseController::class, 'select2SparePart'])->name('invoicereturpurchases.select2SparePart');
     Route::get('cooperation/select2', [BackendCooperationController::class, 'select2'])->name('cooperation.select2');
     Route::get('banks/select2', [BackendBankController::class, 'select2'])->name('banks.select2');
+    Route::get('journals/select2', [BackendJournalController::class, 'select2'])->name('journals.select2');
 
     //Print
     Route::get('invoicesalaries/{id}/print', [BackendInvoiceSalaryController::class, 'print']);

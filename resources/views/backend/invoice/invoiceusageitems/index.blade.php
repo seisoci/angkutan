@@ -39,6 +39,8 @@
         <tr>
           <th>Prefix</th>
           <th>No. Pemakaian</th>
+          <th>Supir</th>
+          <th>No. Pol</th>
           <th>Tanggal Pemakaian</th>
           <th>Created At</th>
           <th>Action</th>
@@ -90,13 +92,15 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[3, 'desc']],
+        order: [[5, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.invoiceusageitems.index') }}",
         columns: [
             {data: 'prefix', name: 'prefix'},
             {data: 'num_bill', name: 'num_bill'},
+            {data: 'driver.name', name: 'driver.name'},
+            {data: 'transport.num_pol', name: 'transport.num_pol'},
             {data: 'invoice_date', name: 'invoice_date'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},

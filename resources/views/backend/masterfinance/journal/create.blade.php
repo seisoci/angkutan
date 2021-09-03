@@ -250,7 +250,7 @@
         $(".select2Coa").select2({
           placeholder: "Choose Akun",
           ajax: {
-            url: "{{ route('backend.mastercoa.select2self') }}",
+            url: "{{ route('backend.journals.select2') }}",
             dataType: "json",
             cache: true,
             data: function (e) {

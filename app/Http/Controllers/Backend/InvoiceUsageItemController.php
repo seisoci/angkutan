@@ -10,6 +10,7 @@ use App\Models\InvoiceUsageItem;
 use App\Models\Journal;
 use App\Models\Prefix;
 use App\Models\Stock;
+use App\Models\Transport;
 use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
 use DataTables;
@@ -39,8 +40,7 @@ class InvoiceUsageItemController extends Controller
     ];
 
     if ($request->ajax()) {
-      $type = $request->type;
-      $data = InvoiceUsageItem::where('type', 'self');
+      $data = InvoiceUsageItem::with('driver', 'transport')->where('invoice_usage_items.type', 'self');
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
@@ -106,6 +106,7 @@ class InvoiceUsageItemController extends Controller
           'total_payment' => $grandTotal,
         ]);
         $driver = Driver::findOrFail($request->input('driver_id'));
+        $transport = Transport::findOrFail($request->input('transport_id'));
         foreach ($items['sparepart_id'] as $key => $item):
           $stock = Stock::findOrFail($items['stock_id'][$key]);
           $totalPrice = $items['qty'][$key] * $items['price'][$key];
@@ -125,7 +126,7 @@ class InvoiceUsageItemController extends Controller
             'kredit' => $totalPrice,
             'table_ref' => 'invoiceusageitems',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Pengurangan stok di persediaan barang untuk supir $driver->name"
+            'description' => "Pengurangan stok di persediaan barang dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')." untuk supir $driver->name dengan No. Pol: $transport->num_pol"
           ]);
 
           Journal::create([
@@ -135,7 +136,7 @@ class InvoiceUsageItemController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoiceusageitems',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Beban pemakaian barang supir $driver->name"
+            'description' => "Beban pemakaian barang dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')." untuk supir $driver->name  dengan No. Pol: $transport->num_pol"
           ]);
 
           $stock->qty = $stock->qty - $items['qty'][$key];

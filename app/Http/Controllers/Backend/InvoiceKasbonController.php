@@ -157,7 +157,7 @@ class InvoiceKasbonController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicekasbons',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari kasbon supir $driver->name"
+            'description' => "Penambahan saldo dari kasbon supir $driver->name dengan dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
 
           Journal::create([
@@ -167,7 +167,7 @@ class InvoiceKasbonController extends Controller
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbons',
             'code_ref' => $data->id,
-            'description' => "Pembayaran kasbon supir $driver->name ke $coa->name"
+            'description' => "Pembayaran kasbon supir $driver->name ke $coa->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
         endforeach;
 
@@ -353,7 +353,7 @@ class InvoiceKasbonController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicekasbons',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari kasbon supir $driver->name"
+            'description' => "Penambahan saldo dari kasbon supir $driver->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
           ]);
 
           Journal::create([
@@ -363,7 +363,7 @@ class InvoiceKasbonController extends Controller
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbons',
             'code_ref' => $data->id,
-            'description' => "Pembayaran kasbon supir $driver->name ke $coa->name"
+            'description' => "Pembayaran kasbon supir $driver->name ke $coa->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
           ]);
         endforeach;
 

@@ -296,39 +296,52 @@ class ReportLedgerSparePartController extends Controller
           $sheet->getStyle('F' . $startCell)->applyFromArray($borderRight);
           $sheet->setCellValue('A' . $startCell, '-');
           $sheet->setCellValue('B' . $startCell, 'Sisa saldo bulan sebelumnya');
-          $sheet->setCellValue('C' . $startCell, ($itemParent->rest_balance >= 0 ? $itemParent->rest_balance : NULL));
-          $sheet->setCellValue('D' . $startCell, ($itemParent->rest_balance < 0 ? $itemParent->rest_balance : NULL));
-          $sheet->setCellValue('E' . $startCell, ($itemParent->rest_balance >= 0 ? $saldo : NULL));
-          $sheet->setCellValue('F' . $startCell, ($itemParent->rest_balance < 0 ? $saldo : NULL));
-        } else {
-          foreach ($itemParent->journal as $itemChildren):
-            $startCell++;
-            $merge++;
-            if ($itemParent->normal_balance == 'Db') {
-              if ($itemChildren->debit != 0) {
-                $saldo += $itemChildren->debit;
-              } else {
-                $saldo -= $itemChildren->kredit;
-              }
-            } else {
-              if ($itemChildren->debit != 0) {
-                $saldo -= $itemChildren->debit;
-              } else {
-                $saldo += $itemChildren->kredit;
-              }
-            }
-            $sheet->getStyle('A' . $startCell)->applyFromArray($borderLeft);
-            $sheet->getStyle('F' . $startCell)->applyFromArray($borderRight);
-            $sheet->getStyle('C' . $startCell . ':F' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
-            $sheet->setCellValue('A' . $startCell, $itemChildren->date);
-            $sheet->setCellValue('B' . $startCell, $itemChildren->description);
-            $sheet->setCellValue('C' . $startCell, ($itemChildren->debit != 0 ? $itemChildren->debit : NULL));
-            $sheet->setCellValue('D' . $startCell, ($itemChildren->kredit != 0 ? $itemChildren->kredit : NULL));
-            $sheet->setCellValue('E' . $startCell, ($itemParent->normal_balance == 'Db' && $saldo >= 0 ? $saldo : NULL));
-            $sheet->setCellValue('F' . $startCell, ($itemParent->normal_balance == 'Kr' && $saldo >= 0 ? $saldo : NULL));
-          endforeach;
-          $sheet->getStyle('A' . $startCell . ':F' . $startCell)->applyFromArray($borderBottom);
+          $sheet->setCellValue('C' . $startCell, ($itemParent->rest_balance >= 0 ? abs($itemParent->rest_balance) : NULL));
+          $sheet->setCellValue('D' . $startCell, ($itemParent->rest_balance < 0 ? abs($itemParent->rest_balance) : NULL));
+          $sheet->setCellValue('E' . $startCell, ($itemParent->rest_balance >= 0 ? abs($saldo) : NULL));
+          $sheet->setCellValue('F' . $startCell, ($itemParent->rest_balance < 0 ? abs($saldo) : NULL));
         }
+        foreach ($itemParent->journal as $itemChildren):
+          $startCell++;
+          $merge++;
+          if ($itemParent->normal_balance == 'Db') {
+            if ($itemChildren->debit != 0) {
+              $saldo += $itemChildren->debit;
+            } else {
+              $saldo -= $itemChildren->kredit;
+            }
+          } else {
+            if ($itemChildren->debit != 0) {
+              $saldo -= $itemChildren->debit;
+            } else {
+              $saldo += $itemChildren->kredit;
+            }
+          }
+          $saldoDb = '';
+          if ($itemParent->normal_balance == 'Db' && $saldo >= 0) {
+            $saldoDb = $saldo;
+          } else if ($itemParent->normal_balance == 'Kr' && $saldo < 0) {
+            $saldoDb = abs($saldo);
+          }
+          $saldoKr = '';
+          if ($itemParent->normal_balance == 'Kr' && $saldo >= 0) {
+            $saldoKr = $saldo;
+          } else if (($itemParent->normal_balance == 'Db' && $saldo < 0)) {
+            $saldoKr = abs($saldo);
+          }
+
+          $sheet->getStyle('A' . $startCell)->applyFromArray($borderLeft);
+          $sheet->getStyle('F' . $startCell)->applyFromArray($borderRight);
+          $sheet->getStyle('C' . $startCell . ':F' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
+          $sheet->setCellValue('A' . $startCell, $itemChildren->date);
+          $sheet->setCellValue('B' . $startCell, $itemChildren->description);
+          $sheet->setCellValue('C' . $startCell, ($itemChildren->debit != 0 ? $itemChildren->debit : NULL));
+          $sheet->setCellValue('D' . $startCell, ($itemChildren->kredit != 0 ? $itemChildren->kredit : NULL));
+          $sheet->setCellValue('E' . $startCell, $saldoDb);
+          $sheet->setCellValue('F' . $startCell, $saldoKr);
+        endforeach;
+        $sheet->getStyle('A' . $startCell . ':F' . $startCell)->applyFromArray($borderBottom);
+
         $startCell += 2;
         $merge += 2;
       endforeach;

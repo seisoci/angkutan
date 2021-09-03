@@ -54,6 +54,8 @@
         <tr>
           <th>Prefix</th>
           <th>No. Invoice</th>
+          <th>Supir</th>
+          <th>No. Polisi</th>
           <th>Tgl Pembelian</th>
           <th>Total Biaya</th>
           <th>Created At</th>
@@ -106,7 +108,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[4, 'desc']],
+        order: [[6, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.invoiceusageitemsoutside.index') }}",
@@ -114,6 +116,8 @@
             {data: 'prefix', name: 'prefix'},
             {data: 'num_bill', name: 'num_bill'},
             {data: 'invoice_date', name: 'invoice_date'},
+            {data: 'driver.name', name: 'driver.name'},
+            {data: 'transport.num_pol', name: 'transport.num_pol'},
             {data: 'total_payment', name: 'total_payment', render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},

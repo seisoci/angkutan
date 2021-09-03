@@ -56,24 +56,26 @@
     </div>
     <div class="card-body">
       <div class="mb-10">
-        <form action="{{ route('backend.ledgersparepart.index') }}" method="GET">
-        <div class="card">
-          <h5 class="card-header bg-primary-o-60">Featured</h5>
-          <div class="card-body">
-            <div class="row align-items-center">
-              <div class="col-12">
-                <div class="row align-items-center">
-                  <div class="col-md-6 my-md-0">
-                    <div class="form-group row">
-                      <label class="col-md-3 align-self-center">Priode:</label>
-                      <div class=" col-md-9">
-                        <div class="input-daterange input-group">
-                          <div class="input-group-prepend">
+        <form action="{{ route('backend.ledger.index') }}" method="GET">
+          <div class="card">
+            <h5 class="card-header bg-primary-o-60">Featured</h5>
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <div class="row align-items-center">
+                    <div class="col-md-6 my-md-0">
+                      <div class="form-group row">
+                        <label class="col-md-3 align-self-center">Priode:</label>
+                        <div class=" col-md-9">
+                          <div class="input-daterange input-group">
+                            <div class="input-group-prepend">
                         <span class="input-group-text">
 											    <i class="la la-calendar-check-o"></i>
                         </span>
+                            </div>
+                            <input type="text" class="form-control" name="date_begin" id="dateBegin" value="{{ $date }}"
+                                   readonly/>
                           </div>
-                          <input type="text" class="form-control" name="date_begin" id="dateBegin" value="{{ $date }}" readonly/>
                         </div>
                       </div>
                     </div>
@@ -81,11 +83,10 @@
                 </div>
               </div>
             </div>
+            <div class="card-footer  d-flex justify-content-end">
+              <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+            </div>
           </div>
-          <div class="card-footer  d-flex justify-content-end">
-            <button type="submit" class="btn btn-sm btn-primary">Submit</button>
-          </div>
-        </div>
         </form>
       </div>
 
@@ -116,18 +117,18 @@
                 $saldo = 0;
                 $saldo += $itemParent->rest_balance ?? 0;
               @endphp
-                @if(isset($itemParent->rest_balance))
+              @if(isset($itemParent->rest_balance))
                 <tr>
                   <td>-</td>
                   <td>Sisa saldo bulan sebelumnya</td>
                   <td
-                    class="text-right">{{ $itemParent->rest_balance >= 0 ? number_format($itemParent->rest_balance, 2,'.',',') : NULL }}</td>
+                    class="text-right">{{ $itemParent->rest_balance >= 0 ? number_format(abs($itemParent->rest_balance), 2,'.',',') : NULL }}</td>
                   <td
-                    class="text-right">{{ $itemParent->rest_balance < 0 ? number_format($itemParent->rest_balance, 2,'.',',') : NULL }}</td>
+                    class="text-right">{{ $itemParent->rest_balance < 0 ? number_format(abs($itemParent->rest_balance), 2,'.',',') : NULL }}</td>
                   <td
-                    class="text-right">{{ ($itemParent->rest_balance >= 0) ? number_format($saldo, 2,'.',',') : NULL }}</td>
+                    class="text-right">{{ ($itemParent->rest_balance >= 0) ? number_format(abs($saldo), 2,'.',',') : NULL }}</td>
                   <td
-                    class="text-right">{{ ($itemParent->rest_balance < 0) ? number_format($saldo, 2,'.',',') : NULL }}</td>
+                    class="text-right">{{ ($itemParent->rest_balance < 0) ? number_format(abs($saldo), 2,'.',',') : NULL }}</td>
                 </tr>
               @endif
               @foreach($itemParent->journal as $itemChildren)
@@ -157,10 +158,22 @@
                     style="min-width: 100px">{{ $itemChildren->kredit != 0 ? number_format($itemChildren->kredit, 2,'.',',') : NULL }}</td>
                   <td
                     class="text-right"
-                    style="min-width: 100px">{{ ($itemParent->normal_balance == 'Db' && $saldo >= 0) ? number_format($saldo, 2,'.',',') : NULL }}</td>
+                    style="min-width: 100px">
+                    @if($itemParent->normal_balance == 'Db' && $saldo >= 0)
+                      {{ number_format($saldo, 2,'.',',') }}
+                    @elseif($itemParent->normal_balance == 'Kr' && $saldo < 0)
+                      {{ number_format(abs($saldo), 2,'.',',') }}
+                    @endif
+                  </td>
                   <td
                     class="text-right"
-                    style="min-width: 100px">{{ ($itemParent->normal_balance == 'Kr' && $saldo >= 0) ? number_format($saldo, 2,'.',',') : NULL }}</td>
+                    style="min-width: 100px">
+                    @if($itemParent->normal_balance == 'Kr' && $saldo >= 0)
+                      {{ number_format($saldo, 2,'.',',') }}
+                    @elseif($itemParent->normal_balance == 'Db' && $saldo < 0)
+                      {{ number_format(abs($saldo), 2,'.',',') }}
+                    @endif
+                  </td>
                 </tr>
               @endforeach
               </tbody>

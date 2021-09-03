@@ -163,7 +163,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => ($request->input('total_cut') ?? 0),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name"
+            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name dan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
 
           Journal::create([
@@ -173,7 +173,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Pendapatan untuk Potongan Klaim"
+            'description' => "Potongan Pendapatan untuk Potongan Klaim dengan No. Invoice " .$prefix->name.'-'.$request->input('num_bill')
           ]);
         }
 
@@ -185,7 +185,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => $request->input('total_piutang'),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name"
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
 
           Journal::create([
@@ -195,7 +195,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name"
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
         }
 
@@ -215,7 +215,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name"
+            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
 
           Journal::create([
@@ -225,7 +225,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => ($request->input('payment.payment') ?? 0),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Pembayaran tagihan JO pelanggan $costumer->name"
+            'description' => "Pembayaran tagihan JO pelanggan $costumer->name dengan No.Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
         }
         if ($request->rest_payment <= -1) {
@@ -339,7 +339,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => $request->input('total_piutang'),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name"
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
           ]);
 
           Journal::create([
@@ -349,7 +349,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name"
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
           ]);
         }
 
@@ -361,7 +361,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Pendapatan untuk Potongan Klaim"
+            'description' => "Potongan Pendapatan untuk Potongan Klaim dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
           ]);
 
           Journal::create([
@@ -371,7 +371,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => ($request->input('total_cut') ?? 0),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name"
+            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
           ]);
         }
 
@@ -391,7 +391,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name"
+            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name  dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
           ]);
 
           Journal::create([
@@ -401,7 +401,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => $request->input('payment.payment'),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Pembayaran tagihan JO pelanggan $costumer->name"
+            'description' => "Pembayaran tagihan JO pelanggan $costumer->name  dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
           ]);
 
         }

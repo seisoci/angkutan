@@ -290,6 +290,12 @@ class JobOrderController extends Controller
             $roadMoney = $request->road_money;
           }
 
+          if (is_numeric($request->transport_id)) {
+            $transportId = Transport::findOrFail($request->transport_id)->num_pol;
+          } else {
+            $transportId = $request->transport_id;
+          }
+
           Journal::create([
             'coa_id' => $request->input('coa_id'),
             'date_journal' => $request->input('date_begin'),
@@ -297,7 +303,7 @@ class JobOrderController extends Controller
             'kredit' => $roadMoney,
             'table_ref' => 'joborders',
             'code_ref' => $data->id,
-            'description' => "Pengurangan saldo untuk uang jalan $costumer->name dari $routefrom->name ke $routeto->name"
+            'description' => "Pengurangan saldo untuk uang jalan $costumer->name dari $routefrom->name ke $routeto->name dengan No. Pol: $transportId"
           ]);
 
           Journal::create([
@@ -307,7 +313,7 @@ class JobOrderController extends Controller
             'kredit' => 0,
             'table_ref' => 'joborders',
             'code_ref' => $data->id,
-            'description' => "Beban operasional uang jalan $costumer->name dari $routefrom->name ke $routeto->name"
+            'description' => "Beban operasional uang jalan $costumer->name dari $routefrom->name ke $routeto->name dengan No. Pol: $transportId"
           ]);
 
           DB::commit();

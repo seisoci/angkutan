@@ -141,7 +141,7 @@ class InvoiceReturPurchaseController extends Controller
           'kredit' => $totalPayment + $discount,
           'table_ref' => 'invoicereturpurchases',
           'code_ref' => $invoice->id,
-          'description' => "Retur pembelian barang $supplier->name"
+          'description' => "Retur pembelian barang $supplier->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
         ]);
 
         Journal::create([
@@ -151,7 +151,7 @@ class InvoiceReturPurchaseController extends Controller
           'kredit' => 0,
           'table_ref' => 'invoicereturpurchases',
           'code_ref' => $invoice->id,
-          'description' => "Penambahan $coa->name dari retur pembelian"
+          'description' => "Penambahan $coa->name dari retur pembelian dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
         ]);
 
         foreach ($items['sparepart_id'] as $key => $item):

@@ -7,11 +7,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Cooperation;
+use App\Models\Driver;
 use App\Models\InvoiceUsageItem;
 use App\Models\Journal;
 use App\Models\Prefix;
 use App\Models\Setting;
 use App\Models\Stock;
+use App\Models\Transport;
 use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
 use DataTables;
@@ -60,7 +62,7 @@ class InvoiceUsageItemOutsideController extends Controller
 
     if ($request->ajax()) {
       $type = $request->type;
-      $data = InvoiceUsageItem::where('type', 'outside');
+      $data = InvoiceUsageItem::with('transport', 'driver')->where('invoice_usage_items.type', 'outside');
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
@@ -123,6 +125,8 @@ class InvoiceUsageItemOutsideController extends Controller
           ->where('journals.coa_id', $request->coa_id)
           ->groupBy('journals.coa_id')
           ->first();
+        $driver = Driver::findOrFail($request->input('driver_id'));
+        $transport = Transport::findOrFail($request->input('transport_id'));
 
         $totalPayment = 0;
         foreach ($items['name'] as $key => $item):
@@ -155,7 +159,7 @@ class InvoiceUsageItemOutsideController extends Controller
             'kredit' => $totalPayment,
             'table_ref' => 'invoiceusageitemsoutside',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Pembelian barang diluar ".$prefix->name.'-'.$$request->input('num_bill')
+            'description' => "Pembelian barang diluar dengan No. Invoice: ".$prefix->name.'-'.$request->input('num_bill')." dengan supir $driver->name dan No. Pol: $transport->num_pol"
           ]);
 
           Journal::create([
@@ -165,7 +169,7 @@ class InvoiceUsageItemOutsideController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoiceusageitemsoutside',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Beban pembelian barang diluar $coa->name dengan no invoice " .$prefix->name.'-'.$$request->input('num_bill')
+            'description' => "Beban pembelian barang diluar $coa->name dengan No. Invoice:  " .$prefix->name.'-'.$request->input('num_bill')." dengan supir $driver->name dan No. Pol: $transport->num_pol"
           ]);
           DB::commit();
           $response = response()->json([

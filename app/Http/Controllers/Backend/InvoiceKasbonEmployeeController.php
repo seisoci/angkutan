@@ -155,7 +155,7 @@ class InvoiceKasbonEmployeeController extends Controller
             'debit' => $payments['payment'][$key],
             'kredit' => 0,
             'table_ref' => 'invoicekasbonemployees',
-            'description' => "Penambahan saldo dari kasbon karyawaan $employee->name"
+            'description' => "Penambahan saldo dari kasbon karyawaan $employee->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
 
           Journal::create([
@@ -164,7 +164,7 @@ class InvoiceKasbonEmployeeController extends Controller
             'debit' => 0,
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbonemployees',
-            'description' => "Pembayaran kasbon karyawaan $employee->name ke $coa->name"
+            'description' => "Pembayaran kasbon karyawaan $employee->name ke $coa->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
         endforeach;
 
@@ -352,7 +352,7 @@ class InvoiceKasbonEmployeeController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicekasbonemployees',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari kasbon karyawaan $employee->name"
+            'description' => "Penambahan saldo dari kasbon karyawaan $employee->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
           ]);
 
           Journal::create([
@@ -362,7 +362,7 @@ class InvoiceKasbonEmployeeController extends Controller
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbonemployees',
             'code_ref' => $data->id,
-            'description' => "Pembayaran kasbon karyawaan $employee->name ke $coa->name"
+            'description' => "Pembayaran kasbon karyawaan $employee->name ke $coa->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
           ]);
         endforeach;
 

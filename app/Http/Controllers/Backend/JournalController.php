@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coa;
+use App\Models\ConfigCoa;
 use App\Models\Journal;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -232,4 +236,53 @@ class JournalController extends Controller
     }
     return $response;
   }
+
+  public function select2(Request $request)
+  {
+    $userRole = Auth::user()->roles[0]->name;
+    $plucked = NULL;
+     if ($userRole == 'operasional') {
+      $configCoa = ConfigCoa::with('coa')->where('type', 'ledger')->where('name_page', 'ledgeroperational')->first();
+      $plucked = $configCoa->coa->pluck('id') ?? array();
+    } else if ($userRole == 'akunting') {
+      $configCoa = ConfigCoa::with('coa')->where('type', 'ledger')->where('name_page', 'ledgeraccounting')->first();
+      $plucked = $configCoa->coa->pluck('id') ?? array();
+    } else if ($userRole == 'sparepart') {
+      $configCoa = ConfigCoa::with('coa')->where('type', 'ledger')->where('name_page', 'ledgersparepart')->first();
+      $plucked = $configCoa->coa->pluck('id') ?? array();
+    }
+    $page = $request->page;
+    $resultCount = 25;
+    $offset = ($page - 1) * $resultCount;
+    $data = Coa::where('name', 'LIKE', '%' . $request->q . '%')
+      ->whereNotNull('parent_id')
+      ->when($plucked, function ($query) use($plucked) {
+        return $query->whereIn('id', $plucked);
+      })
+      ->orderBy('code')
+      ->skip($offset)
+      ->take($resultCount)
+      ->selectRaw('id, CONCAT(`code`, " - ", `name`) as text')
+      ->get();
+
+    $count = Coa::where('name', 'LIKE', '%' . $request->q . '%')
+      ->whereNotNull('parent_id')
+      ->when($plucked, function ($query) use($plucked) {
+        return $query->whereIn('id', $plucked);
+      })
+      ->get()
+      ->count();
+    $endCount = $offset + $resultCount;
+    $morePages = $count > $endCount;
+
+    $results = array(
+      "results" => $data,
+      "pagination" => array(
+        "more" => $morePages
+      )
+    );
+
+    return response()->json($results);
+  }
+
 }
