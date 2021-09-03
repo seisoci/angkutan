@@ -292,11 +292,11 @@ return [
       'bullet' => 'dot',
       'root' => true,
       'arrow' => true,
-      'list' => ['ledger', 'finance', 'profitloss',
+      'list' => ['ledger', 'finance', 'profitloss', 'ledgeraccounting', 'ledgeroperational', 'ledgersparepart',
         'recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
-        'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside',
+        'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportldonetprofit',
         'reportcostumers', 'reportdrivers', 'reporttransports',
-        'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo','reportldonetprofit',
+        'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo',
         'reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees',
         'reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks'
       ],
@@ -305,7 +305,7 @@ return [
           'title' => 'Laporan Akutansi',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['ledger', 'finance', 'profitloss'],
+          'list' => ['ledger', 'finance', 'profitloss', 'ledgeroperational', 'ledgeraccounting', 'ledgersparepart'],
           'submenu' => [
             [
               'title' => 'Laporan Buku Besar',
@@ -314,6 +314,10 @@ return [
             [
               'title' => 'Laporan Buku Besar Operasional',
               'page' => 'backend/ledgeroperational'
+            ],
+            [
+              'title' => 'Laporan Buku Besar Akunting',
+              'page' => 'backend/ledgeraccounting'
             ],
             [
               'title' => 'Laporan Buku Besar Spare Part',
@@ -334,7 +338,7 @@ return [
           'bullet' => 'dot',
           'arrow' => true,
           'list' => ['recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
-            'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportcustomerroadmoney'],
+            'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportcustomerroadmoney', 'reportldonetprofit'],
           'submenu' => [
             [
               'title' => 'Laporan Rekapitulasi',
@@ -363,7 +367,11 @@ return [
             [
               'title' => 'Laporan Rekap Pembelian Barang Diluar',
               'page' => 'backend/reportrecapusageitemoutside'
-            ]
+            ],
+            [
+              'title' => 'Laporan Rekap Laba LDO',
+              'page' => 'backend/reportldonetprofit'
+            ],
           ]
         ],
         [
@@ -392,7 +400,7 @@ return [
           'title' => 'Laporan Job Order & Invoice',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo', 'reportldonetprofit'],
+          'list' => ['reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo'],
           'submenu' => [
             [
               'title' => 'Laporan Tagihan Job Order',
@@ -405,10 +413,6 @@ return [
             [
               'title' => 'Laporan Invoice LDO',
               'page' => 'backend/reportinvoiceldo'
-            ],
-            [
-              'title' => 'Laporan Rekap Laba LDO',
-              'page' => 'backend/reportldonetprofit'
             ],
           ]
         ],

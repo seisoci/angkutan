@@ -155,7 +155,7 @@ class InvoiceUsageItemOutsideController extends Controller
             'kredit' => $totalPayment,
             'table_ref' => 'invoiceusageitemsoutside',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Pembayaran invoice ldo"
+            'description' => "Pembelian barang diluar ".$prefix->name.'-'.$$request->input('num_bill')
           ]);
 
           Journal::create([
@@ -165,7 +165,7 @@ class InvoiceUsageItemOutsideController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoiceusageitemsoutside',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Beban invoice ldo dengan $coa->name"
+            'description' => "Beban pembelian barang diluar $coa->name dengan no invoice " .$prefix->name.'-'.$$request->input('num_bill')
           ]);
           DB::commit();
           $response = response()->json([

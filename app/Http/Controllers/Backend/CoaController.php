@@ -66,13 +66,17 @@ class CoaController extends Controller
 
     if ($validator->passes()) {
       if (is_numeric($request->parent_id)) {
-        $parent = Coa::where('parent_id', $request->parent_id)->max('code');
+        $parentCode = Coa::where('parent_id', $request->parent_id)->max('code');
+        $parent = Coa::selectRaw('SUBSTRING_INDEX(TRIM(`code`), ".", -1) AS `max`')->where('parent_id', $request->parent_id)->get();
         $type = Coa::findOrFail($request->parent_id)->type ?? NULL;
         $parent_id = $request->parent_id;
         $normal_balance = $request->normal_balance;
         if ($parent) {
-          $val = explode('.', $parent);
-          $lastNum = end($val);
+          $val = explode('.', $parentCode);
+          $array = $parent->pluck('max') ?? array();
+          $max = max($array->toArray());
+          $lastNum = $max;
+
           array_pop($val);
           $code = implode('.', $val) . "." . ++$lastNum;
         } else {
@@ -81,7 +85,8 @@ class CoaController extends Controller
         }
       } elseif ($request->parent_id == 'none') {
         $type = $request->type;
-        $parent = Coa::whereNull('parent_id')->where('type', $request->type)->max('code');
+        $parentId = Coa::whereNull('parent_id')->where('type', $request->type)->max('code');
+        $parent = Coa::selectRaw('SUBSTRING_INDEX(TRIM(`code`), ".", -1) AS `max`')->whereNull('parent_id')->where('type', $request->type)->get();
         $parent_id = NULL;
         $normal_balance = NULL;
         if ($parent == NULL) {
@@ -104,8 +109,10 @@ class CoaController extends Controller
             default:
           }
         } else {
-          $val = explode('.', $parent);
-          $lastNum = end($val);
+          $val = explode('.', $parentId);
+          $array = $parent->pluck('max') ?? array();
+          $max = max($array->toArray());
+          $lastNum = $max;
           array_pop($val);
           $code = implode('.', $val) . "." . ++$lastNum;
         }

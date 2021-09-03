@@ -77,6 +77,7 @@ use App\Http\Controllers\Backend\ReportNeracaBalanceController as BackendNeracaB
 use App\Http\Controllers\Backend\ReportLedgerController as BackendReportLedgerController;
 use App\Http\Controllers\Backend\ReportLedgerOperationalController as BackendReportLedgerOperationalController;
 use App\Http\Controllers\Backend\ReportLedgerSparePartController as BackendReportLedgerSparePartControllerlController;
+use App\Http\Controllers\Backend\ReportLedgerAccountingController as BackendReportLedgerAccountingController;
 use App\Http\Controllers\Backend\ReportFinanceController as BackendReportFinanceController;
 use App\Http\Controllers\Backend\ReportNeracaBalanceController as BackendReportNeracaBalanceController;
 use App\Http\Controllers\Backend\ReportProfitLossController as BackendReportProfitLossController;
@@ -205,6 +206,8 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('ledgeroperational/document', [BackendReportLedgerOperationalController::class, 'document']);
     Route::get('ledgersparepart/print', [BackendReportLedgerSparePartControllerlController::class, 'print']);
     Route::get('ledgersparepart/document', [BackendReportLedgerSparePartControllerlController::class, 'document']);
+    Route::get('ledgeraccounting/print', [BackendReportLedgerAccountingController::class, 'print']);
+    Route::get('ledgeraccounting/document', [BackendReportLedgerAccountingController::class, 'document']);
     Route::get('profitloss/print', [BackendReportProfitLossController::class, 'print']);
     Route::get('profitloss/document', [BackendReportProfitLossController::class, 'document']);
     Route::get('reportcustomerroadmoney/print', [BackendReportCustomerRoadMoneyController::class, 'print']);
@@ -354,6 +357,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('ledger', BackendReportLedgerController::class);
     Route::resource('ledgeroperational', BackendReportLedgerOperationalController::class);
     Route::resource('ledgersparepart', BackendReportLedgerSparePartControllerlController::class);
+    Route::resource('ledgeraccounting', BackendReportLedgerAccountingController::class);
     Route::resource('finance', BackendReportFinanceController::class);
     Route::resource('neraca', BackendReportNeracaBalanceController::class);
     Route::resource('profitloss', BackendReportProfitLossController::class);
