@@ -708,7 +708,7 @@ class JobOrderController extends Controller
 
       $roadmoneyPrev = 0;
       if (is_numeric($request->transport_id) && is_numeric($request->driver_id)) {
-        $roadmoneyPrev = JobOrder::orderBy('created_at', 'desc')->first()->road_money_extra ?? 0;
+        $roadmoneyPrev = JobOrder::where('status_cargo', 'selesai')->orderBy('created_at', 'desc')->first()->road_money_extra ?? 0;
       }
 
       $response = response()->json([
