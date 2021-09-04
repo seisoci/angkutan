@@ -126,7 +126,7 @@
                                   class="fas fa-info-circle"></i> {{ $item->diff_days }} Hari Lagi</span>
                             @else
                               <span class="btn btn-block btn-light-danger font-weight-bolder font-size-sm text-left"><i
-                                  class="fas fa-info-circle"></i>{{ $item->diff_days }} Hari Telat</span>
+                                  class="fas fa-info-circle"></i>{{ abs($item->diff_days) }} Hari Telat</span>
                             @endif
 
                           </td>
@@ -177,7 +177,7 @@
                                   class="fas fa-info-circle"></i> {{ $item->diff_days }} Hari Lagi</span>
                             @else
                               <span class="btn btn-block btn-light-danger font-weight-bolder font-size-sm text-left"><i
-                                  class="fas fa-info-circle"></i>{{ $item->diff_days }} Hari Telat</span>
+                                  class="fas fa-info-circle"></i>{{ abs($item->diff_days) }} Hari Telat</span>
                             @endif
 
                           </td>
@@ -226,7 +226,7 @@
                                   class="fas fa-info-circle"></i> {{ $item->diff_days }} Hari Lagi</span>
                             @else
                               <span class="btn btn-block btn-light-danger font-weight-bolder font-size-sm text-left"><i
-                                  class="fas fa-info-circle"></i>{{ $item->diff_days }} Hari Telat</span>
+                                  class="fas fa-info-circle"></i>{{ abs($item->diff_days) }} Hari Telat</span>
                             @endif
 
                           </td>
@@ -332,6 +332,111 @@
       </div>
     </div>
   </div>
+
+  <div class="card card-custom mt-10">
+    <div class="card-header flex-wrap py-3">
+      <div class="card-title w-100">
+        Informasi Tagihan Pelanggan
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-head-custom table-head-bg table-vertical-center">
+          <thead>
+          <tr class="text-left text-uppercase">
+            <th>Prefix</th>
+            <th>No. Invoice</th>
+            <th>Pelanggan</th>
+            <th>Total Tagihan</th>
+            <th>Total Pembayaran</th>
+            <th>Sisa Tagihan</th>
+            <th>Jatuh Tempo</th>
+          </tr>
+          </thead>
+          <tbody>
+          @foreach ($invoiceCustomer as $item)
+            <tr>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ $item->prefix }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ $item->num_bill }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ $item->costumer->name ?? NULL }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_bill,2, '.',',') }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_payment,2, '.',',') }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->rest_payment,2, '.',',') }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs badge badge-warning">{{ $item->due_date }}</span>
+              </td>
+            </tr>
+          @endforeach
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-custom mt-10">
+    <div class="card-header flex-wrap py-3">
+      <div class="card-title w-100">
+        Informasi Tagihan Pembelian
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-head-custom table-head-bg table-vertical-center">
+          <thead>
+          <tr class="text-left text-uppercase">
+            <th>Prefix</th>
+            <th>No. Invoice</th>
+            <th>Supplier</th>
+            <th>Total Tagihan</th>
+            <th>Total Pembayaran</th>
+            <th>Sisa Tagihan</th>
+            <th>Jatuh Tempo</th>
+          </tr>
+          </thead>
+          <tbody>
+          @foreach ($invoicePurchase as $item)
+            <tr>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ $item->prefix }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ $item->num_bill }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ $item->supplier->name ?? NULL }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_bill,2, '.',',') }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_payment,2, '.',',') }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->rest_payment,2, '.',',') }}</span>
+              </td>
+              <td>
+                <span class="text-dark-75 d-block font-size-xs badge badge-warning">{{ $item->due_date }}</span>
+              </td>
+            </tr>
+          @endforeach
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 @endsection
 
 {{-- Styles Section --}}

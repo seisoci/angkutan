@@ -56,7 +56,7 @@
     </div>
     <div class="card-body">
       <div class="mb-10">
-        <form action="{{ route('backend.ledger.index') }}" method="GET">
+        <form action="{{ route('backend.ledgeraccounting.index') }}" method="GET">
           <div class="card">
             <h5 class="card-header bg-primary-o-60">Featured</h5>
             <div class="card-body">
