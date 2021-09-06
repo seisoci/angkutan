@@ -444,7 +444,7 @@ class JobOrderController extends Controller
         'status' => 'error',
         'message' => 'Failed updated',
       ]);
-      $data = JobOrder::with('operationalexpense')->withSum('operationalexpense', 'amount')->find($id);
+      $data = JobOrder::with('transport', 'routeto', 'routeto','operationalexpense')->withSum('operationalexpense', 'amount')->find($id);
 
       if ($request->no_sj || $request->shipement) {
         $data->update($request->all());
@@ -481,7 +481,7 @@ class JobOrderController extends Controller
             'kredit' => 0,
             'table_ref' => 'joborders',
             'code_ref' => $data->id,
-            'description' => "Penambahan piutang usaha dari joborder"
+            'description' => "Penambahan piutang usaha dari joborder $data->prefix"."-".$data->num_bill." dengan No. Pol: ".$data->transport->num_pol." dari rute ".$data->routefrom->name." tujuan ".$data->routeto->name,
           ]);
 
           Journal::create([
@@ -491,7 +491,7 @@ class JobOrderController extends Controller
             'kredit' => $data->total_basic_price,
             'table_ref' => 'joborders',
             'code_ref' => $data->id,
-            'description' => "Penambahan Pendapatan joborder"
+            'description' => "Penambahan Pendapatan joborder $data->prefix"."-".$data->num_bill." dengan No. Pol: ".$data->transport->num_pol." dari rute ".$data->routefrom->name." tujuan ".$data->routeto->name,
           ]);
           $data->update($request->all());
           $response = response()->json([

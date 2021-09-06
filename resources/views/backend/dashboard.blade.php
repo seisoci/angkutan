@@ -369,10 +369,12 @@
                 <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_bill,2, '.',',') }}</span>
               </td>
               <td>
-                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_payment,2, '.',',') }}</span>
+                <span
+                  class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_payment,2, '.',',') }}</span>
               </td>
               <td>
-                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->rest_payment,2, '.',',') }}</span>
+                <span
+                  class="text-dark-75 d-block font-size-xs">{{ number_format($item->rest_payment,2, '.',',') }}</span>
               </td>
               <td>
                 <span class="text-dark-75 d-block font-size-xs badge badge-warning">{{ $item->due_date }}</span>
@@ -421,10 +423,12 @@
                 <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_bill,2, '.',',') }}</span>
               </td>
               <td>
-                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_payment,2, '.',',') }}</span>
+                <span
+                  class="text-dark-75 d-block font-size-xs">{{ number_format($item->total_payment,2, '.',',') }}</span>
               </td>
               <td>
-                <span class="text-dark-75 d-block font-size-xs">{{ number_format($item->rest_payment,2, '.',',') }}</span>
+                <span
+                  class="text-dark-75 d-block font-size-xs">{{ number_format($item->rest_payment,2, '.',',') }}</span>
               </td>
               <td>
                 <span class="text-dark-75 d-block font-size-xs badge badge-warning">{{ $item->due_date }}</span>
