@@ -43,6 +43,11 @@ class UsageItem extends Model
     return $this->belongsTo(InvoiceUsageItem::class, 'invoice_usage_item_id');
   }
 
+  public function invoicepurchase()
+  {
+    return $this->belongsTo(InvoicePurchase::class, 'invoice_purchase_id');
+  }
+
   public function getTotalPriceAttribute()
   {
     return ($this->price * $this->qty);

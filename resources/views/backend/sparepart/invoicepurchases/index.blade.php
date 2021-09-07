@@ -55,6 +55,7 @@
         <tr>
           <th>Prefix</th>
           <th>No. Invoice</th>
+          <th>Supplier</th>
           <th>Total Tagihan</th>
           <th>Total Pembayaran</th>
           <th>Diskon</th>
@@ -134,13 +135,14 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[7, 'desc']],
+        order: [[8, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.invoicepurchases.index') }}",
         columns: [
           {data: 'prefix', name: 'prefix', className: 'dt-center'},
           {data: 'num_bill', name: 'num_bill',},
+          {data: 'supplier.name', name: 'supplier.name',},
           {
             data: 'total_bill',
             name: 'total_bill',
@@ -172,7 +174,7 @@
         columnDefs: [
           {
             className: 'dt-center',
-            targets: 6,
+            targets: 7,
             width: '75px',
             render: function (data, type, full, meta) {
               let status;

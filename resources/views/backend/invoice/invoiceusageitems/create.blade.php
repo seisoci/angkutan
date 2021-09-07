@@ -64,11 +64,6 @@
               <table class="table table-bordered">
                 <thead>
                 <tr>
-                  <th class="text-center" scope="col" style="width: 50px">
-                    <button type="button"
-                            class="add btn btn-sm btn-primary rounded-0">+
-                    </button>
-                  </th>
                   <th class="text-left" scope="col">Produk</th>
                   <th class="text-left" scope="col">No. Invoice</th>
                   <th class="text-center" scope="col">Stok Tersedia</th>
@@ -77,7 +72,6 @@
                 </thead>
                 <tbody>
                 <tr class="items" id="items_1">
-                  <td></td>
                   <td style="width: 300px">
                     <select class="form-control select2Stocks" name="items[sparepart_id][]"
                             style="width: 300px"></select></td>
@@ -91,6 +85,12 @@
                 </tr>
                 </tbody>
               </table>
+            </div>
+            <div class="d-flex justify-content-end">
+              <div class="btn-group" role="group">
+                <button type="button" class='rmItems btn btn btn-danger'>&nbsp;-&nbsp;</button>
+                <button type="button" class="add btn btn-sm btn-primary">&nbsp;+&nbsp;</button>
+              </div>
             </div>
           </div>
         </div>
@@ -212,8 +212,22 @@
             delay: 250,
             cache: true,
             data: function (e) {
+              let invoiceId = [];
+              let sparePartId = [];
+              $('select[name^="items[sparepart_id]"]').each(function () {
+                if ($(this).val()) {
+                  sparePartId.push($(this).val());
+                }
+              });
+              $('input[name^="items[invoice_purchase_id]"]').each(function () {
+                if ($(this).val()) {
+                  invoiceId.push($(this).val());
+                }
+              });
               return {
-                sparepart_id: $(this).closest("tr").find('select[name="items[sparepart_id][]"]').find(":selected").val() || 0,
+                sparepart_id_current: $(this).closest("tr").find('select[name="items[sparepart_id][]"]').find(":selected").val() || 0,
+                sparepart_id: sparePartId,
+                invoice_id: invoiceId,
                 q: e.term || '',
                 page: e.page || 1
               }
@@ -222,6 +236,7 @@
         }).on('change', function (evt) {
           let $row = $(this).closest("tr");
           $row.find('input[name="items[qty_system][]"]').val('');
+          $row.find('input[name="items[invoice_purchase_id][]"]').val('');
         }).on('select2:select', function (evt) {
           let $row = $(this).closest("tr");
           $row.find('input[name="items[qty_system][]"]').val(evt.params.data.qty);
@@ -262,11 +277,13 @@
         });
       }
 
-      $('tbody').on('click', '.rmItems', function () {
-        let id = this.id;
-        let split_id = id.split("_");
+      $('.rmItems').on('click', function () {
+        let lastid = $(".items:last").attr("id");
+        let split_id = lastid.split("_");
         let deleteindex = split_id[1];
-        $("#items_" + deleteindex).remove();
+        if(deleteindex > 1){
+          $("#" + lastid).remove();
+        }
       });
 
       $(".add").on('click', function () {
@@ -285,8 +302,7 @@
       });
 
       function raw_items(nextindex) {
-        return "<td><button id='itemsx_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>" +
-          '<td style="width: 300px">' +
+        return '<td style="width: 300px">' +
           '   <select class="form-control select2Stocks" name="items[sparepart_id][]"' +
           '      style="width: 300px"></select>' +
           '</td>' +

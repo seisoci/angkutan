@@ -212,9 +212,13 @@
             <div class="form-group">
               <label>Status Job Order:</label>
               <select id="statusCargoModal" class="form-control" name="status_cargo">
-                <option value="selesai">Selesai</option>
-                <option value="transfer">Transfer</option>
-                <option value="batal">Batal</option>
+                @hasanyrole('super-admin|admin|operasional')
+                  <option value="transfer">Transfer</option>
+                  <option value="selesai">Selesai</option>
+                @endhasanyrole
+                @hasanyrole('super-admin|admin')
+                  <option value="batal">Batal</option>
+                @endhasanyrole
               </select>
             </div>
             <div class="form-group" style="display: none">
@@ -320,7 +324,7 @@
     $(document).ready(function () {
       initCurrency();
       let dataTable = $('#Datatable').DataTable({
-        responsive: true,
+        responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,

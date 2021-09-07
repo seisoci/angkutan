@@ -68,6 +68,7 @@
             <tr>
               <th style="width:5%">#</th>
               <th>Nama Barang</th>
+              <th>Supplier</th>
               <th class="text-center" style="width:5%">Jumlah</th>
             </tr>
             </thead>
@@ -76,6 +77,7 @@
               <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $item->sparepart->name }}</td>
+                <td>{{ $item->invoicepurchase->supplier->name }}</td>
                 <td class="text-center">{{ $item->qty }}</td>
               </tr>
             @endforeach

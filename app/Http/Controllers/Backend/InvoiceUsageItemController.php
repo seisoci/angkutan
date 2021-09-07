@@ -169,7 +169,7 @@ class InvoiceUsageItemController extends Controller
     ];
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
+    $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name', 'usageitem.invoicepurchase:id,supplier_sparepart_id', 'usageitem.invoicepurchase.supplier'])->findOrFail($id);
     return view('backend.invoice.invoiceusageitems.show', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 
@@ -182,11 +182,11 @@ class InvoiceUsageItemController extends Controller
     ];
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
+    $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name', 'usageitem.invoicepurchase:id,supplier_sparepart_id', 'usageitem.invoicepurchase.supplier'])->findOrFail($id);
     $result = '';
     $no = 1;
     foreach ($data->usageitem as $val):
-      $item[] = ['no' => $no++, 'nama' => $val->sparepart->name, 'nominal' => $val->qty];
+      $item[] = ['no' => $no++, 'nama' => $val->sparepart->name, 'supplier' => $val->invoicepurchase->supplier->name, 'nominal' => $val->qty];
     endforeach;
 
 
@@ -196,7 +196,7 @@ class InvoiceUsageItemController extends Controller
       'spasi' => 2,
       'column_width' => [
         'header' => [35, 0],
-        'table' => [3, 28, 4],
+        'table' => [3, 20, 8, 4],
         'footer' => [18, 17]
       ],
       'header' => [
@@ -220,7 +220,7 @@ class InvoiceUsageItemController extends Controller
         ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
       ],
       'table' => [
-        'header' => ['No', 'Nama Barang', 'Jml'],
+        'header' => ['No', 'Nama Barang', 'Supplier','Jml'],
         'produk' => $item,
         'footer' => array(
           'catatan' => ''

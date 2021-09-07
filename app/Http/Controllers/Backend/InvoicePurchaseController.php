@@ -61,7 +61,7 @@ class InvoicePurchaseController extends Controller
     });
 
     if ($request->ajax()) {
-      $data = InvoicePurchase::query()
+      $data = InvoicePurchase::with('supplier')
         ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'));
       return DataTables::of($data)
         ->addIndexColumn()
