@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+use DateTimeInterface;
 /**
  * @mixin IdeHelperOperationalExpense
  */
@@ -22,7 +23,16 @@ class OperationalExpense extends Model
     'expense_id',
     'amount',
     'description',
+    'approved',
+    'approved_by',
+    'created_by',
+    'type',
   ];
+
+  protected function serializeDate(DateTimeInterface $date)
+  {
+    return $date->format('Y-m-d H:i:s');
+  }
 
   public function expense(){
     return $this->belongsTo(Expense::class, 'expense_id');

@@ -83,6 +83,7 @@ use App\Http\Controllers\Backend\ReportNeracaBalanceController as BackendReportN
 use App\Http\Controllers\Backend\ReportProfitLossController as BackendReportProfitLossController;
 use App\Http\Controllers\Backend\ReportCustomerRoadMoneyController as BackendReportCustomerRoadMoneyController;
 use App\Http\Controllers\Backend\ReportLdoNetProfitController as BackendReportLdoNetProfitController;
+use App\Http\Controllers\Backend\SubmissionController as BackendSubmissionController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -234,6 +235,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('reportinvoicecostumers/datatabledetail/{id}', [BackendReportInvoiceCostumer::class, 'datatabledetail'])->name('reportinvoicecostumers.datatabledetail');
     Route::get('reportinvoiceldo/datatabledetail/{id}', [BackendReportInvoiceLdoController::class, 'datatabledetail'])->name('reportinvoiceldo.datatabledetail');
     Route::get('reportcustomerroadmoney/datatabledetail/{id}', [BackendReportCustomerRoadMoneyController::class, 'datatabledetail'])->name('reportcustomerroadmoney.datatabledetail');
+    Route::get('joborders/datatabledetail/{id}', [BackendJobOrderController::class, 'datatabledetail'])->name('joborders.datatabledetail');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function () {
@@ -254,6 +256,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('invoicepurchases/{id}/showpayment', [BackendInvoicePurchaseController::class, 'showpayment'])->name('invoicepurchases.showpayment');
     Route::post('invoicekasbonemployees/findbypk', [BackendInvoiceKasbonEmployeeController::class, 'findbypk'])->name('invoicekasbonemployees.findbypk');
     Route::get('reportcustomerroadmoney/findbypk/{id}', [BackendReportCustomerRoadMoneyController::class, 'findbypk'])->name('reportcustomerroadmoney.findbypk');
+    Route::get('operationalexpenses/findbypk/{id}', [BackendOperationalExpenseController::class, 'findbypk'])->name('operationalexpense.findbypk');
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -307,7 +310,8 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
 
     //Job Order
     Route::resource('joborders', BackendJobOrderController::class);
-    Route::resource('operationalexpenses', BackendOperationalExpenseController::class)->only(['store', 'destroy', 'index']);
+    Route::resource('submission', BackendSubmissionController::class);
+    Route::resource('operationalexpenses', BackendOperationalExpenseController::class)->only(['store', 'update', 'destroy', 'index']);
     Route::resource('salaries', BackendSalaryController::class);
     Route::resource('recapitulation', BackendRecapitulationController::class);
     Route::resource('invoicesalaries', BackendInvoiceSalaryController::class);

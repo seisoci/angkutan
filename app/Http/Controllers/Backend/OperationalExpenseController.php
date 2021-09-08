@@ -17,6 +17,7 @@ class OperationalExpenseController extends Controller
   {
     $this->middleware('permission:joborders-list|joborders-create|joborders-edit|joborders-delete', ['only' => ['index']]);
     $this->middleware('permission:joborders-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:joborders-edit', ['only' => ['edit', 'update']]);
     $this->middleware('permission:joborders-delete', ['only' => ['destroy']]);
   }
 
@@ -75,7 +76,61 @@ class OperationalExpenseController extends Controller
     return $response;
   }
 
-  public function destroy($id)
+  public function update(Request $request, $id)
+  {
+    $validator = Validator::make($request->all(), [
+      'job_order_id' => 'required|integer',
+      'amount' => 'required|integer',
+      'created_by' => 'integer',
+    ]);
+
+    if ($validator->passes()) {
+      try {
+        DB::beginTransaction();
+//        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,cooperation_id,name','costumer.cooperation:id,nickname', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense'])->find($id);
+
+        OperationalExpense::create([
+          'job_order_id' => $id,
+          'amount' => $request['amount'],
+          'description' => $request['description'],
+          'created_by' => $request['created_by'],
+          'type' => 'roadmoney',
+        ]);
+
+        DB::commit();
+        return response()->json([
+          'status' => 'success',
+          'message' => 'Data has been updated',
+        ]);
+      } catch
+      (\Throwable $throw) {
+        DB::rollBack();
+        $response = $throw;
+      }
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
+    }
+    return $response;
+  }
+
+  public function findbypk($id)
+  {
+    $data = JobOrder::withSum('operationalexpense', 'amount')->where('id', $id)->sole();
+    $roadMoney = OperationalExpense::where([
+      ['job_order_id', $id],
+      ['type', 'roadmoney'],
+      ['approved', '1']
+    ])->sum('amount');
+    $response = [
+      'data' => $data,
+      'roadMoney' => $roadMoney,
+      'status' => 'success'
+    ];
+    return $response;
+  }
+
+  public
+  function destroy($id)
   {
     try {
       DB::beginTransaction();
