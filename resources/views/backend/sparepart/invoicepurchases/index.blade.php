@@ -61,6 +61,8 @@
           <th>Diskon</th>
           <th>Sisa Pembayaran</th>
           <th>Metode</th>
+          <th>Tgl Invoice</th>
+          <th>Jatuh Tempo</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -137,7 +139,7 @@
         serverSide: true,
         order: [[8, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        pageLength: 10,
+        pageLength: 12,
         ajax: "{{ route('backend.invoicepurchases.index') }}",
         columns: [
           {data: 'prefix', name: 'prefix', className: 'dt-center'},
@@ -168,6 +170,8 @@
             render: $.fn.dataTable.render.number('.', ',', 2)
           },
           {data: 'method_payment', name: 'method_payment'},
+          {data: 'invoice_date', name: 'invoice_date'},
+          {data: 'due_date', name: 'due_date'},
           {data: 'created_at', name: 'created_at'},
           {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
