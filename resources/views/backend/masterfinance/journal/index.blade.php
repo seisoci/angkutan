@@ -152,16 +152,19 @@
         responsive: false,
         scrollX: true,
         processing: true,
-        bSort: false,
-        searching: false,
         serverSide: true,
-        order: [0, 'desc'],
+        order: [0, 'asc'],
         lengthMenu: [[50, 100, -1], [50, 100, "All"]],
         pageLength: 50,
-        ajax: "{{ route('backend.journals.index') }}",
+        ajax: {
+          url: "{{ route('backend.journals.index') }}",
+          data: function (d) {
+            d.date = $('input[name=date]').val();
+          }
+        },
         columns: [
           {data: 'date_journal', name: 'date_journal'},
-          {data: 'coa.kode_akun', name: 'coa.kode_akun'},
+          {data: 'coa.kode_akun', name: 'coa.kode_akun', searchable: false},
           {data: 'description', name: 'description'},
           {data: 'debit', name: 'debit', render: $.fn.dataTable.render.number(',', '.', 2), className: 'dt-right'},
           {data: 'kredit', name: 'kredit', render: $.fn.dataTable.render.number(',', '.', 2), className: 'dt-right'},
