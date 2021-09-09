@@ -213,20 +213,8 @@
                 </div>
                 @endhasanyrole
                 <div class="form-group">
-                  <label>Uang Jalan</label>
-                  <input type="text" name="road_money" class="form-control currency" readonly/>
-                </div>
-                <div class="form-group" style="display: none">
-                  <label>Uang Jalan Sebelumnya</label>
-                  <input type="text" name="road_money_prev" class="form-control currency" readonly/>
-                </div>
-                <div class="form-group" style="display: none">
-                  <label>Uang Jalan Tambahan</label>
-                  <input type="text" name="road_money_extra" class="form-control currency"/>
-                </div>
-                <div class="form-group" style="display: none">
-                  <label>Uang Jalan Real</label>
-                  <input type="text" name="road_money_real" class="form-control currency" readonly/>
+                  <label style="display: none">Uang Jalan</label>
+                  <input type="text" name="road_money" class="form-control currency" style="display: none" readonly/>
                 </div>
                 @hasanyrole('super-admin|admin|akunting')
                 <div class="form-group">
@@ -294,13 +282,13 @@
           </div>
           @endhasanyrole
           <div class="offset-md-8 col-md-4">
-            <div class="form-group">
+     {{--       <div class="form-group">
               <select name="coa_id" class="form-control">
                 @foreach($selectCoa->coa as $item)
                   <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
                 @endforeach
               </select>
-            </div>
+            </div>--}}
             <div class="form-group">
               <label>Keterangan</label>
               <textarea class="form-control" name="description" rows="5"></textarea>
@@ -386,7 +374,8 @@
       $('#selectExpedition').on('change', function (e) {
         if (this.value === 'self') {
           initTransportDriverSelf();
-          $('input[name=road_money]').attr('readonly', true);
+          $('input[name=road_money]').parent().find('label').css("display", "block");
+          $('input[name=road_money]').attr('display', 'block');
           $("#select2AnotherExpedition").parent().css("display", "none");
           $('input[name="basic_price_ldo"]').parent().css("display", "none");
           $("#percentSparepart").parent().parent().css("display", "block");
@@ -401,9 +390,6 @@
           $('input[name="grandtotalgross"]').parent().find('label').css("display", "block");
           $('input[name="grandtotalnettoldo"]').parent().css("display", "none");
           $('input[name="grandtotalnettoldo"]').parent().find('label').css("display", "none");
-          $('input[name="road_money_prev"]').parent().css("display", "block");
-          $('input[name="road_money_extra"]').parent().css("display", "block");
-          $('input[name="road_money_real"]').parent().css("display", "block");
           $('#totalpayloadldo').parent().css("display", "none");
           $('#totalpayloadldo').parent().find('label').css("display", "none");
           $('#totalpayloadldoaftertax').parent().css("display", "none");
@@ -414,7 +400,8 @@
           callSelf();
         } else {
           initTransportDriverLDO();
-          $('input[name=road_money]').attr('readonly', false);
+          $('input[name=road_money]').css('display', 'none');
+          $('input[name=road_money]').parent().find('label').css("display", "none");
           $("#select2AnotherExpedition").parent().css("display", "block");
           $("#select2AnotherExpedition").parent().find('label').css("display", "block");
           $('input[name="basic_price_ldo"]').parent().css("display", "block");
@@ -433,9 +420,6 @@
           $("#percentSalary").parent().parent().css("display", "none");
           $('input[name="cut_sparepart"]').parent().css("display", "none");
           $('input[name="salary"]').parent().css("display", "none");
-          $('input[name="road_money_prev"]').parent().css("display", "none");
-          $('input[name="road_money_extra"]').parent().css("display", "none");
-          $('input[name="road_money_real"]').parent().css("display", "none");
           callLdo();
         }
         $("#select2RoadFrom").val("");
@@ -872,8 +856,6 @@
         let payload = 1;
         let basicPrice = parseFloat($('.basicprice').val()) || 0;
         let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
-        let roadMoneyPrev = parseFloat($('input[name=road_money_prev]').val()) || 0;
-        let roadMoneyExtra = parseFloat($('input[name=road_money_extra]').val()) || 0;
         let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
         let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
         let sumPayload = basicPrice * payload;
@@ -886,7 +868,6 @@
         let sparepart = totalGross * pecentSparePart;
         let salary = (totalGross - sparepart) * pecentSalary;
         let totalNetto = totalGross - sparepart - salary;
-        let totalRoadMoneyReal = (roadMoney - roadMoneyPrev) + roadMoneyExtra;
         $('#totalPayload').val(sumPayload);
         $('#taxFee').val(taxPPH);
         $('#totalPayloadAfterTax').val(sumPayloadAfterTax);
@@ -895,15 +876,12 @@
         $('input[name="cut_sparepart"]').val(sparepart);
         $('input[name="salary"]').val(salary);
         $('input[name="grandtotalnetto"]').val(totalNetto);
-        $('input[name="road_money_real"]').val(totalRoadMoneyReal);
       }
 
       function callSelf() {
         let basicPrice = parseFloat($('.basicprice').val()) || 0;
         let payload = parseFloat($('input[name=payload]').val()) || 0;
         let roadMoney = parseFloat($('input[name=road_money]').val()) || 0;
-        let roadMoneyPrev = parseFloat($('input[name=road_money_prev]').val()) || 0;
-        let roadMoneyExtra = parseFloat($('input[name=road_money_extra]').val()) || 0;
         let fee_thanks = parseFloat($('#fee_thanks').val()) || 0;
         let tax_pph = (parseFloat($('#taxPercent').val()) || 0) / 100;
         let sumPayload = basicPrice * payload;
@@ -916,7 +894,6 @@
         let sparepart = totalGross * pecentSparePart;
         let salary = (totalGross - sparepart) * pecentSalary;
         let totalNetto = totalGross - sparepart - salary;
-        let totalRoadMoneyReal = (roadMoney - roadMoneyPrev) + roadMoneyExtra;
         $('#totalPayload').val(sumPayload);
         $('#taxFee').val(taxPPH);
         $('#totalPayloadAfterTax').val(sumPayloadAfterTax);
@@ -954,7 +931,7 @@
         $('input[name="grandtotalnetto"]').val(totalNetto);
       }
 
-      $('input[name=payload],input[name=basic_price_ldo],input[name=road_money],input[name=road_money_extra]').on('keyup', function () {
+      $('input[name=payload],input[name=basic_price_ldo],input[name=road_money]').on('keyup', function () {
         let select = $('#selectExpedition').find(":selected").val();
         if (select === 'self') {
           callSelf();
@@ -985,7 +962,6 @@
             if (response.data) {
               let data = response.data.pivot;
               let taxfee = response.taxfee;
-              let roadmoney_prev = response.road_money_prev;
               let transport = response.type.type_car;
               let type = response.data.pivot.type;
               if (transport === 'engkel') {
@@ -993,7 +969,6 @@
                 $('.basicprice').val(data.expense);
                 $('input[name=tax_percent],#taxPercent').val(taxfee.tax_pph);
                 $('input[name=fee_thanks],#fee_thanks').val(taxfee.fee_thanks);
-                $('input[name=road_money_prev]').val(roadmoney_prev);
                 if (type === 'fix') {
                   callBorongan();
                 }

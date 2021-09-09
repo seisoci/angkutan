@@ -145,6 +145,7 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
+          <th></th>
           <th>Prefix</th>
           <th>No. Job Order</th>
           <th>No. Surat Jalan</th>
@@ -213,11 +214,11 @@
               <label>Status Job Order:</label>
               <select id="statusCargoModal" class="form-control" name="status_cargo">
                 @hasanyrole('super-admin|admin|operasional')
-                  <option value="transfer">Transfer</option>
-                  <option value="selesai">Selesai</option>
+                <option value="transfer">Transfer</option>
+                <option value="selesai">Selesai</option>
                 @endhasanyrole
                 @hasanyrole('super-admin|admin')
-                  <option value="batal">Batal</option>
+                <option value="batal">Batal</option>
                 @endhasanyrole
               </select>
             </div>
@@ -307,31 +308,95 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="modalEditRoadMoney" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Input Uang Jalan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <i aria-hidden="true" class="ki ki-close"></i>
+          </button>
+        </div>
+        <form class="formUpdate" action="#">
+          @method('PUT')
+          <meta name="csrf-token" content="{{ csrf_token() }}">
+          <div class="modal-body">
+            <input type="hidden" name="created_by" value="{{ Auth::id() }}">
+            <input type="hidden" name="job_order_id">
+            <div class="form-group">
+              <label>Uang Jalan Sistem:</label>
+              <input type="text" class="form-control currency" id="roadMoneySystem" disabled>
+            </div>
+            <div class="form-group">
+              <label>Uang Jalan JO Sebelumnya:</label>
+              <input type="text" class="form-control currency" id="roadMoneyPrev" disabled>
+            </div>
+            <div class="form-group">
+              <label>Uang Jalan Telah Diambil:</label>
+              <input type="text" class="form-control currency" id="roadMoney" disabled>
+            </div>
+            <div class="form-group">
+              <label>Sisa Uang Jalan Sistem:</label>
+              <input type="text" class="form-control currency" id="restRoadMoney" disabled>
+            </div>
+            <div class="form-group">
+              <label>Input Uang Jalan:</label>
+              <input type="text" class="form-control currencyInput" name="amount">
+            </div>
+            <div class="form-group">
+              <label>Keterangan:</label>
+              <textarea type="text" class="form-control" name="description" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 @endsection
 
 {{-- Styles Section --}}
 @section('styles')
+  <link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
-
 
 {{-- Scripts Section --}}
 @section('scripts')
   {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
+  <script id="details-template" type="text/x-handlebars-template">
+    @verbatim
+    <table class="table table-bordered dataTableChild" id="posts-{{id}}" style="width: 800px !important;">
+      <thead>
+      <tr>
+        <th>Tanggal Pengajuan</th>
+        <th>Nominal</th>
+        <th>Deskripsi</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+    </table>
+    @endverbatim
+  </script>
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
       initCurrency();
+      let template = Handlebars.compile($("#details-template").html());
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[14, 'desc']],
+        order: [[15, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         dom: 'Bfrtip',
+        stateSave: true,
         buttons: [
           'colvis'
         ],
@@ -352,6 +417,13 @@
           }
         },
         columns: [
+          {
+            "className": 'details-control',
+            "orderable": false,
+            "searchable": false,
+            "data": null,
+            "defaultContent": ''
+          },
           {data: 'prefix', name: 'prefix'},
           {data: 'num_bill', name: 'num_bill'},
           {data: 'no_sj', name: 'no_sj'},
@@ -372,7 +444,7 @@
         columnDefs: [
           {
             className: 'dt-center',
-            targets: 12,
+            targets: 13,
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -390,7 +462,7 @@
           },
           {
             className: 'dt-center',
-            targets: 13,
+            targets: 14,
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -413,9 +485,78 @@
           digits: 0,
           rightAlign: true,
           autoUnmask: true,
+          removeMaskOnSubmit: true
+        });
+
+        $(".currencyInput").inputmask('decimal', {
+          groupSeparator: '.',
+          digits: 0,
+          rightAlign: true,
+          autoUnmask: true,
           allowMinus: false,
           removeMaskOnSubmit: true
         });
+      }
+
+      $('#Datatable tbody').on('click', 'td.details-control', function () {
+        let tr = $(this).closest('tr');
+        let row = dataTable.row(tr);
+        let tableId = 'posts-' + row.data().id;
+
+        if (row.child.isShown()) {
+          row.child.hide();
+          tr.removeClass('shown');
+        } else {
+          row.child(template(row.data())).show();
+          initTable(tableId, row.data());
+          tr.addClass('shown');
+          tr.next().find('td').addClass('no-padding bg-gray');
+        }
+      });
+
+      function initTable(tableId, data) {
+        $('#' + tableId).DataTable({
+          processing: true,
+          serverSide: true,
+          autoWidth: false,
+          ajax: data.details_url,
+          order: [0, 'desc'],
+          lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+          pageLength: 10,
+          columns: [
+            {data: 'created_at', name: 'created_at', width: '140px'},
+            {
+              data: 'amount',
+              name: 'amount',
+              render: $.fn.dataTable.render.number(',', '.', 2),
+              orderable: false,
+              searchable: false,
+              className: 'dt-right',
+              width: '200px'
+            },
+            {data: 'description', name: 'description', width: '400px'},
+            {data: 'approved', name: 'approved', width: '100px'},
+          ],
+          columnDefs: [
+            {
+              className: 'dt-center',
+              targets: 3,
+              width: '75px',
+              render: function (data, type, full, meta) {
+                let status = {
+                  null: {'title': 'Pending', 'class': 'badge badge-secondary'},
+                  0: {'title': 'Di Tolak', 'class': 'badge badge-danger'},
+                  1: {'title': 'Di Setujui', 'class': 'badge badge-success'},
+                };
+                if (typeof status[data] === 'undefined') {
+                  return data;
+                }
+                return '<span class="' + status[data].class + '">' + status[data].title +
+                  '</span>';
+              },
+            }
+          ]
+        })
       }
 
       $('a.dropdown-item').on('click', function (e) {
@@ -639,8 +780,43 @@
       });
       $('#modalEditDocument').on('hidden.bs.modal', function (event) {
       });
+      $('#modalEditRoadMoney').on('show.bs.modal', function (event) {
+        let id = $(event.relatedTarget).data('id');
+        $(this).find('.formUpdate').attr('action', '{{ route("backend.operationalexpenses.index") }}/' + id);
+        $(this).find('.modal-body').find('input[name="job_order_id"]').val(id);
+        $.ajaxSetup({
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+        });
+        let url = '{{ route("backend.operationalexpenses.index") }}/findbypk/' + id;
+        $.ajax({
+          type: 'GET',
+          url: url,
+          dataType: 'json',
+          success: function (response) {
+            let roadMoneyPrev = parseFloat(response.data.road_money_prev) || 0;
+            let roadMoneySystem = parseFloat(response.data.road_money) || 0;
+            let roadMoney = parseFloat(response.roadMoney) || 0;
+            let restRoadMoney = (roadMoneySystem + roadMoneyPrev) - roadMoney;
+
+            $('#roadMoneyPrev').val(roadMoneyPrev);
+            $('#roadMoneySystem').val(roadMoneySystem);
+            $('#roadMoney').val(roadMoney);
+            $('#restRoadMoney').val(restRoadMoney);
+          },
+          error: function (response) {
+            console.log(data);
+          }
+        });
+      });
+      $('#modalEditRoadMoney').on('hidden.bs.modal', function (event) {
+        $(this).find('.modal-body').find('input[name="job_order_id"]').val('');
+        $(this).find('.modal-body').find('input[name="amount"]').val('');
+        $(this).find('.modal-body').find('textarea[name="description"]').val('');
+      });
       $(".formUpdate").submit(function (e) {
-        $('.currency').inputmask('remove');
+        $('.currency', '.currencyInput').inputmask('remove');
         e.preventDefault();
         let form = $(this);
         let btnSubmit = form.find("[type='submit']");
@@ -669,6 +845,7 @@
               $('#modalEdit').modal('hide');
               $('#modalEditTonase').modal('hide');
               $('#modalEditDocument').modal('hide');
+              $('#modalEditRoadMoney').modal('hide');
               dataTable.draw();
               $("[role='alert']").parent().css("display", "none");
             } else {
@@ -689,6 +866,8 @@
             $('#modalEditTonase').find('a[name="id"]').attr('href', '');
             $('#modalEditDocument').modal('hide');
             $('#modalEditDocument').find('a[name="id"]').attr('href', '');
+            $('#modalEditRoadMoney').modal('hide');
+            $('#modalEditRoadMoney').find('a[name="id"]').attr('href', '');
           }
         });
       });

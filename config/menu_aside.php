@@ -188,9 +188,13 @@ return [
       'icon' => 'media/svg/icons/Communication/Archive.svg',
       'bullet' => 'dot',
       'root' => true,
-      'list' => ['joborders', 'salaries', 'paymentldo'],
+      'list' => ['submission', 'joborders', 'salaries', 'paymentldo'],
       'arrow' => true,
       'submenu' => [
+        [
+          'title' => 'Pengajuan Uang Jalan',
+          'page' => 'backend/submission'
+        ],
         [
           'title' => 'Job Order',
           'page' => 'backend/joborders'
