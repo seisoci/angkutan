@@ -29,6 +29,10 @@ class OperationalExpense extends Model
     'type',
   ];
 
+  protected $appends = [
+    'status'
+  ];
+
   protected function serializeDate(DateTimeInterface $date)
   {
     return $date->format('Y-m-d H:i:s');
@@ -40,5 +44,17 @@ class OperationalExpense extends Model
 
   public function joborder(){
     return $this->belongsTo(joborder::class, 'job_order_id');
+  }
+
+  public function getStatusAttribute()
+  {
+    if($this->approved == NULL){
+      $data = 'Pending';
+    }else if($this->approved == '0'){
+      $data = 'Di Tolak';
+    }else if($this->approved == '1'){
+      $data = 'Di Setujui';
+    }
+    return $data;
   }
 }

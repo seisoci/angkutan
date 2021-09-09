@@ -29,9 +29,25 @@
             </div>
           </div>
         </div>
+        <div class="col-12 mb-10">
+          <div class="alert alert-custom alert-outline-primary fade show mb-5" role="alert">
+            <div class="alert-icon"><i class="flaticon-warning"></i></div>
+            <div class="d-flex flex-column">
+              <h4>Status Uang Jalan Lebih/Kurang Expedisi Sendiri</h4>
+              @foreach($restRoadMoney as $item)
+                @if($item->road_money_extra != 0)
+                  @if($item->type == 'self')
+                   <span>{{ $item->driver->name }} - {{ $item->transport->num_pol }} # {{ number_format($item->road_money_extra, 2, '.', ',') }}</span>
+                  @else
+                  @endif
+                @endif
+              @endforeach
+            </div>
+          </div>
+        </div>
         <div class="col-md-3 my-md-0">
           <div class="form-group">
-            <label>Status:</label>
+            <label>Status Transfer:</label>
             <select class="form-control" id="selectStatus">
               <option value="all">All</option>
               <option value="pending">Pending</option>
@@ -61,6 +77,7 @@
           <th>Deskripsi</th>
           <th>Status</th>
           <th>Tipe</th>
+          <th>Status JO</th>
           <th>Actions</th>
         </tr>
         </thead>
@@ -168,6 +185,7 @@
           {data: 'description', name: 'description'},
           {data: 'approved', name: 'approved'},
           {data: 'type', name: 'type'},
+          {data: 'joborder.status_cargo', name: 'joborder.status_cargo'},
           {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
         columnDefs: [
@@ -194,13 +212,31 @@
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
-                'roadmoney': {'title': 'Uang Jalan', 'class': 'badge badge-success'},
+                'roadmoney': {'title': 'Uang Jalan', 'class': 'badge badge-primary'},
                 'operational': {'title': 'Uang Jalan Operasional', 'class': 'badge badge-warning'},
               };
               if (typeof status[data] === 'undefined') {
                 return data;
               }
               return '<span class="' + status[data].class + '">' + status[data].title +
+                '</span>';
+            },
+          },
+          {
+            className: 'dt-center',
+            targets: 6,
+            width: '75px',
+            render: function (data, type, full, meta) {
+              let status = {
+                'mulai': {'title': 'Mulai', 'class': ' label-light-info'},
+                'transfer': {'title': 'Transfer', 'class': ' label-light-dark'},
+                'selesai': {'title': 'Selesai', 'class': ' label-light-success'},
+                'batal': {'title': 'Batal', 'class': ' label-light-danger'},
+              };
+              if (typeof status[data] === 'undefined') {
+                return data;
+              }
+              return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
                 '</span>';
             },
           },

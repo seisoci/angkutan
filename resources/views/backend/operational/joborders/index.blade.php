@@ -341,7 +341,7 @@
             </div>
             <div class="form-group">
               <label>Input Uang Jalan:</label>
-              <input type="text" class="form-control currency" name="amount">
+              <input type="text" class="form-control currencyInput" name="amount">
             </div>
             <div class="form-group">
               <label>Keterangan:</label>
@@ -396,6 +396,7 @@
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         dom: 'Bfrtip',
+        stateSave: true,
         buttons: [
           'colvis'
         ],
@@ -480,6 +481,14 @@
 
       function initCurrency() {
         $(".currency").inputmask('decimal', {
+          groupSeparator: '.',
+          digits: 0,
+          rightAlign: true,
+          autoUnmask: true,
+          removeMaskOnSubmit: true
+        });
+
+        $(".currencyInput").inputmask('decimal', {
           groupSeparator: '.',
           digits: 0,
           rightAlign: true,
@@ -789,7 +798,7 @@
             let roadMoneyPrev = parseFloat(response.data.road_money_prev) || 0;
             let roadMoneySystem = parseFloat(response.data.road_money) || 0;
             let roadMoney = parseFloat(response.roadMoney) || 0;
-            let restRoadMoney = roadMoneySystem - roadMoneyPrev - roadMoney;
+            let restRoadMoney = (roadMoneySystem + roadMoneyPrev) - roadMoney;
 
             $('#roadMoneyPrev').val(roadMoneyPrev);
             $('#roadMoneySystem').val(roadMoneySystem);
@@ -807,7 +816,7 @@
         $(this).find('.modal-body').find('textarea[name="description"]').val('');
       });
       $(".formUpdate").submit(function (e) {
-        $('.currency').inputmask('remove');
+        $('.currency', '.currencyInput').inputmask('remove');
         e.preventDefault();
         let form = $(this);
         let btnSubmit = form.find("[type='submit']");

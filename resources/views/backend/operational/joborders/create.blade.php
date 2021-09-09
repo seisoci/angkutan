@@ -213,8 +213,8 @@
                 </div>
                 @endhasanyrole
                 <div class="form-group">
-                  <label>Uang Jalan</label>
-                  <input type="text" name="road_money" class="form-control currency" readonly/>
+                  <label style="display: none">Uang Jalan</label>
+                  <input type="text" name="road_money" class="form-control currency" style="display: none" readonly/>
                 </div>
                 @hasanyrole('super-admin|admin|akunting')
                 <div class="form-group">
@@ -282,13 +282,13 @@
           </div>
           @endhasanyrole
           <div class="offset-md-8 col-md-4">
-            <div class="form-group">
+     {{--       <div class="form-group">
               <select name="coa_id" class="form-control">
                 @foreach($selectCoa->coa as $item)
                   <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
                 @endforeach
               </select>
-            </div>
+            </div>--}}
             <div class="form-group">
               <label>Keterangan</label>
               <textarea class="form-control" name="description" rows="5"></textarea>
@@ -374,7 +374,8 @@
       $('#selectExpedition').on('change', function (e) {
         if (this.value === 'self') {
           initTransportDriverSelf();
-          $('input[name=road_money]').attr('readonly', true);
+          $('input[name=road_money]').parent().find('label').css("display", "block");
+          $('input[name=road_money]').attr('display', 'block');
           $("#select2AnotherExpedition").parent().css("display", "none");
           $('input[name="basic_price_ldo"]').parent().css("display", "none");
           $("#percentSparepart").parent().parent().css("display", "block");
@@ -399,7 +400,8 @@
           callSelf();
         } else {
           initTransportDriverLDO();
-          $('input[name=road_money]').attr('readonly', false);
+          $('input[name=road_money]').css('display', 'none');
+          $('input[name=road_money]').parent().find('label').css("display", "none");
           $("#select2AnotherExpedition").parent().css("display", "block");
           $("#select2AnotherExpedition").parent().find('label').css("display", "block");
           $('input[name="basic_price_ldo"]').parent().css("display", "block");

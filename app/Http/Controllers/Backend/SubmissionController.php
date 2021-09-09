@@ -46,6 +46,12 @@ class SubmissionController extends Controller
             ->first()->saldo ?? 0,
       ];
     });
+
+    $restRoadMoney = JobOrder::with('driver:id,name', 'transport:id,num_pol')
+      ->whereRaw('id IN (SELECT max(id) FROM `job_orders` WHERE `status_cargo` = "selesai" GROUP BY `transport_id`, `driver_id`)')
+      ->orderBy('created_at', 'desc')
+      ->get();
+
     if ($request->ajax()) {
       $type = $request['type'];
       if ($type == 'null') {
@@ -79,7 +85,7 @@ class SubmissionController extends Controller
         })
         ->make(true);
     }
-    return view('backend.operational.submission.index', compact('config', 'page_breadcrumbs', 'selectCoa', 'saldoGroup'));
+    return view('backend.operational.submission.index', compact('config', 'page_breadcrumbs', 'selectCoa', 'saldoGroup', 'restRoadMoney'));
   }
 
   public function update(Request $request, $id)
@@ -112,6 +118,7 @@ class SubmissionController extends Controller
             ->where('journals.coa_id', $request['coa_id'])
             ->groupBy('journals.coa_id')
             ->first();
+
           if (($checksaldo->saldo ?? FALSE) && $operationalExpense->amount <= $checksaldo->saldo) {
             Journal::create([
               'coa_id' => $request['coa_id'],
@@ -120,7 +127,7 @@ class SubmissionController extends Controller
               'kredit' => $operationalExpense->amount,
               'table_ref' => 'operationalexpense',
               'code_ref' => $id,
-              'description' => "Pengurangan saldo untuk uang jalan ".$data->costumer->name." dari ".$data->routefrom->name." ke ".$data->routeto->name." dengan No. Pol: ".$data->transport->num_pol
+              'description' => "Pengurangan saldo untuk uang jalan " . $data->costumer->name . " dari " . $data->routefrom->name . " ke " . $data->routeto->name . " dengan No. Pol: " . $data->transport->num_pol
             ]);
 
             Journal::create([
@@ -130,26 +137,31 @@ class SubmissionController extends Controller
               'kredit' => 0,
               'table_ref' => 'operationalexpense',
               'code_ref' => $id,
-              'description' => "Beban operasional uang jalan ".$data->costumer->name." dari ".$data->routefrom->name." ke ".$data->routeto->name." dengan No. Pol: ".$data->transport->num_pol
+              'description' => "Beban operasional uang jalan " . $data->costumer->name . " dari " . $data->routefrom->name . " ke " . $data->routeto->name . " dengan No. Pol: " . $data->transport->num_pol
             ]);
 
             $roadMoneySystem = $data->road_money;
             $roadMoneyPrev = JobOrder::where([
+                ['driver_id', $data['driver_id']],
+                ['transport_id', $data['transport_id']],
                 ['status_cargo', 'selesai'],
-                ['transport_id', $data->transport_id],
-                ['driver_id', $data->driver_id]
-              ])->where('created_at', 'desc')->first()->road_money_extra ?? 0;
-            $roadMoney = OperationalExpense::where('type', 'roadmoney')->where('approved', '1')->sum('amount');
+              ])->orderBy('created_at', 'desc')->first()->road_money_extra ?? 0;
 
-            $roadMOneyExtra = $roadMoneySystem - $roadMoneyPrev - $roadMoney;
-            if ($roadMOneyExtra >= 0) {
+            $roadMoney = OperationalExpense::where([
+              ['type', 'roadmoney'],
+              ['approved', '1'],
+              ['job_order_id', $operationalExpense->job_order_id]
+            ])->sum('amount');
+
+            if ($data->type == 'self') {
+              $roadMOneyExtra = ($roadMoneySystem + $roadMoneyPrev) - $roadMoney;
               $data->update([
                 'road_money_prev' => $roadMoneyPrev,
+                'road_money_extra' => $roadMOneyExtra
               ]);
-            } else {
+            } else if ($data->type == 'ldo') {
               $data->update([
-                'road_money_prev' => $roadMoneyPrev,
-                'road_money_extra' => abs($roadMOneyExtra)
+                'road_money' => $roadMoney,
               ]);
             }
           } else {
