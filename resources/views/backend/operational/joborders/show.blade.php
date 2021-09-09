@@ -114,13 +114,22 @@
                   <td style="width: 30%" class="pr-7">{{ $item->expense->name }}</td>
                   <td style="width: 30%" class="pr-7">{{ $item->description  }}</td>
                   <td class="currency pr-7 text-right">{{ number_format($item->amount, 0,'.',',') }}</td>
-                  @if ($data->status_cargo != 'selesai' && $data->status_cargo != 'batal')
-                    <td style="width: 20%">
-                      <button href="#" data-toggle="modal" data-target="#modalDelete"
-                              data-id="{{ $item->id }}" class="delete btn btn-danger btn-sm d-print-none">X
-                      </button>
-                    </td>
-                  @endif
+                  <td><span class="badge
+                      @if($item->approved == '1')
+                        badge-success
+                      @elseif($item->approved == '0')
+                        badge-danger
+                      @else
+                        badge-secondary
+                      @endif
+                      ">{{ $item->status }}</span></td>
+{{--                  @if ($data->status_cargo != 'selesai' && $data->status_cargo != 'batal')--}}
+{{--                    <td style="width: 20%">--}}
+{{--                      <button href="#" data-toggle="modal" data-target="#modalDelete"--}}
+{{--                              data-id="{{ $item->id }}" class="delete btn btn-danger btn-sm d-print-none">X--}}
+{{--                      </button>--}}
+{{--                    </td>--}}
+{{--                  @endif--}}
                 </tr>
               @endforeach
               @if ($data->status_document != 1 && $data->status_cargo != 'batal')
@@ -140,13 +149,13 @@
                       <input type="text" class="form-control currency text-right" name="amount" placeholder="Biaya"
                              style="width: 150px"/>
                     </td>
-                    <td class="d-print-none pr-7" style="width: 250px">
+{{--                    <td class="d-print-none pr-7" style="width: 250px">
                       <select name="coa_id" class="form-control" style="width: 250px;">
                         @foreach($selectCoa->coa as $item)
                           <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
                         @endforeach
                       </select>
-                    </td>
+                    </td>--}}
                     <td class="d-print-none pr-7" style="width: 100px">
                       <button id="submit" type="submit"
                               class="btn btn-primary btn-sm">+
@@ -273,7 +282,6 @@
           url: url,
           data: data,
           success: function (response) {
-            btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             if (response.status === "success") {
               toastr.success(response.message, 'Success !');
               setTimeout(function () {
@@ -284,6 +292,7 @@
                 }
               }, 1000);
             } else {
+              btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
               $("[role='alert']").parent().removeAttr("style");
               $(".alert-text").html('');
               $.each(response.error, function (key, value) {

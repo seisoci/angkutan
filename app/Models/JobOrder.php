@@ -23,7 +23,11 @@ class JobOrder extends Model
     'status_salary',
     'status_payment',
     'status_payment_ldo',
+    'road_money_prev',
+    'road_money_extra',
+
   ];
+
   protected $appends = [
     'num_prefix',
     'total_basic_price',
@@ -89,7 +93,12 @@ class JobOrder extends Model
 
   public function operationalexpense()
   {
-    return $this->hasMany(OperationalExpense::class);
+    return $this->hasMany(OperationalExpense::class)->where('type', 'operational');
+  }
+
+  public function roadmoneydetail()
+  {
+    return $this->hasMany(OperationalExpense::class)->where('type', 'roadmoney');
   }
 
   public function getTotalBasicPriceAttribute()

@@ -123,7 +123,6 @@ class RoadMoneyController extends Controller
 
     $data = RoadMoney::with(['costumers', 'routefrom', 'routeto', 'cargo', 'typecapacities'])->findOrFail($id);
 
-//    dd($data->toArray());
     return view('backend.masteroperational.roadmonies.edit',compact('config', 'page_breadcrumbs', 'data'));
   }
 
