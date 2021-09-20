@@ -106,6 +106,8 @@
           <th>Tanggal</th>
           <th>No. Polisi</th>
           <th>No. Prefix</th>
+          <th>No. SJ</th>
+          <th>No. Shipment</th>
           <th>Nama Pelanggan</th>
           <th>Rute Dari</th>
           <th>Rute Tujuan</th>
@@ -191,6 +193,8 @@
           {data: 'date_begin', name: 'date_begin'},
           {data: 'transport.num_pol', name: 'transport.num_pol', orderable: false, searchable: false},
           {data: 'num_prefix', name: 'num_prefix', orderable: false, searchable: false},
+          {data: 'no_sj', name: 'no_sj', orderable: false, searchable: false},
+          {data: 'no_shipment', name: 'no_shipment', orderable: false, searchable: false},
           {data: 'costumer.name', name: 'costumer.name', orderable: false, searchable: false},
           {data: 'routefrom.name', name: 'routefrom.name', orderable: false, searchable: false},
           {data: 'routeto.name', name: 'routeto.name', orderable: false, searchable: false},

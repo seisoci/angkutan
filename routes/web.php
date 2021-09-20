@@ -13,7 +13,6 @@ use App\Http\Controllers\Backend\ExpenseController as BackendExpenseController;
 use App\Http\Controllers\Backend\AnotherExpeditionController as BackendAnotherExpeditionController;
 use App\Http\Controllers\Backend\SupplierSparepartController as BackendSupplierSparepartController;
 use App\Http\Controllers\Backend\SparepartController as BackendSparepartController;
-use App\Http\Controllers\Backend\ServiceController as BackendServiceController;
 use App\Http\Controllers\Backend\BrandController as BackendBrandController;
 use App\Http\Controllers\Backend\CategoryController as BackendCategoryController;
 use App\Http\Controllers\Backend\CompanyController as BackendCompanyController;
@@ -257,6 +256,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::post('invoicekasbonemployees/findbypk', [BackendInvoiceKasbonEmployeeController::class, 'findbypk'])->name('invoicekasbonemployees.findbypk');
     Route::get('reportcustomerroadmoney/findbypk/{id}', [BackendReportCustomerRoadMoneyController::class, 'findbypk'])->name('reportcustomerroadmoney.findbypk');
     Route::get('operationalexpenses/findbypk/{id}', [BackendOperationalExpenseController::class, 'findbypk'])->name('operationalexpense.findbypk');
+    Route::get('submission/findbypk/{id}', [BackendSubmissionController::class, 'findbypk'])->name('submission.findbypk');
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -272,7 +272,6 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     //Master Services
     Route::resource('supplierspareparts', BackendSupplierSparepartController::class)->except(['create', 'edit', 'show']);
     Route::resource('spareparts', BackendSparepartController::class)->except('show');
-    Route::resource('services', BackendServiceController::class)->except(['create', 'edit', 'show']);
     Route::resource('brands', BackendBrandController::class)->except(['create', 'edit', 'show']);
     Route::resource('categories', BackendCategoryController::class)->except(['create', 'edit', 'show']);
 
@@ -294,6 +293,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
       Route::get('{id}', [BackendMonthlySalaryDetailController::class, 'index'])->name('index');
       Route::get('{id}/detail', [BackendMonthlySalaryDetailController::class, 'show'])->name('show');
       Route::put('{id}', [BackendMonthlySalaryDetailController::class, 'update'])->name('update');
+      Route::delete('{id}', [BackendMonthlySalaryDetailController::class, 'destroy'])->name('delete');
     });
     Route::resource('kasbonemployees', BackendKasbonEmployeeController::class);
     Route::resource('invoicekasbonemployees', BackendInvoiceKasbonEmployeeController::class);

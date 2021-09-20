@@ -118,7 +118,7 @@
           {data: 'phone', name: 'phone'},
           {data: 'emergency_name', name: 'emergency_name'},
           {data: 'emergency_phone', name: 'emergency_phone'},
-          {data: 'cooperation', name: 'cooperation'},
+          {data: 'cooperation.nickname', name: 'cooperation.nickname'},
         ],
       });
     });

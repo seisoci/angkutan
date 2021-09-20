@@ -37,7 +37,7 @@
               @foreach($restRoadMoney as $item)
                 @if($item->road_money_extra != 0)
                   @if($item->type == 'self')
-                   <span>{{ $item->driver->name }} - {{ $item->transport->num_pol }} # {{ number_format($item->road_money_extra, 2, '.', ',') }}</span>
+                    <span>{{ $item->driver->name }} - {{ $item->transport->num_pol }} # {{ number_format($item->road_money_extra, 2, '.', ',') }}</span>
                   @else
                   @endif
                 @endif
@@ -66,6 +66,20 @@
             </select>
           </div>
         </div>
+        <div class="col-md-3 my-md-0">
+          <div class="form-group">
+            <label>Supir:</label>
+            <select class="form-control" id="select2Driver">
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3 my-md-0">
+          <div class="form-group">
+            <label>No. Pol:</label>
+            <select class="form-control" id="select2Transport">
+            </select>
+          </div>
+        </div>
       </div>
       <!--begin: Datatable-->
       <table class="table table-bordered table-hover" id="Datatable">
@@ -73,6 +87,11 @@
         <tr>
           <th>No Job Order</th>
           <th>Tanggal Pengajuan</th>
+          <th>Pelanggan</th>
+          <th>Supir</th>
+          <th>No. Pol</th>
+          <th>Dari</th>
+          <th>Tujuan</th>
           <th>Nominal</th>
           <th>Deskripsi</th>
           <th>Status</th>
@@ -107,8 +126,11 @@
             </div>
             <input type="hidden" name="approved_by" value="{{ Auth::id() }}">
             <div class="form-group">
+              <span id="roadMoney"></span>
+            </div>
+            <div class="form-group">
               <label>Status Pengajuan</label>
-              <select class="form-control form-control-solid"  name="approved">
+              <select class="form-control form-control-solid" name="approved">
                 <option>Pilih Status</option>
                 <option value="0">Di Tolak</option>
                 <option value="1">Setuju</option>
@@ -116,7 +138,7 @@
             </div>
             <div class="form-group">
               <label>Akun COA</label>
-              <select class="form-control form-control-solid"  name="coa_id">
+              <select class="form-control form-control-solid" name="coa_id">
                 @foreach($selectCoa->coa as $item)
                   <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
                 @endforeach
@@ -165,16 +187,28 @@
         order: [[1, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
+        dom: 'Bfrtip',
+        stateSave: true,
+        buttons: [
+          'colvis'
+        ],
         ajax: {
           url: "{{ route('backend.submission.index') }}",
           data: function (d) {
             d.status = $('#selectStatus').find(':selected').val();
             d.type = $('#selectType').find(':selected').val();
+            d.driver_id = $('#select2Driver').find(':selected').val();
+            d.transport_id = $('#select2Transport').find(':selected').val();
           }
         },
         columns: [
-          {data: 'joborder.num_prefix', name: 'joborder.num_prefix', width: '140px'},
+          {data: 'joborder.num_prefix', name: 'joborder.num_bill', width: '140px'},
           {data: 'created_at', name: 'created_at'},
+          {data: 'joborder.costumer.name', name: 'joborder.costumer.name'},
+          {data: 'joborder.driver.name', name: 'joborder.driver.name'},
+          {data: 'joborder.transport.num_pol', name: 'joborder.transport.num_pol'},
+          {data: 'joborder.routefrom.name', name: 'joborder.routefrom.name'},
+          {data: 'joborder.routeto.name', name: 'joborder.routeto.name'},
           {
             data: 'amount', name: 'amount',
             render: $.fn.dataTable.render.number(',', '.', 2),
@@ -191,7 +225,7 @@
         columnDefs: [
           {
             className: 'dt-center',
-            targets: 4,
+            targets: 9,
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -208,7 +242,7 @@
           },
           {
             className: 'dt-center',
-            targets: 5,
+            targets: 10,
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -224,7 +258,7 @@
           },
           {
             className: 'dt-center',
-            targets: 6,
+            targets: 11,
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -248,12 +282,72 @@
         let description = $(event.relatedTarget).data('description');
         $(this).find('#formUpdate').attr('action', '{{ route("backend.submission.index") }}/' + id)
         $(this).find('.modal-body').find('textarea[name="description"]').text(description);
+        let url = '{{ route("backend.submission.index") }}/findbypk/' + id;
+        $.ajax({
+          type: 'GET',
+          url: url,
+          dataType: 'json',
+          success: function (response) {
+            $('#roadMoney').empty();
+            if (response.type == "self") {
+              if (response.roadMoney > 0) {
+                $('#roadMoney').text('Sisa uang jalan: ' + response.roadMoneyFormat)
+              } else if (response.roadMoney < 0) {
+                $('#roadMoney').text('Uang jalan sudah melewati sistem: ' + response.roadMoneyFormat)
+              } else {
+                $('#roadMoney').text('Uang jalan KLOP')
+              }
+            } else {
+              $('#roadMoney').text('Total Uang jalan LDO telah diambil: ' + response.roadMoneyFormat)
+            }
+          },
+          error: function (response) {
+            console.log(data);
+          }
+        });
       });
       $('#modalEdit').on('hidden.bs.modal', function (event) {
         $(this).find('.modal-body').find('textarea[name="description"]').text('');
       });
 
       $('#selectType, #selectStatus').on('change', function () {
+        dataTable.draw();
+      });
+
+      $("#select2Driver").select2({
+        placeholder: "Search Supir",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.drivers.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+      $("#select2Transport").select2({
+        placeholder: "Search Kendaraan",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.transports.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
         dataTable.draw();
       });
 
@@ -326,14 +420,8 @@
               toastr.success(response.message, 'Success !');
               $('#modalEdit').modal('hide');
               dataTable.draw();
-              $("[role='alert']").parent().css("display", "none");
             } else {
-              $("[role='alert']").parent().removeAttr("style");
-              $(".alert-text").html('');
-              $.each(response.error, function (key, value) {
-                $(".alert-text").append('<span style="display: block">' + value + '</span>');
-              });
-              toastr.error("Please complete your form", 'Failed !');
+              toastr.error("Data Cannot Update", 'Failed !');
             }
           }, error: function (response) {
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");

@@ -108,7 +108,7 @@
           <td>{{ $item->phone }}</td>
           <td>{{ $item->emergency_name }}</td>
           <td>{{ $item->emergency_phone }}</td>
-          <td>{{ $item->cooperation }}</td>
+          <td>{{ $item->cooperation->nickname }}</td>
         </tr>
       @endforeach
       </tbody>

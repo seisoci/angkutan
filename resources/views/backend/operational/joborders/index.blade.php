@@ -268,7 +268,7 @@
             <div class="form-group">
               <label>Kubiknasi / Tonase:</label>
               <div class="input-group">
-                <input id="tonaseModal" type="text" name="payload" class="form-control text-right currency"
+                <input id="tonaseModal" type="text" name="payload" class="form-control text-right currencyKG"
                        inputmode="numeric" style="text-align: right;">
                 <div class="input-group-append">
                   <span class="input-group-text">KG</span>
@@ -488,6 +488,14 @@
           removeMaskOnSubmit: true
         });
 
+        $(".currencyKG").inputmask('decimal', {
+          groupSeparator: '.',
+          digits: 3,
+          rightAlign: true,
+          autoUnmask: true,
+          removeMaskOnSubmit: true
+        });
+
         $(".currencyInput").inputmask('decimal', {
           groupSeparator: '.',
           digits: 0,
@@ -613,7 +621,7 @@
       });
 
       $("#select2Driver").select2({
-        placeholder: "Search LDO",
+        placeholder: "Search Supir",
         allowClear: true,
         ajax: {
           url: "{{ route('backend.drivers.select2') }}",

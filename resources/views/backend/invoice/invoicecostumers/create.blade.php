@@ -74,7 +74,9 @@
                   <tr>
                     <th scope="col" class="text-center">#</th>
                     <th scope="col">Tanggal</th>
-                    <th scope="col">S. Jalan</th>
+                    <th scope="col">No. JobOrder</th>
+                    <th scope="col">No. SJ</th>
+                    <th scope="col">No. Shipment</th>
                     <th scope="col">Pelanggan</th>
                     <th scope="col">Rute Dari</th>
                     <th scope="col">Rute Ke</th>
@@ -182,6 +184,8 @@
           <th>Tanggal Mulai</th>
           <th>Prefix</th>
           <th>No. Job Order</th>
+          <th>No. SJ</th>
+          <th>No. Shipment</th>
           <th>Pelanggan</th>
           <th>Rute Dari</th>
           <th>Rute Ke</th>
@@ -241,6 +245,8 @@
           {data: 'date_begin', name: 'date_begin'},
           {data: 'prefix', name: 'prefix'},
           {data: 'num_bill', name: 'num_bill'},
+          {data: 'no_sj', name: 'no_sj'},
+          {data: 'no_shipment', name: 'no_shipment'},
           {data: 'costumer.name', name: 'costumer.name'},
           {data: 'routefrom.name', name: 'routefrom.name'},
           {data: 'routeto.name', name: 'routeto.name'},
@@ -370,6 +376,8 @@
                   ' <td class="text-center">' + (index + 1) + '</td>' +
                   ' <td>' + data.date_begin + '</td>' +
                   ' <td>' + data.prefix + '-' + data.num_bill + '</td>' +
+                  ' <td>' + (data.no_sj ?? '') + '</td>' +
+                  ' <td>' + (data.no_shipment ?? '') + '</td>' +
                   ' <td>' + data.costumer.name + '</td>' +
                   ' <td>' + data.routefrom.name + '</td>' +
                   ' <td>' + data.routeto.name + '</td>' +

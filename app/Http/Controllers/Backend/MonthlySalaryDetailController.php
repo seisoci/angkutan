@@ -48,6 +48,7 @@ class MonthlySalaryDetailController extends Controller
         })
         ->addColumn('action', function ($row) use ($id) {
           $btnEditStatus = $row->status == '0' ? '<a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" class="dropdown-item">Edit Status</a>' : NULL;
+          $btnDelete = $row->status == '1' ? '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="dropdown-item">Delete</a>' : NULL;
           $actionBtn = '
              <div class="dropdown">
                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -55,7 +56,7 @@ class MonthlySalaryDetailController extends Controller
                  </button>
                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                    <a href="' . $row->id . '/detail" class="dropdown-item">Detail Gaji</a>
-                   ' . $btnEditStatus . '
+                   ' . $btnEditStatus . $btnDelete . '
                  </div>
              </div>
            ';
@@ -216,6 +217,38 @@ class MonthlySalaryDetailController extends Controller
       }
     } else {
       $response = response()->json(['error' => $validator->errors()->all()]);
+    }
+
+    return $response;
+  }
+
+  public function destroy($id)
+  {
+
+
+    try {
+      DB::transaction(function () use ($id) {
+        $data = MonthlySalaryDetail::find($id);
+        $data->update([
+          'status' => '0',
+          'coa_id' => NULL
+        ]);
+
+        Journal::where([
+          ['table_ref', 'monthlysalarydetail'],
+          ['code_ref', $data->id]
+        ])->delete();
+      });
+
+      $response = response()->json([
+        'status' => 'success',
+        'message' => 'Data has been deleted',
+      ]);
+    } catch (\Throwable $throwable) {
+      $response = response()->json([
+        'status' => 'error',
+        'message' => 'Data cannot be deleted',
+      ]);
     }
 
     return $response;

@@ -96,6 +96,8 @@
         <th>Tanggal</th>
         <th>No. Polisi</th>
         <th>No. Prefix</th>
+        <th>No. SJ</th>
+        <th>No. Shipment</th>
         <th>Nama Pelanggan</th>
         <th>Rute Dari</th>
         <th>Rute Tujuan</th>
@@ -116,6 +118,8 @@
           <td>{{ $item->date_begin }}</td>
           <td>{{ $item->transport->num_pol }}</td>
           <td>{{ $item->num_prefix }}</td>
+          <td>{{ $item->no_sj }}</td>
+          <td>{{ $item->no_shipment }}</td>
           <td>{{ $item->costumer->name }}</td>
           <td>{{ $item->routefrom->name }}</td>
           <td>{{ $item->routeto->name }}</td>
@@ -131,7 +135,7 @@
       @endforeach
       </tbody>
       <tfoot>
-      <td colspan="8" class="text-right">Total Rp.</td>
+      <td colspan="10" class="text-right">Total Rp.</td>
       <td class="text-right">{{ number_format($data->sum('basic_price'), 2, ',', '.') }}</td>
       <td class="text-right">{{ number_format($data->sum('payload'), 2, ',', '.') }}</td>
       <td class="text-right">{{ number_format($data->sum('total_basic_price'), 2, ',', '.') }}</td>

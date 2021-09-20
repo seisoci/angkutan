@@ -338,7 +338,7 @@ class JobOrderController extends Controller
       ['page' => '/backend/drivers', 'title' => "List Job Order"],
       ['page' => '#', 'title' => "Detail Job Order"],
     ];
-    $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer.cooperation', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->findOrFail($id);
+    $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer.cooperation', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])->withSum('roadmoneydetail', 'amount')->findOrFail($id);
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'joborders')->sole();
     return view('backend.operational.joborders.show', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
   }
@@ -351,37 +351,31 @@ class JobOrderController extends Controller
       ['page' => '/backend/joborders', 'title' => "List Job Order"],
       ['page' => '#', 'title' => "Detail Job Order"],
     ];
-    $item = array();
-    $data = JobOrder::with(['anotherexpedition', 'driver', 'costumer.cooperation', 'cargo', 'transport', 'routefrom', 'routeto', 'operationalexpense.expense'])
+    $itemBody = array();
+    $data = JobOrder::with(['anotherexpedition', 'driver:id,name', 'costumer.cooperation:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense', 'roadmoneydetail'])
       ->withSum('operationalexpense', 'amount')
+      ->withSum('roadmoneydetail', 'amount')
       ->findOrFail($id);
-    $totalRoadMoney = ($data->road_money ?? 0) - ($data->road_money_prev) + ($data->operationalexpense_sum_amount ?? 0) + ($data->road_money_extra ?? 0);
-    $item [] = [
-      'no' => 1,
-      'nama' => 'Uang jalan standart',
-      'nominal' => number_format($data->road_money, 0, '.', ',')
-    ];
-    if ($data->road_money_prev > 0) {
-      $item [] = [
-        'no' => count($item) + 1,
-        'nama' => 'Pot. uang jalan telah diambil sebelumnya',
-        'nominal' => '-' . number_format($data->road_money_prev, 0, '.', ',')
-      ];
-    }
-    if ($data->road_money_extra > 0) {
-      $item [] = [
-        'no' => count($item) + 1,
-        'nama' => 'Uang Jalan Tambahan',
-        'nominal' => number_format($data->road_money_extra, 0, '.', ',')
-      ];
-    }
 
-    $operationalExpense = OperationalExpense::with('expense')->where('job_order_id', $id)->get();
-    foreach ($operationalExpense as $val):
-      $item[] = ['no' => count($item) + 1, 'nama' => $val->expense->name, 'nominal' => number_format($val->amount, 0, '.', ',')];
+
+    $no = 1;
+    $totalRoadMoney = 0;
+    foreach ($data->roadmoneydetail as $item):
+      $itemBody [] = [
+        'no' => $no,
+        'nama' => 'Uang Jalan Ke-' . $no,
+        'nominal' => number_format($item->amount, 0, '.', ',')
+      ];
+    $no++;
+      $totalRoadMoney += $item->amount;
     endforeach;
-    $item[] = ['no' => '------------------------------------'];
-    $item[] = ['1' => '', 'name' => 'Total', 'nominal' => number_format($totalRoadMoney, 0, '.', ',')];
+
+    foreach ($data->operationalexpense as $val):
+      $itemBody[] = ['no' => $no++, 'nama' => $val->expense->name, 'nominal' => number_format($val->amount, 0, '.', ',')];
+      $totalRoadMoney += $val->amount;
+    endforeach;
+    $itemBody[] = ['no' => '------------------------------------'];
+    $itemBody[] = ['1' => '', 'name' => 'Total', 'nominal' => number_format($totalRoadMoney, 0, '.', ',')];
     $result = '';
     $paper = array(
       'panjang' => 35,
@@ -413,7 +407,7 @@ class JobOrderController extends Controller
       ],
       'table' => [
         'header' => ['No', 'Keterangan', 'Nominal'],
-        'produk' => $item,
+        'produk' => $itemBody,
         'footer' => array(
           'catatan' => 'KET: ' . $data->description ?? '',
         )

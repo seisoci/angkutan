@@ -85,6 +85,7 @@
         <thead>
         <tr>
           <th>Tanggal</th>
+          <th>Tanggal</th>
           <th>Kode Akun</th>
           <th>Deskripsi</th>
           <th>Debit</th>
@@ -153,7 +154,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [0, 'asc'],
+        order: [[1, 'desc'], [0, 'desc']],
         lengthMenu: [[50, 100, -1], [50, 100, "All"]],
         pageLength: 50,
         ajax: {
@@ -163,12 +164,16 @@
           }
         },
         columns: [
-          {data: 'date_journal', name: 'date_journal'},
+          {data: 'id', name: 'id'},
+          {data: 'date_journal', name: 'date_journal', orderable: false},
           {data: 'coa.kode_akun', name: 'coa.kode_akun', searchable: false},
           {data: 'description', name: 'description'},
           {data: 'debit', name: 'debit', render: $.fn.dataTable.render.number(',', '.', 2), className: 'dt-right'},
           {data: 'kredit', name: 'kredit', render: $.fn.dataTable.render.number(',', '.', 2), className: 'dt-right'},
           {data: 'action', name: 'action'},
+        ],
+        columnDefs: [
+          { "visible" : false, "targets": [0]}
         ],
         footerCallback: function (row, data, start, end, display) {
           let api = this.api();

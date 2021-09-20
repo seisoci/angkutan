@@ -69,7 +69,9 @@
               <tr>
                 <th class="text-center">#</th>
                 <th>Tanggal</th>
-                <th>S. Jalan</th>
+                <th>No. Job Order</th>
+                <th>No. SJ</th>
+                <th>No. Shipment</th>
                 <th>Pelanggan</th>
                 <th>Rute Dari</th>
                 <th>Rute Ke</th>
@@ -88,6 +90,8 @@
                   <td class="text-center">{{ $loop->iteration }}</td>
                   <td>{{  $item->date_begin }}</td>
                   <td>{{ $item->prefix . '-' . $item->num_bill  }}</td>
+                  <td>{{ $item->no_sj  }}</td>
+                  <td>{{ $item->no_shipment  }}</td>
                   <td>{{ $item->costumer->name }}</td>
                   <td>{{ $item->routefrom->name }}</td>
                   <td>{{ $item->routeto->name }}</td>
@@ -101,7 +105,7 @@
                 </tr>
               @endforeach
               <tr>
-                <td colspan="10" class="text-right font-weight-bolder">Total</td>
+                <td colspan="12" class="text-right font-weight-bolder">Total</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->total_tax }}</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->total_fee_thanks }}</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->total_bill  }}</td>

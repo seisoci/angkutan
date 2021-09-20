@@ -187,6 +187,11 @@
         order: [[11, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
+        stateSave: true,
+        dom: 'Bfrtip',
+        buttons: [
+          'colvis'
+        ],
         ajax: "{{ route('backend.invoicecostumers.index') }}",
         columns: [
           {

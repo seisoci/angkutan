@@ -41,7 +41,7 @@ class ReportCustomerRoadMoneyController extends Controller
 
 
     if ($request->ajax()) {
-      $data = Costumer::orderBy('name', 'asc');
+      $data = Costumer::with('cooperation')->orderBy('name', 'asc');
       return DataTables::of($data)
         ->addColumn('details_url', function (Costumer $costumer) {
           return route('backend.reportcustomerroadmoney.datatabledetail', $costumer->id);
@@ -54,7 +54,7 @@ class ReportCustomerRoadMoneyController extends Controller
 
   public function print(Request $request)
   {
-    $customer = Costumer::orderBy('name', 'asc')->get();
+    $customer = Costumer::with('cooperation')->orderBy('name', 'asc')->get();
 
     $data = collect($customer)->map(function ($customer) {
       $roadMoneyResult = DB::table('road_money')
@@ -109,7 +109,7 @@ class ReportCustomerRoadMoneyController extends Controller
 
     $type = $request->type;
     $status_payment = $request->status_payment;
-    $customer = Costumer::orderBy('name', 'asc')->get();
+    $customer = Costumer::with('cooperation')->orderBy('name', 'asc')->get();
 
     $data = collect($customer)->map(function ($customer) {
       $roadMoneyResult = DB::table('road_money')
@@ -263,7 +263,7 @@ class ReportCustomerRoadMoneyController extends Controller
       $sheet->setCellValue('A' . $startCell, "Nama Pelanggan");
       $sheet->setCellValue('C' . $startCell, ': ' . $item['name']);
       $sheet->setCellValue('E' . $startCell, "Kerjasama");
-      $sheet->setCellValue('F' . $startCell, ': ' . ucfirst($item['cooperation']));
+      $sheet->setCellValue('F' . $startCell, ': ' . ucfirst($item['cooperation']['nickname']));
       $startCell++;
       $sheet->getStyle('A' . $startCell)->applyFromArray($borderLeft);
       $sheet->getStyle('F' . $startCell)->applyFromArray($borderRight);

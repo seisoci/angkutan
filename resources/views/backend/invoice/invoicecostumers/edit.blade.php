@@ -71,7 +71,9 @@
               <tr>
                 <th scope="col" class="text-center">#</th>
                 <th scope="col">Tanggal</th>
-                <th scope="col">S. Jalan</th>
+                <th scope="col">No. JobOrder</th>
+                <th scope="col">No. SJ</th>
+                <th scope="col">No. Shipment</th>
                 <th scope="col">Pelanggan</th>
                 <th scope="col">Rute Dari</th>
                 <th scope="col">Rute Ke</th>
@@ -90,6 +92,8 @@
                   <td class="text-center">{{ $loop->iteration }}</td>
                   <td>{{  $item->date_begin }}</td>
                   <td>{{ $item->prefix . '-' . $item->num_bill  }}</td>
+                  <td>{{ $item->no_sj  }}</td>
+                  <td>{{ $item->no_shipment  }}</td>
                   <td>{{ $item->costumer->name }}</td>
                   <td>{{ $item->routefrom->name }}</td>
                   <td>{{ $item->routeto->name }}</td>
@@ -105,7 +109,7 @@
               </tbody>
               <tfoot>
               <tr>
-                <td colspan="10" class="font-weight-bolder text-right">Total</td>
+                <td colspan="12" class="font-weight-bolder text-right">Total</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->joborders->sum('tax_amount') }}</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->joborders->sum('fee_thanks') }}</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->joborders->sum('total_basic_price') }}</td>

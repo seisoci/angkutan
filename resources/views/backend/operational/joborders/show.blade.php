@@ -75,7 +75,7 @@
                 <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Unit (Qty)</th>
                 <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Uang Jalan</th>
                 <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Potongan UJ</th>
-                <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Tambahan UJ Real</th>
+                <th class="text-right pr-0 font-weight-bold text-muted text-uppercase">Total UJ Real</th>
               </tr>
               </thead>
               <tbody>
@@ -90,7 +90,7 @@
                 <td
                   class="pr-0 pt-7 text-right text-danger">{{ number_format($data->road_money_prev ?? 0,0, '.', '.') }}</td>
                 <td
-                  class="pr-0 pt-7 text-right text-success">{{ number_format($data->road_money_extra ?? 0,0, '.', '.') }}</td>
+                  class="pr-0 pt-7 text-right">{{ number_format($data->roadmoneydetail_sum_amount ?? 0,0, '.', '.') }}</td>
               </tr>
               </tbody>
             </table>

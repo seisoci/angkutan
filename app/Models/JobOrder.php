@@ -93,12 +93,12 @@ class JobOrder extends Model
 
   public function operationalexpense()
   {
-    return $this->hasMany(OperationalExpense::class)->where('type', 'operational');
+    return $this->hasMany(OperationalExpense::class)->where('type', 'operational')->where('approved', '1');
   }
 
   public function roadmoneydetail()
   {
-    return $this->hasMany(OperationalExpense::class)->where('type', 'roadmoney');
+    return $this->hasMany(OperationalExpense::class)->where('type', 'roadmoney')->where('approved', '1');
   }
 
   public function getTotalBasicPriceAttribute()

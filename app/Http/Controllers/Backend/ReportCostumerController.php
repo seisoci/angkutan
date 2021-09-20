@@ -35,7 +35,7 @@ class ReportCostumerController extends Controller
     $config['print_url'] = 'reportcostumers/print';
 
     if ($request->ajax()) {
-      $data = Costumer::orderBy('name', 'asc');
+      $data = Costumer::with('cooperation')->orderBy('name', 'asc');
       return DataTables::of($data)
         ->make(true);
     }
@@ -47,7 +47,7 @@ class ReportCostumerController extends Controller
     $type = $request->type;
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = Costumer::orderBy('name', 'asc')->get();
+    $data = Costumer::with('cooperation')->orderBy('name', 'asc')->get();
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->getPageSetup()
@@ -150,7 +150,7 @@ class ReportCostumerController extends Controller
       $sheet->setCellValue('D' . $startCell, $item->phone);
       $sheet->setCellValue('E' . $startCell, $item->emergency_name);
       $sheet->setCellValue('F' . $startCell, $item->emergency_phone);
-      $sheet->setCellValue('G' . $startCell, $item->cooperation);
+      $sheet->setCellValue('G' . $startCell, $item->cooperation->nickname);
     endforeach;
     $sheet->setAutoFilter('B' . $startCellFilter . ':G' . $startCell);
     $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderBottom);
@@ -195,7 +195,7 @@ class ReportCostumerController extends Controller
 
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = Costumer::orderBy('name', 'asc')->get();
+    $data = Costumer::with('cooperation')->orderBy('name', 'asc')->get();
     return view('backend.report.reportcostumers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 

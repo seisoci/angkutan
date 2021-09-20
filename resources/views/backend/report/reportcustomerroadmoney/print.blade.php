@@ -99,7 +99,7 @@
           <td style="width:20%; font-weight: bold;">Kerjasama</td>
           <td style="width:1%">:</td>
           <td
-            style="width:35%; text-align: right !important;">{{ $item['cooperation'] }}</td>
+            style="width:35%; text-align: right !important;">{{ $item['cooperation']['nickname'] }}</td>
         </tr>
         <tr>
           <td class="font-weight-normal" style="width:15%; font-weight: bold;">No. Telp</td>
