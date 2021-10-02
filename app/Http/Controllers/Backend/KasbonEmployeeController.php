@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Cooperation;
-use App\Models\Driver;
+use App\Models\Employee;
 use App\Models\Journal;
 use App\Models\KasbonEmployee;
 use App\Traits\CarbonTrait;
@@ -107,12 +107,12 @@ class KasbonEmployeeController extends Controller
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
-        $employee = Driver::findOrFail($request->employee_id);
+        $employee = Employee::findOrFail($request->employee_id);
         $coa = Coa::findOrFail($request->coa_id);
         $checksaldo = DB::table('journals')
           ->select(DB::raw('
           IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
-          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`  nn
           '))
           ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
           ->where('journals.coa_id', $request->coa_id)

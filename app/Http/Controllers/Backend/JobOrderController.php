@@ -706,7 +706,6 @@ class JobOrderController extends Controller
   {
     $data = OperationalExpense::where([
       ['job_order_id', $id],
-      ['type', 'roadmoney']
     ]);
 
     return Datatables::of($data)->make(true);

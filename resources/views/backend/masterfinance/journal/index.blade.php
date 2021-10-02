@@ -84,7 +84,7 @@
       <table class="table table-borderless table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>Tanggal</th>
+          <th>ID</th>
           <th>Tanggal</th>
           <th>Kode Akun</th>
           <th>Deskripsi</th>
@@ -95,6 +95,7 @@
         </thead>
         <tfoot>
         <tr>
+          <th></th>
           <th></th>
           <th></th>
           <th></th>
@@ -165,15 +166,12 @@
         },
         columns: [
           {data: 'id', name: 'id'},
-          {data: 'date_journal', name: 'date_journal', orderable: false},
+          {data: 'date_journal', name: 'date_journal'},
           {data: 'coa.kode_akun', name: 'coa.kode_akun', searchable: false},
           {data: 'description', name: 'description'},
           {data: 'debit', name: 'debit', render: $.fn.dataTable.render.number(',', '.', 2), className: 'dt-right'},
           {data: 'kredit', name: 'kredit', render: $.fn.dataTable.render.number(',', '.', 2), className: 'dt-right'},
           {data: 'action', name: 'action'},
-        ],
-        columnDefs: [
-          { "visible" : false, "targets": [0]}
         ],
         footerCallback: function (row, data, start, end, display) {
           let api = this.api();
@@ -185,22 +183,22 @@
           };
 
           let debit = api
-            .column(3)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let kredit = api
             .column(4)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
+          let kredit = api
+            .column(5)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
 
-          $(api.column(3).footer()).html(format(debit));
-          $(api.column(4).footer()).html(format(kredit));
+
+          $(api.column(4).footer()).html(format(debit));
+          $(api.column(5).footer()).html(format(kredit));
 
         },
       });

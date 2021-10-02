@@ -43,7 +43,7 @@ class OperationalExpense extends Model
   }
 
   public function joborder(){
-    return $this->belongsTo(joborder::class, 'job_order_id');
+    return $this->belongsTo(JobOrder::class, 'job_order_id');
   }
 
   public function getStatusAttribute()

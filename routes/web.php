@@ -97,6 +97,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', function () {
+  return redirect('/backend');
+});
 Route::get('backend', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('backend', [LoginController::class, 'login']);
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');

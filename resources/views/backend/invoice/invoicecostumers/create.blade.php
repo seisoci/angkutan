@@ -275,7 +275,9 @@
             data: 'tax_amount',
             name: 'tax_amount',
             render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
+            className: 'dt-right',
+            orderable: false,
+            searchable: false
           },
           {
             data: 'total_basic_price_after_tax',

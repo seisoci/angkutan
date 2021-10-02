@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Expense;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\OperationalExpense;

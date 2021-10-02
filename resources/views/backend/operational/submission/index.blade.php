@@ -163,6 +163,11 @@
 {{-- Styles Section --}}
 @section('styles')
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
+  <style>
+    .dataTables_wrapper .dataTable td, .dataTables_wrapper .dataTable th {
+      font-size: 10px !important;
+    }
+  </style>
 @endsection
 
 
@@ -182,12 +187,13 @@
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
+        scrollY: "300px",
         processing: true,
         serverSide: true,
         order: [[1, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        dom: 'Bfrtip',
+        dom: 'Blfrtip',
         stateSave: true,
         buttons: [
           'colvis'

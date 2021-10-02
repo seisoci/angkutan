@@ -146,21 +146,21 @@
         <thead>
         <tr>
           <th></th>
-          <th>Prefix</th>
-          <th>No. Job Order</th>
-          <th>No. Surat Jalan</th>
-          <th>LDO</th>
-          <th>Supir</th>
+          <th>Tanggal Mulai</th>
           <th>No. Pol</th>
+          <th>Supir</th>
           <th>Pelanggan</th>
           <th>Rute Dari</th>
           <th>Rute Ke</th>
           <th>Muatan</th>
-          <th>Tanggal Mulai</th>
-          <th>Tanggal Selesai</th>
           <th>Status JO</th>
           <th>Status Dokumen</th>
+          <th>Prefix</th>
+          <th>No. Job Order</th>
+          <th>No. Surat Jalan</th>
+          <th>LDO</th>
           <th>Created At</th>
+          <th>Tanggal Selesai</th>
           <th>Actions</th>
         </tr>
         </thead>
@@ -362,6 +362,11 @@
 @section('styles')
   <link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
+  <style>
+    .dataTables_wrapper .dataTable td, .dataTables_wrapper .dataTable th {
+      font-size: 10px !important;
+    }
+  </style>
 @endsection
 
 {{-- Scripts Section --}}
@@ -376,6 +381,7 @@
         <th>Tanggal Pengajuan</th>
         <th>Nominal</th>
         <th>Deskripsi</th>
+        <th>Tipe</th>
         <th>Status</th>
       </tr>
       </thead>
@@ -390,12 +396,13 @@
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
+        scrollY: "300px",
         processing: true,
         serverSide: true,
-        order: [[15, 'desc']],
+        order: [[14, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        dom: 'Bfrtip',
+        dom: 'Blfrtip',
         stateSave: true,
         buttons: [
           'colvis'
@@ -424,27 +431,27 @@
             "data": null,
             "defaultContent": ''
           },
-          {data: 'prefix', name: 'prefix'},
-          {data: 'num_bill', name: 'num_bill'},
-          {data: 'no_sj', name: 'no_sj'},
-          {data: 'anotherexpedition.name', name: 'anotherexpedition.name', defaultContent: ''},
-          {data: 'driver.name', name: 'driver.name'},
+          {data: 'date_begin', name: 'date_begin'},
           {data: 'transport.num_pol', name: 'transport.num_pol'},
+          {data: 'driver.name', name: 'driver.name'},
           {data: 'costumer.name', name: 'costumer.name'},
           {data: 'routefrom.name', name: 'routefrom.name'},
           {data: 'routeto.name', name: 'routeto.name'},
           {data: 'cargo.name', name: 'cargo.name'},
-          {data: 'date_begin', name: 'date_begin'},
-          {data: 'date_end', name: 'date_end', defaultContent: ''},
           {data: 'status_cargo', name: 'status_cargo'},
           {data: 'status_document', name: 'status_document'},
+          {data: 'prefix', name: 'prefix'},
+          {data: 'num_bill', name: 'num_bill'},
+          {data: 'no_sj', name: 'no_sj'},
+          {data: 'anotherexpedition.name', name: 'anotherexpedition.name', defaultContent: '', orderable: false},
           {data: 'created_at', name: 'created_at'},
+          {data: 'date_end', name: 'date_end', defaultContent: ''},
           {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
         columnDefs: [
           {
             className: 'dt-center',
-            targets: 13,
+            targets: 8,
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -462,7 +469,7 @@
           },
           {
             className: 'dt-center',
-            targets: 14,
+            targets: 9,
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -543,12 +550,13 @@
               width: '200px'
             },
             {data: 'description', name: 'description', width: '400px'},
+            {data: 'type', name: 'type'},
             {data: 'approved', name: 'approved', width: '100px'},
           ],
           columnDefs: [
             {
               className: 'dt-center',
-              targets: 3,
+              targets: 4,
               width: '75px',
               render: function (data, type, full, meta) {
                 let status = {
@@ -562,7 +570,23 @@
                 return '<span class="' + status[data].class + '">' + status[data].title +
                   '</span>';
               },
-            }
+            },
+            {
+              className: 'dt-center',
+              targets: 3,
+              width: '75px',
+              render: function (data, type, full, meta) {
+                let status = {
+                  'roadmoney': {'title': 'Uang Jalan', 'class': 'badge badge-primary'},
+                  'operational': {'title': 'Uang Jalan Operasional', 'class': 'badge badge-warning'},
+                };
+                if (typeof status[data] === 'undefined') {
+                  return data;
+                }
+                return '<span class="' + status[data].class + '">' + status[data].title +
+                  '</span>';
+              },
+            },
           ]
         })
       }

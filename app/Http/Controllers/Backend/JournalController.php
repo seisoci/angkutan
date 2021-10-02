@@ -113,16 +113,16 @@ class JournalController extends Controller
         $max_ref = Journal::where('table_ref', 'self')->max('code_ref');
         $max_ref += 1;
 
-        $coa = Coa::findOrFail($request->coa_id);
-        $checksaldo = DB::table('journals')
-          ->select(DB::raw('
-          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
-          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
-          '))
-          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
-          ->where('journals.coa_id', $request->coa_id)
-          ->groupBy('journals.coa_id')
-          ->first();
+//        $coa = Coa::findOrFail($request->coa_id);
+//        $checksaldo = DB::table('journals')
+//          ->select(DB::raw('
+//          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+//          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+//          '))
+//          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+//          ->where('journals.coa_id', $request->coa_id)
+//          ->groupBy('journals.coa_id')
+//          ->first();
 
         foreach ($items['coa_id'] as $key => $item):
           Journal::create([

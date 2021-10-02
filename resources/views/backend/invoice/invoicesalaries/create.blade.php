@@ -349,7 +349,7 @@
             $.each(response.error, function(key, value) {
               $(".alert-text").append('<span style="display: block">'+value+'</span>');
             });
-            toastr.error("Please complete your form", 'Failed !');
+            toastr.error((response.message ? response.message : "Please complete your form"), 'Failed !');
           }
         },
         error: function(response) {
