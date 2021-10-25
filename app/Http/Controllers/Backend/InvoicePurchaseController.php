@@ -375,7 +375,7 @@ class InvoicePurchaseController extends Controller
     $printed = new ContinousPaperLong($paper);
     $result .= $printed->output() . "\n";
 //    return response($result, 200)->header('Content-Type', 'text/plain');
-    return view('backend.sparepart.invoicepurchases.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.sparepart.invoicepurchases.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function showpayment($id)
@@ -426,10 +426,9 @@ class InvoicePurchaseController extends Controller
       try {
         DB::beginTransaction();
         $payments = $request->payment;
-        $data = InvoicePurchase::findOrFail($id);
+        $data = InvoicePurchase::withSum('purchasepayments', 'payment')->findOrFail($id);
         $supplier = SupplierSparepart::findOrFail($data->supplier_sparepart_id);
-
-        $totalPayment = 0;
+        $totalPayment = $data->purchasepayments_sum_payment;
         foreach ($payments['date'] as $key => $item):
           $totalPayment += $payments['payment'][$key];
           $coa = Coa::findOrFail($payments['coa'][$key]);
@@ -481,6 +480,7 @@ class InvoicePurchaseController extends Controller
 
         $restPayment = $data->rest_payment - $totalPayment;
         $data->update([
+          'total_payment' => $totalPayment,
           'rest_payment' => $restPayment,
         ]);
 

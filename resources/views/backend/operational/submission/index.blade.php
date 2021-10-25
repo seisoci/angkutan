@@ -51,8 +51,8 @@
             <select class="form-control" id="selectStatus">
               <option value="all">All</option>
               <option value="pending">Pending</option>
-              <option value="0">Di Tolak</option>
-              <option value="1">Di Setujui</option>
+              <option value="ditolak">Di Tolak</option>
+              <option value="disetujui">Di Setujui</option>
             </select>
           </div>
         </div>

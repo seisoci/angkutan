@@ -16,6 +16,7 @@ class JobOrder extends Model
   protected $fillable = [
     'no_sj',
     'no_shipment',
+    'basic_price_ldo',
     'payload',
     'status_cargo',
     'status_document',

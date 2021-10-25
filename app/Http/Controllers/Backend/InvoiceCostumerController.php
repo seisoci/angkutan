@@ -151,6 +151,7 @@ class InvoiceCostumerController extends Controller
           'rest_payment' => $request->input('rest_payment'),
           'memo' => $request->input('memo'),
         ]);
+
         foreach ($request->job_order_id as $item):
           JobOrder::where('id', $item)->update(['invoice_costumer_id' => $data->id, 'status_payment' => '1']);
         endforeach;
@@ -228,13 +229,14 @@ class InvoiceCostumerController extends Controller
             'description' => "Pembayaran tagihan JO pelanggan $costumer->name dengan No.Invoice: " .$prefix->name.'-'.$request->input('num_bill')
           ]);
         }
+
         if ($request->rest_payment <= -1) {
+          DB::rollBack();
           return response()->json([
             'status' => 'error',
             'message' => 'Pastikan sisa tagihan tidak negative',
             'redirect' => '/backend/invoicecostumers',
           ]);
-          DB::rollBack();
         }
 
         DB::commit();

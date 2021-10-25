@@ -134,7 +134,7 @@ class JobOrderController extends Controller
           }
           if ($row->status_cargo == 'selesai' && $row->status_document == 1 && !$row->invoice_costumer_id && in_array(Auth::user()->roles[0]->name, ['super-admin', 'admin', 'akunting'])) {
             $btnShowTonase = '
-            <a href="#" data-toggle="modal" data-target="#modalEditTonase" data-id="' . $row->id . '" data-type_payload="' . $row->type_payload . '" data-payload="' . $row->payload . '" data-no_sj="' . $row->no_sj . '"   data-no_shipment="' . $row->no_shipment . '"  class="edit dropdown-item">Input Tonase</a>';
+            <a href="#" data-toggle="modal" data-target="#modalEditTonase" data-id="' . $row->id . '" data-type_payload="' . $row->type_payload . '" data-payload="' . $row->payload . '" data-no_sj="' . $row->no_sj . '"   data-no_shipment="' . $row->no_shipment . '" data-type="' . $row->type . '" data-basic_price_ldo="' . $row->basic_price_ldo . '"  class="edit dropdown-item">Input Tonase</a>';
           }
           if ($row->status_cargo == 'transfer') {
             $btnTransfer = '
@@ -208,7 +208,7 @@ class JobOrderController extends Controller
         if ($request->type === 'self') {
           //CALCULATE
           $basicPrice = $request->basic_price;
-          $payload = $request->payload ?? 1;
+          $payload = $request->payload ?? 0;
           $sumPayload = $basicPrice * $payload;
           //MODEL DB
           $data->date_begin = $request->date_begin;
@@ -256,6 +256,13 @@ class JobOrderController extends Controller
               'type_car' => 'engkel'
             ])->id;
           }
+
+/*          if($request->type_payload == 'calculate' && !$request->basic_price_ldo){
+             return response()->json([
+              'status' => 'error',
+              'message' => 'Inputan harus di isi',
+            ]);
+          }*/
 
           //CALCULATE
           $basicPrice = $request->basic_price;

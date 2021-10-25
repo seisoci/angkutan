@@ -63,12 +63,14 @@ class SubmissionController extends Controller
       $driver_id = $request->driver_id;
       $transport_id = $request->transport_id;
       $data = OperationalExpense::with(['joborder', 'joborder.costumer:id,name', 'joborder.routefrom:id,name', 'joborder.routeto:id,name', 'joborder.transport:id,num_pol', 'joborder.driver:id,name'])
-        ->when($request['status'], function ($query, $typeData) use ($request) {
+        ->when($request['status'], function ($query) use ($request) {
           if ($request['status'] == 'all') {
           } else if ($request['status'] == 'pending') {
             return $query->whereNull('approved');
-          } else {
-            return $query->where('approved', $request['status']);
+          } else if($request['status'] == "ditolak"){
+            return $query->where('approved', "0");
+          }else if($request['status'] == "disetujui"){
+            return $query->where('approved', "1");
           }
         })
         ->whereHas('joborder', function ($query) use($transport_id, $driver_id) {

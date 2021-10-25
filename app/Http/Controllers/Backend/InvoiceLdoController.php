@@ -150,28 +150,30 @@ class InvoiceLdoController extends Controller
           ->groupBy('journals.coa_id')
           ->first();
 
-        if (($checksaldo->saldo ?? FALSE) && $request->input('payment.payment') <= $checksaldo->saldo) {
-          $data = InvoiceLdo::create([
-            'prefix' => $prefix->name,
-            'num_bill' => $request->input('num_bill'),
-            'another_expedition_id' => $request->input('another_expedition_id'),
-            'invoice_date' => $request->input('invoice_date'),
-            'due_date' => $request->input('due_date'),
-            'total_bill' => $request->input('total_bill'),
-            'total_cut' => $request->input('total_cut') ?? 0,
-            'total_payment' => $request->input('payment.payment') ?? 0,
-            'rest_payment' => $request->input('rest_payment'),
-            'memo' => $request->input('memo'),
+        $data = InvoiceLdo::create([
+          'prefix' => $prefix->name,
+          'num_bill' => $request->input('num_bill'),
+          'another_expedition_id' => $request->input('another_expedition_id'),
+          'invoice_date' => $request->input('invoice_date'),
+          'due_date' => $request->input('due_date'),
+          'total_bill' => $request->input('total_bill'),
+          'total_cut' => $request->input('total_cut') ?? 0,
+          'total_payment' => $request->input('payment.payment') ?? 0,
+          'rest_payment' => $request->input('rest_payment'),
+          'memo' => $request->input('memo'),
+        ]);
+
+        foreach ($request->job_order_id as $item):
+          JobOrder::where('id', $item)->update([
+            'invoice_ldo_id' => $data->id,
+            'status_payment_ldo' => '1',
           ]);
+        endforeach;
 
-          foreach ($request->job_order_id as $item):
-            JobOrder::where('id', $item)->update([
-              'invoice_ldo_id' => $data->id,
-              'status_payment_ldo' => '1',
-            ]);
-          endforeach;
 
-          if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
+        if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
+          if (($checksaldo->saldo ?? FALSE) && ($request->input('payment.payment') ?? 0) <= $checksaldo->saldo) {
+
             PaymentLdo::create([
               'invoice_ldo_id' => $data->id,
               'date_payment' => $request->input('payment.date_payment'),
@@ -189,7 +191,7 @@ class InvoiceLdoController extends Controller
               'kredit' => $request->input('payment.payment'),
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill').""
+              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill') . ""
             ]);
 
             Journal::create([
@@ -199,34 +201,34 @@ class InvoiceLdoController extends Controller
               'kredit' => 0,
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill').""
+              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill') . ""
             ]);
+
           } else {
             DB::rollBack();
-          }
-
-          if ($request->rest_payment <= -1) {
             return response()->json([
-              'status' => 'error',
-              'message' => 'Pastikan sisa tagihan tidak negative',
-              'redirect' => '/backend/invoiceldo',
+              'status' => 'errors',
+              'message' => "Saldo $coa->name tidak ada/kurang",
             ]);
-            DB::rollBack();
           }
+        }
 
-          DB::commit();
-          $response = response()->json([
-            'status' => 'success',
-            'message' => 'Data has been saved',
+        if ($request->rest_payment <= -1) {
+          DB::rollBack();
+          return response()->json([
+            'status' => 'error',
+            'message' => 'Pastikan sisa tagihan tidak negative',
             'redirect' => '/backend/invoiceldo',
           ]);
-        } else {
-          DB::rollBack();
-          $response = response()->json([
-            'status' => 'errors',
-            'message' => "Saldo $coa->name tidak ada/kurang",
-          ]);
         }
+
+        DB::commit();
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been saved',
+          'redirect' => '/backend/invoiceldo',
+        ]);
+
       } catch (\Throwable $throw) {
         DB::rollBack();
         $response = $throw;
@@ -335,7 +337,7 @@ class InvoiceLdoController extends Controller
               'kredit' => $request->input('payment.payment'),
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
+              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill . ""
             ]);
 
             Journal::create([
@@ -345,17 +347,17 @@ class InvoiceLdoController extends Controller
               'kredit' => 0,
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
+              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " . $data->prefix . '-' . $data->num_bill . ""
             ]);
           }
 
           if ($request->rest_payment <= -1) {
+            DB::rollBack();
             return response()->json([
               'status' => 'error',
               'message' => 'Pastikan sisa tagihan tidak negative',
               'redirect' => '/backend/invoiceldo',
             ]);
-            DB::rollBack();
           }
 
           DB::commit();

@@ -68,7 +68,7 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+        <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
         </td>
         <td class="text-left" style="width:10%"></td>
         <td class="text-left" style="padding-left:4rem;width:20%">No. Invoice</td>
@@ -76,21 +76,21 @@
         <td class="text-left" style="width:18%"> {{ $data->num_invoice }}</td>
       </tr>
       <tr>
-        <td style="width:50%">{{ $profile['address'] ?? '' }}</td>
+        <td style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
         <td class="text-left" style="width:10%"></td>
         <td class="text-left" style="padding-left:4rem;width:20%">Supplier</td>
         <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
         <td class="text-left" style="width:18%"> {{ $data->supplier->name }}</td>
       </tr>
       <tr>
-        <td>{{ $profile['telp'] ?? ''}}</td>
+        <td>Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
         <td class="text-left" style="width:10%"></td>
         <td class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
         <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td class="text-left" style="width:18%"> {{ $data->created_at }}</td>
+        <td class="text-left" style="width:18%"> {{ $data->invoice_date }}</td>
       </tr>
       <tr>
-        <td>FAX {{ $profile['fax'] ?? ''}}</td>
+        <td>Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
         <td class="text-left" style="width:10%"></td>
         <td class="text-left" style="padding-left:4rem;width:20%">Metode Pembayaran</td>
         <td class="text-left" style="width:2%">&ensp;: &ensp;</td>

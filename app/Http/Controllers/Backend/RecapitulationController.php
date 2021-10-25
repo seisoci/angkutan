@@ -56,6 +56,8 @@ class RecapitulationController extends Controller
         $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense'])
           ->withSum('operationalexpense', 'amount')
           ->where('type', 'self')
+          ->where('status_cargo', 'selesai')
+          ->where('status_document', '1')
           ->when($driver_id, function ($query, $driver_id) {
             return isset($driver_id) ? $query->where('driver_id', $driver_id) : NULL;
           })
@@ -102,6 +104,8 @@ class RecapitulationController extends Controller
         $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense'])
           ->withSum('operationalexpense', 'amount')
           ->where('type', 'self')
+          ->where('status_cargo', 'selesai')
+          ->where('status_document', '1')
           ->when($driver_id, function ($query, $driver_id) {
             return isset($driver_id) ? $query->where('driver_id', $driver_id) : NULL;
           })
@@ -146,6 +150,8 @@ class RecapitulationController extends Controller
     $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense'])
       ->withSum('operationalexpense', 'amount')
       ->where('type', 'self')
+      ->where('status_cargo', 'selesai')
+      ->where('status_document', '1')
       ->when($driver_id, function ($query, $driver_id) {
         return isset($driver_id) ? $query->where('driver_id', $driver_id) : NULL;
       })

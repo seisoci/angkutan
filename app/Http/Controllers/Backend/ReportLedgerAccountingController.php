@@ -28,9 +28,9 @@ class ReportLedgerAccountingController extends Controller
   {
     $config['page_title'] = "Laporan Buku Besar Akunting";
     $config['page_description'] = "Laporan Buku Besar Akunting";
-    $config['excel_url'] = 'accounting/document?type=EXCEL';
-    $config['pdf_url'] = 'accounting/document?type=PDF';
-    $config['print_url'] = 'accounting/print';
+    $config['excel_url'] = 'ledgeraccounting/document?type=EXCEL';
+    $config['pdf_url'] = 'ledgeraccounting/document?type=PDF';
+    $config['print_url'] = 'ledgeraccounting/print';
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "Laporan Buku Besar Akunting"],
     ];

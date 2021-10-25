@@ -50,7 +50,7 @@
               <td class="text-left" style="width:10%"></td>
               <td class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
               <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td class="text-left" style="width:18%"> {{ $data->created_at }}</td>
+              <td class="text-left" style="width:18%"> {{ $data->invoice_date }}</td>
             </tr>
             <tr>
               <td>FAX {{ $cooperationDefault['fax'] ?? ''}}</td>

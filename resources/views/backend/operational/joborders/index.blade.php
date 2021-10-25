@@ -261,6 +261,10 @@
               <label>No Surat Jalan:</label>
               <input type="text" class="form-control" name="no_sj">
             </div>
+            <div class="form-group" style="display: none">
+              <label>Ongkosan Dasar Ldo:</label>
+              <input type="text" class="form-control currency" name="basic_price_ldo">
+            </div>
             <div class="form-group">
               <label>No Shipment:</label>
               <input type="text" class="form-control" name="no_shipment">
@@ -787,12 +791,20 @@
         let id = $(event.relatedTarget).data('id');
         let payload = $(event.relatedTarget).data('payload');
         let type_payload = $(event.relatedTarget).data('type_payload');
+        let type = $(event.relatedTarget).data('type');
         let no_sj = $(event.relatedTarget).data('no_sj');
+        let basic_price_ldo = $(event.relatedTarget).data('basic_price_ldo');
         let no_shipment = $(event.relatedTarget).data('no_shipment');
         if (type_payload === 'fix') {
           $('#tonaseModal').prop('disabled', true);
         } else {
           $('#tonaseModal').prop('disabled', false);
+        }
+        if(type === 'ldo'){
+          $(this).find('.modal-body').find('input[name="basic_price_ldo"]').val(basic_price_ldo);
+          $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', '');
+        }else{
+          $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', 'none');
         }
         $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/' + id);
         $(this).find('.modal-body').find('input[name="payload"]').val(payload);
@@ -801,10 +813,14 @@
         $(this).find('.modal-body').find('input[name="no_shipment"]').val(no_shipment);
       });
       $('#modalEditTonase').on('hidden.bs.modal', function (event) {
+
+        $(this).find('.modal-body').find('input[name="payload"]').val('');
         $(this).find('.modal-body').find('input[name="payload"]').val('');
         $(this).find('.modal-body').find('input[name="type_payload"]').val('');
         $(this).find('.modal-body').find('input[name="no_sj"]').val('');
         $(this).find('.modal-body').find('input[name="no_shipment"]').val('');
+        $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', 'none');
+        $(this).find('.modal-body').find('input[name="basic_price_ldo"]').val('');
       });
       $('#modalEditDocument').on('show.bs.modal', function (event) {
         let id = $(event.relatedTarget).data('id');
