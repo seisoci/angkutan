@@ -154,9 +154,9 @@ class KasbonController extends Controller
       ['page' => '/backend/kasbon', 'title' => "Kasbon"],
       ['page' => '#', 'title' => "Detail Kasbon"],
     ];
-
+    $cooperationDefault = Cooperation::where('default', '1')->first();
     $data = Kasbon::with('driver')->findOrFail($id);
-    return view('backend.invoice.kasbon.show', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    return view('backend.invoice.kasbon.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function print($id)

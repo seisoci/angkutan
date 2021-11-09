@@ -25,7 +25,7 @@
 {{--            <div class="form-group">--}}
 {{--              <label class="mx-0 text-bold d-block">Logo</label>--}}
 {{--              <img id="avatar"--}}
-{{--                   src="{{ $logo->value != NULL ? asset("/images/original/".$logo->value) : asset('media/bg/no-content.svg') }}"--}}
+{{--                   src="{{ $logo->value != NULL ? asset("storage/images/original/".$logo->value) : asset('media/bg/no-content.svg') }}"--}}
 {{--                   style="object-fit: fit; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="100px"--}}
 {{--                   width="300px">--}}
 {{--              <input type="file" class="image d-block" name="logo" accept=".jpg, .jpeg, .png">--}}
@@ -36,7 +36,7 @@
 {{--            <div class="form-group">--}}
 {{--              <label class="mx-0 text-bold d-block">Favicon</label>--}}
 {{--              <img id="avatar"--}}
-{{--                   src="{{ $favicon->value != NULL ? asset("/images/original/".$favicon->value) : asset('media/bg/no-content.svg') }}"--}}
+{{--                   src="{{ $favicon->value != NULL ? asset("storage/images/original/".$favicon->value) : asset('media/bg/no-content.svg') }}"--}}
 {{--                   style="object-fit: fit; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="50px"--}}
 {{--                   width="50px">--}}
 {{--              <input type="file" class="image d-block" name="favicon" accept=".jpg, .jpeg, .png">--}}

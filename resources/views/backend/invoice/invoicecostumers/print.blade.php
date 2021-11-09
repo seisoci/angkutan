@@ -68,7 +68,7 @@
     }
 
     .tableRekening {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: bold;
       border-collapse: collapse;
       border: 1px solid black;
@@ -133,7 +133,7 @@
 <body>
 <div style="display: flex; flex-direction: row">
   <img height="100px" width="100px"
-       src="{{ $data->costumer->cooperation->image ? asset("/images/thumbnail/".$data->costumer->cooperation->image) : asset('media/bg/no-content.svg') }}"
+       src="{{ $data->costumer->cooperation->image ? asset("storage/images/thumbnail/".$data->costumer->cooperation->image) : asset('media/bg/no-content.svg') }}"
        alt="">
   <div style="display: flex; flex-direction: column; margin-top: 30px">
     <div style="font-weight: bold; font-size: 14px">{{ $data->costumer->cooperation->name }}</div>
@@ -195,7 +195,8 @@
 <div style="float: right;">
   <div class="ttdPembayaran" style="font-size: 12px; display: flex; flex-direction: column; width: 300px;">
     <div style="text-align: center">Bandar Lampung, {{ \Carbon\Carbon::now()->format('d F Y') }}</div>
-    <div style="margin-top: 130px; text-align: center; font-weight: bold">{{ $data->costumer->cooperation->owner }}</div>
+    <div
+      style="margin-top: 130px; text-align: center; font-weight: bold">{{ $data->costumer->cooperation->owner }}</div>
     <div style="text-align: center; font-weight: bold">{{ $data->costumer->cooperation->name }}</div>
   </div>
 </div>
@@ -209,17 +210,16 @@
   <div>Dengan Hormat,</div>
   <div>Kami lampirkan tagihan jasa ekspedisi dengan rute sebagai berikut:</div>
 </div>
-<table class="tableTagihan">
+<table class="tableTagihan" style="width: 100%">
   <thead>
   <tr>
     <th>#</th>
-    <th>Tanggal</th>
+    <th style="width: 60px;">Tanggal</th>
     <th>No. Surat Jalan</th>
     <th>Muat Dari</th>
     <th>Tujuan</th>
-    <th>Customer</th>
-    <th>No Pol</th>
-    <th>No Shipment</th>
+    <th style="width: 70px;">No Pol</th>
+    <th style="width: 100px">No Shipment</th>
     <th>Biaya (Rp)</th>
   </tr>
   </thead>
@@ -231,15 +231,14 @@
       <td>{{ $item->no_sj  }}</td>
       <td>{{ $item->routefrom->name }}</td>
       <td>{{ $item->routeto->name }}</td>
-      <td>{{ $item->costumer->name }}</td>
       <td>{{ $item->transport->num_pol }}</td>
       <td>{{ $item->transport->no_shipment }}</td>
-      <td>{{ number_format($item->total_basic_price , 2, ',','.') }}</td>
+      <td style="text-align: right">{{ number_format($item->total_basic_price , 2, ',','.') }}</td>
     </tr>
   @endforeach
   <tr>
-    <td colspan="8" style="text-align: right">Total</td>
-    <td style="font-weight: bold">{{ number_format($data->total_bill , 2, ',','.') }}</td>
+    <td colspan="7" style="text-align: right">Total</td>
+    <td style="font-weight: bold; text-align: right">{{ number_format($data->total_bill , 2, ',','.') }}</td>
   </tr>
   </tbody>
 </table>

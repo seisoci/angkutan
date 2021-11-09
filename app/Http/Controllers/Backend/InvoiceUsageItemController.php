@@ -230,7 +230,6 @@ class InvoiceUsageItemController extends Controller
     $printed = new ContinousPaper($paper);
     $result .= $printed->output() . "\n";
     return response($result, 200)->header('Content-Type', 'text/plain');
-//    return view('backend.invoice.invoiceusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
   }
 
   public function destroy($id)

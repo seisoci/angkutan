@@ -389,7 +389,7 @@
         let defaultData = $(event.relatedTarget).data('default');
         $(this).find('.formUpdate').attr('action', '{{ route("backend.cooperation.index") }}/' + id)
         if (image) {
-          $(this).find('.modal-body').find('img').attr('src', '/images/thumbnail/' + image);
+          $(this).find('.modal-body').find('img').attr('src', '/storage/images/thumbnail/' + image);
         } else {
           $(this).find('.modal-body').find('img').attr('src', '/media/bg/no-content.svg');
         }

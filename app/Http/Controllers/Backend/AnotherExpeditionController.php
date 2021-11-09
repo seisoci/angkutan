@@ -71,7 +71,7 @@ class AnotherExpeditionController extends Controller
         return $actionBtn;
       })
       ->editColumn('image', function (Transport $data) {
-        return !empty($data->photo) ? asset("/images/thumbnail/$data->photo") : asset('media/users/blank.png');
+        return !empty($data->photo) ? asset("storage/images/thumbnail/$data->photo") : asset('media/users/blank.png');
       })->make(true);
   }
 
@@ -88,7 +88,7 @@ class AnotherExpeditionController extends Controller
         return $actionBtn;
       })
       ->editColumn('image', function (Driver $data) {
-        return !empty($data->photo) ? asset("/images/thumbnail/$data->photo") : asset('media/users/blank.png');
+        return !empty($data->photo) ? asset("storage/images/thumbnail/$data->photo") : asset('media/users/blank.png');
       })->make(true);
   }
 

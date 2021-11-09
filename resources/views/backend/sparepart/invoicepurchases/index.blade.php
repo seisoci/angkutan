@@ -48,6 +48,34 @@
               </div>
             </div>
           </div>
+          <div class="col-md-4 my-md-0">
+            <div class="form-group">
+              <label>Priode:</label>
+              <div class="input-group" id="dateRangePicker">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="la la-calendar-check-o"></i></span>
+                </div>
+                <input type="text" class="form-control" name="date" placeholder="Choose Date">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 my-md-0">
+            <div class="form-group">
+              <label>Nama Supplier:</label>
+              <select class="form-control" id="select2Supplier">
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4 my-md-0">
+            <div class="form-group">
+              <label>Status:</label>
+              <select class="form-control" id="select2Status">
+                <option value="null">All</option>
+                <option value="lunas">Lunas</option>
+                <option value="belum_lunas">Belum Lunas</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
       <table class="table table-hover" id="Datatable">
@@ -140,7 +168,14 @@
         order: [[10, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
-        ajax: "{{ route('backend.invoicepurchases.index') }}",
+        ajax: {
+          url: "{{ route('backend.invoicepurchases.index') }}",
+          data: function (d) {
+            d.supplier_sparepart_id = $('#select2Supplier').find(':selected').val();
+            d.status = $('#select2Status').val();
+            d.invoice_date = $("input[name=date]").val();
+          }
+        },
         columns: [
           {data: 'prefix', name: 'prefix', className: 'dt-center'},
           {data: 'num_bill', name: 'num_bill',},
@@ -182,9 +217,9 @@
             width: '75px',
             render: function (data, type, full, meta) {
               let status;
-              if(data === 'cash'){
+              if (data === 'cash') {
                 status = 'Tunai';
-              }else{
+              } else {
                 status = 'Kredit';
               }
               return status;
@@ -200,6 +235,41 @@
 
       $('#modalDelete').on('hidden.bs.modal', function (event) {
         $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
+      });
+
+      $('#dateRangePicker').daterangepicker({
+        buttonClasses: ' btn',
+        applyClass: 'btn-primary',
+        cancelClass: 'btn-secondary'
+      }, function (start, end, label) {
+        $('#dateRangePicker .form-control').val(start.format('YYYY-MM-DD') + ' / ' + end.format('YYYY-MM-DD'));
+        dataTable.draw();
+      }).on('cancel.daterangepicker', function (ev, picker) {
+        $('#dateRangePicker .form-control').val('');
+        dataTable.draw();
+      });
+
+      $("#select2Supplier").select2({
+        placeholder: "Search Supplier",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.supplierspareparts.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
+      $('#select2Status').on('change', function () {
+        dataTable.draw();
       });
 
       $("#formDelete").click(function (e) {

@@ -75,6 +75,7 @@
                     <th scope="col" class="text-center">#</th>
                     <th scope="col">Tanggal</th>
                     <th scope="col">S. Jalan</th>
+                    <th scope="col">No. Polisi</th>
                     <th scope="col">Pelanggan</th>
                     <th scope="col">Rute Dari</th>
                     <th scope="col">Rute Ke</th>
@@ -176,6 +177,7 @@
           <th>Tanggal Mulai</th>
           <th>Prefix</th>
           <th>No. Job Order</th>
+          <th>No. Polisi</th>
           <th>LDO</th>
           <th>Pelanggan</th>
           <th>Rute Dari</th>
@@ -237,6 +239,7 @@
           {data: 'date_begin', name: 'date_begin'},
           {data: 'prefix', name: 'prefix'},
           {data: 'num_bill', name: 'num_bill'},
+          {data: 'transport.num_pol', name: 'transport.num_pol'},
           {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},
           {data: 'costumer.name', name: 'costumer.name'},
           {data: 'routefrom.name', name: 'routefrom.name'},
@@ -321,6 +324,7 @@
                   ' <td class="text-center">' + (index + 1) + '</td>' +
                   ' <td>' + data.date_begin + '</td>' +
                   ' <td>' + data.prefix + '-' + data.num_bill + '</td>' +
+                  ' <td>' + data.transport.num_pol + '</td>' +
                   ' <td>' + data.costumer.name + '</td>' +
                   ' <td>' + data.routefrom.name + '</td>' +
                   ' <td>' + data.routeto.name + '</td>' +
@@ -335,7 +339,7 @@
               $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '">');
 
               $('#table_invoice tfoot').append('<tr>' +
-                '<td colspan="11" class="text-right">Total</td>' +
+                '<td colspan="12" class="text-right">Total</td>' +
                 '<td class="text-right money">' + total + '</td>' +
                 '</tr>');
 

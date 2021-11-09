@@ -11,14 +11,14 @@
       <div class="btn-group btn-group-md" role="group" aria-label="Large button group">
         <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
             class="fa fa-arrow-left"></i> Back</button>
-        <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i
-            class="fa fa-print"></i> Print</a>
-{{--        <a href="#" id="btn_print" class="btn btn-outline-secondary font-weight-bold" target="_blank">--}}
-{{--                  <span class="navi-icon">--}}
-{{--                    <i class="la la-print"></i>--}}
-{{--                  </span>--}}
-{{--          <span class="navi-text">Print</span>--}}
-{{--        </a>--}}
+{{--        <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i--}}
+{{--            class="fa fa-print"></i> Print</a>--}}
+        <a href="#" id="btn_print" class="btn btn-outline-secondary font-weight-bold" target="_blank">
+                  <span class="navi-icon">
+                    <i class="la la-print"></i>
+                  </span>
+          <span class="navi-text">Print</span>
+        </a>
       </div>
     </div>
   </div>

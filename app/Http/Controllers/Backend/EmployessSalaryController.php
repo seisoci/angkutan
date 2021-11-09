@@ -45,7 +45,7 @@ class EmployessSalaryController extends Controller
           return $actionBtn;
         })
         ->editColumn('photo', function (Employee $employee) {
-          return !empty($employee->photo) ? asset("/images/thumbnail/$employee->photo") : asset('media/users/blank.png');
+          return !empty($employee->photo) ? asset("storage/images/thumbnail/$employee->photo") : asset('media/users/blank.png');
         })
         ->addColumn('details_url', function (Employee $employee) {
           return route('backend.employeessalary.datatabledetail', $employee->id);

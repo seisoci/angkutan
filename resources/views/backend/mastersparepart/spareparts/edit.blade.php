@@ -26,7 +26,7 @@
           <div class="form-group">
             <label class="mx-0 text-bold d-block">Image Kendaraan</label>
             <img id="avatar"
-              src="{{ $data->photo != NULL ? asset("/images/original/".$data->photo) : asset('media/bg/no-content.svg') }}"
+              src="{{ $data->photo != NULL ? asset("storage/images/original/".$data->photo) : asset('media/bg/no-content.svg') }}"
               style="object-fit: cover; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="100px"
               width="100px">
             <input type="file" class="image d-block" name="photo" accept=".jpg, .jpeg, .png">

@@ -61,8 +61,28 @@ class InvoicePurchaseController extends Controller
     });
 
     if ($request->ajax()) {
+      $invoiceDate = $request['invoice_date'];
+      $supplierSparepartId = $request['supplier_sparepart_id'];
+      $status = $request['status'];
       $data = InvoicePurchase::with('supplier')
-        ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'));
+        ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
+        ->when($invoiceDate, function ($query, $date) {
+          $date_format = explode(" / ", $date);
+          $date_begin = $date_format[0];
+          $date_end = $date_format[1];
+          return $query->whereBetween('invoice_date', [$date_begin, $date_end]);
+        })
+        ->when($supplierSparepartId, function ($query, $supplierSparepartId) {
+          return $query->where('supplier_sparepart_id', $supplierSparepartId);
+        })
+        ->when($status, function ($query, $status) {
+          if ($status == 'lunas') {
+            return $query->where('rest_payment', 0);
+          } elseif ($status == 'belum_lunas') {
+            return $query->where('rest_payment', '>', $status);
+          }
+        });
+
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
@@ -204,7 +224,7 @@ class InvoicePurchaseController extends Controller
                 'kredit' => $payments['payment'][$key],
                 'table_ref' => 'invoicepurchases',
                 'code_ref' => $invoice->id,
-                'description' => "Pembayaran barang supplier $supplier->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+                'description' => "Pembayaran barang supplier $supplier->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
               ]);
 
             } else {
@@ -232,7 +252,7 @@ class InvoicePurchaseController extends Controller
             'kredit' => $restPayment,
             'table_ref' => 'invoicepurchases',
             'code_ref' => $invoice->id,
-            'description' => "Utang pembelian barang $supplier->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+            'description' => "Utang pembelian barang $supplier->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
           ]);
         }
 
@@ -244,7 +264,7 @@ class InvoicePurchaseController extends Controller
             'kredit' => $discount,
             'table_ref' => 'invoicepurchases',
             'code_ref' => $invoice->id,
-            'description' => "Diskon Pembelian barang barang $supplier->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+            'description' => "Diskon Pembelian barang barang $supplier->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
           ]);
         }
 
@@ -255,7 +275,7 @@ class InvoicePurchaseController extends Controller
           'kredit' => 0,
           'table_ref' => 'invoicepurchases',
           'code_ref' => $invoice->id,
-          'description' => "Penambahan persediaan barang $supplier->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+          'description' => "Penambahan persediaan barang $supplier->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
         ]);
 
         DB::commit();
@@ -374,8 +394,8 @@ class InvoicePurchaseController extends Controller
     );
     $printed = new ContinousPaperLong($paper);
     $result .= $printed->output() . "\n";
-//    return response($result, 200)->header('Content-Type', 'text/plain');
-    return view('backend.sparepart.invoicepurchases.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
+    return response($result, 200)->header('Content-Type', 'text/plain');
+//    return view('backend.sparepart.invoicepurchases.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function showpayment($id)
@@ -457,7 +477,7 @@ class InvoicePurchaseController extends Controller
               'kredit' => $payments['payment'][$key],
               'table_ref' => 'invoicepurchases',
               'code_ref' => $data->id,
-              'description' => "Pembayaran barang supplier $supplier->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
+              'description' => "Pembayaran barang supplier $supplier->name dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill . ""
             ]);
 
             Journal::create([
@@ -467,7 +487,7 @@ class InvoicePurchaseController extends Controller
               'kredit' => 0,
               'table_ref' => 'invoicepurchases',
               'code_ref' => $data->id,
-              'description' => "Pembayaran utang pembelian barang $supplier->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill.""
+              'description' => "Pembayaran utang pembelian barang $supplier->name dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill . ""
             ]);
           } else {
             DB::rollBack();

@@ -269,7 +269,7 @@
       $(this).find('.modal-body').find('input[name="max_weight"]').val(max_weight + ' Ton');
       $(this).find('.modal-body').find('input[name="expired_stnk"]').val(expired_stnk);
       $(this).find('.modal-body').find('textarea[name="description"]').val(description);
-      let photos = photo ? '/images/thumbnail/' + photo : '/media/bg/no-content.svg';
+      let photos = photo ? '/storage/images/thumbnail/' + photo : '/media/bg/no-content.svg';
       $(this).find('.modal-body').find('img[name="photo"]').attr('src', '' + photos);
     });
     $('#modalShow').on('hidden.bs.modal', function (event) {

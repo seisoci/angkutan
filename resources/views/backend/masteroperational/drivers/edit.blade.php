@@ -27,7 +27,7 @@
           <div class="form-group">
             <div class="image-input" id="kt_image_2">
               <div class="image-input-wrapper"
-                style="background-image: url({{ $data->photo != NULL ? asset("/images/original/".$data->photo) : asset('media/users/blank.png') }})">
+                style="background-image: url({{ $data->photo != NULL ? asset("storage/images/original/".$data->photo) : asset('media/users/blank.png') }})">
               </div>
               <label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow"
                 data-action="change" data-toggle="tooltip" data-original-title="Change avatar">
@@ -89,7 +89,7 @@
           <div class="form-group">
             <label class="mx-0 text-bold">Image KTP</label>
             <img id="avatar"
-              src="{{ $data->photo_ktp != NULL ? asset("/images/original/".$data->photo_ktp) : asset('media/bg/no-content.svg') }}"
+              src="{{ $data->photo_ktp != NULL ? asset("storage/images/original/".$data->photo_ktp) : asset('media/bg/no-content.svg') }}"
               style="object-fit: fit; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="250px"
               width="100%">
             <input type="file" class="image" name="photo_ktp" accept=".jpg, .jpeg, .png">
@@ -100,7 +100,7 @@
           <div class="form-group">
             <label class="mx-0 text-bold">Image SIM</label>
             <img id="avatar"
-              src="{{ $data->photo_sim != NULL ? asset("/images/original/".$data->photo_sim) : asset('media/bg/no-content.svg') }}"
+              src="{{ $data->photo_sim != NULL ? asset("storage/images/original/".$data->photo_sim) : asset('media/bg/no-content.svg') }}"
               style="object-fit: fit; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="250px"
               width="100%">
             <input type="file" class="image" name="photo_sim" accept=".jpg, .jpeg, .png">

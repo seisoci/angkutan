@@ -68,25 +68,25 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+        <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
         </td>
       </tr>
       <tr>
-        <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
+        <td scope="col" style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Supir</td>
         <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
         <td scope="col" class="text-left" style="width:18%"> {{ $data->driver->name }}</td>
       </tr>
       <tr>
-        <td scope="col">{{ $profile['telp'] ?? ''}}</td>
+        <td scope="col">{{ $cooperationDefault['telp'] ?? ''}}</td>
         <td scope="col" class="text-left" style="width:10%"></td>
         <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
         <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
         <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
       </tr>
       <tr>
-        <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
+        <td scope="col">FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
       </tr>
       </tbody>
     </table>

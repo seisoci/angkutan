@@ -75,6 +75,7 @@
                     <th scope="col" class="text-center">#</th>
                     <th scope="col">Tanggal</th>
                     <th scope="col">No. JobOrder</th>
+                    <th scope="col">No. Polisi</th>
                     <th scope="col">No. SJ</th>
                     <th scope="col">No. Shipment</th>
                     <th scope="col">Pelanggan</th>
@@ -184,6 +185,7 @@
           <th>Tanggal Mulai</th>
           <th>Prefix</th>
           <th>No. Job Order</th>
+          <th>No. Polisi</th>
           <th>No. SJ</th>
           <th>No. Shipment</th>
           <th>Pelanggan</th>
@@ -245,6 +247,7 @@
           {data: 'date_begin', name: 'date_begin'},
           {data: 'prefix', name: 'prefix'},
           {data: 'num_bill', name: 'num_bill'},
+          {data: 'transport.num_pol', name: 'transport.num_pol'},
           {data: 'no_sj', name: 'no_sj'},
           {data: 'no_shipment', name: 'no_shipment'},
           {data: 'costumer.name', name: 'costumer.name'},
@@ -378,6 +381,7 @@
                   ' <td class="text-center">' + (index + 1) + '</td>' +
                   ' <td>' + data.date_begin + '</td>' +
                   ' <td>' + data.prefix + '-' + data.num_bill + '</td>' +
+                  ' <td>' + data.transport.num_pol + '</td>' +
                   ' <td>' + (data.no_sj ?? '') + '</td>' +
                   ' <td>' + (data.no_shipment ?? '') + '</td>' +
                   ' <td>' + data.costumer.name + '</td>' +

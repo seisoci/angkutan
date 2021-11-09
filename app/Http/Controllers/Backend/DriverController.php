@@ -41,7 +41,7 @@ class DriverController extends Controller
               <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete btn btn-danger btn-sm">Delete</a>';
           return $actionBtn;
         })->editColumn('image', function (Driver $data) {
-          return !empty($data->photo) ? asset("/images/thumbnail/$data->photo") : asset('media/users/blank.png');
+          return !empty($data->photo) ? asset("storage/images/thumbnail/$data->photo") : asset('media/users/blank.png');
         })->make(true);
     }
     return view('backend.masteroperational.drivers.index', compact('config', 'page_breadcrumbs'));

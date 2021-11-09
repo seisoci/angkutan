@@ -83,6 +83,7 @@ use App\Http\Controllers\Backend\ReportProfitLossController as BackendReportProf
 use App\Http\Controllers\Backend\ReportCustomerRoadMoneyController as BackendReportCustomerRoadMoneyController;
 use App\Http\Controllers\Backend\ReportLdoNetProfitController as BackendReportLdoNetProfitController;
 use App\Http\Controllers\Backend\SubmissionController as BackendSubmissionController;
+use App\Http\Controllers\Backend\ReportPiutangController as BackendReportPiutangController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -99,6 +100,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
   return redirect('/backend');
+});
+Route::get('/linkstorage', function () {
+  Artisan::call('storage:link');
 });
 Route::get('backend', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('backend', [LoginController::class, 'login']);
@@ -369,5 +373,6 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('finance', BackendReportFinanceController::class);
     Route::resource('neraca', BackendReportNeracaBalanceController::class);
     Route::resource('profitloss', BackendReportProfitLossController::class);
+    Route::resource('reportpiutang', BackendReportPiutangController::class);
   });
 });

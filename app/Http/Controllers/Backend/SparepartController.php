@@ -49,7 +49,7 @@ class SparepartController extends Controller
               <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete btn btn-danger btn-sm">Delete</a>';
           return $actionBtn;
         })->editColumn('image', function (Sparepart $data) {
-          return !empty($data->photo) ? asset("/images/thumbnail/$data->photo") : asset('media/bg/no-content.svg');
+          return !empty($data->photo) ? asset("storage/images/thumbnail/$data->photo") : asset('media/bg/no-content.svg');
         })->make(true);
     }
     return view('backend.mastersparepart.spareparts.index', compact('config', 'page_breadcrumbs'));

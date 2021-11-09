@@ -18,7 +18,7 @@ $direction = config('layout.extras.user.offcanvas.direction', 'right');
     {{-- Header --}}
     <div class="d-flex align-items-center mt-5">
       <div class="symbol symbol-100 mr-5">
-        <div class="symbol-label" style="background-image:url('{{ auth()->user()->image ? asset("/images/thumbnail/". auth()->user()->image) : asset('media/users/blank.png') }}')"></div>
+        <div class="symbol-label" style="background-image:url('{{ auth()->user()->image ? asset("storage/images/thumbnail/". auth()->user()->image) : asset('media/users/blank.png') }}')"></div>
         <i class="symbol-badge bg-success"></i>
       </div>
       <div class="d-flex flex-column">

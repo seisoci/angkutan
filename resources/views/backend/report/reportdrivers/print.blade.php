@@ -112,7 +112,7 @@
             <img
               height="100px"
               width="80px"
-              src="{{ !empty($item->photo) ? asset("/images/thumbnail/$item->photo") : asset('media/users/blank.png') }}" alt="Profile">
+              src="{{ !empty($item->photo) ? asset("storage/images/thumbnail/$item->photo") : asset('media/users/blank.png') }}" alt="Profile">
           </td>
         </tr>
       @endforeach

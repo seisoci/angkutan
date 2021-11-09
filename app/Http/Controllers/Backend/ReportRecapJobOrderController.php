@@ -39,7 +39,7 @@ class ReportRecapJobOrderController extends Controller
       $data = DB::table('job_orders')
         ->select(
           DB::raw(
-            'COUNT(`job_orders`.`costumer_id`)                                               AS `report_qty`,
+            'COUNT(`job_orders`.`id`)                                               AS `report_qty`,
        `costumers`.`name`                                                                         AS `costumer_name`,
        `costumers`.`address`                                                                      AS `costumer_address`,
        @basic_price := SUM(`job_orders`.`invoice_bill`)                                           AS `report_basic_price`,
@@ -60,7 +60,7 @@ class ReportRecapJobOrderController extends Controller
         '))
         ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
         ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
-        ->where('job_orders.status_cargo', 'selesai')
+        ->where('job_orders.status_cargo', '!=', 'batal')
         ->whereNull('job_orders.invoice_costumer_id')
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
@@ -105,7 +105,7 @@ class ReportRecapJobOrderController extends Controller
         '))
       ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
       ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
-      ->where('job_orders.status_cargo', 'selesai')
+      ->where('job_orders.status_cargo', '!=', 'batal')
       ->whereNull('job_orders.invoice_costumer_id')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
@@ -282,7 +282,7 @@ class ReportRecapJobOrderController extends Controller
         '))
       ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
       ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
-      ->where('job_orders.status_cargo', 'selesai')
+      ->where('job_orders.status_cargo', '!=', 'batal')
       ->whereNull('job_orders.invoice_costumer_id')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);

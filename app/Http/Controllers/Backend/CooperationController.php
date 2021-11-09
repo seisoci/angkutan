@@ -47,7 +47,7 @@ class CooperationController extends Controller
           ';
           return $actionBtn;
         })->editColumn('image', function (Cooperation $data) {
-          return !empty($data->image) ? asset("/images/thumbnail/$data->image") : asset('media/bg/no-content.svg');
+          return !empty($data->image) ? asset("/storage/images/thumbnail/$data->image") : asset('media/bg/no-content.svg');
         })->make(true);
     }
     return view('backend.settings.cooperation.index', compact('config', 'page_breadcrumbs'));
@@ -64,7 +64,7 @@ class CooperationController extends Controller
       $image = NULL;
       $dimensions = [array('500', '500', 'thumbnail')];
       if (isset($request->image) && !empty($request->image)) {
-        $image = Fileupload::uploadImagePublic('image', $dimensions, 'public');
+        $image = Fileupload::uploadImagePublic('image', $dimensions, 'storage');
       }
 
       Cooperation::create([
@@ -109,7 +109,7 @@ class CooperationController extends Controller
         ]);
       }
       $dimensions = [array('500', '500', 'thumbnail')];
-      $image = isset($request->image) && !empty($request->image) ? Fileupload::uploadImagePublic('image', $dimensions, 'public', $data->image) : $data->image;
+      $image = isset($request->image) && !empty($request->image) ? Fileupload::uploadImagePublic('image', $dimensions, 'storage', $data->image) : $data->image;
 
       $data->update([
         'image' => $image,

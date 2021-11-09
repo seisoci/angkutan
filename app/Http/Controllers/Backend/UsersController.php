@@ -49,7 +49,7 @@ class UsersController extends Controller
           return $row->getRoleNames()[0];
         })
         ->editColumn('image', function (User $user) {
-          return !empty($user->image) ? asset("/images/thumbnail/$user->image") : asset('media/users/blank.png');
+          return !empty($user->image) ? asset("storage/images/thumbnail/$user->image") : asset('media/users/blank.png');
         })->make(true);
     }
     return view('backend.users.index', compact('config', 'page_breadcrumbs'));

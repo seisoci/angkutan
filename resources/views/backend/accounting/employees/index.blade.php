@@ -246,8 +246,8 @@
       $(this).find('.modal-body').find('input[name="position"]').val(position);
       $(this).find('.modal-body').find('input[name="no_card"]').val(no_card);
       $(this).find('.modal-body').find('input[name="status"]').val(status);
-      let photo_img = photo ? '/images/thumbnail/' + photo : '/media/bg/no-content.svg';
-      let photo_ktp_img = photo_ktp ? '/images/thumbnail/' + photo_ktp : '/media/bg/no-content.svg';
+      let photo_img = photo ? '/storage/images/thumbnail/' + photo : '/media/bg/no-content.svg';
+      let photo_ktp_img = photo_ktp ? '/storage/images/thumbnail/' + photo_ktp : '/media/bg/no-content.svg';
       $(this).find('.modal-body').find('img[name="photo"]').attr('src', '' + photo_img);
       $(this).find('.modal-body').find('img[name="photo_ktp"]').attr('src', '' + photo_ktp_img);
     });

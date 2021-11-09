@@ -48,7 +48,7 @@ class EmployeeController extends Controller
           return $actionBtn;
         })
         ->editColumn('photo', function (Employee $employee) {
-          return !empty($employee->photo) ? asset("/images/thumbnail/$employee->photo") : asset('media/users/blank.png');
+          return !empty($employee->photo) ? asset("storage/images/thumbnail/$employee->photo") : asset('media/users/blank.png');
         })->make(true);
     }
     return view('backend.accounting.employees.index', compact('config', 'page_breadcrumbs'));

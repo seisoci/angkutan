@@ -41,7 +41,7 @@ class ReportDriverController extends Controller
       return DataTables::of($data)
         ->addIndexColumn()
         ->editColumn('image', function (Driver $data) {
-          return !empty($data->photo) ? asset("/images/thumbnail/$data->photo") : asset('media/users/blank.png');
+          return !empty($data->photo) ? asset("storage/images/thumbnail/$data->photo") : asset('media/users/blank.png');
         })->make(true);
     }
     return view('backend.report.reportdrivers.index', compact('config', 'page_breadcrumbs'));
@@ -159,7 +159,7 @@ class ReportDriverController extends Controller
     foreach ($data as $item):
       $startCell++;
       $drawing = new MemoryDrawing();
-      $image = !empty($item->photo) ? asset("/images/thumbnail/$item->photo") : asset('media/users/blank.png');
+      $image = !empty($item->photo) ? asset("storage/images/thumbnail/$item->photo") : asset('media/users/blank.png');
       $gdImage = strpos($image, '.jpg') ? imagecreatefromjpeg($image) : imagecreatefrompng($image);
       $sheet->getRowDimension($startCell)->setRowHeight(100);
       $drawing->setName($item->name);

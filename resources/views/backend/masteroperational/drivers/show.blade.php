@@ -42,7 +42,7 @@
         <div class="form-group">
           <div class="image-input" id="kt_image_2">
             <img class="image-input-wrapper"
-              src="{{ $data->photo != NULL ? asset("/images/original/".$data->photo) : asset('media/users/blank.png') }}"
+              src="{{ $data->photo != NULL ? asset("storage/images/original/".$data->photo) : asset('media/users/blank.png') }}"
               alt="">
           </div>
         </div>
@@ -85,7 +85,7 @@
         <div class="form-group">
           <label class="mx-0 text-bold">Image KTP</label>
           <img id="avatar"
-            src="{{ $data->photo_ktp != NULL ? asset("/images/original/".$data->photo_ktp) : asset('media/bg/no-content.svg') }}"
+            src="{{ $data->photo_ktp != NULL ? asset("storage/images/original/".$data->photo_ktp) : asset('media/bg/no-content.svg') }}"
             style="object-fit: cover; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="250px"
             width="100%">
 
@@ -93,7 +93,7 @@
         <div class="form-group">
           <label class="mx-0 text-bold">Image SIM</label>
           <img id="avatar"
-            src="{{ $data->photo_sim != NULL ? asset("/images/original/".$data->photo_sim) : asset('media/bg/no-content.svg') }}"
+            src="{{ $data->photo_sim != NULL ? asset("storage/images/original/".$data->photo_sim) : asset('media/bg/no-content.svg') }}"
             style="object-fit: cover; border: 1px solid #d9d9d9" class="mb-2 border-2 mx-auto" height="250px"
             width="100%">
 

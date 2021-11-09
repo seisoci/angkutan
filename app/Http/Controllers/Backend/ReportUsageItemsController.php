@@ -323,7 +323,7 @@ class ReportUsageItemsController extends Controller
         `transports`.`num_pol` AS `num_pol`,
         `drivers`.`name` AS `driver_name`,
         `usage_items`.`price` AS `price`,
-        SUM(`usage_items`.`price` * `usage_items`.`qty`) AS total_price
+        (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
         '))
       ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
       ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
