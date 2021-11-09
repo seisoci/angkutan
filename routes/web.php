@@ -83,10 +83,9 @@ use App\Http\Controllers\Backend\ReportProfitLossController as BackendReportProf
 use App\Http\Controllers\Backend\ReportCustomerRoadMoneyController as BackendReportCustomerRoadMoneyController;
 use App\Http\Controllers\Backend\ReportLdoNetProfitController as BackendReportLdoNetProfitController;
 use App\Http\Controllers\Backend\SubmissionController as BackendSubmissionController;
-use App\Http\Controllers\Backend\ReportPiutangController as BackendReportPiutangController;
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Backend as Backend;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -229,6 +228,8 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('invoicekasbonemployees/{id}/print', [BackendInvoiceKasbonEmployeeController::class, 'print']);
     Route::get('kasbon/{id}/print', [BackendKasbonController::class, 'print']);
     Route::get('kasbonemployees/{id}/print', [BackendKasbonEmployeeController::class, 'print']);
+    Route::get('reportpiutanglunas/print', [Backend\ReportPiutangLunasController::class, 'print']);
+    Route::get('reportpiutangbelumlunas/print', [Backend\ReportPiutangBelumLunasController::class, 'print']);
 
     //Datatables Details
     Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
@@ -373,6 +374,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('finance', BackendReportFinanceController::class);
     Route::resource('neraca', BackendReportNeracaBalanceController::class);
     Route::resource('profitloss', BackendReportProfitLossController::class);
-    Route::resource('reportpiutang', BackendReportPiutangController::class);
+    Route::resource('reportpiutanglunas', Backend\ReportPiutangLunasController::class);
+    Route::resource('reportpiutangbelumlunas', Backend\ReportPiutangBelumLunasController::class);
   });
 });

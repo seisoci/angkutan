@@ -123,7 +123,6 @@
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
-
       $('#btn_pdf').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
@@ -136,8 +135,7 @@
       $('#btn_print').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          status: $('#selectStatusSalary').val() || '',
+          customer_id: $('#select2Costumer').find(':selected').val() || '',
           date: $("input[name=date]").val(),
         });
         window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
@@ -152,7 +150,7 @@
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
-          url: "{{ route('backend.reportpiutang.index') }}",
+          url: "{{ route('backend.reportpiutangbelumlunas.index') }}",
           data: function (d) {
             d.costumer_id = $('#select2Costumer').find(':selected').val();
             d.date = $("input[name=date]").val();

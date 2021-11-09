@@ -299,7 +299,7 @@ return [
       'list' => ['ledger', 'finance', 'profitloss', 'ledgeraccounting', 'ledgeroperational', 'ledgersparepart',
         'recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
         'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportldonetprofit',
-        'reportcostumers', 'reportdrivers', 'reporttransports',
+        'reportcostumers', 'reportdrivers', 'reporttransports', 'reportpiutangbelumlunas','reportpiutanglunas',
         'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo',
         'reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees',
         'reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks'
@@ -382,7 +382,7 @@ return [
           'title' => 'Laporan Data',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['reportcostumers', 'reportdrivers', 'reporttransports', 'reportcustomerroadmoney'],
+          'list' => ['reportcostumers', 'reportdrivers', 'reporttransports', 'reportcustomerroadmoney', 'reportpiutangbelumlunas', 'reportpiutanglunas'],
           'submenu' => [
             ['title' => 'Laporan Data Pelanggan',
               'page' => 'backend/reportcostumers'
@@ -397,6 +397,14 @@ return [
             [
               'title' => 'Laporan Data Kendaraan',
               'page' => 'backend/reporttransports'
+            ],
+            [
+              'title' => 'Laporan Piutang Belum Lunas',
+              'page' => 'backend/reportpiutangbelumlunas'
+            ],
+            [
+              'title' => 'Laporan Piutang Lunas',
+              'page' => 'backend/reportpiutanglunas'
             ],
           ]
         ],

@@ -126,7 +126,7 @@ class InvoiceUsageItemController extends Controller
             'kredit' => $totalPrice,
             'table_ref' => 'invoiceusageitems',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Pengurangan stok di persediaan barang dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')." untuk supir $driver->name dengan No. Pol: $transport->num_pol"
+            'description' => "Pengurangan stok di persediaan barang dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill') . " untuk supir $driver->name dengan No. Pol: $transport->num_pol"
           ]);
 
           Journal::create([
@@ -136,7 +136,7 @@ class InvoiceUsageItemController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoiceusageitems',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Beban pemakaian barang dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')." untuk supir $driver->name  dengan No. Pol: $transport->num_pol"
+            'description' => "Beban pemakaian barang dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill') . " untuk supir $driver->name  dengan No. Pol: $transport->num_pol"
           ]);
 
           $stock->qty = $stock->qty - $items['qty'][$key];
@@ -157,7 +157,6 @@ class InvoiceUsageItemController extends Controller
     }
     return $response;
   }
-
 
   public function show($id)
   {
@@ -220,7 +219,7 @@ class InvoiceUsageItemController extends Controller
         ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
       ],
       'table' => [
-        'header' => ['No', 'Nama Barang', 'Supplier','Jml'],
+        'header' => ['No', 'Nama Barang', 'Supplier', 'Jml'],
         'produk' => $item,
         'footer' => array(
           'catatan' => ''
@@ -234,13 +233,33 @@ class InvoiceUsageItemController extends Controller
 
   public function destroy($id)
   {
-    $data = InvoiceUsageItem::findOrFail($id);
-    Journal::where('table_ref', 'invoiceusageitems')->where('code_ref', $data->id)->delete();
-    if ($data->delete()) {
-      $response = response()->json([
-        'status' => 'success',
-        'message' => 'Data has been deleted',
-      ]);
+    try {
+      DB::beginTransaction();
+      $data = InvoiceUsageItem::with('usageitem')->findOrFail($id);
+      foreach ($data->usageitem as $item):
+        $stock = Stock::where([
+          ['invoice_purchase_id', $item['invoice_purchase_id']],
+          ['sparepart_id', $item['sparepart_id']]
+        ])->first();
+
+        $stock->update([
+          'qty' => $stock->qty + $item['qty']
+        ]);
+        $stock->save();
+      endforeach;
+
+      Journal::where('table_ref', 'invoiceusageitems')->where('code_ref', $data->id)->delete();
+      if ($data->delete()) {
+        DB::commit();
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been deleted',
+        ]);
+      }
+
+    } catch (\Throwable $throw) {
+      DB::rollBack();
+      $response = $throw;
     }
     return $response;
   }
