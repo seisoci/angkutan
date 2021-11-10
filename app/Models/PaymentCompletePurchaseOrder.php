@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
-
+use DateTimeInterface;
 /**
  * @mixin IdeHelperPaymentCompletePurchaseOrder
  */
@@ -27,4 +27,10 @@ class PaymentCompletePurchaseOrder extends Model
   public function coa(){
     return $this->belongsTo(Coa::class);
   }
+
+  protected function serializeDate(DateTimeInterface $date)
+  {
+    return $date->format('Y-m-d H:i:s');
+  }
+
 }

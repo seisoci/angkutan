@@ -19,9 +19,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*','https://als-triel.com', 'http://als-triel.com'],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => ['/https?:\/\/als-triel\.com\/?\z/'],
 
     'allowed_headers' => ['*'],
 

@@ -215,12 +215,16 @@ return [
       'icon' => 'media/svg/icons/Shopping/Cart2.svg',
       'bullet' => 'dot',
       'root' => true,
-      'list' => ['invoicepurchases', 'invoicereturpurchases', 'invoiceusageitems', 'invoiceusageitemsoutside'],
+      'list' => ['invoicepurchases', 'invoicereturpurchases', 'invoiceusageitems', 'invoiceusageitemsoutside', 'completepurchaseorder'],
       'arrow' => true,
       'submenu' => [
         [
           'title' => 'Pembelian Barang',
           'page' => 'backend/invoicepurchases'
+        ],
+        [
+          'title' => 'Pelunasan Pembelian Barang',
+          'page' => 'backend/completepurchaseorder'
         ],
         [
           'title' => 'Retur Pembelian',

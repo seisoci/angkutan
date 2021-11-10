@@ -89,8 +89,9 @@ class InvoicePurchaseController extends Controller
 //          $restPayment = $row->rest_payment != 0 ? '<a href="invoicepurchases/' . $row->id . '/edit" class="dropdown-item">Bayar Sisa</a>' : NULL;
           $restPayment = NULL;
           $usageItem = UsageItem::where('invoice_purchase_id', $row->id)->exists();
+          $completePO = InvoicePurchase::where('id', $row->id)->whereNotNull('complete_purchase_order_id')->first();
           $invoiceReturItem = InvoiceReturPurchase::where('invoice_purchase_id', $row->id)->exists();
-          $deleteBtn = $usageItem || $invoiceReturItem ? NULL : '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
+          $deleteBtn = $usageItem || $invoiceReturItem || !isset($completePO) ? NULL : '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
           $actionBtn = '
               <div class="dropdown">
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -148,9 +149,9 @@ class InvoicePurchaseController extends Controller
           $totalBill += $items['qty'][$key] * $items['price'][$key];
         endforeach;
 
-        foreach ($payments['date'] as $key => $item):
+   /*     foreach ($payments['date'] as $key => $item):
           $totalPayment += $payments['payment'][$key];
-        endforeach;
+        endforeach;*/
 
         $restPayment = ($totalBill - $discount) - $totalPayment;
 
@@ -182,16 +183,9 @@ class InvoicePurchaseController extends Controller
             'qty' => $items['qty'][$key]
           ]);
 
-//          $stockSummary = Stock::firstOrCreate(
-//            ['sparepart_id' => $items['sparepart_id'][$key]],
-//            ['qty' => $items['qty'][$key]]
-//          );
-//          if (!$stockSummary->wasRecentlyCreated) {
-//            $stockSummary->increment('qty', $items['qty'][$key]);
-//          }
         endforeach;
 
-        foreach ($payments['date'] as $key => $item):
+   /*     foreach ($payments['date'] as $key => $item):
           $coa = Coa::findOrFail($payments['coa'][$key]);
           if ($item) {
             $checksaldo = DB::table('journals')
@@ -230,7 +224,7 @@ class InvoicePurchaseController extends Controller
               ]);
             }
           }
-        endforeach;
+        endforeach;*/
 
         if ($restPayment <= -1) {
           return response()->json([

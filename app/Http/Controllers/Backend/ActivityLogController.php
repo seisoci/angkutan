@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use DataTables;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
@@ -27,6 +28,9 @@ class ActivityLogController extends Controller
           $actionBtn = '
         <a href="#" data-toggle="modal" data-target="#modalShow" data-id="' . $row->id . '" class="edit btn btn-primary btn-sm">Lihat Perubahan</a>';
           return $actionBtn;
+        })
+        ->editColumn('created_at', function ($row){
+          return $row['created_at'];
         })
         ->make(true);
     }
