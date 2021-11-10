@@ -139,9 +139,14 @@
                                                disabled style="width: 175px;"/>
               </td>
             </tr>
+            <tr>
+              <td colspan="2" class="text-right">
+                <button type="submit" class="btn btn-primary rounded-0">Submit</button>
+              </td>
+            </tr>
             </tbody>
           </table>
-          <div class="table-responsive">
+          {{--<div class="table-responsive">
             <table class="table table-bordered">
               <thead>
               <tr>
@@ -177,8 +182,8 @@
               </tr>
               </tbody>
             </table>
-          </div>
-          <table class="table table-borderless">
+          </div>--}}
+        {{--  <table class="table table-borderless">
             <thead>
             <tr>
               <th class="text-right" scope="col"></th>
@@ -207,12 +212,10 @@
             </tr>
             <tr>
               <td></td>
-              <td class="text-right" style="width: 150px">
-                <button type="submit" class="btn btn-primary rounded-0">Submit</button>
-              </td>
+
             </tr>
             </tbody>
-          </table>
+          </table>--}}
         </div>
       </form>
     </div>

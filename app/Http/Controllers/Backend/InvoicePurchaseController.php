@@ -86,7 +86,8 @@ class InvoicePurchaseController extends Controller
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
-          $restPayment = $row->rest_payment != 0 ? '<a href="invoicepurchases/' . $row->id . '/edit" class="dropdown-item">Bayar Sisa</a>' : NULL;
+//          $restPayment = $row->rest_payment != 0 ? '<a href="invoicepurchases/' . $row->id . '/edit" class="dropdown-item">Bayar Sisa</a>' : NULL;
+          $restPayment = NULL;
           $usageItem = UsageItem::where('invoice_purchase_id', $row->id)->exists();
           $invoiceReturItem = InvoiceReturPurchase::where('invoice_purchase_id', $row->id)->exists();
           $deleteBtn = $usageItem || $invoiceReturItem ? NULL : '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
@@ -131,12 +132,6 @@ class InvoicePurchaseController extends Controller
       'items.qty.*' => 'required|integer',
       'items.price' => 'required|array',
       'items.price.*' => 'required|integer',
-//      'payment.date' => 'required|array',
-//      'payment.date.*' => 'required|date_format:Y-m-d',
-//      'payment.payment' => 'required|array',
-//      'payment.payment.*' => 'required|integer',
-//      'payment.coa' => 'required|array',
-//      'payment.coa.*' => 'required|integer',
     ]);
 
     if ($validator->passes()) {

@@ -23,6 +23,7 @@ class InvoicePurchase extends Model
 
   protected $fillable = [
     'supplier_sparepart_id',
+    'complete_purchase_order_id',
     'prefix',
     'num_bill',
     'invoice_date',

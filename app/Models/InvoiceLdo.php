@@ -39,7 +39,6 @@ class InvoiceLdo extends Model
     return $date->format('Y-m-d H:i:s');
   }
 
-
   public function anotherexpedition()
   {
     return $this->belongsTo(AnotherExpedition::class, 'another_expedition_id');

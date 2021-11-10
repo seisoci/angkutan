@@ -17,7 +17,7 @@ class ReportPiutangBelumLunasController extends Controller
 
   function __construct()
   {
-    $this->middleware('permission:reportpiutanglunas-list|reportpiutanglunas-create|reportpiutanglunas-edit|reportpiutanglunas-delete', ['only' => ['index']]);
+    $this->middleware('permission:reportpiutangbelumlunas-list|reportpiutangbelumlunas-create|reportpiutangbelumlunas-edit|reportpiutangbelumlunas-delete', ['only' => ['index']]);
   }
 
   public function index(Request $request)
@@ -54,7 +54,7 @@ class ReportPiutangBelumLunasController extends Controller
         ->rawColumns(['num_invoice'])
         ->make(true);
     }
-    return view('backend.report.reportpiutanglunas.index', compact('config', 'page_breadcrumbs'));
+    return view('backend.report.reportpiutangbelumlunas.index', compact('config', 'page_breadcrumbs'));
   }
 
   public function print(Request $request)

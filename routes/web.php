@@ -100,9 +100,7 @@ use App\Http\Controllers\Backend as Backend;
 Route::get('/', function () {
   return redirect('/backend');
 });
-Route::get('/linkstorage', function () {
-  Artisan::call('storage:link');
-});
+
 Route::get('backend', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('backend', [LoginController::class, 'login']);
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
@@ -230,6 +228,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('kasbonemployees/{id}/print', [BackendKasbonEmployeeController::class, 'print']);
     Route::get('reportpiutanglunas/print', [Backend\ReportPiutangLunasController::class, 'print']);
     Route::get('reportpiutangbelumlunas/print', [Backend\ReportPiutangBelumLunasController::class, 'print']);
+    Route::get('completepurchaseorder/{id}/print', [Backend\CompletePurchaseOrderController::class, 'print']);
 
     //Datatables Details
     Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
@@ -265,6 +264,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('reportcustomerroadmoney/findbypk/{id}', [BackendReportCustomerRoadMoneyController::class, 'findbypk'])->name('reportcustomerroadmoney.findbypk');
     Route::get('operationalexpenses/findbypk/{id}', [BackendOperationalExpenseController::class, 'findbypk'])->name('operationalexpense.findbypk');
     Route::get('submission/findbypk/{id}', [BackendSubmissionController::class, 'findbypk'])->name('submission.findbypk');
+    Route::post('completepurchaseorder/findbypk', [Backend\CompletePurchaseOrderController::class, 'findbypk'])->name('completepurchaseorder.findbypk');
 
     //Master Operationals
     Route::resource('costumers', BackendCostumerController::class)->except(['create', 'edit', 'show']);
@@ -376,5 +376,6 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('profitloss', BackendReportProfitLossController::class);
     Route::resource('reportpiutanglunas', Backend\ReportPiutangLunasController::class);
     Route::resource('reportpiutangbelumlunas', Backend\ReportPiutangBelumLunasController::class);
+    Route::resource('completepurchaseorder', Backend\CompletePurchaseOrderController::class);
   });
 });
