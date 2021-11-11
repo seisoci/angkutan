@@ -38,7 +38,7 @@
                 <table class="table table-bordered table-hover" id="Datatable">
                   <thead>
                   <tr>
-                    <th>#</th>
+                    <th>No</th>
                     <th class="text-center" colspan="5">Nama</th>
                   </tr>
                   </thead>

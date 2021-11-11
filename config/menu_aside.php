@@ -303,7 +303,7 @@ return [
       'list' => ['ledger', 'finance', 'profitloss', 'ledgeraccounting', 'ledgeroperational', 'ledgersparepart',
         'recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
         'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportldonetprofit',
-        'reportcostumers', 'reportdrivers', 'reporttransports', 'reportpiutangbelumlunas','reportpiutanglunas',
+        'reportcostumers', 'reportdrivers', 'reporttransports', 'reportpiutangbelumlunas', 'reportpiutanglunas',
         'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo',
         'reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees',
         'reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks'

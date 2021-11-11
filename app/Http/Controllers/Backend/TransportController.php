@@ -74,7 +74,7 @@ class TransportController extends Controller
 
     if ($validator->passes()) {
       $dimensions = [array('1280', '720', 'thumbnail')];
-      $image = isset($request->photo) && !empty($request->photo) ? Fileupload::uploadImagePublic('photo', $dimensions, 'public') : NULL;
+      $image = isset($request->photo) && !empty($request->photo) ? Fileupload::uploadImagePublic('photo', $dimensions, 'storage') : NULL;
       Transport::create([
         'another_expedition_id' => $request->input('another_expedition_id') ?? NULL,
         'num_pol' => $request->input('num_pol'),
@@ -133,7 +133,7 @@ class TransportController extends Controller
 
     if ($validator->passes()) {
       $dimensions = [array('1280', '720', 'thumbnail')];
-      $image = isset($request->photo) && !empty($request->photo) ? Fileupload::uploadImagePublic('photo', $dimensions, 'public', $transport->photo) : $transport->photo;
+      $image = isset($request->photo) && !empty($request->photo) ? Fileupload::uploadImagePublic('photo', $dimensions, 'storage', $transport->photo) : $transport->photo;
       $transport->update([
         'another_expedition_id' => $request->input('another_expedition_id') ?? NULL,
         'num_pol' => $request->input('num_pol'),
@@ -166,7 +166,7 @@ class TransportController extends Controller
       'status' => 'error',
       'message' => 'Data cannot be deleted',
     ]);
-    File::delete(["images/original/$transport->photo", "images/thumbnail/$transport->photo"]);
+    File::delete(["storage/images/original/$transport->photo", "storage/images/thumbnail/$transport->photo"]);
     if ($transport->delete()) {
       $response = response()->json([
         'status' => 'success',

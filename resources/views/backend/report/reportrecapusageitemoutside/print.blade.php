@@ -93,7 +93,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>No. Pembelian</th>
         <th>Tgl Pembelian</th>
         <th>Nama Supir</th>

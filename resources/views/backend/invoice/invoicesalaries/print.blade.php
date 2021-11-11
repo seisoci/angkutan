@@ -51,7 +51,7 @@
       }
 
       @page {
-        size: A4 potrait;
+        size: A4 portrait;
       }
     }
   </style>
@@ -69,7 +69,7 @@
             <td class="text-left" style="width:10%"></td>
             <td class="text-left pl-20" style="width:20%">Tanggal</td>
             <td class="text-left" style="width:2%">: &ensp;</td>
-            <td class="text-left" style="width:18%"> {{ $data->created_at }}</td>
+            <td class="text-left" style="width:18%"> {{ $data->invoice_date }}</td>
           </tr>
           <tr>
             <td style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
@@ -88,9 +88,6 @@
           <tr>
             <td>FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
             <td class="text-left" style="width:10%"></td>
-            <td class="text-left pl-20" style="width:20%">No. Polisi</td>
-            <td class="text-left" style="width:2%">: &ensp;</td>
-            <td class="text-left" style="width:18%"> {{ $data->transport->num_pol }}</td>
           </tr>
         </tbody>
       </table>
@@ -98,22 +95,22 @@
       <table class="table">
         <thead>
           <tr>
-            <th style="width:5%">#</th>
-            <th style="width:15%">No. Job Order</th>
-            <th style="width:5%">KETERANGAN</th>
-            <th style="width:30%">PELANGGAN</th>
-            <th style="width:30%">RUTE</th>
-            <th class="text-right" style="width:15%">JUMLAH</th>
+            <th style="width:5%">No</th>
+            <th style="width:10%">Tgl. Muat</th>
+            <th style="width:10%">Muatan</th>
+            <th style="width:50%">Rute</th>
+            <th style="width:15%">Muatan</th>
+            <th class="text-right" style="width:15%">Nominal</th>
           </tr>
         </thead>
         <tbody>
           @foreach ($data->joborders as $item)
           <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $item->num_prefix }}</td>
-            <td>Gaji</td>
-            <td>{{ $item->costumer->name }}</td>
-            <td>{{ $item->routefrom->name }} -> {{ $item->routeto->name }}</td>
+            <td>{{ $item->date_begin }}</td>
+            <td>{{ $item->costumer->cooperation->nickname, }}</td>
+            <td>{{ $item->routefrom->name . '-' . $item->routeto->name }}</td>
+            <td>{{ $item->cargo->name }}</td>
             <td class="text-right">{{ number_format($item->total_salary ?? 0, 2, ',', '.') }}</td>
           </tr>
           @endforeach

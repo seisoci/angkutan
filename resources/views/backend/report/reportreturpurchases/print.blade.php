@@ -92,7 +92,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>No. Retur</th>
         <th>Tgl Retur</th>
         <th>Nama Sparepart</th>

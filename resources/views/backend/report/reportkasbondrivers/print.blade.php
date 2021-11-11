@@ -93,7 +93,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>Nama Supir</th>
         <th class="text-right">Nominal</th>
         <th>Status</th>

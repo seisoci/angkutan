@@ -92,7 +92,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>Nama Supir</th>
         <th>Nama Pelanggan</th>
         <th>T. Muat</th>

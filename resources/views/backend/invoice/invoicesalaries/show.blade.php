@@ -12,14 +12,20 @@
           <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
               class="fa fa-arrow-left"></i> Back
           </button>
-          <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i
-              class="fa fa-print"></i> Print</a>
-          {{--          <a href="#" id="btn_print" class="btn btn-outline-secondary font-weight-bold" target="_blank">--}}
-          {{--                  <span class="navi-icon">--}}
-          {{--                    <i class="la la-print"></i>--}}
-          {{--                  </span>--}}
-          {{--            <span class="navi-text">Print</span>--}}
-          {{--          </a>--}}
+
+
+          <div class="btn-group" role="group">
+            <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-print"></i>Print
+            </button>
+            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a href="{{ $config['print_url'] }}" target="_blank" class="dropdown-item">Biasa</a>
+              <a href="#" id="btn_print" class="dropdown-item" target="_blank">
+                Dot Matrix
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -31,12 +37,13 @@
           <table class="table table-borderless table-title">
             <tbody>
             <tr>
-              <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
+              <td class="font-weight-bolder text-uppercase"
+                  style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
               </td>
               <td class="text-left" style="width:10%"></td>
               <td class="text-left pl-20" style="width:20%">Tanggal</td>
               <td class="text-left" style="width:2%">: &ensp;</td>
-              <td class="text-left" style="width:18%"> {{ $data->created_at }}</td>
+              <td class="text-left" style="width:18%"> {{ $data->invoice_date }}</td>
             </tr>
             <tr>
               <td style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
@@ -55,9 +62,6 @@
             <tr>
               <td>FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
               <td class="text-left" style="width:10%"></td>
-              <td class="text-left pl-20" style="width:20%">No. Polisi</td>
-              <td class="text-left" style="width:2%">: &ensp;</td>
-              <td class="text-left" style="width:18%"> {{ $data->transport->num_pol }}</td>
             </tr>
             </tbody>
           </table>
@@ -66,8 +70,8 @@
             <thead>
             <tr>
               <th style="width:5%">#</th>
+              <th style="width:10%">Tgl Muat</th>
               <th style="width:15%">No. Job Order</th>
-              <th style="width:5%">KETERANGAN</th>
               <th style="width:30%">PELANGGAN</th>
               <th style="width:30%">RUTE</th>
               <th class="text-right" style="width:15%">JUMLAH</th>
@@ -77,8 +81,8 @@
             @foreach ($data->joborders as $item)
               <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>{{ $item->date_begin }}</td>
                 <td>{{ $item->num_prefix }}</td>
-                <td>Gaji</td>
                 <td>{{ $item->costumer->name }}</td>
                 <td>{{ $item->routefrom->name }} -> {{ $item->routeto->name }}</td>
                 <td class="text-right">{{ number_format($item->total_salary ?? 0, 2, ',', '.') }}</td>
@@ -117,7 +121,7 @@
       $('#btn_print').on('click', function (e) {
         e.preventDefault();
         $.ajax({
-          url: "{{ $config['print_url'] }}",
+          url: "{{ $config['print_dotMatrix_url'] }}",
           success: function (text) {
             console.log(text);
             $.post('http://localhost/dotmatrix/', JSON.stringify({

@@ -90,7 +90,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>Nama Pelanggan</th>
         <th>Alamat</th>
         <th>No. Telp</th>

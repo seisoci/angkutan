@@ -26,7 +26,6 @@ use App\Http\Controllers\Backend\JobOrderController as BackendJobOrderController
 use App\Http\Controllers\Backend\OperationalExpenseController as BackendOperationalExpenseController;
 use App\Http\Controllers\Backend\SalaryController as BackendSalaryController;
 use App\Http\Controllers\Backend\RecapitulationController as BackendRecapitulationController;
-use App\Http\Controllers\Backend\InvoiceSalaryController as BackendInvoiceSalaryController;
 use App\Http\Controllers\Backend\InvoiceCostumerController as BackendInvoiceCostumerController;
 use App\Http\Controllers\Backend\InvoiceLdoController as BackendInvoiceLdoController;
 use App\Http\Controllers\Backend\PaymentLdoController as BackendPaymentLdoController;
@@ -86,6 +85,7 @@ use App\Http\Controllers\Backend\SubmissionController as BackendSubmissionContro
 use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend as Backend;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -150,7 +150,8 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('journals/select2', [BackendJournalController::class, 'select2'])->name('journals.select2');
 
     //Print
-    Route::get('invoicesalaries/{id}/print', [BackendInvoiceSalaryController::class, 'print']);
+    Route::get('invoicesalaries/{id}/dotmatrix', [Backend\InvoiceSalaryController::class, 'dotMatrix']);
+    Route::get('invoicesalaries/{id}/print', [Backend\InvoiceSalaryController::class, 'print']);
     Route::get('invoiceldo/{id}/print', [BackendInvoiceLdoController::class, 'print']);
     Route::get('invoiceusageitems/{id}/print', [BackendInvoiceUsageItemController::class, 'print']);
     Route::get('invoiceusageitemsoutside/{id}/print', [BackendInvoiceUsageItemOutsideController::class, 'print']);
@@ -231,7 +232,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('completepurchaseorder/{id}/print', [Backend\CompletePurchaseOrderController::class, 'print']);
 
     //Datatables Details
-    Route::get('invoicesalaries/datatabledetail/{id}', [BackendInvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
+    Route::get('invoicesalaries/datatabledetail/{id}', [Backend\InvoiceSalaryController::class, 'datatabledetail'])->name('invoicesalaries.datatabledetail');
     Route::get('invoicecostumers/datatabledetail/{id}', [BackendInvoiceCostumerController::class, 'datatabledetail'])->name('invoicecostumers.datatabledetail');
     Route::get('invoiceldo/datatabledetail/{id}', [BackendInvoiceLdoController::class, 'datatabledetail'])->name('invoiceldo.datatabledetail');
     Route::get('invoicekasbons/datatabledetail/{id}', [BackendInvoiceKasbonController::class, 'datatabledetail'])->name('invoicekasbons.datatabledetail');
@@ -255,7 +256,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::put('roadmonies/{id}/updatetypecapacities', [BackendRoadMoneyController::class, 'updatetypecapacities'])->name('roadmonies.updatetypecapacities');
     Route::get('invoicepurchases/{id}/cetakpdf', [BackendInvoicePurchaseController::class, 'cetakPdfInvoice'])->name('invoicepurchases.cetakpdf');
     Route::post('joborders/storeexpense', [BackendJobOrderController::class, 'storeexpense'])->name('joborders.storeexpense');
-    Route::post('invoicesalaries/findbypk', [BackendInvoiceSalaryController::class, 'findbypk'])->name('invoicesalaries.findbypk');
+    Route::post('invoicesalaries/findbypk', [Backend\InvoiceSalaryController::class, 'findbypk'])->name('invoicesalaries.findbypk');
     Route::post('invoicekasbons/findbypk', [BackendInvoiceKasbonController::class, 'findbypk'])->name('invoicekasbons.findbypk');
     Route::post('invoicecostumers/findbypk', [BackendInvoiceCostumerController::class, 'findbypk'])->name('invoicecostumers.findbypk');
     Route::post('invoiceldo/findbypk', [BackendInvoiceLdoController::class, 'findbypk'])->name('invoiceldo.findbypk');
@@ -322,9 +323,9 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('operationalexpenses', BackendOperationalExpenseController::class)->only(['store', 'update', 'destroy', 'index']);
     Route::resource('salaries', BackendSalaryController::class);
     Route::resource('recapitulation', BackendRecapitulationController::class);
-    Route::resource('invoicesalaries', BackendInvoiceSalaryController::class);
+    Route::resource('invoicesalaries', Backend\InvoiceSalaryController::class);
     Route::resource('invoicecostumers', BackendInvoiceCostumerController::class);
-    Route::put('invoicecostumerstaxfee/{id}', [BackendInvoiceCostumerController::class , 'taxfee']);
+    Route::put('invoicecostumerstaxfee/{id}', [BackendInvoiceCostumerController::class, 'taxfee']);
     Route::resource('invoiceldo', BackendInvoiceLdoController::class);
     Route::resource('invoiceusageitems', BackendInvoiceUsageItemController::class);
     Route::resource('invoiceusageitemsoutside', BackendInvoiceUsageItemOutsideController::class);

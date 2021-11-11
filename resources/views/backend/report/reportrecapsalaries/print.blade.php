@@ -92,7 +92,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>Nama Pelanggan</th>
         <th class="text-center">Jml</th>
         <th class="text-right">Sub Total (Inc. Tax, Fee)</th>

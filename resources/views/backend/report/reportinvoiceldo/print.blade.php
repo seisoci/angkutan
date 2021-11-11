@@ -157,7 +157,7 @@
              border-right: 1px solid #000 !important;border-bottom: 1px solid #000 !important; margin-bottom: 10px;font-family: monospace; font-size:12px;">
         <thead>
         <tr>
-          <th>#</th>
+          <th>No</th>
           <th style="text-align: left !important;">No. Surat Jalan</th>
           <th style="text-align: left !important;">Tgl Muat</th>
           <th style="text-align: left !important;">No. Polisi</th>

@@ -28,21 +28,6 @@
                     <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date" placeholder="Tanggal Invoice" readonly>
                   </div>
                 </div>
-                <div class="form-group row">
-                  <label class="col-lg-4 col-form-label">Prefix:</label>
-                  <div class="col-lg-6">
-                    <select name="prefix" class="form-control" id="select2Prefix">
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <label class="col-lg-4 col-form-label">No. Slip Gaji:</label>
-                  <div class="col-lg-6">
-                    <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
-                    <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
-                    </select>
-                  </div>
-                </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
@@ -52,13 +37,17 @@
                     </select>
                   </div>
                 </div>
+              </div>
+              <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-lg-4 col-form-label">Kendaraan:</label>
-                  <div class="col-lg-8">
-                    <select name="transport_id" class="form-control" id="select2Transport">
+                  <label class="col-lg-4 col-form-label">Prefix:</label>
+                  <div class="col-lg-6">
+                    <select name="prefix" class="form-control" id="select2Prefix">
                     </select>
                   </div>
                 </div>
+              </div>
+              <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-lg-4 col-form-label">Master Akun:</label>
                   <div class="col-lg-8">
@@ -70,14 +59,26 @@
                   </div>
                 </div>
               </div>
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label class="col-lg-4 col-form-label">No. Slip Gaji:</label>
+                  <div class="col-lg-6">
+                    <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
+                    <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
+                    </select>
+                  </div>
+                </div>
+              </div>
             </div>
             <table id="table_invoice" class="table table-striped">
               <thead>
                 <tr>
-                  <th scope="col" class="text-center">#</th>
-                  <th scope="col">Tanggal</th>
+                  <th scope="col" class="text-center">No</th>
+                  <th scope="col">Tanggal Muat</th>
                   <th scope="col">S. Jalan</th>
                   <th scope="col">No. Polisi</th>
+                  <th scope="col">Muatan</th>
+                  <th scope="col">Rute</th>
                   <th scope="col" class="text-right">Jumlah</th>
                 </tr>
               </thead>
@@ -114,7 +115,7 @@
       <thead>
         <tr>
           <th></th>
-          <th>Tanggal Mulai</th>
+          <th>Tanggal Muat</th>
           <th>Prefix</th>
           <th>No. Job Order</th>
           <th>Supir</th>
@@ -159,7 +160,6 @@
           url: "{{ route('backend.invoicesalaries.create') }}",
           data: function(d){
             d.driver_id = $('#select2Driver').find(':selected').val();
-            d.transport_id = $('#select2Transport').find(':selected').val();
           }
         },
         columns: [
@@ -214,13 +214,15 @@
               ' <td>'+data.date_begin+'</td>'+
               ' <td>'+data.prefix+'-'+data.num_bill+'</td>'+
               ' <td>'+data.transport.num_pol+'</td>'+
+              ' <td>'+data.cargo.name+'</td>'+
+              ' <td>'+data.routefrom.name+' - '+data.routeto.name+'</td>'+
               ' <td class="text-right money">'+data.total_salary+'</td>'+
               '</tr>');
             });
             $('#TampungId').append('<input type="hidden" name="grand_total" value="'+total+'">');
 
             $('#table_invoice tfoot').append('<tr>'+
-              '<td colspan="4" class="text-right">Total</td>'+
+              '<td colspan="6" class="text-right">Total</td>'+
               '<td class="text-right money">'+total+'</td>'+
               '</tr>');
 
@@ -268,7 +270,7 @@
       placeholder: "Search Supir",
       allowClear: true,
       ajax: {
-          url: "{{ route('backend.drivers.select2') }}",
+          url: "{{ route('backend.drivers.select2self') }}",
           dataType: "json",
           delay: 250,
           cache: true,

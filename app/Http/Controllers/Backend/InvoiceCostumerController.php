@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdditionalInvoiceCostumer;
 use App\Models\Bank;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
@@ -55,9 +56,9 @@ class InvoiceCostumerController extends Controller
           $restPayment = $row->rest_payment != 0 ? '<a href="invoicecostumers/' . $row->id . '/edit" class="dropdown-item">Input Pembayaran</a>' : NULL;
           $tax_coa_id = !$row->tax_coa_id && $row->total_tax > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditTax" data-id="' . $row->id . '"  data-tax="' . $row->total_tax . '" class="edit dropdown-item">Bayar Pajak</a>' : NULL;
           $fee_coa_id = !$row->fee_coa_id && $row->total_fee_thanks > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditFee" data-id="' . $row->id . '"  class="edit dropdown-item">Bayar Fee</a>' : NULL;
-          if(Auth::user()->can('delete invoicecostumers')){
+          if (Auth::user()->can('delete invoicecostumers')) {
             $deleteBtn = '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
-          }else{
+          } else {
             $deleteBtn = '';
           }
           $actionBtn = '
@@ -68,7 +69,7 @@ class InvoiceCostumerController extends Controller
                   <div class="dropdown-menu" aria-labelledby = "dropdownMenuButton" >
                     ' . $restPayment . $tax_coa_id . $fee_coa_id . '
                     <a href = "invoicecostumers/' . $row->id . '" class="dropdown-item" > Invoice Detail </a >
-                    '.$deleteBtn.'
+                    ' . $deleteBtn . '
                   </div >
               </div >
           ';
@@ -156,6 +157,34 @@ class InvoiceCostumerController extends Controller
           JobOrder::where('id', $item)->update(['invoice_costumer_id' => $data->id, 'status_payment' => '1']);
         endforeach;
 
+        foreach ($request['tambahan']['total'] as $key => $item):
+          $additionalInvoiceCostumer = AdditionalInvoiceCostumer::create([
+            'invoice_costumer_id' => $data->id,
+            'description' => $request['tambahan'][$key]['description'],
+            'total' => $request['tambahan'][$key]['total']
+          ]);
+
+          Journal::create([
+            'coa_id' => 43,
+            'date_journal' => $data->date_begin,
+            'debit' => $request['tambahan'][$key]['total'],
+            'kredit' => 0,
+            'table_ref' => 'additional_invoice_costumers',
+            'code_ref' => $additionalInvoiceCostumer->id,
+            'description' => "Penambahan piutang usaha dari " . $request['tambahan'][$key]['description'] . " dengan No Invoice Costumer" . $data->prefix . "-" . $data->num_bill,
+          ]);
+
+          Journal::create([
+            'coa_id' => 52,
+            'date_journal' => $data->date_begin,
+            'debit' => 0,
+            'kredit' => $request['tambahan'][$key]['total'],
+            'table_ref' => 'additional_invoice_costumers',
+            'code_ref' => $additionalInvoiceCostumer->id,
+            'description' => "Penambahan Pendapatan joborder dari tagihan invoice costumer Penambahan piutang usaha dari " . $request['tambahan'][$key]['description'] . " dengan No Invoice Costumer" . $data->prefix . "-" . $data->num_bill,
+          ]);
+        endforeach;
+
         if (($request->input('total_cut') ?? 0) > 0) {
           Journal::create([
             'coa_id' => 43,
@@ -164,7 +193,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => ($request->input('total_cut') ?? 0),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name dan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name dan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
           ]);
 
           Journal::create([
@@ -174,7 +203,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Pendapatan untuk Potongan Klaim dengan No. Invoice " .$prefix->name.'-'.$request->input('num_bill')
+            'description' => "Potongan Pendapatan untuk Potongan Klaim dengan No. Invoice " . $prefix->name . '-' . $request->input('num_bill')
           ]);
         }
 
@@ -186,7 +215,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => $request->input('total_piutang'),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: " . $prefix->name . '-' . $request->input('num_bill')
           ]);
 
           Journal::create([
@@ -196,7 +225,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: " . $prefix->name . '-' . $request->input('num_bill')
           ]);
         }
 
@@ -216,7 +245,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
           ]);
 
           Journal::create([
@@ -226,7 +255,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => ($request->input('payment.payment') ?? 0),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Pembayaran tagihan JO pelanggan $costumer->name dengan No.Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+            'description' => "Pembayaran tagihan JO pelanggan $costumer->name dengan No.Invoice: " . $prefix->name . '-' . $request->input('num_bill')
           ]);
         }
 
@@ -341,7 +370,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => $request->input('total_piutang'),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill
           ]);
 
           Journal::create([
@@ -351,7 +380,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill
           ]);
         }
 
@@ -363,7 +392,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Pendapatan untuk Potongan Klaim dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
+            'description' => "Potongan Pendapatan untuk Potongan Klaim dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill
           ]);
 
           Journal::create([
@@ -373,7 +402,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => ($request->input('total_cut') ?? 0),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
+            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill
           ]);
         }
 
@@ -393,7 +422,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name  dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
+            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name  dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill
           ]);
 
           Journal::create([
@@ -403,9 +432,8 @@ class InvoiceCostumerController extends Controller
             'kredit' => $request->input('payment.payment'),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Pembayaran tagihan JO pelanggan $costumer->name  dengan No. Invoice: " .$data->prefix.'-'.$data->num_bill
+            'description' => "Pembayaran tagihan JO pelanggan $costumer->name  dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill
           ]);
-
         }
 
         if ($request->rest_payment <= -1) {

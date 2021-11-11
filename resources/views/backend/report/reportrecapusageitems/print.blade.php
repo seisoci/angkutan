@@ -93,7 +93,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>No. Pemakaian</th>
         <th>Tgl Pemakaian</th>
         <th>Nama Supir</th>

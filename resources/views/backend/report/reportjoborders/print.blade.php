@@ -92,7 +92,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>Tanggal</th>
         <th>No. Polisi</th>
         <th>No. Prefix</th>

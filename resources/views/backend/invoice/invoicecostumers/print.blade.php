@@ -213,7 +213,7 @@
 <table class="tableTagihan" style="width: 100%">
   <thead>
   <tr>
-    <th>#</th>
+    <th>No</th>
     <th style="width: 60px;">Tanggal</th>
     <th>No. Surat Jalan</th>
     <th>Muat Dari</th>

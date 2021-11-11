@@ -39,7 +39,18 @@ class InvoiceSalaryController extends Controller
       ['page' => '#', 'title' => "List Invoice Gaji Supir"],
     ];
     if ($request->ajax()) {
-      $data = InvoiceSalary::with(['transport:id,num_pol', 'driver:id,name']);
+      $date = $request['date'];
+      $driverId = $request['driver_id'];
+      $data = InvoiceSalary::with(['transport:id,num_pol', 'driver:id,name'])
+        ->when($date, function ($query, $date) {
+          $date_format = explode(" / ", $date);
+          $date_begin = $date_format[0];
+          $date_end = $date_format[1];
+          return $query->whereBetween('created_at', [$date_begin, $date_end]);
+        })
+        ->when($driverId, function ($query, $driverId) {
+          return $query->where('driver_id', $driverId);
+        });;
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('details_url', function (InvoiceSalary $invoiceSalary) {
@@ -100,7 +111,6 @@ class InvoiceSalaryController extends Controller
       'prefix' => 'required|integer',
       'num_bill' => 'required|integer',
       'driver_id' => 'required|integer',
-      'transport_id' => 'required|integer',
       'coa_id' => 'required|integer',
       'invoice_date' => 'required|date_format:Y-m-d',
     ]);
@@ -125,7 +135,6 @@ class InvoiceSalaryController extends Controller
             'prefix' => $prefix->name,
             'num_bill' => $request->input('num_bill'),
             'driver_id' => $request->input('driver_id'),
-            'transport_id' => $request->input('transport_id'),
             'invoice_date' => $request->input('invoice_date'),
             'grandtotal' => $request->input('grand_total'),
             'description' => $request->input('description'),
@@ -187,6 +196,7 @@ class InvoiceSalaryController extends Controller
   {
     $config['page_title'] = "Invoice Gaji Supir";
     $config['print_url'] = "/backend/invoicesalaries/$id/print";
+    $config['print_dotMatrix_url'] = "/backend/invoicesalaries/$id/dotmatrix";
     $page_breadcrumbs = [
       ['page' => '/backend/invoicesalaries', 'title' => "List Invoice Gaji"],
       ['page' => '#', 'title' => "Invoice Gaji Supir"],
@@ -203,14 +213,24 @@ class InvoiceSalaryController extends Controller
   public function print($id)
   {
     $config['page_title'] = "Invoice Gaji Supir";
-    $config['print_url'] = "/backend/invoicesalaries/$id/print";
     $page_breadcrumbs = [
       ['page' => '/backend/invoicesalaries', 'title' => "List Invoice Gaji"],
       ['page' => '#', 'title' => "Invoice Gaji Supir"],
     ];
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = InvoiceSalary::with(['joborders.costumer:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name', 'joborders' => function ($q) {
+    $data = InvoiceSalary::with(['joborders.costumer.cooperation:id,nickname', 'joborders.cargo', 'joborders.costumer:id,name,cooperation_id', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name', 'joborders' => function ($q) {
+      $q->withSum('operationalexpense', 'amount');
+    }])->findOrFail($id);
+
+    return view('backend.invoice.invoicesalaries.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
+  }
+
+  public function dotMatrix($id)
+  {
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
+    $data = InvoiceSalary::with(['joborders.costumer.cooperation:id,nickname', 'joborders.cargo', 'joborders.costumer:id,name,cooperation_id', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'transport:id,num_pol', 'driver:id,name', 'joborders' => function ($q) {
       $q->withSum('operationalexpense', 'amount');
     }])->findOrFail($id);
 
@@ -219,22 +239,23 @@ class InvoiceSalaryController extends Controller
     foreach ($data->joborders as $val):
       $item[] = [
         'no' => $no++,
-        'no_jo' => $val->num_prefix,
-        'keterangan' => 'Gaji',
-        'costumer' => $val->costumer->name,
-        'route' => $val->routefrom->name . '->' . $val->routeto->name,
+        'tgl' => $val->date_begin,
+        'muatan' => $val->costumer->cooperation->nickname,
+        'rute' => $val->routefrom->name . '-' . $val->routeto->name,
+        'costumer' => $val->cargo->name,
         'Nominal' => number_format($val->total_salary, 0, '.', ',')
       ];
     endforeach;
     $item[] = ['no' => '--------------------------------------------------------------------------------'];
     $item[] = ['1' => '', '2' => '', '3' => '', '4' => '', 'name' => 'Total', 'nominal' => number_format($data->grandtotal, 0, '.', ',')];
+
     $paper = array(
       'panjang' => 80,
       'baris' => 29,
       'spasi' => 3,
       'column_width' => [
         'header' => [40, 40],
-        'table' => [3, 14, 10, 19, 23, 11],
+        'table' => [3, 10, 10, 31, 15, 11],
         'footer' => [40, 40]
       ],
       'header' => [
@@ -249,7 +270,7 @@ class InvoiceSalaryController extends Controller
         'right' => [
           'No. Gaji: ' . $data->num_invoice,
           'Supir: ' . $data->driver->name,
-          'Tanggal: ' . $this->convertToDate($data->created_at),
+          'Tanggal: ' . $data->date_invoice,
         ]
       ],
       'footer' => [
@@ -259,7 +280,7 @@ class InvoiceSalaryController extends Controller
         ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
       ],
       'table' => [
-        'header' => ['No', 'No Job Order', 'Keterangan', 'Pelanggan', 'Rute', 'Total'],
+        'header' => ['No', 'Tgl. Muat', 'Muatan', 'Rute', 'Muatan', 'Nominal'],
         'produk' => $item,
         'footer' => array(
           'catatan' => ''
@@ -268,8 +289,7 @@ class InvoiceSalaryController extends Controller
     );
     $printed = new ContinousPaperLong($paper);
     $result .= $printed->output() . "\n";
-//    return response($result, 200)->header('Content-Type', 'text/plain');
-    return view('backend.invoice.invoicesalaries.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
+    return response($result, 200)->header('Content-Type', 'text/plain');
   }
 
   public function findbypk(Request $request)
@@ -277,7 +297,7 @@ class InvoiceSalaryController extends Controller
     $data = json_decode($request->data);
     $response = NULL;
     if ($request->data) {
-      $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->withSum('operationalexpense', 'amount')->whereIn('id', $data)->get();
+      $result = JobOrder::with(['anotherexpedition:id,name', 'cargo', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])->withSum('operationalexpense', 'amount')->whereIn('id', $data)->get();
 
       $response = response()->json([
         'data' => $result,

@@ -92,7 +92,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>Gaji Bulan</th>
         <th>Nama Karyawaan</th>
         <th class="text-center">Status</th>

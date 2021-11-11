@@ -92,7 +92,7 @@
     <table class="table">
       <thead>
       <tr>
-        <th>#</th>
+        <th>No</th>
         <th>Nama Pelanggan</th>
         <th>Alamat</th>
         <th class="text-center">Jumlah JO</th>

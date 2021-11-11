@@ -96,7 +96,30 @@
                   </tfoot>
                 </table>
               </div>
-              <h2 class="pt-10"><u>Pembayaran</u></h2>
+              <h3 class="pt-10"><u>Tambahan Biaya</u></h3>
+              <table class="table table-borderless">
+                <thead>
+                <tr>
+                  <th class="text-left" scope="col"></th>
+                  <th class="text-left" scope="col" style="width: 160px; max-width: 160px"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="addfee" id="addfee_1">
+                  <td><input type="text" name="tambahan[description][]" class="unit rounded-0 form-control"
+                             style="min-width: 100px" placeholder="Keterangan"/></td>
+                  <td><input type="text" name="tambahan[total][]" class="unit rounded-0 form-control currency"
+                             style="min-width: 100px" placeholder="Nominal"/></td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-start ml-4">
+                <div class="btn-group" role="group">
+                  <button type="button" class='rmItems btn btn btn-danger'>&nbsp;-&nbsp;</button>
+                  <button type="button" class="add btn btn-sm btn-primary">&nbsp;+&nbsp;</button>
+                </div>
+              </div>
+              <h3 class="pt-10"><u>Pembayaran</u></h3>
               <div class="table-responsive">
                 <table class="table table-borderless">
                   <thead>
@@ -105,7 +128,7 @@
                     <th scope="col" style="min-width: 200px">Keterangan</th>
                     <th scope="col" style="min-width: 150px">Master Akun</th>
                     <th scope="col" style="min-width: 150px">Nominal</th>
-                    <th scope="col" style="min-width: 150px">Total Dibayar</th>
+                    <th scope="col" style="width: 160px; min-width: 160px">Total Dibayar</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -125,12 +148,14 @@
                   <tfoot>
                   <tr>
                     <td colspan="4" class="text-right">Total Tagihan</td>
-                    <td class="text-right"><input type="text" name="total_bill" class="currency rounded-0 form-control"
+                    <td class="text-right"><input type="text" name="total_tagihan"
+                                                  class="currency rounded-0 form-control"
                                                   disabled></td>
                   </tr>
                   <tr>
                     <td colspan="4" class="text-right">Total Piutang Klaim</td>
-                    <td class="text-right"><input type="text" name="total_piutang" class="currency rounded-0 form-control">
+                    <td class="text-right"><input type="text" name="total_piutang"
+                                                  class="currency rounded-0 form-control">
                     </td>
                   </tr>
                   <tr>
@@ -228,6 +253,7 @@
     $(document).ready(function () {
       initDate();
       initCurrency();
+      initCalculate();
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
@@ -332,20 +358,53 @@
       }
 
       function initCalculate() {
+        let totalTambahan = 0;
+        $('input[name^="tambahan[total][]"]').each(function (i) {
+          totalTambahan += parseFloat($(this).val()) || 0;
+        });
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
         let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
         let total_piutang = parseFloat($('input[name="total_piutang"]').val()) || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
-        let rest_payment = total_bill - total_payment - total_cut + total_piutang;
+        let totalTagihan = total_bill + totalTambahan;
+        let rest_payment = totalTagihan - total_payment - total_cut + total_piutang;
+        $('input[name="total_tagihan"]').val(totalTagihan);
         $('.total_payment').val(total_payment);
         $('.rest_payment').val(rest_payment);
-        $('input[name=total_bill]').val(total_bill);
-        $('input[name=total_basic_price_after_thanks]').val(total_basic_price_after_thanks);
       }
 
-      $('input[name="payment[payment]"],input[name="total_cut"],input[name="total_piutang"],#diskon').on('keyup', function () {
+      $('input[name="payment[payment]"],input[name="total_cut"],input[name="total_piutang"],#diskon,input[name^="tambahan[total][]"]').on('keyup', function () {
         initCalculate();
       });
+
+
+      $(".add").on('click', function () {
+        let total_items = $(".addfee").length;
+        let lastid = $(".addfee:last").attr("id");
+        let split_id = lastid.split("_");
+        let nextindex = Number(split_id[1]) + 1;
+        let max = 100;
+        if (total_items < max) {
+          $(".addfee:last").after("<tr class='addfee' id='addfee_" + nextindex + "'></tr>");
+          $("#addfee_" + nextindex).append(raw_html(nextindex));
+          initCurrency();
+          initCalculate();
+        }
+      });
+
+      $('.rmItems').on('click', function () {
+        let lastid = $(".addfee:last").attr("id");
+        let split_id = lastid.split("_");
+        let deleteindex = split_id[1];
+        if (deleteindex > 1) {
+          $("#" + lastid).remove();
+        }
+      });
+
+      function raw_html(key) {
+        return '<td><input type="text" name="tambahan[description][]" class="unit rounded-0 form-control" style="min-width: 100px" placeholder="Keterangan"/></td>' +
+          '<td><input type="text" name="tambahan[total][]" class="unit rounded-0 form-control currency" style="min-width: 100px" placeholder="Nominal"/></td>'
+      }
 
       $('#submitAppend').on('click', function (e) {
         e.preventDefault();
@@ -371,6 +430,11 @@
               let totalBasicPriceAfterThanks = 0;
               let totalTax = 0;
               let totalFee = 0;
+              let totalTambahan = 0;
+              let totalTagihan = 0;
+              $('input[name^="tambahan[][total]"]').each(function (i) {
+                totalTambahan += parseFloat($(this).val()) || 0;
+              });
               $.each(response.data, function (index, data) {
                 total += parseFloat(data.total_basic_price) || 0;
                 totalTax += parseFloat(data.tax_amount) || 0;
@@ -397,17 +461,20 @@
                   '</tr>');
 
               });
+              totalTagihan = totalTambahan + total;
+              $('input[name=total_tagihan]').val(totalTagihan);
               $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '">' +
                 '<input type="hidden" name="total_tax" value="' + totalTax + '">' +
                 '<input type="hidden" name="total_fee" value="' + totalFee + '">' +
                 '<input type="hidden" name="total_basic_price_after_thanks" value="' + totalBasicPriceAfterThanks + '">');
 
               $('#table_invoice tfoot').append('<tr>' +
-                '<td colspan="10" class="text-right">Total</td>' +
+                '<td colspan="13" class="text-right">Total</td>' +
                 '<td class="text-right money">' + totalTax + '</td>' +
                 '<td class="text-right money">' + totalFee + '</td>' +
                 '<td class="text-right money">' + total + '</td>' +
                 '</tr>');
+
               $(".money").inputmask({
                 'alias': 'decimal',
                 'groupSeparator': ',',

@@ -55,6 +55,10 @@ class InvoiceCostumer extends Model
     return $this->hasMany(PaymentCostumer::class);
   }
 
+  public function additional(){
+    return $this->hasMany(AdditionalInvoiceCostumer::class);
+  }
+
   public function getNumInvoiceAttribute()
   {
       return ($this->prefix ."-". $this->num_bill);
