@@ -91,7 +91,7 @@ class InvoicePurchaseController extends Controller
           $usageItem = UsageItem::where('invoice_purchase_id', $row->id)->exists();
           $completePO = InvoicePurchase::where('id', $row->id)->whereNotNull('complete_purchase_order_id')->first();
           $invoiceReturItem = InvoiceReturPurchase::where('invoice_purchase_id', $row->id)->exists();
-          $deleteBtn = $usageItem || $invoiceReturItem || !isset($completePO) ? NULL : '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
+          $deleteBtn = $usageItem || $invoiceReturItem || isset($completePO) ? NULL : '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
           $actionBtn = '
               <div class="dropdown">
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

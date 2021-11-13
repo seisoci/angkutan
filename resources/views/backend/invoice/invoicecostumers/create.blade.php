@@ -72,7 +72,8 @@
                 <table id="table_invoice" class="table table-striped">
                   <thead>
                   <tr>
-                    <th scope="col" class="text-center">#</th>
+                    <th>#</th>
+                    <th scope="col" class="text-center">No.</th>
                     <th scope="col">Tanggal</th>
                     <th scope="col">No. JobOrder</th>
                     <th scope="col">No. Polisi</th>
@@ -95,29 +96,6 @@
                   <tfoot>
                   </tfoot>
                 </table>
-              </div>
-              <h3 class="pt-10"><u>Tambahan Biaya</u></h3>
-              <table class="table table-borderless">
-                <thead>
-                <tr>
-                  <th class="text-left" scope="col"></th>
-                  <th class="text-left" scope="col" style="width: 160px; max-width: 160px"></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="addfee" id="addfee_1">
-                  <td><input type="text" name="tambahan[description][]" class="unit rounded-0 form-control"
-                             style="min-width: 100px" placeholder="Keterangan"/></td>
-                  <td><input type="text" name="tambahan[total][]" class="unit rounded-0 form-control currency"
-                             style="min-width: 100px" placeholder="Nominal"/></td>
-                </tr>
-                </tbody>
-              </table>
-              <div class="d-flex justify-content-start ml-4">
-                <div class="btn-group" role="group">
-                  <button type="button" class='rmItems btn btn btn-danger'>&nbsp;-&nbsp;</button>
-                  <button type="button" class="add btn btn-sm btn-primary">&nbsp;+&nbsp;</button>
-                </div>
               </div>
               <h3 class="pt-10"><u>Pembayaran</u></h3>
               <div class="table-responsive">
@@ -228,6 +206,44 @@
         </tr>
         </thead>
       </table>
+    </div>
+  </div>
+
+  {{--  Modal--}}
+  <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Tambah</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <i aria-hidden="true" class="ki ki-close"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="selectType" class="col-form-label">Tipe:</label>
+              <select class="form-control" name="type" id="selectType">
+                <option value="tambah">Tambah</option>
+                <option value="kurang">Kurang</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Nominal:</label>
+              <input class="form-control currency" name="nominal">
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Keterangan:</label>
+              <textarea class="form-control" name="keterangan" rows="4"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="addRow" type="button" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
     </div>
   </div>
 @endsection
@@ -358,53 +374,24 @@
       }
 
       function initCalculate() {
-        let totalTambahan = 0;
-        $('input[name^="tambahan[total][]"]').each(function (i) {
-          totalTambahan += parseFloat($(this).val()) || 0;
-        });
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
         let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
         let total_piutang = parseFloat($('input[name="total_piutang"]').val()) || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
-        let totalTagihan = total_bill + totalTambahan;
+        let totalTagihan = total_bill;
         let rest_payment = totalTagihan - total_payment - total_cut + total_piutang;
         $('input[name="total_tagihan"]').val(totalTagihan);
         $('.total_payment').val(total_payment);
         $('.rest_payment').val(rest_payment);
       }
 
-      $('input[name="payment[payment]"],input[name="total_cut"],input[name="total_piutang"],#diskon,input[name^="tambahan[total][]"]').on('keyup', function () {
+      $('input[name="payment[payment]"],input[name="total_cut"],input[name="total_piutang"],#diskon').on('keyup', function () {
         initCalculate();
       });
 
-
-      $(".add").on('click', function () {
-        let total_items = $(".addfee").length;
-        let lastid = $(".addfee:last").attr("id");
-        let split_id = lastid.split("_");
-        let nextindex = Number(split_id[1]) + 1;
-        let max = 100;
-        if (total_items < max) {
-          $(".addfee:last").after("<tr class='addfee' id='addfee_" + nextindex + "'></tr>");
-          $("#addfee_" + nextindex).append(raw_html(nextindex));
-          initCurrency();
-          initCalculate();
-        }
+      $('#addRow').on('click', function () {
+        console.log($(this).parent().parent().find('input[name="nominal"]').val());
       });
-
-      $('.rmItems').on('click', function () {
-        let lastid = $(".addfee:last").attr("id");
-        let split_id = lastid.split("_");
-        let deleteindex = split_id[1];
-        if (deleteindex > 1) {
-          $("#" + lastid).remove();
-        }
-      });
-
-      function raw_html(key) {
-        return '<td><input type="text" name="tambahan[description][]" class="unit rounded-0 form-control" style="min-width: 100px" placeholder="Keterangan"/></td>' +
-          '<td><input type="text" name="tambahan[total][]" class="unit rounded-0 form-control currency" style="min-width: 100px" placeholder="Nominal"/></td>'
-      }
 
       $('#submitAppend').on('click', function (e) {
         e.preventDefault();
@@ -430,18 +417,15 @@
               let totalBasicPriceAfterThanks = 0;
               let totalTax = 0;
               let totalFee = 0;
-              let totalTambahan = 0;
               let totalTagihan = 0;
-              $('input[name^="tambahan[][total]"]').each(function (i) {
-                totalTambahan += parseFloat($(this).val()) || 0;
-              });
               $.each(response.data, function (index, data) {
                 total += parseFloat(data.total_basic_price) || 0;
                 totalTax += parseFloat(data.tax_amount) || 0;
                 totalFee += parseFloat(data.fee_thanks) || 0;
                 totalBasicPriceAfterThanks += parseFloat(data.total_basic_price_after_thanks) || 0;
                 $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="' + data.id + '">');
-                $('#table_invoice tbody').append('<tr>' +
+                $('#table_invoice tbody').append('<tr id="jo_' + data.id + '">' +
+                  '<td><button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#addModal" data-id="' + data + '">+</button></td>' +
                   ' <td class="text-center">' + (index + 1) + '</td>' +
                   ' <td>' + data.date_begin + '</td>' +
                   ' <td>' + data.prefix + '-' + data.num_bill + '</td>' +
@@ -461,7 +445,7 @@
                   '</tr>');
 
               });
-              totalTagihan = totalTambahan + total;
+              totalTagihan = total;
               $('input[name=total_tagihan]').val(totalTagihan);
               $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '">' +
                 '<input type="hidden" name="total_tax" value="' + totalTax + '">' +
