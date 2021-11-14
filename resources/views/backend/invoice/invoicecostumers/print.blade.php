@@ -131,16 +131,7 @@
 </head>
 
 <body>
-<div style="display: flex; flex-direction: row">
-  <img height="100px" width="100px"
-       src="{{ $data->costumer->cooperation->image ? asset("storage/images/thumbnail/".$data->costumer->cooperation->image) : asset('media/bg/no-content.svg') }}"
-       alt="">
-  <div style="display: flex; flex-direction: column; margin-top: 30px">
-    <div style="font-weight: bold; font-size: 14px">{{ $data->costumer->cooperation->name }}</div>
-    <div style="font-weight: bold; font-size: 10px">{{ $data->costumer->cooperation->address }}</div>
-  </div>
-</div>
-<div style="display: flex; flex-direction: column; align-items: end">
+<div style="display: flex; flex-direction: column; align-items: end; margin-top: 150px">
   <div class="ttdPembayaran" style="font-size: 12px; display: flex; flex-direction: column; width: 300px;">
     <div style="text-align: center; font-weight: bold">Kwitansi</div>
     <div style="text-align: center;">No: {{ $data->num_invoice }}</div>
@@ -201,7 +192,7 @@
   </div>
 </div>
 <p style="page-break-after: always;">&nbsp;</p>
-<div class="headerTagihan">
+<div class="headerTagihan" style="margin-top: 75px">
   <div>Bandar Lampung, {{ \Carbon\Carbon::now()->format('d M Y') }}</div>
   <div>Kepada Yang Terhormat,</div>
   <div>{{ $data->costumer->name }}</div>
@@ -235,10 +226,19 @@
       <td>{{ $item->transport->no_shipment }}</td>
       <td style="text-align: right">{{ number_format($item->total_basic_price , 2, ',','.') }}</td>
     </tr>
+    @foreach($item->piutangklaim as $piutangklaim)
+      @if($piutangklaim->type == 'tambah')
+        <tr>
+          <td></td>
+          <td colspan="6">{{ $piutangklaim->description }}</td>
+          <td style="text-align: right">{{ number_format($piutangklaim->amount , 2, ',','.') }}</td>
+        </tr>
+      @endif
+    @endforeach
   @endforeach
   <tr>
     <td colspan="7" style="text-align: right">Total</td>
-    <td style="font-weight: bold; text-align: right">{{ number_format($data->total_bill , 2, ',','.') }}</td>
+    <td style="font-weight: bold; text-align: right">{{ number_format(($data->total_bill+$data->total_piutang) , 2, ',','.') }}</td>
   </tr>
   </tbody>
 </table>
@@ -278,26 +278,6 @@
   <div style="margin-top: 130px; text-align: center; font-weight: bold">{{ $data->costumer->cooperation->owner }}</div>
   <div style="text-align: center; font-weight: bold">{{ $data->costumer->cooperation->name }}</div>
 </div>
-<footer>
-  <hr class="divider">
-  <div style="display: inline-block">
-    <div style="display: inline-flex; align-items: center; padding-left: 30px; padding-right: 30px">
-      <i class="far fa-building fa-3x"
-         style="padding-right: 4px;  color: #36298e"></i>
-      <div style="font-size: 12px; color: #36298e">{{ $data->costumer->cooperation->address }}</div>
-    </div>
-    <div style="display: inline-flex; align-items: center; padding-right: 30px">
-      <i class="fas fa-phone fa-3x"
-         style="padding-right: 4px;  color: #36298e"></i>
-      <div style="font-size: 12px; color: #36298e">{{ $data->costumer->cooperation->phone }}</div>
-    </div>
-    <div style="display: inline-flex; align-items: center; padding-right: 30px">
-      <i class="fas fa-envelope-open fa-3x"
-         style="padding-right: 4px; color: #36298e"></i>
-      <div style="font-size: 12px; color: #36298e">{{ $data->costumer->cooperation->email }}</div>
-    </div>
-  </div>
-</footer>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 <script type="text/javascript">

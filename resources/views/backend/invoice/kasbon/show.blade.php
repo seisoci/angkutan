@@ -3,70 +3,55 @@
 
 {{-- Content --}}
 @section('content')
-  <!-- begin::Card-->
-  <div class="card card-custom overflow-hidden">
-    {{-- Header --}}
-    <div class="card-header d-flex justify-content-end align-items-center">
-      <div class="">
-        <div class="btn-group btn-group-md" role="group" aria-label="Large button group">
-          <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
-              class="fa fa-arrow-left"></i> Back
-          </button>
-          <a href="#" id="btn_print" class="btn btn-outline-secondary font-weight-bold" target="_blank">
-                  <span class="navi-icon">
-                    <i class="la la-print"></i>
-                  </span>
-            <span class="navi-text">Print</span>
-          </a>
-        </div>
+
+  <!--begin::Card-->
+  <div class="card card-custom">
+    <div class="card-header flex-wrap py-3">
+      <div class="card-title">
+        <h3 class="card-label">{{ $config['page_title'] }} {{ $data->driver->name }}
+          <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
       </div>
     </div>
-    {{-- Body --}}
-    <div class="card-body p-0">
-      <!-- begin: Invoice header-->
-      <div class="row justify-content-center py-8 px-8 px-md-0">
-        <div class="col-md-11">
-          <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Kasbon</u></h2>
-          <table class="table table-borderless table-title">
-            <tbody>
-            <tr>
-              <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
-              </td>
-            </tr>
-            <tr>
-              <td scope="col" style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Supir</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ $data->driver->name }}</td>
-            </tr>
-            <tr>
-              <td scope="col">{{ $cooperationDefault['telp'] ?? ''}}</td>
-              <td scope="col" class="text-left" style="width:10%"></td>
-              <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
-              <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-              <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
-            </tr>
-            <tr>
-              <td scope="col">FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
-            </tr>
-            </tbody>
-          </table>
-          <div class="separator separator-solid separator-border-1"></div>
-          <table class="table">
-            <thead>
-            <tr>
-              <th scope="col" class="text-left">Keterangan</th>
-              <th scope="col" class="text-right">Nominal</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td class="text-left">{{ $data->memo }}</td>
-              <td class="text-right">{{ number_format($data->amount, 2, '.', ',') }}</td>
-            </tr>
-            </tbody>
-          </table>
+
+    <div class="card-body">
+      <div class="mb-10">
+        <div class="row align-items-center">
+        </div>
+      </div>
+      <!--begin: Datatable-->
+      <table class="table table-hover" id="Datatable">
+        <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Tanggal Transaksi</th>
+          <th>Deskripsi</th>
+          <th>Nominal</th>
+          <th>Tipe</th>
+          <th>Created At</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+  <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <i aria-hidden="true" class="ki ki-close"></i>
+          </button>
+        </div>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        @method('DELETE')
+        <div class="modal-body">
+          <a href="" type="hidden" name="id" disabled></a>
+          Are you sure you want to delete this item?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="formDelete" type="button" class="btn btn-danger">Submit</button>
         </div>
       </div>
     </div>
@@ -75,36 +60,124 @@
 
 {{-- Styles Section --}}
 @section('styles')
-  <style>
-    .table-title td,
-    th {
-      padding: 0;
-    }
-  </style>
+  <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
+
 
 {{-- Scripts Section --}}
 @section('scripts')
   {{-- vendors --}}
-  <script>
+  <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
+  {{-- page scripts --}}
+  <script type="text/javascript">
     $(document).ready(function () {
-      $('#btn_print').on('click', function (e) {
+      $(".currency").inputmask('decimal', {
+        groupSeparator: '.',
+        digits: 0,
+        rightAlign: true,
+        removeMaskOnSubmit: true,
+        autoUnmask: true,
+        allowMinus: false,
+      });
+
+      let dataTable = $('#Datatable').DataTable({
+        responsive: false,
+        scrollX: true,
+        processing: true,
+        serverSide: true,
+        order: [[1, 'desc']],
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        pageLength: 10,
+        ajax: "{{ route('backend.kasbon.datatableshow', $id) }}",
+        columns: [
+          {data: 'driver.name', name: 'driver.name'},
+          {data: 'date_payment', name: 'date_payment'},
+          {data: 'description', name: 'description'},
+          {data: 'payment', name: 'payment', render: $.fn.dataTable.render.number('.', '.', 2), className: 'dt-right'},
+          {data: 'type', name: 'type'},
+          {data: 'created_at', name: 'created_at'},
+          {data: 'action', name: 'action', orderable: false},
+        ],
+        columnDefs: [
+          {
+            className: 'dt-center',
+            targets: 4,
+            width: '75px',
+            render: function (data, type, full, meta) {
+              var status = {
+                'hutang': {'title': 'Hutang', 'class': ' label-light-danger'},
+                'pembayaran': {'title': 'Hutang Dibayar', 'class': ' label-light-success'},
+              };
+              if (typeof status[data] === 'undefined') {
+                return data;
+              }
+              return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
+                '</span>';
+            },
+          },
+        ],
+      }).on('draw', function () {
+        $('.btnPrintDotMatrix').on('click', function (e) {
+          e.preventDefault();
+          $.ajax({
+            url: '/backend/kasbon/' + $(this).attr('data-id') + '/dotmatrix',
+            success: function (text) {
+              $.post('http://localhost/dotmatrix/', JSON.stringify({
+                printer: 'DotMatrix',
+                data: text,
+                autocut: true
+              }), function (response) {
+              });
+            }
+          });
+        });
+      });
+
+      $('#modalDelete').on('show.bs.modal', function (event) {
+        let id = $(event.relatedTarget).data('id');
+        $(this).find('.modal-body').find('a[name="id"]').attr('href', '{{ route("backend.kasbon.index") }}/' + id);
+      });
+
+      $('#modalDelete').on('hidden.bs.modal', function (event) {
+        $(this).find('.modal-body').find('a[name="id"]').attr('href', '');
+      });
+
+      $("#formDelete").click(function (e) {
         e.preventDefault();
+        let form = $(this);
+        let url = $('#modalDelete').find('a[name="id"]').attr('href');
+        let btnHtml = form.html();
+        let spinner = $('<span role="status" class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
         $.ajax({
-          url: "{{ $config['print_url'] }}",
-          success: function (text) {
-            console.log(text);
-            $.post('http://localhost/dotmatrix/', JSON.stringify({
-              printer: 'DotMatrix',
-              data: text,
-              autocut: true
-            }), function (response) {
-              console.log(response);
-            });
+          beforeSend: function () {
+            form.prop('disabled', true).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Loading...");
+          },
+          type: 'DELETE',
+          url: url,
+          dataType: 'json',
+          headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+          success: function (response) {
+            if (response.status === "success") {
+              form.prop('disabled', false).html(btnHtml);
+              toastr.success(response.message, 'Success !');
+              $('#modalDelete').modal('hide');
+              dataTable.draw();
+            } else {
+              form.prop('disabled', false).html(btnHtml);
+              toastr.error(response.message, 'Failed !');
+              $('#modalDelete').modal('hide');
+            }
+          },
+          error: function (response) {
+            form.prop('disabled', false).text('Submit').find("[role='status']").removeClass("spinner-border spinner-border-sm").html(btnHtml);
+            toastr.error(response.responseJSON.message, 'Failed !');
+            $('#modalDelete').modal('hide');
+            $('#modalDelete').find('a[name="id"]').attr('href', '');
           }
         });
       });
+
     });
   </script>
-  {{-- page scripts --}}
+
 @endsection

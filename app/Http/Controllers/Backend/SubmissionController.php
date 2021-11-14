@@ -62,6 +62,8 @@ class SubmissionController extends Controller
 
       $driver_id = $request->driver_id;
       $transport_id = $request->transport_id;
+      $another_expedition_id = $request->another_expedition_id;
+      $another_expedition_id = $request->another_expedition_id;
       $data = OperationalExpense::with(['joborder', 'joborder.costumer:id,name', 'joborder.routefrom:id,name', 'joborder.routeto:id,name', 'joborder.transport:id,num_pol', 'joborder.driver:id,name'])
         ->when($request['status'], function ($query) use ($request) {
           if ($request['status'] == 'all') {
@@ -73,12 +75,23 @@ class SubmissionController extends Controller
             return $query->where('approved', "1");
           }
         })
-        ->whereHas('joborder', function ($query) use($transport_id, $driver_id) {
+        ->whereHas('joborder', function ($query) use($transport_id, $driver_id, $another_expedition_id, $request) {
           $query->when($driver_id, function ($query, $driver_id) {
             return $query->where('driver_id', $driver_id);
           });
           $query->when($transport_id, function ($query, $driver_id) {
             return $query->where('transport_id', $driver_id);
+          });
+          $query->when($another_expedition_id, function ($query, $another_expedition_id) {
+            return $query->where('another_expedition_id', $another_expedition_id);
+          });
+          $query->when($request['status'], function ($query) use ($request) {
+            if ($request['statusLDO'] == 'all') {
+            } else if ($request['statusLDO'] == 'self') {
+              return $query->whereNull('another_expedition_id');
+            } else if($request['statusLDO'] == "ldo"){
+              return $query->WhereNotNull('another_expedition_id');
+            }
           });
         })
         ->when($typeData, function ($query, $typeData) {

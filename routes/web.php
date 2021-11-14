@@ -150,6 +150,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('journals/select2', [BackendJournalController::class, 'select2'])->name('journals.select2');
 
     //Print
+    Route::get('kasbon/{id}/dotmatrix', [Backend\KasbonController::class, 'dotMatrix']);
     Route::get('invoicesalaries/{id}/dotmatrix', [Backend\InvoiceSalaryController::class, 'dotMatrix']);
     Route::get('invoicesalaries/{id}/print', [Backend\InvoiceSalaryController::class, 'print']);
     Route::get('invoiceldo/{id}/print', [BackendInvoiceLdoController::class, 'print']);
@@ -243,6 +244,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('reportinvoiceldo/datatabledetail/{id}', [BackendReportInvoiceLdoController::class, 'datatabledetail'])->name('reportinvoiceldo.datatabledetail');
     Route::get('reportcustomerroadmoney/datatabledetail/{id}', [BackendReportCustomerRoadMoneyController::class, 'datatabledetail'])->name('reportcustomerroadmoney.datatabledetail');
     Route::get('joborders/datatabledetail/{id}', [BackendJobOrderController::class, 'datatabledetail'])->name('joborders.datatabledetail');
+    Route::get('kasbon/datatableshow/{id}', [Backend\KasbonController::class, 'datatableshow'])->name('kasbon.datatableshow');
 
     //Route Free
     Route::prefix('anotherexpedition')->name('anotherexpedition.')->group(function () {

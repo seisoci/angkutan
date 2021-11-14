@@ -80,6 +80,16 @@
             </select>
           </div>
         </div>
+        <div class="col-md-3 my-md-0">
+          <div class="form-group">
+            <label>Pengajual JO:</label>
+            <select class="form-control" id="select2TypeExpedition">
+                <option value="all">All</option>
+                <option value="self">Expedisi sendiri</option>
+                <option value="ldo">LDO</option>
+            </select>
+          </div>
+        </div>
       </div>
       <!--begin: Datatable-->
       <table class="table table-bordered table-hover" id="Datatable">
@@ -205,6 +215,7 @@
             d.type = $('#selectType').find(':selected').val();
             d.driver_id = $('#select2Driver').find(':selected').val();
             d.transport_id = $('#select2Transport').find(':selected').val();
+            d.statusLDO = $('#select2TypeExpedition').find(':selected').val();
           }
         },
         columns: [
@@ -316,7 +327,7 @@
         $(this).find('.modal-body').find('textarea[name="description"]').text('');
       });
 
-      $('#selectType, #selectStatus').on('change', function () {
+      $('#selectType, #selectStatus, #select2TypeExpedition').on('change', function () {
         dataTable.draw();
       });
 
@@ -338,6 +349,26 @@
       }).on('change', function (e) {
         dataTable.draw();
       });
+
+      $("#select2AnotherExpedition").select2({
+        placeholder: "Search LDO",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.anotherexpedition.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
       $("#select2Transport").select2({
         placeholder: "Search Kendaraan",
         allowClear: true,

@@ -36,7 +36,7 @@
     <div class="mb-10">
       <div class="row align-items-center">
         <div class="col-12 mb-10">
-          <div class="alert alert-custom alert-outline-primary fade show mb-5" role="alert">
+          <div class="alert alert-custom alert-outline-primary fade show mb-5">
             <div class="alert-icon"><i class="flaticon-warning"></i></div>
             <div class="d-flex flex-column">
               <h4>Sisa Saldo</h4>
@@ -53,9 +53,7 @@
       <thead>
         <tr>
           <th>Nama</th>
-          <th>Nominal</th>
-          <th>Status</th>
-          <th>Keterangan</th>
+          <th>Total Hutang</th>
           <th>Created At</th>
           <th>Action</th>
         </tr>
@@ -89,20 +87,32 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Nominal</label>
-            <input type="text" name="amount" class="form-control currency" placeholder="Nominal Kasbon" />
+            <label>Tanggal</label>
+            <input type="text" name="date_payment" class="form-control w-100 datepicker" readonly/>
           </div>
           <div class="form-group">
             <label>Master Akun</label>
             <select name="coa_id" class="form-control">
               @foreach($selectCoa->coa as $item)
                 <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
-              @endforeach
+            @endforeach
             </select>
           </div>
           <div class="form-group">
+            <label>Jenis Kasbon</label>
+            <select class="form-control" name="type">
+              <option value="">Pilih Jenis Kasbon</option>
+              <option value="hutang">Hutang</option>
+              <option value="pembayaran">Bayar</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Nominal</label>
+            <input type="text" name="amount" class="form-control currency" placeholder="Nominal Kasbon" />
+          </div>
+          <div class="form-group">
             <label>Keterangan</label>
-            <textarea type="text" name="memo" class="form-control" rows="5" placeholder="Keterangan"></textarea>
+            <textarea type="text" name="description" class="form-control" rows="5" placeholder="Keterangan"></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -142,35 +152,15 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[4, 'desc']],
+        order: [[0, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.kasbon.index') }}",
         columns: [
             {data: 'driver.name', name: 'driver.name'},
             {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number( '.', '.', 2), className: 'dt-right'},
-            {data: 'status', name: 'status'},
-            {data: 'memo', name: 'memo'},
             {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action'},
-        ],
-        columnDefs: [
-        {
-          className: 'dt-center',
-          targets: 2,
-          render: function(data, type, full, meta) {
-            let status = {
-              0: {'title': 'Belum Dibayar', 'class': ' label-light-danger'},
-              1: {'title': 'Dicicil', 'class': ' label-light-warning'},
-              2: {'title': 'Lunas', 'class': ' label-light-success'},
-            };
-            if (typeof status[data] === 'undefined') {
-              return data;
-            }
-            return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
-              '</span>';
-          },
-        },
         ],
     });
 
@@ -179,7 +169,7 @@
     $('#modalCreate').on('hidden.bs.modal', function (event) {
       $("#select2Driver").val('').trigger('change');
       $(this).find('.modal-body').find('input[name="amount"]').val('');
-      $(this).find('.modal-body').find('textarea[name="memo"]').val('');
+      $(this).find('.modal-body').find('textarea[name="description"]').val('');
     });
 
     $("#select2Driver").select2({
@@ -188,7 +178,6 @@
       ajax: {
           url: "{{ route('backend.drivers.select2self') }}",
           dataType: "json",
-          delay: 250,
           cache: true,
           data: function(e) {
             return {
@@ -197,6 +186,13 @@
             }
           },
       },
+    });
+
+    $('.datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      todayBtn: "linked",
+      clearBtn: true,
+      todayHighlight: true,
     });
 
     $("#formStore").submit(function(e) {

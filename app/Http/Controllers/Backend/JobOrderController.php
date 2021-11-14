@@ -234,6 +234,7 @@ class JobOrderController extends Controller
           $data->fee_thanks = $request->fee_thanks ?? 0;
           $data->invoice_bill = $sumPayload;
           $data->description = $request->description;
+          $data->km = $request->km;
           $data->save();
 
         } elseif ($request->type == 'ldo') {
@@ -256,13 +257,6 @@ class JobOrderController extends Controller
               'type_car' => 'engkel'
             ])->id;
           }
-
-/*          if($request->type_payload == 'calculate' && !$request->basic_price_ldo){
-             return response()->json([
-              'status' => 'error',
-              'message' => 'Inputan harus di isi',
-            ]);
-          }*/
 
           //CALCULATE
           $basicPrice = $request->basic_price;
@@ -291,36 +285,9 @@ class JobOrderController extends Controller
           $data->fee_thanks = $request->fee_thanks ?? 0;
           $data->invoice_bill = $sumPayload;
           $data->description = $request->description;
+          $data->km = $request->km;
           $data->save();
-          $roadMoney = $request->road_money;
         }
-
-        if (is_numeric($request->transport_id)) {
-          $transportId = Transport::findOrFail($request->transport_id)->num_pol;
-        } else {
-          $transportId = $request->transport_id;
-        }
-
-        /*          Journal::create([
-                    'coa_id' => $request->input('coa_id'),
-                    'date_journal' => $request->input('date_begin'),
-                    'debit' => 0,
-                    'kredit' => $roadMoney,
-                    'table_ref' => 'joborders',
-                    'code_ref' => $data->id,
-                    'description' => "Pengurangan saldo untuk uang jalan $costumer->name dari $routefrom->name ke $routeto->name dengan No. Pol: $transportId"
-                  ]);
-
-                  Journal::create([
-                    'coa_id' => 50,
-                    'date_journal' => $request->input('date_begin'),
-                    'debit' => $roadMoney,
-                    'kredit' => 0,
-                    'table_ref' => 'joborders',
-                    'code_ref' => $data->id,
-                    'description' => "Beban operasional uang jalan $costumer->name dari $routefrom->name ke $routeto->name dengan No. Pol: $transportId"
-                  ]);*/
-
         DB::commit();
         $response = response()->json([
           'status' => 'success',

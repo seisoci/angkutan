@@ -86,6 +86,7 @@
               <select id="select2Cargo" class="form-control" name="cargo_id">
               </select>
             </div>
+            <input type="hidden" name="km">
             @hasanyrole('super-admin|admin|akunting')
             <div class="form-group" style="display: none">
               <label>Total Ongkosan Dasar LDO</label>
@@ -506,6 +507,7 @@
           $('input[name=tax_percent]').val('');
           $('#taxPercent').val('');
           $('.currency').val('');
+          $('input[name=km]').val('');
         });
 
         $("#select2Drivers").select2({
@@ -541,6 +543,7 @@
           $('input[name=salary]').val('');
           $('input[name=grandtotalnetto]').val('');
           $('input[name=tax_percent]').val('');
+          $('input[name=km]').val('');
           $('#taxPercent').val('');
           $('.currency').val('');
         });
@@ -588,6 +591,7 @@
           $('input[name=salary]').val('');
           $('input[name=grandtotalnetto]').val('');
           $('input[name=tax_percent]').val('');
+          $('input[name=km]').val('');
           $('#taxPercent').val('');
           $('.currency').val('');
         });
@@ -633,6 +637,7 @@
           $('input[name=salary]').val('');
           $('input[name=grandtotalnetto]').val('');
           $('input[name=tax_percent]').val('');
+          $('input[name=km]').val('');
           $('#taxPercent').val('');
           $('.currency').val('');
         });
@@ -676,6 +681,7 @@
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
         $('input[name=tax_percent]').val('');
+        $('input[name=km]').val('');
         $('#taxPercent').val('');
         $('.currency').val('');
       });
@@ -717,6 +723,7 @@
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
         $('input[name=tax_percent]').val('');
+        $('input[name=km]').val('');
         $('#taxPercent').val('');
         $('.currency').val('');
       });
@@ -757,6 +764,7 @@
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
         $('input[name=tax_percent]').val('');
+        $('input[name=km]').val('');
         $('#taxPercent').val('');
         $('.currency').val('');
       });
@@ -797,6 +805,7 @@
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
         $('input[name=tax_percent]').val('');
+        $('input[name=km]').val('');
         $('#taxPercent').val('');
         $('.currency').val('');
       });
@@ -830,6 +839,7 @@
         $('input[name=cut_sparepart]').val('');
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
+        $('input[name=km]').val('');
       });
 
       $('#selectTypeOngkosan').on('change', function () {
@@ -844,6 +854,7 @@
         $('input[name=cut_sparepart]').val('');
         $('input[name=salary]').val('');
         $('input[name=grandtotalnetto]').val('');
+        $('input[name=km]').val('');
         getData();
         if (this.value == 'fix') {
           $('input[name="payload"]').prop('disabled', true).val(1);
@@ -962,6 +973,7 @@
             if (response.data) {
               let data = response.data.pivot;
               let taxfee = response.taxfee;
+              $('input[name=km]').val(response.taxfee.km);
               let transport = response.type.type_car;
               let type = response.data.pivot.type;
               if (transport === 'engkel') {

@@ -21,12 +21,8 @@ class Kasbon extends Model
   protected static $logAttributesToIgnore = ['driver_id', 'invoice_kasbon_id'];
 
   protected $fillable = [
-    'invoice_kasbon_id',
     'driver_id',
-    'coa_id',
     'amount',
-    'status',
-    'memo'
   ];
 
   public function driver()

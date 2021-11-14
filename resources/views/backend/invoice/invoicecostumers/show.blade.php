@@ -15,7 +15,8 @@
           <select class="form-control" id="select2Bank" style="width: 200px">
           </select>
           <button id="btn_print" class="btn btn-outline-secondary"><i
-              class="fa fa-print"></i> Print</button>
+              class="fa fa-print"></i> Print
+          </button>
         </div>
       </div>
     </div>
@@ -28,7 +29,8 @@
           <table class="table table-borderless table-title">
             <tbody>
             <tr>
-              <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $data->costumer->cooperation->nickname ?? '' }}
+              <td class="font-weight-bolder text-uppercase"
+                  style="width:50%">{{ $data->costumer->cooperation->nickname ?? '' }}
               </td>
               <td class="text-left" style="width:10%"></td>
               <td class="text-left" style="padding-left:4rem;width:20%">No. Invoice</td>
@@ -103,12 +105,23 @@
                   <td class="text-right currency">{{ $item->fee_thanks }}</td>
                   <td class="text-right currency">{{ $item->total_basic_price }}</td>
                 </tr>
+                @foreach($item->piutangklaim as $piutangklaim)
+                  <tr>
+                    <td></td>
+                    <td>
+                      <span class="badge {{ $piutangklaim->type == 'tambah' ? 'badge-success' : 'badge-danger' }}">{{ $piutangklaim->type == 'tambah' ? 'Penambahan' : 'Pengu' }}</span>
+                    </td>
+                    <td colspan="12">{{ $piutangklaim->description }}</td>
+                    <td class="text-right currency">{{ $piutangklaim->amount }}</td>
+                  </tr>
+                @endforeach
               @endforeach
               <tr>
                 <td colspan="12" class="text-right font-weight-bolder">Total</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->total_tax }}</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->total_fee_thanks }}</td>
-                <td class="text-right font-weight-bolder currency">{{ $data->total_bill  }}</td>
+                <td
+                  class="text-right font-weight-bolder currency">{{ ($data->total_bill + $data->total_piutang)  }}</td>
               </tr>
               </tbody>
             </table>
@@ -138,11 +151,12 @@
             </tr>
             <tr>
               <td colspan="3" class="text-right font-weight-bolder">Total Piutang Klaim</td>
-              <td class="text-right font-weight-bolder">{{ number_format($data->total_piutang ?? 0,2, ',', '.') }}</td>
+              <td class="text-right font-weight-bolder text-success">{{ number_format($data->total_piutang ?? 0,2, ',', '.') }}</td>
             </tr>
             <tr>
               <td colspan="3" class="text-right font-weight-bolder">Total Pemotongan Klaim</td>
-              <td class="text-right font-weight-bolder text-danger">{{ number_format($data->total_cut ?? 0,2, ',', '.') }}</td>
+              <td
+                class="text-right font-weight-bolder text-danger">{{ number_format($data->total_cut ?? 0,2, ',', '.') }}</td>
             </tr>
             <tr>
               <td colspan="3" class="text-right font-weight-bolder">Total Pembayaran</td>
@@ -168,6 +182,7 @@
     th {
       padding: 0;
     }
+
     .select2-container--default .select2-selection--single {
       border-radius: 0 !important;
     }
@@ -192,7 +207,9 @@
         let params = new URLSearchParams({
           bank_id: $('#select2Bank').find(':selected').val() || '',
         });
-        window.location.href = '{{ $config['print_url'] }}?' + params.toString();
+{{--        window.location.href = '{{ $config['print_url'] }}?' + params.toString();--}}
+        window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
+
       });
 
       $("#select2Bank").select2({

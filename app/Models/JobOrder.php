@@ -26,6 +26,7 @@ class JobOrder extends Model
     'status_payment_ldo',
     'road_money_prev',
     'road_money_extra',
+    'km',
 
   ];
 
@@ -61,6 +62,12 @@ class JobOrder extends Model
   {
     return $this->belongsTo(Route::class, 'route_to');
   }
+
+  public function piutangklaim()
+  {
+    return $this->hasMany(PiutangKlaim::class);
+  }
+
 
   public function routefrom()
   {

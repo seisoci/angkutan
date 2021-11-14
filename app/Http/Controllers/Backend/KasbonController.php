@@ -9,8 +9,10 @@ use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Cooperation;
 use App\Models\Driver;
+use App\Models\InvoiceKasbon;
 use App\Models\Journal;
 use App\Models\Kasbon;
+use App\Models\PaymentKasbon;
 use App\Traits\CarbonTrait;
 use DataTables;
 use Illuminate\Http\Request;
@@ -56,7 +58,7 @@ class KasbonController extends Controller
     });
 
     if ($request->ajax()) {
-      $data = Kasbon::with('driver:id,name');
+      $data = Kasbon::with('driver');
       return DataTables::of($data)
         ->addColumn('action', function ($row) {
           return '
@@ -65,7 +67,7 @@ class KasbonController extends Controller
                       <i class="fas fa-eye"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a href="kasbon/' . $row->id . '" class="dropdown-item">Detail Kasbon</a>
+                    <a href="kasbon/' . $row->id . '" class="dropdown-item">Detail Seluruh Kasbon</a>
                   </div>
               </div>
             ';
@@ -73,6 +75,8 @@ class KasbonController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
+
+
     return view('backend.invoice.kasbon.index', compact('config', 'page_breadcrumbs', 'selectCoa', 'saldoGroup'));
   }
 
@@ -82,7 +86,6 @@ class KasbonController extends Controller
       'driver_id' => 'required|integer',
       'coa_id' => 'required|integer',
       'amount' => 'required|integer',
-      'memo' => 'required|string',
     ]);
 
     if ($validator->passes()) {
@@ -99,43 +102,93 @@ class KasbonController extends Controller
           ->where('journals.coa_id', $request->coa_id)
           ->groupBy('journals.coa_id')
           ->first();
-        if (($checksaldo->saldo ?? FALSE) && $request->amount <= $checksaldo->saldo) {
-          $kasbon = Kasbon::create([
-            'driver_id' => $request->input('driver_id'),
-            'coa_id' => $request->input('coa_id'),
-            'amount' => $request->input('amount'),
-            'memo' => $request->input('memo'),
-          ]);
-          Journal::create([
-            'coa_id' => 7,
-            'date_journal' => $this->dateNow(),
-            'debit' => $request->input('amount'),
-            'kredit' => 0,
-            'table_ref' => 'kasbon',
-            'code_ref' => $kasbon->id,
-            'description' => "Supir $driver->name melakukan kasbon dengan $coa->name"
-          ]);
-          Journal::create([
-            'coa_id' => $request->input('coa_id'),
-            'date_journal' => $this->dateNow(),
-            'debit' => 0,
-            'kredit' => $request->input('amount'),
-            'table_ref' => 'kasbon',
-            'code_ref' => $kasbon->id,
-            'description' => "Pengeluaran untuk kasbon $driver->name"
-          ]);
-          $response = response()->json([
-            'status' => 'success',
-            'message' => 'Data has been saved',
-          ]);
-          DB::commit();
+
+
+        $data = Kasbon::firstOrNew([
+          'driver_id' => $request['driver_id']
+        ]);
+        $paymentKasbon = PaymentKasbon::create([
+          'coa_id' => $request['coa_id'],
+          'driver_id' => $request['driver_id'],
+          'date_payment' => $request['date_payment'],
+          'type' => $request['type'],
+          'payment' => $request['amount'],
+          'description' => $request['description'],
+        ]);
+
+        if ($request['type'] == 'hutang') {
+          $data->amount = ($data->exists ? $data['amount'] : 0) + $request['amount'];
+          if (($checksaldo->saldo ?? FALSE) && $request->amount <= $checksaldo->saldo) {
+            Journal::create([
+              'coa_id' => 7,
+              'date_journal' => $request['date_payment'],
+              'debit' => $request['amount'],
+              'kredit' => 0,
+              'table_ref' => 'kasbon',
+              'code_ref' => $paymentKasbon->id,
+              'description' => "Supir $driver->name melakukan kasbon dengan $coa->name"
+            ]);
+            Journal::create([
+              'coa_id' => $request->input('coa_id'),
+              'date_journal' => $request['date_payment'],
+              'debit' => 0,
+              'kredit' => $request['amount'],
+              'table_ref' => 'kasbon',
+              'code_ref' => $paymentKasbon->id,
+              'description' => "Pengeluaran untuk kasbon $driver->name"
+            ]);
+            $response = response()->json([
+              'status' => 'success',
+              'message' => 'Data has been saved',
+            ]);
+            $data->save();
+            DB::commit();
+          } else {
+            DB::rollBack();
+            $response = response()->json([
+              'status' => 'errors',
+              'message' => "Saldo $coa->name tidak ada/kurang",
+            ]);
+          }
         } else {
-          DB::rollBack();
-          $response = response()->json([
-            'status' => 'errors',
-            'message' => "Saldo $coa->name tidak ada/kurang",
-          ]);
+          if ((($data->exists ? $data['amount'] : 0) - $request['amount']) >= 0) {
+            $data->amount = ($data->exists ? $data['amount'] : 0) - $request['amount'];
+
+            Journal::create([
+              'coa_id' => $request['coa_id'],
+              'date_journal' => $request['date_payment'],
+              'debit' => $request['amount'],
+              'kredit' => 0,
+              'table_ref' => 'kasbon',
+              'code_ref' => $paymentKasbon->id,
+              'description' => "Penambahan saldo dari kasbon supir $driver->name"
+            ]);
+
+            Journal::create([
+              'coa_id' => 7,
+              'date_journal' => $request['date_payment'],
+              'debit' => 0,
+              'kredit' => $request['amount'],
+              'table_ref' => 'kasbon',
+              'code_ref' => $paymentKasbon->id,
+              'description' => "Pembayaran kasbon supir $driver->name ke $coa->name"
+            ]);
+
+            $response = response()->json([
+              'status' => 'success',
+              'message' => 'Data has been saved',
+            ]);
+            $data->save();
+            DB::commit();
+
+          } else {
+            return response()->json([
+              'status' => 'errors',
+              'message' => "Pembayaran melebihi hutang",
+            ]);
+          }
         }
+
       } catch (\Throwable $throw) {
         DB::rollBack();
         $response = $throw;
@@ -146,17 +199,17 @@ class KasbonController extends Controller
     return $response;
   }
 
-  public function show($id)
+  public function show(Request $request, $id)
   {
     $config['page_title'] = "Detail Kasbon";
-    $config['print_url'] = "/backend/kasbon/$id/print";
+    $config['page_description'] = "Detail List Kasbon";
+
     $page_breadcrumbs = [
       ['page' => '/backend/kasbon', 'title' => "Kasbon"],
       ['page' => '#', 'title' => "Detail Kasbon"],
     ];
-    $cooperationDefault = Cooperation::where('default', '1')->first();
-    $data = Kasbon::with('driver')->findOrFail($id);
-    return view('backend.invoice.kasbon.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
+    $data = Kasbon::with('driver')->where('driver_id', $id)->sole();
+    return view('backend.invoice.kasbon.show', compact('config', 'page_breadcrumbs', 'data', 'id'));
   }
 
   public function print($id)
@@ -211,6 +264,122 @@ class KasbonController extends Controller
     $result .= $printed->output() . "\n";
     return response($result, 200)->header('Content-Type', 'text/plain');
 //    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+  }
+
+  public function dotMatrix($id)
+  {
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
+    $data = PaymentKasbon::with('driver')->findOrFail($id);
+    $result = '';
+    $item[] = ['no' => 1, 'nama' => $data->description, 'nominal' => number_format($data->payment, 0, '.', ',')];
+    $paper = array(
+      'panjang' => 35,
+      'baris' => 31,
+      'spasi' => 2,
+      'column_width' => [
+        'header' => [35, 0],
+        'table' => [3, 21, 11],
+        'footer' => [18, 17]
+      ],
+      'header' => [
+        'left' => [
+          strtoupper($cooperationDefault['nickname']),
+          $cooperationDefault['address'],
+          'KASBON SUPIR',
+          'Nama: ' . $data->driver->name,
+          'Tgl Kasbon: ' . $data->date_payment,
+        ],
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
+      ],
+      'table' => [
+        'header' => ['No', 'Keterangan', 'Nominal'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
+        )
+      ]
+    );
+//    $paper['footer'][] = [
+//      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
+//    ];
+    $printed = new ContinousPaper($paper);
+    $result .= $printed->output() . "\n";
+    return response($result, 200)->header('Content-Type', 'text/plain');
+  }
+
+  public function datatableShow($id)
+  {
+    $data = PaymentKasbon::where('driver_id', $id)->with('driver');
+
+    return DataTables::of($data)
+      ->addColumn('action', function ($row) use ($id) {
+        return '
+              <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-eye"></i>
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a href="#" class="dropdown-item btnPrintDotMatrix" data-id="' . $row->id . '">Print DotMatrix</a>
+                    <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="dropdown-item">Delete</a>
+                  </div>
+              </div>
+            ';
+      })
+      ->addIndexColumn()
+      ->make(true);
+  }
+
+  public function destroy($id)
+  {
+    try {
+      DB::beginTransaction();
+      Journal::where([
+        ['table_ref', 'kasbon'],
+        ['code_ref', $id]
+      ])->delete();
+
+      $data = PaymentKasbon::find($id);
+
+      $kasbon = Kasbon::firstOrNew([
+        'driver_id' => $data['driver_id']
+      ]);
+
+      if ($data['type'] == 'hutang') {
+        $kasbon->amount = ($kasbon->exists ? $kasbon['amount'] : 0) - $data['payment'];
+        if($kasbon->amount < 0){
+          DB::rollBack();
+          return response()->json([
+            'status' => 'error',
+            'message' => 'Kasbon tidak boleh negative',
+          ]);
+        }
+      }else{
+        $kasbon->amount = ($kasbon->exists ? $kasbon['amount'] : 0) + $data['payment'];
+      }
+      $kasbon->save();
+      $data->delete();
+      $response = response()->json([
+        'status' => 'success',
+        'message' => 'Data has been deleted',
+      ]);
+
+
+      DB::commit();
+    } catch (\Throwable $throw) {
+      DB::rollBack();
+      $response = response()->json([
+        'status' => 'error',
+        'message' => 'Data cannot be deleted',
+      ]);
+    }
+
+    return $response;
   }
 
 }

@@ -120,6 +120,15 @@
                   </div>
                 </div>
               </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Jarak Tempuh<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <input type="number" class="form-control" name="km" value="{{ $data->km ?? 0 }}"/>
+                    <div class="input-group-append"><span class="input-group-text">KM</span></div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="card-footer d-flex justify-content-end">
               <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>

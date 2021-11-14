@@ -21,10 +21,12 @@ class PaymentKasbon extends Model
   protected static $logAttributesToIgnore = ['invoice_kasbon_id'];
 
   protected $fillable = [
-    'invoice_kasbon_id',
     'coa_id',
+    'driver_id',
     'date_payment',
-    'payment'
+    'type',
+    'payment',
+    'description'
   ];
 
   protected function serializeDate(DateTimeInterface $date)
@@ -37,8 +39,8 @@ class PaymentKasbon extends Model
     return $this->belongsTo(Coa::class, 'coa_id');
   }
 
-  public function invoicekasbon()
+  public function driver()
   {
-    return $this->belongsTo(InvoiceKasbon::class, 'invoice_kasbon_id');
+    return $this->belongsTo(Driver::class, 'driver_id');
   }
 }

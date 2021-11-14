@@ -25,8 +25,7 @@ class RoadMoney extends Model
     'cargo_id',
     'fee_thanks',
     'tax_pph',
-    'road_engkel',
-    'road_tronton',
+    'km'
   ];
 
   protected function serializeDate(DateTimeInterface $date)

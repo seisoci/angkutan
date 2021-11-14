@@ -266,15 +266,11 @@ return [
       'bullet' => 'dot',
       'root' => true,
       'arrow' => true,
-      'list' => ['kasbon', 'invoicekasbons', 'invoicesalaries', 'invoicecostumers', 'invoiceldo'],
+      'list' => ['invoicekasbons', 'invoicesalaries', 'invoicecostumers', 'invoiceldo'],
       'submenu' => [
         [
           'title' => 'Kasbon Supir',
           'page' => 'backend/kasbon'
-        ],
-        [
-          'title' => 'Invoice Kasbon Supir',
-          'page' => 'backend/invoicekasbons'
         ],
         [
           'title' => 'Invoice Gaji Supir',

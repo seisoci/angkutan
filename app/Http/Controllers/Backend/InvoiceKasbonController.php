@@ -149,26 +149,7 @@ class InvoiceKasbonController extends Controller
             'payment' => $payments['payment'][$key],
           ]);
 
-          $coa = Coa::findOrFail($payments['coa_id'][$key]);
-          Journal::create([
-            'coa_id' => $payments['coa_id'][$key],
-            'date_journal' => $payments['date'][$key],
-            'debit' => $payments['payment'][$key],
-            'kredit' => 0,
-            'table_ref' => 'invoicekasbons',
-            'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari kasbon supir $driver->name dengan dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
-          ]);
 
-          Journal::create([
-            'coa_id' => 7,
-            'date_journal' => $payments['date'][$key],
-            'debit' => 0,
-            'kredit' => $payments['payment'][$key],
-            'table_ref' => 'invoicekasbons',
-            'code_ref' => $data->id,
-            'description' => "Pembayaran kasbon supir $driver->name ke $coa->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
-          ]);
         endforeach;
 
         if ($restPayment <= -1) {

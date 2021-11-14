@@ -131,14 +131,15 @@
                                                   disabled></td>
                   </tr>
                   <tr>
-                    <td colspan="4" class="text-right">Total Piutang Klaim</td>
-                    <td class="text-right"><input type="text" name="total_piutang"
-                                                  class="currency rounded-0 form-control">
+                    <td colspan="4" class="text-right">Total Piutang</td>
+                    <td class="text-right"><input type="text" class="currency rounded-0 form-control total_piutang"
+                                                  disabled>
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="4" class="text-right">Total Pemotongan Klaim</td>
-                    <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control">
+                    <td colspan="4" class="text-right">Total Klaim</td>
+                    <td class="text-right"><input type="text" class="currency rounded-0 form-control total_klaim"
+                                                  disabled>
                     </td>
                   </tr>
                   <tr>
@@ -222,6 +223,7 @@
         </div>
         <div class="modal-body">
           <form>
+            <input type="hidden" name="tb_job_order_id">
             <div class="form-group">
               <label for="selectType" class="col-form-label">Tipe:</label>
               <select class="form-control" name="type" id="selectType">
@@ -374,24 +376,87 @@
       }
 
       function initCalculate() {
+        let totalKlaim = 0;
+        let totalPiutang = 0;
+        $("input[name*='[kurang][nominal]']").each(function () {
+          totalKlaim += parseInt($(this).val()) || 0;
+        });
+        $("input[name*='[tambah][nominal]']").each(function () {
+          totalPiutang += parseInt($(this).val()) || 0;
+        });
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
-        let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
-        let total_piutang = parseFloat($('input[name="total_piutang"]').val()) || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
         let totalTagihan = total_bill;
-        let rest_payment = totalTagihan - total_payment - total_cut + total_piutang;
+        let rest_payment = total_bill - total_payment + totalPiutang - totalKlaim;
+        $('#totalTagihan').val(totalTagihan);
         $('input[name="total_tagihan"]').val(totalTagihan);
         $('.total_payment').val(total_payment);
         $('.rest_payment').val(rest_payment);
+        $('.total_klaim').val(totalKlaim);
+        $('.total_piutang').val(totalPiutang);
       }
 
       $('input[name="payment[payment]"],input[name="total_cut"],input[name="total_piutang"],#diskon').on('keyup', function () {
         initCalculate();
       });
 
-      $('#addRow').on('click', function () {
-        console.log($(this).parent().parent().find('input[name="nominal"]').val());
+      $('#addModal').on('show.bs.modal', function (event) {
+        let id = $(event.relatedTarget).data('id');
+        $(this).find('.modal-body').find('input[name="tb_job_order_id"]').val(id);
+
       });
+      $('#addModal').on('hidden.bs.modal', function (event) {
+        $(this).find('.modal-body').find('input[name="tb_job_order_id"]').val('');
+        $(this).find('.modal-body').find('input[name="nominal"]').val('');
+        $(this).find('.modal-body').find('textarea[name="keterangan"]').val('');
+      });
+
+      $('#addRow').on('click', function () {
+        let jobOrderId = $(this).parent().parent().find('input[name="tb_job_order_id"]').val();
+        let keterangan = $(this).parent().parent().find('textarea[name="keterangan"]').val();
+        let nominal = $(this).parent().parent().find('input[name="nominal"]').val();
+        let select = $(this).parent().parent().find('select[name="type"]').val();
+        let typeVar = '';
+        if (select == 'tambah' && !$.trim($('#jo_' + jobOrderId + '_tambahan').html())) {
+          typeVar = 'jo_' + jobOrderId + '_tambahan';
+          $("#jo_" + jobOrderId).after('<tr id="' + typeVar + '">' +
+            '<td><button type="button" class="btn btn-sm btn-danger deleteItem">-</button></td>' +
+            '<td><input type="hidden" name="job_orderid['+jobOrderId+'][tambah][nominal]" value="'+nominal+'"></td>' +
+            '<td><span class="badge badge-success">Tambahan</span></td>' +
+            '<td colspan="13">' + keterangan + '<input type="hidden" name="job_orderid['+jobOrderId+'][tambah][keterangan]" value="'+keterangan+'"></td>' +
+            '<td class="text-right money">' + nominal + '</td>' +
+            '</tr>');
+        } else if (select == 'kurang' && !$.trim($('#jo_' + jobOrderId + '_pengurangan').html())) {
+          typeVar = 'jo_' + jobOrderId + '_pengurangan';
+          console.log(nominal);
+          $("#jo_" + jobOrderId).after('<tr id="' + typeVar + '">' +
+            '<td><button type="button" class="btn btn-sm btn-danger deleteItem">-</button></td>' +
+            '<td><input type="hidden" name="job_orderid['+jobOrderId+'][kurang][nominal]" value="'+nominal+'"></td>' +
+            '<td><span class="badge badge-danger">Pengurangan</span></td>' +
+            '<td colspan="13">' + keterangan + '<input type="hidden" name="job_orderid['+jobOrderId+'][kurang][keterangan]" value="'+keterangan+'"></td>' +
+          '<td class="text-right money">' + nominal + '</td>' +
+          '</tr>'
+        );
+        }
+
+        $(".money").inputmask({
+          'alias': 'decimal',
+          'groupSeparator': ',',
+          'autoGroup': true,
+          'digits': 2,
+          'digitsOptional': false,
+        });
+
+        initCalculate();
+        $('#addModal').modal('hide');
+
+        $('.deleteItem').on('click', function (){
+          $(this).parent().parent().empty();
+          initCalculate();
+        })
+      });
+
+
 
       $('#submitAppend').on('click', function (e) {
         e.preventDefault();
@@ -425,7 +490,7 @@
                 totalBasicPriceAfterThanks += parseFloat(data.total_basic_price_after_thanks) || 0;
                 $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="' + data.id + '">');
                 $('#table_invoice tbody').append('<tr id="jo_' + data.id + '">' +
-                  '<td><button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#addModal" data-id="' + data + '">+</button></td>' +
+                  '<td><button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#addModal" data-id="' + data.id + '">+</button></td>' +
                   ' <td class="text-center">' + (index + 1) + '</td>' +
                   ' <td>' + data.date_begin + '</td>' +
                   ' <td>' + data.prefix + '-' + data.num_bill + '</td>' +
@@ -453,7 +518,7 @@
                 '<input type="hidden" name="total_basic_price_after_thanks" value="' + totalBasicPriceAfterThanks + '">');
 
               $('#table_invoice tfoot').append('<tr>' +
-                '<td colspan="13" class="text-right">Total</td>' +
+                '<td colspan="14" class="text-right">Total</td>' +
                 '<td class="text-right money">' + totalTax + '</td>' +
                 '<td class="text-right money">' + totalFee + '</td>' +
                 '<td class="text-right money">' + total + '</td>' +

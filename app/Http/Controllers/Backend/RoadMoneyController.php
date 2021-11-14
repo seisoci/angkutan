@@ -89,7 +89,8 @@ class RoadMoneyController extends Controller
           'cargo_id'      => $request->input('cargo_id'),
           'fee_thanks'    => $request->input('fee_thanks') ?? 0,
           'tax_pph'       => $request->input('tax_pph') ?? 0,
-          'amount'        => $request->input('amount')
+          'amount'        => $request->input('amount'),
+          'km'        => $request->input('km')
         ]);
 //        $type_capacities = TypeCapacity::all();
 //        $data->typecapacities()->attach($type_capacities);
@@ -151,7 +152,8 @@ class RoadMoneyController extends Controller
         'tax_pph'       => $request->input('tax_pph') ?? 0,
         'road_engkel'   => $request->input('road_engkel'),
         'road_tronton'  => $request->input('road_tronton'),
-        'amount'        => $request->input('amount')
+        'amount'        => $request->input('amount'),
+        'km'        => $request->input('km')
       ]);
 
       $response = response()->json([
