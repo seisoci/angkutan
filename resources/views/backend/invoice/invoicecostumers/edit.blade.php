@@ -69,9 +69,11 @@
             <table id="table_invoice" class="table table-striped">
               <thead>
               <tr>
-                <th scope="col" class="text-center">#</th>
+                <th>#</th>
+                <th scope="col" class="text-center">No.</th>
                 <th scope="col">Tanggal</th>
                 <th scope="col">No. JobOrder</th>
+                <th scope="col">No. Polisi</th>
                 <th scope="col">No. SJ</th>
                 <th scope="col">No. Shipment</th>
                 <th scope="col">Pelanggan</th>
@@ -82,16 +84,22 @@
                 <th scope="col">Harga Dasar</th>
                 <th scope="col">Pajak (%)</th>
                 <th scope="col">Pajak (Rp.)</th>
-                <th scope="col" cl>Fee</th>
+                <th scope="col">Fee</th>
                 <th scope="col" class="text-right">Total Tagihan (Rp.)</th>
               </tr>
               </thead>
               <tbody>
               @foreach($data->joborders as $item)
-                <tr>
+                <tr id="jo_{{ $item->id }}">
+                  <td>
+                    <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#addModal"
+                            data-id="{{ $item->id }}">+
+                    </button>
+                  </td>
                   <td class="text-center">{{ $loop->iteration }}</td>
                   <td>{{  $item->date_begin }}</td>
                   <td>{{ $item->prefix . '-' . $item->num_bill  }}</td>
+                  <td>{{ $item->transport->num_pol  }}</td>
                   <td>{{ $item->no_sj  }}</td>
                   <td>{{ $item->no_shipment  }}</td>
                   <td>{{ $item->costumer->name }}</td>
@@ -105,11 +113,30 @@
                   <td class="text-right currency">{{ $item->fee_thanks }}</td>
                   <td class="text-right currency">{{ $item->total_basic_price }}</td>
                 </tr>
+                @foreach($item->piutangklaim as $piutangklaim)
+                  <tr>
+                    <td>
+                      <button type="button" class="btn btn-sm btn-danger deleteItem">-</button>
+                    </td>
+                    <td><input type="hidden"
+                               name="job_orderid[{{ $item->id }}][{{ $piutangklaim->type == 'tambah' ? 'tambah' : 'kurang' }}][nominal]"
+                               value="{{ $piutangklaim->amount }}"></td>
+                    <td>
+                      <span
+                        class="badge {{ $piutangklaim->type == 'tambah' ? 'badge-success' : 'badge-danger' }}">{{ $piutangklaim->type == 'tambah' ? 'Penambahan' : 'Pengurangan' }}</span>
+                    </td>
+                    <td colspan="13">{{ $piutangklaim->description }}<input type="hidden"
+                                                                            name="job_orderid[{{ $item->id }}][{{ $piutangklaim->type == 'tambah' ? 'tambah' : 'kurang' }}][keterangan]"
+                                                                            value="{{ $piutangklaim->description }}">
+                    </td>
+                    <td class="text-right currency">{{ $piutangklaim->amount }}</td>
+                  </tr>
+                @endforeach
               @endforeach
               </tbody>
               <tfoot>
               <tr>
-                <td colspan="12" class="font-weight-bolder text-right">Total</td>
+                <td colspan="14" class="font-weight-bolder text-right">Total</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->joborders->sum('tax_amount') }}</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->joborders->sum('fee_thanks') }}</td>
                 <td class="text-right font-weight-bolder currency">{{ $data->joborders->sum('total_basic_price') }}</td>
@@ -162,46 +189,86 @@
               <tfoot>
               <tr>
                 <td colspan="4" class="text-right">Total Tagihan</td>
-                <td class="text-right"><input type="text" name="total_bill" class="currency rounded-0 form-control"
-                                              value="{{ $data->total_bill }}"
-                                              disabled></td>
-              </tr>
-              <tr>
-                <td colspan="4" class="text-right">Total Piutang Klaim</td>
-                <td class="text-right"><input type="text" name="total_piutang" class="currency rounded-0 form-control" value="{{ $data->total_piutang }}">
+                <td class="text-right">
+                  <input type="text" class="currency rounded-0 form-control total_bill" value="{{ $data->total_bill }}"
+                         disabled>
+                  <input type="hidden" class="total_bill" name="total_bill" value="{{ $data->total_bill }}">'
                 </td>
               </tr>
               <tr>
-                <input type="hidden" name="total_cut_old" value="{{ $data->total_cut }}">
-                <td colspan="4" class="text-right">Total Pemotongan Klaim</td>
-                <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control"
-                                              value="{{ $data->total_cut }}">
+                <td colspan="4" class="text-right">Total Piutang</td>
+                <td class="text-right"><input type="text" class="currency rounded-0 form-control total_piutang"
+                                              value="{{ $data->total_piutang }}"
+                                              disabled>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4" class="text-right">Total Klaim</td>
+                <td class="text-right"><input type="text" class="currency rounded-0 form-control total_klaim"
+                                              value="{{ $data->total_cut }}"
+                                              disabled>
                 </td>
               </tr>
               <tr>
                 <td colspan="4" class="text-right">Total Pembayaran</td>
                 <td class="text-right"><input type="text" class="currency rounded-0 form-control total_payment"
-                                              value="{{ $data->total_payment }}" disabled>
+                                              value="{{ $data->total_payment }}"
+                                              disabled>
                 </td>
               </tr>
               <tr>
-                <input type="hidden" name="rest_payment" class="currency rounded-0 form-control rest_payment"
-                       value="{{ $data->rest_payment }}">
+                <input type="hidden" name="rest_payment" class="currency rounded-0 form-control rest_payment">
                 <td colspan="4" class="text-right">Sisa Pembayaran</td>
-                <td class="text-right"><input type="text" class="currency rounded-0 form-control rest_payment" disabled
-                                              value="{{ $data->rest_payment }}">
+                <td class="text-right"><input type="text" class="currency rounded-0 form-control rest_payment"
+                                              disabled>
                 </td>
               </tr>
-              <tr>
-                <td colspan="5" class="text-right">
-                  <button type="submit" class="btn btn-primary">Submit</button>
-                </td>
-              </tr>
+              <td colspan="5" class="text-right">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </td>
               </tfoot>
             </table>
           </div>
         </div>
       </form>
+    </div>
+  </div>
+  {{--  Modal--}}
+  <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Tambah</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <i aria-hidden="true" class="ki ki-close"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <input type="hidden" name="tb_job_order_id">
+            <div class="form-group">
+              <label for="selectType" class="col-form-label">Tipe:</label>
+              <select class="form-control" name="type" id="selectType">
+                <option value="tambah">Tambah</option>
+                <option value="kurang">Kurang</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Nominal:</label>
+              <input class="form-control currency" name="nominal">
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Keterangan:</label>
+              <textarea class="form-control" name="keterangan" rows="4"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="addRow" type="button" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
     </div>
   </div>
 @endsection
@@ -241,31 +308,102 @@
       function initCurrency() {
         $(".currency").inputmask('decimal', {
           groupSeparator: '.',
-          digits: 2,
+          digits: 0,
           rightAlign: true,
           removeMaskOnSubmit: true,
           autoUnmask: true,
         });
+
+        $('.deleteItem').on('click', function () {
+          $(this).parent().parent().empty();
+          initCalculate();
+        });
       }
 
       function initCalculate() {
+        let totalKlaim = 0;
+        let totalPiutang = 0;
+        $("input[name*='[kurang][nominal]']").each(function () {
+          totalKlaim += parseInt($(this).val()) || 0;
+        });
+        $("input[name*='[tambah][nominal]']").each(function () {
+          totalPiutang += parseInt($(this).val()) || 0;
+        });
+        console.log(totalPiutang);
+
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
-        let total_fee = parseFloat($('input[name="total_fee"]').val()) || 0;
-        let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
-        let total_piutang = parseFloat($('input[name="total_piutang"]').val()) || 0;
-        let totalPayment = parseFloat('{{ $data->total_payment }}');
-        let totalTax = parseFloat('{{ $data->total_tax }}');
-        let payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
-        let grandTotal = totalPayment + payment;
-        let rest_payment = total_bill - total_cut - totalPayment - payment + total_piutang;
-        $('.totalPayment').val(payment);
-        $('.total_payment').val(grandTotal);
+        let totalPaymentDB = parseFloat("{{ $data->paymentcostumers_sum_payment }}");
+        let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
+        let totalTagihan = total_bill + totalPiutang;
+        let rest_payment = total_bill - total_payment + totalPiutang - totalKlaim - totalPaymentDB;
+        let totalPaymentFull = total_payment + totalPaymentDB;
+        console.log(totalTagihan);
+        $('.total_bill').val(totalTagihan);
+        $('input[name="payment[total_payment]"]').val(total_payment);
+        $('.total_payment').val(totalPaymentFull);
         $('.rest_payment').val(rest_payment);
-        $('input[name=total_bill]').val(total_bill);
+        $('.total_klaim').val(totalKlaim);
+        $('.total_piutang').val(totalPiutang);
       }
 
       $('input[name="payment[payment]"],input[name="total_cut"],input[name="total_piutang"],#diskon').on('keyup', function () {
         initCalculate();
+      });
+
+      $('#addModal').on('show.bs.modal', function (event) {
+        let id = $(event.relatedTarget).data('id');
+        $(this).find('.modal-body').find('input[name="tb_job_order_id"]').val(id);
+
+      });
+      $('#addModal').on('hidden.bs.modal', function (event) {
+        $(this).find('.modal-body').find('input[name="tb_job_order_id"]').val('');
+        $(this).find('.modal-body').find('input[name="nominal"]').val('');
+        $(this).find('.modal-body').find('textarea[name="keterangan"]').val('');
+      });
+
+      $('#addRow').on('click', function () {
+        let jobOrderId = $(this).parent().parent().find('input[name="tb_job_order_id"]').val();
+        let keterangan = $(this).parent().parent().find('textarea[name="keterangan"]').val();
+        let nominal = $(this).parent().parent().find('input[name="nominal"]').val();
+        let select = $(this).parent().parent().find('select[name="type"]').val();
+        let typeVar = '';
+        if (select == 'tambah' && !$.trim($('#jo_' + jobOrderId + '_tambahan').html())) {
+          typeVar = 'jo_' + jobOrderId + '_tambahan';
+          $("#jo_" + jobOrderId).after('<tr id="' + typeVar + '">' +
+            '<td><button type="button" class="btn btn-sm btn-danger deleteItem">-</button></td>' +
+            '<td><input type="hidden" name="job_orderid[' + jobOrderId + '][tambah][nominal]" value="' + nominal + '"></td>' +
+            '<td><span class="badge badge-success">Penambahan</span></td>' +
+            '<td colspan="13">' + keterangan + '<input type="hidden" name="job_orderid[' + jobOrderId + '][tambah][keterangan]" value="' + keterangan + '"></td>' +
+            '<td class="text-right money">' + nominal + '</td>' +
+            '</tr>');
+        } else if (select == 'kurang' && !$.trim($('#jo_' + jobOrderId + '_pengurangan').html())) {
+          typeVar = 'jo_' + jobOrderId + '_pengurangan';
+          console.log(nominal);
+          $("#jo_" + jobOrderId).after('<tr id="' + typeVar + '">' +
+            '<td><button type="button" class="btn btn-sm btn-danger deleteItem">-</button></td>' +
+            '<td><input type="hidden" name="job_orderid[' + jobOrderId + '][kurang][nominal]" value="' + nominal + '"></td>' +
+            '<td><span class="badge badge-danger">Pengurangan</span></td>' +
+            '<td colspan="13">' + keterangan + '<input type="hidden" name="job_orderid[' + jobOrderId + '][kurang][keterangan]" value="' + keterangan + '"></td>' +
+            '<td class="text-right money">' + nominal + '</td>' +
+            '</tr>'
+          );
+        }
+
+        $(".money").inputmask({
+          'alias': 'decimal',
+          'groupSeparator': ',',
+          'autoGroup': true,
+          'digits': 2,
+          'digitsOptional': false,
+        });
+
+        initCalculate();
+        $('#addModal').modal('hide');
+
+        $('.deleteItem').on('click', function () {
+          $(this).parent().parent().empty();
+          initCalculate();
+        });
       });
 
       $("#formUpdate").submit(function (e) {

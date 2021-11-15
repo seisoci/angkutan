@@ -381,9 +381,11 @@
         $("input[name*='[kurang][nominal]']").each(function () {
           totalKlaim += parseInt($(this).val()) || 0;
         });
+
         $("input[name*='[tambah][nominal]']").each(function () {
           totalPiutang += parseInt($(this).val()) || 0;
         });
+
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
         let totalTagihan = total_bill;
@@ -422,7 +424,7 @@
           $("#jo_" + jobOrderId).after('<tr id="' + typeVar + '">' +
             '<td><button type="button" class="btn btn-sm btn-danger deleteItem">-</button></td>' +
             '<td><input type="hidden" name="job_orderid['+jobOrderId+'][tambah][nominal]" value="'+nominal+'"></td>' +
-            '<td><span class="badge badge-success">Tambahan</span></td>' +
+            '<td><span class="badge badge-success">Penambahan</span></td>' +
             '<td colspan="13">' + keterangan + '<input type="hidden" name="job_orderid['+jobOrderId+'][tambah][keterangan]" value="'+keterangan+'"></td>' +
             '<td class="text-right money">' + nominal + '</td>' +
             '</tr>');
@@ -453,10 +455,8 @@
         $('.deleteItem').on('click', function (){
           $(this).parent().parent().empty();
           initCalculate();
-        })
+        });
       });
-
-
 
       $('#submitAppend').on('click', function (e) {
         e.preventDefault();

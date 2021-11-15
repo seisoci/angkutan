@@ -109,9 +109,9 @@
                   <tr>
                     <td></td>
                     <td>
-                      <span class="badge {{ $piutangklaim->type == 'tambah' ? 'badge-success' : 'badge-danger' }}">{{ $piutangklaim->type == 'tambah' ? 'Penambahan' : 'Pengu' }}</span>
+                      <span class="badge {{ $piutangklaim->type == 'tambah' ? 'badge-success' : 'badge-danger' }}">{{ $piutangklaim->type == 'tambah' ? 'Penambahan' : 'Pengurangan' }}</span>
                     </td>
-                    <td colspan="12">{{ $piutangklaim->description }}</td>
+                    <td colspan="12">{{ $piutangklaim->description }}<input type="hidden" name="job_orderid['+jobOrderId+'][tambah][keterangan]" value="{{ $piutangklaim->description }}"></td>
                     <td class="text-right currency">{{ $piutangklaim->amount }}</td>
                   </tr>
                 @endforeach
