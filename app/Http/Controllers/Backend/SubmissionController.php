@@ -63,7 +63,6 @@ class SubmissionController extends Controller
       $driver_id = $request->driver_id;
       $transport_id = $request->transport_id;
       $another_expedition_id = $request->another_expedition_id;
-      $another_expedition_id = $request->another_expedition_id;
       $data = OperationalExpense::with(['joborder', 'joborder.costumer:id,name', 'joborder.routefrom:id,name', 'joborder.routeto:id,name', 'joborder.transport:id,num_pol', 'joborder.driver:id,name'])
         ->when($request['status'], function ($query) use ($request) {
           if ($request['status'] == 'all') {
