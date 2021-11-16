@@ -188,11 +188,11 @@
               </tbody>
               <tfoot>
               <tr>
-                <td colspan="4" class="text-right">Total Tagihan</td>
+                <td colspan="4" class="text-right">Total Tagihan + Piutang</td>
                 <td class="text-right">
-                  <input type="text" class="currency rounded-0 form-control total_bill" value="{{ $data->total_bill }}"
+                  <input type="text" class="currency rounded-0 form-control total_bill"
                          disabled>
-                  <input type="hidden" class="total_bill" name="total_bill" value="{{ $data->total_bill }}">'
+                  <input type="hidden" class="total_bill" name="total_bill">'
                 </td>
               </tr>
               <tr>
@@ -329,9 +329,10 @@
         $("input[name*='[tambah][nominal]']").each(function () {
           totalPiutang += parseInt($(this).val()) || 0;
         });
-        console.log(totalPiutang);
 
-        let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
+
+
+        let total_bill = parseFloat('{{ $total->sum('total_basic_price') }}');
         let totalPaymentDB = parseFloat("{{ $data->paymentcostumers_sum_payment }}");
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
         let totalTagihan = total_bill + totalPiutang;

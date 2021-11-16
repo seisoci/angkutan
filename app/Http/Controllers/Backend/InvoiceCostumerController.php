@@ -317,8 +317,12 @@ class InvoiceCostumerController extends Controller
       ->with(['joborders', 'costumer', 'paymentcostumers.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
       ->withSum('paymentcostumers', 'payment')
       ->findOrFail($id);
+
+    $plucked = $data->joborders->pluck('id');
+    $total = $this->findbyid($plucked);
+
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicecostumers')->sole();
-    return view('backend.invoice.invoicecostumers.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
+    return view('backend.invoice.invoicecostumers.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa', 'total'));
   }
 
   public function update(Request $request, $id)
@@ -351,14 +355,13 @@ class InvoiceCostumerController extends Controller
             ]);
           }
         endforeach;
-          dd($request['total_bill']);
 
         $data->update([
           'total_cut' => $totalCut,
           'total_piutang' => $totalPiutang,
           'rest_payment' => $request['rest_payment'],
           'total_payment' => $payment,
-          'total_bill' => $payment,
+          'total_bill' => $request['total_bill'],
         ]);
 
         Journal::where([
@@ -482,7 +485,9 @@ class InvoiceCostumerController extends Controller
       DB::transaction(function () use ($id) {
         Journal::where('table_ref', 'invoicecostumers')->where('code_ref', $id)->delete();
         JobOrder::where('invoice_costumer_id', $id)->update(['status_payment' => '0']);
-        InvoiceCostumer::find($id)->delete();
+        $data = InvoiceCostumer::find($id);
+        PiutangKlaim::whereIn('job_order_id', $data->joborders->pluck('id'))->delete();
+        $data->delete();
       });
       $response = response()->json([
         'status' => 'success',
@@ -507,6 +512,16 @@ class InvoiceCostumerController extends Controller
       ]);
     }
     return $response;
+  }
+
+  public function findbyid($id)
+  {
+    $result = NULL;
+    if ($id) {
+      $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        ->whereIn('id', $id)->get();
+    }
+    return $result;
   }
 
   public function datatabledetail($id)

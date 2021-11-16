@@ -146,7 +146,7 @@ class JobOrder extends Model
 
   public function getTotalNettoLdoAttribute()
   {
-    return $this->total_basic_price_ldo - ($this->operationalexpense_sum_amount + $this->road_money);
+    return $this->total_basic_price_ldo - $this->roadmoneydetail_sum_amount;
   }
 
   public function getNumPrefixAttribute()

@@ -125,7 +125,7 @@
                   </tbody>
                   <tfoot>
                   <tr>
-                    <td colspan="4" class="text-right">Total Tagihan</td>
+                    <td colspan="4" class="text-right">Total Tagihan + Piutang</td>
                     <td class="text-right"><input type="text" name="total_tagihan"
                                                   class="currency rounded-0 form-control"
                                                   disabled></td>
@@ -388,7 +388,7 @@
 
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
-        let totalTagihan = total_bill;
+        let totalTagihan = total_bill + totalPiutang;
         let rest_payment = total_bill - total_payment + totalPiutang - totalKlaim;
         $('#totalTagihan').val(totalTagihan);
         $('input[name="total_tagihan"]').val(totalTagihan);

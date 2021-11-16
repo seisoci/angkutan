@@ -95,7 +95,7 @@ class InvoiceLdoController extends Controller
     $cargo_id = $request->cargo_id;
     if ($request->ajax()) {
       $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
-        ->withSum('operationalexpense', 'amount')
+        ->withSum('roadmoneydetail', 'amount')
         ->where('status_payment_ldo', '0')
         ->where('status_cargo', 'selesai')
         ->where('another_expedition_id', '!=', 'NULL')
@@ -250,7 +250,7 @@ class InvoiceLdoController extends Controller
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $data = InvoiceLdo::with(['joborders' => function ($q) {
-      $q->withSum('operationalexpense', 'amount');
+      $q->withSum('roadmoneydetail', 'amount');
     }, 'joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])
       ->findOrFail($id);
 
@@ -267,7 +267,7 @@ class InvoiceLdoController extends Controller
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $data = InvoiceLdo::with(['joborders' => function ($q) {
-      $q->withSum('operationalexpense', 'amount');
+      $q->withSum('roadmoneydetail', 'amount');
     }, 'joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])->findOrFail($id);
 
     return view('backend.invoice.invoiceldo.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
@@ -395,8 +395,8 @@ class InvoiceLdoController extends Controller
     $data = json_decode($request->data);
     $response = NULL;
     if ($request->data) {
-      $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
-        ->withSum('operationalexpense', 'amount')
+      $result = JobOrder::with(['anotherexpedition:id,name','driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        ->withSum('roadmoneydetail', 'amount')
         ->whereIn('id', $data)->get();
 
       $response = response()->json([

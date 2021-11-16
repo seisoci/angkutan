@@ -100,11 +100,12 @@ class CompletePurchaseOrderController extends Controller
     if ($request->ajax()) {
       $data = InvoicePurchase::with(['supplier'])
         ->where('rest_payment', '>', '0')
+        ->whereNull('complete_purchase_order_id')
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $date_format[0];
           $date_end = $date_format[1];
-          return $query->whereBetween('created_at', [$date_begin, $date_end]);
+          return $query->whereBetween('invoice_date', [$date_begin, $date_end]);
         })
         ->when($supplier_sparepart_id, function ($query, $supplier_sparepart_id) {
           return $query->where('supplier_sparepart_id', $supplier_sparepart_id);
@@ -134,7 +135,8 @@ class CompletePurchaseOrderController extends Controller
         DB::beginTransaction();
         $prefix = Prefix::find($request['prefix']);
         $totalBill = InvoicePurchase::whereIn('id', $request['invoice_purchase_id'])->sum('rest_payment');
-        $restPayment = $totalBill - $request['payment']['payment'];
+        $totalPayment = $request['payment']['payment'] ?? 0;
+        $restPayment = $totalBill - $totalPayment;
 
         $invoice = CompletePurchaseOrder::create([
           'num_bill' => $request['num_bill'],
@@ -142,7 +144,7 @@ class CompletePurchaseOrderController extends Controller
           'supplier_sparepart_id' => $request['supplier_sparepart_id'],
           'invoice_date' => $request['invoice_date'],
           'total_bill' => $totalBill,
-          'total_payment' => $request['payment']['payment'],
+          'total_payment' => $totalPayment,
           'rest_payment' => $restPayment,
           'memo' => $request['memo'],
         ]);
@@ -160,37 +162,38 @@ class CompletePurchaseOrderController extends Controller
           ->groupBy('journals.coa_id')
           ->first();
 
-        if (($checksaldo->saldo ?? FALSE) && $request['payment']['payment'] <= $checksaldo->saldo && $request['payment']['coa_id'] != NULL) {
-          PaymentCompletePurchaseOrder::create([
-            'complete_purchase_order_id' => $invoice->id,
-            'date_payment' => $request['payment']['date_payment'],
-            'coa_id' => $request['payment']['coa_id'],
-            'payment' => $request['payment']['payment'],
-            'description' => $request['payment']['description'],
-          ]);
+        if (($checksaldo->saldo ?? FALSE) && $totalPayment <= $checksaldo->saldo && $request['payment']['coa_id'] != NULL) {
+          if ($totalPayment > 0) {
+            PaymentCompletePurchaseOrder::create([
+              'complete_purchase_order_id' => $invoice->id,
+              'date_payment' => $request['payment']['date_payment'],
+              'coa_id' => $request['payment']['coa_id'],
+              'payment' => $request['payment']['payment'],
+              'description' => $request['payment']['description'],
+            ]);
 
-          $supplier = SupplierSparepart::findOrFail($request['supplier_sparepart_id']);
+            $supplier = SupplierSparepart::findOrFail($request['supplier_sparepart_id']);
 
-          Journal::create([
-            'coa_id' => $request['payment']['coa_id'],
-            'date_journal' => $request['payment']['date_payment'],
-            'debit' => 0,
-            'kredit' => $request['payment']['payment'],
-            'table_ref' => 'completepurchaseorder',
-            'code_ref' => $invoice->id,
-            'description' => "Pembayaran barang supplier $supplier->name dengan No. Pelunasan Barang: " . $prefix->name . '-' . $request->num_bill . ""
-          ]);
+            Journal::create([
+              'coa_id' => $request['payment']['coa_id'],
+              'date_journal' => $request['payment']['date_payment'],
+              'debit' => 0,
+              'kredit' => $request['payment']['payment'],
+              'table_ref' => 'completepurchaseorder',
+              'code_ref' => $invoice->id,
+              'description' => "Pembayaran barang supplier $supplier->name dengan No. Pelunasan Barang: " . $prefix->name . '-' . $request->num_bill . ""
+            ]);
 
-          Journal::create([
-            'coa_id' => 15,
-            'date_journal' => $request['payment']['date_payment'],
-            'debit' => $request['payment']['payment'],
-            'kredit' => 0,
-            'table_ref' => 'completepurchaseorder',
-            'code_ref' => $invoice->id,
-            'description' => "Pembayaran utang pembelian barang $supplier->name dengan No. Pelunasan Barang: " . $prefix->name . '-' . $request->num_bill . ""
-          ]);
-
+            Journal::create([
+              'coa_id' => 15,
+              'date_journal' => $request['payment']['date_payment'],
+              'debit' => $request['payment']['payment'],
+              'kredit' => 0,
+              'table_ref' => 'completepurchaseorder',
+              'code_ref' => $invoice->id,
+              'description' => "Pembayaran utang pembelian barang $supplier->name dengan No. Pelunasan Barang: " . $prefix->name . '-' . $request->num_bill . ""
+            ]);
+          }
         } else {
           DB::rollBack();
           return response()->json([
@@ -202,7 +205,6 @@ class CompletePurchaseOrderController extends Controller
         if ($restPayment == 0) {
           InvoicePurchase::whereIn('id', $request['invoice_purchase_id'])->update(['rest_payment' => 0]);
         }
-
         if ($restPayment <= -1) {
           return response()->json([
             'status' => 'error',
@@ -210,9 +212,7 @@ class CompletePurchaseOrderController extends Controller
           ]);
           DB::rollBack();
         }
-
         DB::commit();
-
         $response = response()->json([
           'status' => 'success',
           'message' => 'Data has been saved',

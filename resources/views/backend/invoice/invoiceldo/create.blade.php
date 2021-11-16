@@ -267,8 +267,8 @@
             searchable: false
           },
           {
-            data: 'total_operational',
-            name: 'total_operational',
+            data: 'roadmoneydetail_sum_amount',
+            name: 'roadmoneydetail_sum_amount',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right',
             orderable: false,
@@ -332,7 +332,7 @@
                   ' <td class="text-right money">' + data.basic_price_ldo + '</td>' +
                   ' <td>' + data.payload + '</td>' +
                   ' <td class="text-right money">' + data.total_basic_price_ldo + '</td>' +
-                  ' <td class="text-right money">' + data.total_operational + '</td>' +
+                  ' <td class="text-right money">' + data.roadmoneydetail_sum_amount + '</td>' +
                   ' <td class="text-right money">' + data.total_netto_ldo + '</td>' +
                   '</tr>');
               });

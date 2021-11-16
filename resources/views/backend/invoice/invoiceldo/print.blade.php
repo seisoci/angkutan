@@ -123,7 +123,7 @@
           <td>{{ $item->cargo->name }}</td>
           <td>{{ $item->payload }}</td>
           <td>{{ number_format($item->total_basic_price_ldo ?? 0, 2, '.', ',') }}</td>
-          <td>{{ number_format($item->total_operational ?? 0, 2, '.', ',') }}</td>
+          <td>{{ number_format($item->roadmoneydetail_sum_amount ?? 0, 2, '.', ',') }}</td>
           <td>{{ number_format($item->total_netto_ldo ?? 0, 2, '.', ',')}}</td>
         </tr>
       @endforeach
