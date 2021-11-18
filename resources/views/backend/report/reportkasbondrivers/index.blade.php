@@ -47,22 +47,22 @@
                   <span class="navi-text">Print</span>
                 </a>
               </li>
-              <li class="navi-item">
-                <a href="#" id="btn_excel" class="navi-link">
-                  <span class="navi-icon">
-                    <i class="la la-file-excel-o"></i>
-                  </span>
-                  <span class="navi-text">Excel</span>
-                </a>
-              </li>
-              <li class="navi-item">
-                <a href="#" id="btn_pdf" class="navi-link">
-                  <span class="navi-icon">
-                    <i class="la la-file-pdf-o"></i>
-                  </span>
-                  <span class="navi-text">PDF</span>
-                </a>
-              </li>
+{{--              <li class="navi-item">--}}
+{{--                <a href="#" id="btn_excel" class="navi-link">--}}
+{{--                  <span class="navi-icon">--}}
+{{--                    <i class="la la-file-excel-o"></i>--}}
+{{--                  </span>--}}
+{{--                  <span class="navi-text">Excel</span>--}}
+{{--                </a>--}}
+{{--              </li>--}}
+{{--              <li class="navi-item">--}}
+{{--                <a href="#" id="btn_pdf" class="navi-link">--}}
+{{--                  <span class="navi-icon">--}}
+{{--                    <i class="la la-file-pdf-o"></i>--}}
+{{--                  </span>--}}
+{{--                  <span class="navi-text">PDF</span>--}}
+{{--                </a>--}}
+{{--              </li>--}}
             </ul>
             <!--end::Navigation-->
           </div>
@@ -75,21 +75,20 @@
         <div class="row align-items-center">
           <div class="col-12">
             <div class="row align-items-center">
-              <div class="col-md-3 my-md-0">
+              <div class="col-md-4 my-md-0">
                 <div class="form-group">
                   <label>Nama Supir:</label>
                   <select class="form-control" id="select2Driver">
                   </select>
                 </div>
               </div>
-              <div class="col-md-3 my-md-0">
+              <div class="col-md-4 my-md-0">
                 <div class="form-group">
                   <label>Status:</label>
                   <select class="form-control" id="selectStatus">
                     <option value="">All</option>
-                    <option value="none">Belum Lunas</option>
-                    <option value="1">Dicicil</option>
-                    <option value="2">Lunas</option>
+                    <option value="hutang">Hutang</option>
+                    <option value="pembayaran">Pembayaran</option>
                   </select>
                 </div>
               </div>
@@ -114,10 +113,11 @@
         <thead>
         <tr>
           <th>Nama Supir</th>
+          <th>Tgl</th>
           <th>Nominal</th>
-          <th>Status</th>
+          <th>Jenis</th>
           <th>Keterangan</th>
-          <th>Tanggal Pinjam</th>
+          <th>Created At</th>
         </tr>
         </thead>
       </table>
@@ -172,7 +172,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        orderable: false,
+        order: [0, 'desc'],
         searching: false,
         bSort: false,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
@@ -186,15 +186,17 @@
           }
         },
         columns: [
-          {data: 'name', name: 'name'},
+          {data: 'driver.name', name: 'driver.name'},
+          {data: 'date_payment', name: 'date_payment'},
+
           {
-            data: 'amount',
-            name: 'amount',
+            data: 'payment',
+            name: 'payment',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
-          {data: 'status', name: 'status'},
-          {data: 'memo', name: 'memo'},
+          {data: 'type', name: 'type'},
+          {data: 'description', name: 'description'},
           {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [

@@ -17,8 +17,8 @@ class Kasbon extends Model
 
   protected static $logName = 'Data Kasbon Supir';
   protected static $logFillable = true;
-  protected static $logAttributes = ['driver.name', 'invoicekasbon'];
-  protected static $logAttributesToIgnore = ['driver_id', 'invoice_kasbon_id'];
+  protected static $logAttributes = ['driver.name'];
+  protected static $logAttributesToIgnore = ['driver_id'];
 
   protected $fillable = [
     'driver_id',

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\Kasbon;
+use App\Models\PaymentKasbon;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
@@ -40,25 +41,20 @@ class ReportKasbonDriverController extends Controller
     $date = $request->date;
 
     if ($request->ajax()) {
-      $data = Kasbon::join('drivers', 'kasbons.driver_id', '=', 'drivers.id')
-        ->select(['kasbons.*', 'drivers.name'])
+      $data = PaymentKasbon::with('driver:id,name')
         ->when($status, function ($query, $status) {
-          if ($status == 'none') {
-            return $query->where('kasbons.status', '=', '0');
-          } else {
-            return $query->where('kasbons.status', $status);
-          }
+          return $query->where('payment_kasbons.type', $status);
         })
         ->when($driver_id, function ($query, $driver_id) {
-          return $query->where('kasbons.driver_id', $driver_id);
+          return $query->where('payment_kasbons.driver_id', $driver_id);
         })
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $this->toDateServerStart($date_format[0]);
           $date_end = $this->toDateServerEnd($date_format[1]);
-          return $query->whereBetween('kasbons.created_at', [$date_begin, $date_end]);
+          return $query->whereBetween('payment_kasbons.date_payment', [$date_begin, $date_end]);
         })
-        ->orderBy('kasbons.created_at', 'asc');
+        ->orderBy('payment_kasbons.date_payment', 'desc');
 
       return DataTables::of($data)
         ->make(true);
@@ -80,29 +76,23 @@ class ReportKasbonDriverController extends Controller
       $statusPembayaran = 'Belum Lunas';
     } elseif ($status == '1') {
       $statusPembayaran = 'Dicicil';
-    } elseif($status == '2') {
+    } elseif ($status == '2') {
       $statusPembayaran = "Lunas";
     }
 
-    $data = Kasbon::join('drivers', 'kasbons.driver_id', '=', 'drivers.id')
-      ->select(['kasbons.*', 'drivers.id', 'drivers.name'])
+    $data = PaymentKasbon::with('driver:id,name')
       ->when($status, function ($query, $status) {
-        if ($status == 'none') {
-          return $query->where('kasbons.status', '=', '0');
-        } else {
-          return $query->where('kasbons.status', $status);
-        }
+        return $query->where('payment_kasbons.type', $status);
       })
       ->when($driver_id, function ($query, $driver_id) {
-        return $query->where('kasbons.driver_id', $driver_id);
+        return $query->where('payment_kasbons.driver_id', $driver_id);
       })
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $this->toDateServerStart($date_format[0]);
         $date_end = $this->toDateServerEnd($date_format[1]);
-        return $query->whereBetween('kasbons.created_at', [$date_begin, $date_end]);
+        return $query->whereBetween('payment_kasbons.date_payment', [$date_begin, $date_end]);
       })
-      ->orderBy('kasbons.created_at', 'asc')
       ->get();
 
     $spreadsheet = new Spreadsheet();
@@ -258,35 +248,30 @@ class ReportKasbonDriverController extends Controller
     $status = $request->status;
     $date = $request->date;
     $driver = Driver::find($driver_id)->name ?? "All";
-    if ($status == 'none') {
-      $statusPembayaran = 'Belum Lunas';
-    } elseif ($status == '1') {
-      $statusPembayaran = 'Dicicil';
-    } elseif($status == '2') {
-      $statusPembayaran = "Lunas";
+
+    if ($status == 'pembayaran') {
+      $statusPembayaran = 'Pembayaran';
+    } elseif ($status == 'hutang') {
+      $statusPembayaran = "Hutang";
+    } else {
+      $statusPembayaran = "All";
     }
 
-    $data = Kasbon::join('drivers', 'kasbons.driver_id', '=', 'drivers.id')
-      ->select(['kasbons.*', 'drivers.id', 'drivers.name'])
+    $data = PaymentKasbon::with('driver:id,name')
       ->when($status, function ($query, $status) {
-        if ($status == 'none') {
-          return $query->where('kasbons.status', '=', '0');
-        } else {
-          return $query->where('kasbons.status', $status);
-        }
+        return $query->where('payment_kasbons.type', $status);
       })
       ->when($driver_id, function ($query, $driver_id) {
-        return $query->where('kasbons.driver_id', $driver_id);
+        return $query->where('payment_kasbons.driver_id', $driver_id);
       })
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $this->toDateServerStart($date_format[0]);
         $date_end = $this->toDateServerEnd($date_format[1]);
-        return $query->whereBetween('kasbons.created_at', [$date_begin, $date_end]);
+        return $query->whereBetween('payment_kasbons.date_payment', [$date_begin, $date_end]);
       })
-      ->orderBy('kasbons.created_at', 'asc')
       ->get();
-    return view('backend.report.reportkasbondrivers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'driver', 'statusPembayaran',));
+    return view('backend.report.reportkasbondrivers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'driver', 'statusPembayaran'));
   }
 
 }

@@ -93,22 +93,24 @@
     <table class="table">
       <thead>
       <tr>
-        <th>No</th>
+        <th>No.</th>
         <th>Nama Supir</th>
-        <th class="text-right">Nominal</th>
-        <th>Status</th>
+        <th>Tgl</th>
+        <th>Nominal</th>
+        <th>Jenis</th>
         <th>Keterangan</th>
-        <th>Tanggal Pinjaman</th>
+        <th>Created At</th>
       </tr>
       </thead>
       <tbody>
       @foreach ($data as $item)
         <tr>
           <td>{{ $loop->iteration }}</td>
-          <td>{{ $item->name }}</td>
-          <td class="text-right">{{ number_format($item->amount, '2', ',', '.') }}</td>
-          <td>{{ $item->status == "1" ? "Paid" : "Unpaid" }}</td>
-          <td>{{ $item->memo }}</td>
+          <td>{{ $item->date_payment }}</td>
+          <td>{{ $item->driver->name }}</td>
+          <td class="text-right">{{ number_format($item->payment, '2', ',', '.') }}</td>
+          <td>{{ $item->type }}</td>
+          <td>{{ $item->description }}</td>
           <td>{{ $item->created_at }}</td>
         </tr>
       @endforeach

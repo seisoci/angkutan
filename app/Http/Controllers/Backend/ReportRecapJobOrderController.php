@@ -39,29 +39,24 @@ class ReportRecapJobOrderController extends Controller
       $data = DB::table('job_orders')
         ->select(
           DB::raw(
-            'COUNT(`job_orders`.`id`)                                               AS `report_qty`,
+            'COUNT(DISTINCT `job_orders`.`id`)                                               AS `report_qty`,
        `costumers`.`name`                                                                         AS `costumer_name`,
        `costumers`.`address`                                                                      AS `costumer_address`,
-       @basic_price := SUM(`job_orders`.`invoice_bill`)                                           AS `report_basic_price`,
-       @total_operational := (SUM(`job_orders`.`road_money`) +
-                              SUM(IFNULL(`operational_expenses`.`amount`, 0)))                    AS `report_operational`,
-       @total_tax := SUM(`job_orders`.`invoice_bill` *
+       @basic_price := SUM((`job_orders`.`payload` * `job_orders`.`basic_price`))                 AS `report_basic_price`,
+       @total_tax := SUM((`job_orders`.`payload` * `job_orders`.`basic_price`) *
                          (IFNULL(`job_orders`.`tax_percent`, 0) / 100))                           AS `total_tax`,
        @percent_tax := SUM(IFNULL(`job_orders`.`tax_percent`, 0))                                 AS `tax_percent`,
-       @total_basic_price_after_tax :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
-                                                  (IFNULL(`job_orders`.`tax_percent`, 0) / 100))) AS `report_basic_price_after_tax`,
+       @total_basic_price_after_tax := SUM((`job_orders`.`payload` * `job_orders`.`basic_price`) -
+       ((`job_orders`.`payload` * `job_orders`.`basic_price`) *  (IFNULL(`job_orders`.`tax_percent`, 0) / 100)))            AS `report_basic_price_after_tax`,
        @fee_thanks := SUM(IFNULL(`job_orders`.`fee_thanks`, 0))                                   AS `fee_thanks`,
        @total_basic_price_after_thanks :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
+               SUM((`job_orders`.`payload` * `job_orders`.`basic_price`) - ((`job_orders`.`payload` * `job_orders`.`basic_price`) *
                                                   (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                    IFNULL(`job_orders`.`fee_thanks`, 0))
                                                                                                   AS `report_basic_price_after_thanks`
         '))
         ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
-        ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
         ->where('job_orders.status_cargo', '!=', 'batal')
-        ->whereNull('job_orders.invoice_costumer_id')
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $date_format[0];
@@ -84,27 +79,23 @@ class ReportRecapJobOrderController extends Controller
     $data = DB::table('job_orders')
       ->select(
         DB::raw(
-          'COUNT(`job_orders`.`costumer_id`)                                               AS `report_qty`,
+          'COUNT(DISTINCT `job_orders`.`id`)                                               AS `report_qty`,
        `costumers`.`name`                                                                         AS `costumer_name`,
        `costumers`.`address`                                                                      AS `costumer_address`,
-       @basic_price := SUM(`job_orders`.`invoice_bill`)                                           AS `report_basic_price`,
-       @total_operational := (SUM(`job_orders`.`road_money`) +
-                              SUM(IFNULL(`operational_expenses`.`amount`, 0)))                    AS `report_operational`,
-       @total_tax := SUM(`job_orders`.`invoice_bill` *
+       @basic_price := SUM((`job_orders`.`payload` * `job_orders`.`basic_price`))                 AS `report_basic_price`,
+       @total_tax := SUM((`job_orders`.`payload` * `job_orders`.`basic_price`) *
                          (IFNULL(`job_orders`.`tax_percent`, 0) / 100))                           AS `total_tax`,
        @percent_tax := SUM(IFNULL(`job_orders`.`tax_percent`, 0))                                 AS `tax_percent`,
-       @total_basic_price_after_tax :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
-                                                  (IFNULL(`job_orders`.`tax_percent`, 0) / 100))) AS `report_basic_price_after_tax`,
+       @total_basic_price_after_tax := SUM((`job_orders`.`payload` * `job_orders`.`basic_price`) -
+       ((`job_orders`.`payload` * `job_orders`.`basic_price`) *  (IFNULL(`job_orders`.`tax_percent`, 0) / 100)))            AS `report_basic_price_after_tax`,
        @fee_thanks := SUM(IFNULL(`job_orders`.`fee_thanks`, 0))                                   AS `fee_thanks`,
        @total_basic_price_after_thanks :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
+               SUM((`job_orders`.`payload` * `job_orders`.`basic_price`) - ((`job_orders`.`payload` * `job_orders`.`basic_price`) *
                                                   (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                    IFNULL(`job_orders`.`fee_thanks`, 0))
                                                                                                   AS `report_basic_price_after_thanks`
         '))
       ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
-      ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
       ->where('job_orders.status_cargo', '!=', 'batal')
       ->whereNull('job_orders.invoice_costumer_id')
       ->when($date, function ($query, $date) {
@@ -261,27 +252,23 @@ class ReportRecapJobOrderController extends Controller
     $data = DB::table('job_orders')
       ->select(
         DB::raw(
-          'COUNT(`job_orders`.`costumer_id`)                                               AS `report_qty`,
+          'COUNT(DISTINCT `job_orders`.`id`)                                               AS `report_qty`,
        `costumers`.`name`                                                                         AS `costumer_name`,
        `costumers`.`address`                                                                      AS `costumer_address`,
-       @basic_price := SUM(`job_orders`.`invoice_bill`)                                           AS `report_basic_price`,
-       @total_operational := (SUM(`job_orders`.`road_money`) +
-                              SUM(IFNULL(`operational_expenses`.`amount`, 0)))                    AS `report_operational`,
-       @total_tax := SUM(`job_orders`.`invoice_bill` *
+       @basic_price := SUM((`job_orders`.`payload` * `job_orders`.`basic_price`))                 AS `report_basic_price`,
+       @total_tax := SUM((`job_orders`.`payload` * `job_orders`.`basic_price`) *
                          (IFNULL(`job_orders`.`tax_percent`, 0) / 100))                           AS `total_tax`,
        @percent_tax := SUM(IFNULL(`job_orders`.`tax_percent`, 0))                                 AS `tax_percent`,
-       @total_basic_price_after_tax :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
-                                                  (IFNULL(`job_orders`.`tax_percent`, 0) / 100))) AS `report_basic_price_after_tax`,
+       @total_basic_price_after_tax := SUM((`job_orders`.`payload` * `job_orders`.`basic_price`) -
+       ((`job_orders`.`payload` * `job_orders`.`basic_price`) *  (IFNULL(`job_orders`.`tax_percent`, 0) / 100)))            AS `report_basic_price_after_tax`,
        @fee_thanks := SUM(IFNULL(`job_orders`.`fee_thanks`, 0))                                   AS `fee_thanks`,
        @total_basic_price_after_thanks :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
+               SUM((`job_orders`.`payload` * `job_orders`.`basic_price`) - ((`job_orders`.`payload` * `job_orders`.`basic_price`) *
                                                   (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                    IFNULL(`job_orders`.`fee_thanks`, 0))
                                                                                                   AS `report_basic_price_after_thanks`
         '))
       ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
-      ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
       ->where('job_orders.status_cargo', '!=', 'batal')
       ->whereNull('job_orders.invoice_costumer_id')
       ->when($date, function ($query, $date) {

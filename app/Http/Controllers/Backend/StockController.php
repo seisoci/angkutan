@@ -153,4 +153,77 @@ class StockController extends Controller
     return response()->json($results);
   }
 
+  public function select2Opname(Request $request)
+  {
+    $sparepart_id_current = $request->sparepart_id_current;
+    $sparepart_id = $request->sparepart_id;
+    $invoice_id = $request->invoice_id;
+    $sparePartPluck = '';
+    foreach ($sparepart_id  as $key => $item){
+      if(isset($invoice_id[$key])){
+        if($key > 0){
+          $sparePartPluck.= " AND";
+        }
+        $sparePartPluck .= " NOT(`stocks`.`invoice_purchase_id` ='".$invoice_id[$key]."' and `stocks`.`sparepart_id`='".$item."')";
+      }
+    }
+    $page = $request->page;
+    $resultCount = 10;
+    $offset = ($page - 1) * $resultCount;
+    $data = Stock::leftJoin('spareparts', 'stocks.sparepart_id', '=', 'spareparts.id')
+      ->leftJoin('invoice_purchases', 'stocks.invoice_purchase_id', '=', 'invoice_purchases.id')
+      ->leftJoin('purchases', function ($join) use ($sparepart_id_current) {
+        $join->on('purchases.invoice_purchase_id', '=', 'stocks.invoice_purchase_id')
+          ->where('purchases.sparepart_id', $sparepart_id_current);
+      })
+      ->selectRaw('stocks.id as id, invoice_purchases.id as invoice_purchase_id, CONCAT(invoice_purchases.prefix, " - " , invoice_purchases.num_bill) as text, stocks.qty as qty, purchases.price as price')
+      ->when($sparepart_id_current, function ($query, $sparepart_id_current) {
+        return $query->where('stocks.sparepart_id', $sparepart_id_current);
+      })
+      ->where('invoice_purchases.num_bill', 'LIKE', '%' . $request->q . '%')
+      ->where('stocks.qty', '>', 0)
+      ->when($sparePartPluck, function ($query) use($sparePartPluck) {
+        return $query->whereRaw($sparePartPluck);
+      })
+      ->orderBy('invoice_purchases.invoice_date', 'asc')
+      ->skip($offset)
+      ->take($resultCount)
+      ->groupBy('stocks.invoice_purchase_id')
+      ->get();
+
+    $count = Stock::leftJoin('spareparts', 'stocks.sparepart_id', '=', 'spareparts.id')
+      ->leftJoin('invoice_purchases', 'stocks.invoice_purchase_id', '=', 'invoice_purchases.id')
+      ->leftJoin('purchases', function ($join) use ($sparepart_id_current) {
+        $join->on('purchases.invoice_purchase_id', '=', 'stocks.invoice_purchase_id')
+          ->where('purchases.sparepart_id', $sparepart_id_current);
+      })
+      ->selectRaw('stocks.id as id, CONCAT(invoice_purchases.prefix, " - " , invoice_purchases.num_bill) as text, stocks.qty as qty, purchases.price as price')
+      ->when($sparepart_id_current, function ($query) use($sparepart_id_current) {
+        return $query->where('stocks.sparepart_id', $sparepart_id_current);
+      })
+      ->where('invoice_purchases.num_bill', 'LIKE', '%' . $request->q . '%')
+      ->where('stocks.qty', '>', 0)
+      ->when($sparePartPluck, function ($query, $sparePartPluck) {
+        return $query->whereRaw($sparePartPluck);
+      })
+      ->orderBy('invoice_purchases.invoice_date', 'asc')
+      ->skip($offset)
+      ->take($resultCount)
+      ->groupBy('stocks.invoice_purchase_id')
+      ->get()
+      ->count();
+
+    $endCount = $offset + $resultCount;
+    $morePages = $count > $endCount;
+
+    $results = array(
+      "results" => $data,
+      "pagination" => array(
+        "more" => $morePages
+      )
+    );
+
+    return response()->json($results);
+  }
+
 }

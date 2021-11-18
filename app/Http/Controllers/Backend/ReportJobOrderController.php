@@ -50,10 +50,8 @@ class ReportJobOrderController extends Controller
         ->when($costumer_id, function ($query, $costumer_id) {
           return $query->where('costumer_id', $costumer_id);
         })
-        ->where('status_payment', '0')
-        ->where('status_cargo', 'selesai')
+        ->where('status_cargo', '!=','batal')
         ->orderBy('date_begin', 'asc');
-
       return DataTables::of($data)
         ->addIndexColumn()
         ->make(true);
@@ -78,8 +76,7 @@ class ReportJobOrderController extends Controller
       ->when($costumer_id, function ($query, $costumer_id) {
         return $query->where('costumer_id', $costumer_id);
       })
-      ->where('status_payment', '0')
-      ->where('status_cargo', 'selesai')
+      ->where('status_cargo', '!=','batal')
       ->orderBy('date_begin', 'asc')
       ->get();
 
@@ -268,8 +265,7 @@ class ReportJobOrderController extends Controller
       ->when($costumer_id, function ($query, $costumer_id) {
         return $query->where('costumer_id', $costumer_id);
       })
-      ->where('status_payment', '0')
-      ->where('status_cargo', 'selesai')
+      ->where('status_cargo', '!=','batal')
       ->orderBy('date_begin', 'asc')
       ->get();
     $config['page_title'] = "Laporan Tagihan Job Order";

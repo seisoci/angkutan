@@ -131,7 +131,7 @@
           placeholder: "Search Invoice",
           allowClear: true,
           ajax: {
-            url: "{{ route('backend.stocks.select2Invoice') }}",
+            url: "{{ route('backend.stocks.select2Opname') }}",
             dataType: "json",
             delay: 250,
             cache: true,
