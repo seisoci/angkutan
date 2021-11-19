@@ -132,7 +132,7 @@
 {{--                  @endif--}}
                 </tr>
               @endforeach
-              @if ($data->status_document != 1 && $data->status_cargo != 'batal')
+              @if ($data->status_document != 1 && $data->status_cargo != 'batal' && $data->type == 'self')
                 <form id="formStore" action="{{ route('backend.operationalexpenses.store') }}" method="post"
                       class="d-print-none">
                   @csrf
