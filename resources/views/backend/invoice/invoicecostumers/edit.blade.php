@@ -330,10 +330,8 @@
           totalPiutang += parseInt($(this).val()) || 0;
         });
 
-
-
-        let total_bill = parseFloat('{{ $total->sum('total_basic_price') }}');
-        let totalPaymentDB = parseFloat("{{ $data->paymentcostumers_sum_payment }}");
+        let total_bill = parseFloat('{{ $total->sum('total_basic_price') }}') || 0;
+        let totalPaymentDB = parseFloat("{{ $data->paymentcostumers_sum_payment }}") || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
         let totalTagihan = total_bill + totalPiutang;
         let rest_payment = total_bill - total_payment + totalPiutang - totalKlaim - totalPaymentDB;

@@ -24,23 +24,9 @@
                 <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">Tanggal Invoice:</label>
-                    <div class="col-md-6">
+                    <div class="col-lg-9">
                       <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date"
                              placeholder="Tanggal Invoice" readonly>
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-lg-3 col-form-label">Tgl Jatuh Tempo:</label>
-                    <div class="col-lg-6">
-                      <input type="text" class="form-control rounded-0 datepicker w-100" name="due_date"
-                             placeholder="Tgl Jatuh Tempo" readonly="">
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-lg-3 col-form-label">Prefix:</label>
-                    <div class="col-lg-6">
-                      <select name="prefix" class="form-control" id="select2Prefix">
-                      </select>
                     </div>
                   </div>
                 </div>
@@ -53,6 +39,17 @@
                       </select>
                     </div>
                   </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Tgl Jatuh Tempo:</label>
+                    <div class="col-lg-9">
+                      <input type="text" class="form-control rounded-0 datepicker w-100" name="due_date"
+                             placeholder="Tgl Jatuh Tempo" readonly="">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">LDO:</label>
                     <div class="col-lg-9">
@@ -60,6 +57,17 @@
                       </select>
                     </div>
                   </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label class="col-lg-3 col-form-label">Prefix:</label>
+                    <div class="col-lg-9">
+                      <select name="prefix" class="form-control" id="select2Prefix">
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">Memo:</label>
                     <div class="col-lg-9">
@@ -201,6 +209,7 @@
 @section('styles')
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('css/backend/datatables/dataTables.checkboxes.css') }}" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
     .select2-container--default .select2-selection--single {
       border-radius: 0 !important;
@@ -214,6 +223,7 @@
   {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
   <script src="{{ asset('js/backend/datatables/dataTables.checkboxes.js') }}" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
@@ -356,7 +366,6 @@
         });
       });
 
-
       $("#select2Prefix").select2({
         placeholder: "Choose Prefix",
         allowClear: true,
@@ -421,12 +430,15 @@
       });
 
       function initDate() {
-        $('.datepicker').datepicker({
-          format: 'yyyy-mm-dd',
-          todayBtn: "linked",
-          clearBtn: true,
-          todayHighlight: true,
-        });
+        // $('.datepicker').datepicker({
+        //   format: 'yyyy-mm-dd',
+        //   todayBtn: "linked",
+        //   clearBtn: true,
+        //   todayHighlight: true,
+        // });
+
+        $(".datepicker").flatpickr();
+
       }
 
       function initCurrency() {

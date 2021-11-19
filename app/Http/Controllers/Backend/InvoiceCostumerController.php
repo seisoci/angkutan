@@ -138,7 +138,7 @@ class InvoiceCostumerController extends Controller
         DB::beginTransaction();
         $totalCut = 0;
         $totalPiutang = 0;
-        foreach ($request['job_orderid'] as $key => $item):
+        foreach ($request['job_orderid'] ?? array() as $key => $item):
           foreach ($item as $type => $jo) {
             if ($type == 'tambah') {
               $totalPiutang += $jo['nominal'];
@@ -339,14 +339,19 @@ class InvoiceCostumerController extends Controller
         $payment += $request->input('payment.payment');
         $totalCut = 0;
         $totalPiutang = 0;
-        foreach ($request['job_orderid'] as $key => $item):
+
+        foreach ($data->joborders as $item):
+          PiutangKlaim::where('job_order_id', $item->id)->delete();
+        endforeach;
+
+        foreach ($request['job_orderid'] ?? array() as $key => $item):
+          PiutangKlaim::where('job_order_id', $key)->delete();
           foreach ($item as $type => $jo) {
             if ($type == 'tambah') {
               $totalPiutang += $jo['nominal'];
             } else {
               $totalCut += $jo['nominal'];
             }
-            PiutangKlaim::where('job_order_id', $key)->delete();
             PiutangKlaim::create([
               'job_order_id' => $key,
               'amount' => $jo['nominal'],
@@ -379,7 +384,7 @@ class InvoiceCostumerController extends Controller
         if (($totalCut ?? 0) > 0) {
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $request->input('payment.date_payment'),
+            'date_journal' => $data->invoice_date,
             'debit' => 0,
             'kredit' => $totalCut,
             'table_ref' => 'invoicecostumers',
@@ -389,7 +394,7 @@ class InvoiceCostumerController extends Controller
 
           Journal::create([
             'coa_id' => 46,
-            'date_journal' => $request->input('payment.date_payment'),
+            'date_journal' => $data->invoice_date,
             'debit' => $totalCut,
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
@@ -401,7 +406,7 @@ class InvoiceCostumerController extends Controller
         if (($totalPiutang ?? 0) > 0) {
           Journal::create([
             'coa_id' => 52,
-            'date_journal' => $request->input('payment.date_payment'),
+            'date_journal' => $data->invoice_date,
             'debit' => 0,
             'kredit' => $totalPiutang,
             'table_ref' => 'invoicecostumers',
@@ -411,7 +416,7 @@ class InvoiceCostumerController extends Controller
 
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $request->input('payment.date_payment'),
+            'date_journal' => $data->invoice_date,
             'debit' => $totalPiutang,
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',

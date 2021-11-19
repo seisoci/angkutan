@@ -85,9 +85,6 @@
                     <th scope="col">Jenis Barang</th>
                     <th scope="col">Qty (Unit)</th>
                     <th scope="col">Harga Dasar</th>
-                    <th scope="col">Pajak (%)</th>
-                    <th scope="col">Pajak (Rp.)</th>
-                    <th scope="col">Fee</th>
                     <th scope="col" class="text-right">Total Tagihan (Rp.)</th>
                   </tr>
                   </thead>
@@ -425,17 +422,16 @@
             '<td><button type="button" class="btn btn-sm btn-danger deleteItem">-</button></td>' +
             '<td><input type="hidden" name="job_orderid['+jobOrderId+'][tambah][nominal]" value="'+nominal+'"></td>' +
             '<td><span class="badge badge-success">Penambahan</span></td>' +
-            '<td colspan="13">' + keterangan + '<input type="hidden" name="job_orderid['+jobOrderId+'][tambah][keterangan]" value="'+keterangan+'"></td>' +
+            '<td colspan="10">' + keterangan + '<input type="hidden" name="job_orderid['+jobOrderId+'][tambah][keterangan]" value="'+keterangan+'"></td>' +
             '<td class="text-right money">' + nominal + '</td>' +
             '</tr>');
         } else if (select == 'kurang' && !$.trim($('#jo_' + jobOrderId + '_pengurangan').html())) {
           typeVar = 'jo_' + jobOrderId + '_pengurangan';
-          console.log(nominal);
           $("#jo_" + jobOrderId).after('<tr id="' + typeVar + '">' +
             '<td><button type="button" class="btn btn-sm btn-danger deleteItem">-</button></td>' +
             '<td><input type="hidden" name="job_orderid['+jobOrderId+'][kurang][nominal]" value="'+nominal+'"></td>' +
             '<td><span class="badge badge-danger">Pengurangan</span></td>' +
-            '<td colspan="13">' + keterangan + '<input type="hidden" name="job_orderid['+jobOrderId+'][kurang][keterangan]" value="'+keterangan+'"></td>' +
+            '<td colspan="10">' + keterangan + '<input type="hidden" name="job_orderid['+jobOrderId+'][kurang][keterangan]" value="'+keterangan+'"></td>' +
           '<td class="text-right money">' + nominal + '</td>' +
           '</tr>'
         );
@@ -501,11 +497,8 @@
                   ' <td>' + data.routefrom.name + '</td>' +
                   ' <td>' + data.routeto.name + '</td>' +
                   ' <td>' + data.cargo.name + '</td>' +
-                  ' <td class="text-right money">' + data.basic_price + '</td>' +
                   ' <td class="text-center">' + data.payload + '</td>' +
-                  ' <td class="text-center">' + (data.tax_percent ? data.tax_percent : 0) + '</td>' +
-                  ' <td class="text-right money">' + data.tax_amount + '</td>' +
-                  ' <td class="text-right money">' + (data.fee_thanks ? data.fee_thanks : 0) + '</td>' +
+                  ' <td class="text-right money">' + data.basic_price + '</td>' +
                   ' <td class="text-right money">' + data.total_basic_price + '</td>' +
                   '</tr>');
 
@@ -518,9 +511,7 @@
                 '<input type="hidden" name="total_basic_price_after_thanks" value="' + totalBasicPriceAfterThanks + '">');
 
               $('#table_invoice tfoot').append('<tr>' +
-                '<td colspan="14" class="text-right">Total</td>' +
-                '<td class="text-right money">' + totalTax + '</td>' +
-                '<td class="text-right money">' + totalFee + '</td>' +
+                '<td colspan="13" class="text-right">Total</td>' +
                 '<td class="text-right money">' + total + '</td>' +
                 '</tr>');
 
