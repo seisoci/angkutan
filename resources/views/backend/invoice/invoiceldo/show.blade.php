@@ -59,8 +59,9 @@
               <thead>
               <tr>
                 <th class="text-center">#</th>
-                <th>Tanggal</th>
-                <th>S. Jalan</th>
+                <th style="min-width: 90px">Tanggal</th>
+                <th style="min-width: 100px">S. Jalan</th>
+                <th style="min-width: 90px">No. Pol</th>
                 <th>LDO</th>
                 <th>Pelanggan</th>
                 <th>Rute Dari</th>
@@ -78,21 +79,22 @@
                 <tr>
                   <td>{{ $loop->iteration }}</td>
                   <td>{{ $item->date_begin }}</td>
-                  <td>{{ $item->num_prefix }}</td>
+                  <td>{{ $item->no_sj }}</td>
+                  <td>{{ $item->transport->num_pol }}</td>
                   <td>{{ $item->anotherexpedition->name }}</td>
                   <td>{{ $item->costumer->name }}</td>
                   <td>{{ $item->routefrom->name }}</td>
                   <td>{{ $item->routeto->name }}</td>
                   <td>{{ $item->cargo->name }}</td>
-                  <td>{{ $item->payload }}</td>
                   <td>{{ number_format($item->basic_price_ldo ?? 0, 2, '.', ',') }}</td>
+                  <td>{{ $item->payload }}</td>
                   <td>{{ number_format($item->total_basic_price_ldo ?? 0, 2, '.', ',') }}</td>
                   <td>{{ number_format($item->roadmoneydetail_sum_amount ?? 0, 2, '.', ',') }}</td>
                   <td>{{ number_format($item->total_netto_ldo ?? 0, 2, '.', ',')}}</td>
                 </tr>
               @endforeach
               <tr>
-                <td colspan="11" class="text-left font-weight-bolder">
+                <td colspan="12" class="text-left font-weight-bolder">
                   {{ ucwords(Terbilang::terbilang($data->total_bill)) }}
                 </td>
                 <td class="text-right font-weight-bolder text-uppercase">TOTAL DITERIMA:</td>

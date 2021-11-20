@@ -97,6 +97,7 @@
         <th class="text-center">#</th>
         <th>Tanggal</th>
         <th>S. Jalan</th>
+        <th>No. Pol</th>
         <th>LDO</th>
         <th>Pelanggan</th>
         <th>Rute Dari</th>
@@ -114,13 +115,14 @@
         <tr>
           <td>{{ $loop->iteration }}</td>
           <td>{{ $item->date_begin }}</td>
-          <td>{{ $item->num_prefix }}</td>
+          <td>{{ $item->no_sj }}</td>
+          <td>{{ $item->transport->num_pol }}</td>
           <td>{{ $item->anotherexpedition->name }}</td>
           <td>{{ $item->costumer->name }}</td>
           <td>{{ $item->routefrom->name }}</td>
           <td>{{ $item->routeto->name }}</td>
-          <td>{{ number_format($item->basic_price_ldo ?? 0, 2, '.', ',') }}</td>
           <td>{{ $item->cargo->name }}</td>
+          <td>{{ number_format($item->basic_price_ldo ?? 0, 2, '.', ',') }}</td>
           <td>{{ $item->payload }}</td>
           <td>{{ number_format($item->total_basic_price_ldo ?? 0, 2, '.', ',') }}</td>
           <td>{{ number_format($item->roadmoneydetail_sum_amount ?? 0, 2, '.', ',') }}</td>
@@ -131,19 +133,19 @@
         <td colspan="11" class="text-left font-weight-bolder">
           {{ ucwords(Terbilang::terbilang($data->total_bill)) }}
         </td>
-        <td class="text-right font-weight-bolder text-uppercase">TOTAL DITERIMA:</td>
+        <td class="text-right font-weight-bolder text-uppercase" colspan="2">TOTAL DITERIMA:</td>
         <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0, 2, '.', ',') }}</td>
       </tr>
       </tbody>
     </table>
     <h4 class="text-dark"><u>Pembayaran</u></h4>
-    <table class="table">
+    <table class="table w-100">
       <thead>
       <tr>
-        <th width="20%">Tanggal Pembayaran</th>
-        <th width="30%">Keterangan</th>
-        <th width="25%" class="text-right">Nominal</th>
-        <th width="25%" class="text-right">Total Dibayar</th>
+        <th style="width:20%;">Tanggal Pembayaran</th>
+        <th style="width:30%;">Keterangan</th>
+        <th style="width:20%;" class="text-right">Nominal</th>
+        <th style="width:30%;" class="text-right">Total Dibayar</th>
       </tr>
       </thead>
       <tbody>
