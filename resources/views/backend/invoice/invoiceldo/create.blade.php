@@ -80,7 +80,8 @@
                 <table id="table_invoice" class="table table-responsive table-striped">
                   <thead>
                   <tr>
-                    <th scope="col" class="text-center">#</th>
+                    <th>#</th>
+                    <th scope="col" class="text-center">No.</th>
                     <th scope="col">Tanggal</th>
                     <th scope="col">S. Jalan</th>
                     <th scope="col">No. Polisi</th>
@@ -129,13 +130,22 @@
                   </tbody>
                   <tfoot>
                   <tr>
-                    <td colspan="4" class="text-right">Total Tagihan</td>
-                    <td class="text-right"><input type="text" name="total_bill" class="currency rounded-0 form-control"
-                                                  disabled></td>
+                    <td colspan="4" class="text-right">Total Tagihan (Inc. Piutang & Klaim)</td>
+                    <td class="text-right">
+                      <input type="hidden" name="total_tagihan" class="currency rounded-0 form-control">
+                      <input type="text" name="total_tagihan" class="currency rounded-0 form-control" disabled>
+                    </td>
                   </tr>
                   <tr>
-                    <td colspan="4" class="text-right">Total Pemotongan</td>
-                    <td class="text-right"><input type="text" name="total_cut" class="currency rounded-0 form-control">
+                    <td colspan="4" class="text-right">Total Piutang</td>
+                    <td class="text-right">
+                      <input type="text" class="currency rounded-0 form-control total_piutang" disabled>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" class="text-right">Total Klaim</td>
+                    <td class="text-right"><input type="text" class="currency rounded-0 form-control total_klaim"
+                                                  disabled>
                     </td>
                   </tr>
                   <tr>
@@ -203,6 +213,44 @@
       </table>
     </div>
   </div>
+  {{--  Modal--}}
+  <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Tambah</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <i aria-hidden="true" class="ki ki-close"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <input type="hidden" name="tb_job_order_id">
+            <div class="form-group">
+              <label for="selectType" class="col-form-label">Tipe:</label>
+              <select class="form-control" name="type" id="selectType">
+                <option value="tambah">Tambah</option>
+                <option value="kurang">Kurang</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Nominal:</label>
+              <input class="form-control currency" name="nominal">
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Keterangan:</label>
+              <textarea class="form-control" name="keterangan" rows="4"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="addRow" type="button" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 
 {{-- Styles Section --}}
@@ -216,7 +264,6 @@
     }
   </style>
 @endsection
-
 
 {{-- Scripts Section --}}
 @section('scripts')
@@ -307,6 +354,61 @@
         },
       });
 
+      $('#addModal').on('show.bs.modal', function (event) {
+        let id = $(event.relatedTarget).data('id');
+        $(this).find('.modal-body').find('input[name="tb_job_order_id"]').val(id);
+
+      });
+      $('#addModal').on('hidden.bs.modal', function (event) {
+        $(this).find('.modal-body').find('input[name="tb_job_order_id"]').val('');
+        $(this).find('.modal-body').find('input[name="nominal"]').val('');
+        $(this).find('.modal-body').find('textarea[name="keterangan"]').val('');
+      });
+
+      $('#addRow').on('click', function () {
+        let jobOrderId = $(this).parent().parent().find('input[name="tb_job_order_id"]').val();
+        let keterangan = $(this).parent().parent().find('textarea[name="keterangan"]').val();
+        let nominal = $(this).parent().parent().find('input[name="nominal"]').val();
+        let select = $(this).parent().parent().find('select[name="type"]').val();
+        let typeVar = '';
+        if (select == 'tambah' && !$.trim($('#jo_' + jobOrderId + '_tambahan').html())) {
+          typeVar = 'jo_' + jobOrderId + '_tambahan';
+          $("#jo_" + jobOrderId).after('<tr id="' + typeVar + '">' +
+            '<td><button type="button" class="btn btn-sm btn-danger deleteItem">-</button></td>' +
+            '<td><input type="hidden" name="job_orderid[' + jobOrderId + '][tambah][nominal]" value="' + nominal + '"></td>' +
+            '<td><span class="badge badge-success">Penambahan</span></td>' +
+            '<td colspan="10">' + keterangan + '<input type="hidden" name="job_orderid[' + jobOrderId + '][tambah][keterangan]" value="' + keterangan + '"></td>' +
+            '<td class="text-right money">' + nominal + '</td>' +
+            '</tr>');
+        } else if (select == 'kurang' && !$.trim($('#jo_' + jobOrderId + '_pengurangan').html())) {
+          typeVar = 'jo_' + jobOrderId + '_pengurangan';
+          $("#jo_" + jobOrderId).after('<tr id="' + typeVar + '">' +
+            '<td><button type="button" class="btn btn-sm btn-danger deleteItem">-</button></td>' +
+            '<td><input type="hidden" name="job_orderid[' + jobOrderId + '][kurang][nominal]" value="' + nominal + '"></td>' +
+            '<td><span class="badge badge-danger">Pengurangan</span></td>' +
+            '<td colspan="10">' + keterangan + '<input type="hidden" name="job_orderid[' + jobOrderId + '][kurang][keterangan]" value="' + keterangan + '"></td>' +
+            '<td class="text-right money">' + nominal + '</td>' +
+            '</tr>'
+          );
+        }
+
+        $(".money").inputmask({
+          'alias': 'decimal',
+          'groupSeparator': ',',
+          'autoGroup': true,
+          'digits': 2,
+          'digitsOptional': false,
+        });
+
+        initCalculate();
+        $('#addModal').modal('hide');
+
+        $('.deleteItem').on('click', function (){
+          $(this).parent().parent().empty();
+          initCalculate();
+        });
+      });
+
       $('#submitAppend').on('click', function (e) {
         e.preventDefault();
         let selected = dataTable.column(0).checkboxes.selected();
@@ -330,7 +432,8 @@
               $.each(response.data, function (index, data) {
                 total += parseFloat(data.total_netto_ldo);
                 $('#TampungId').append('<input type="hidden" name="job_order_id[]" value="' + data.id + '">');
-                $('#table_invoice tbody').append('<tr>' +
+                $('#table_invoice tbody').append('<tr id="jo_' + data.id + '">' +
+                  '<td><button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#addModal" data-id="' + data.id + '">+</button></td>' +
                   ' <td class="text-center">' + (index + 1) + '</td>' +
                   ' <td>' + data.date_begin + '</td>' +
                   ' <td>' + data.prefix + '-' + data.num_bill + '</td>' +
@@ -349,7 +452,7 @@
               $('#TampungId').append('<input type="hidden" name="total_bill" value="' + total + '">');
 
               $('#table_invoice tfoot').append('<tr>' +
-                '<td colspan="12" class="text-right">Total</td>' +
+                '<td colspan="13" class="text-right">Total</td>' +
                 '<td class="text-right money">' + total + '</td>' +
                 '</tr>');
 
@@ -430,12 +533,6 @@
       });
 
       function initDate() {
-        // $('.datepicker').datepicker({
-        //   format: 'yyyy-mm-dd',
-        //   todayBtn: "linked",
-        //   clearBtn: true,
-        //   todayHighlight: true,
-        // });
 
         $(".datepicker").flatpickr();
 
@@ -452,13 +549,26 @@
       }
 
       function initCalculate() {
+        let totalKlaim = 0;
+        let totalPiutang = 0;
+        $("input[name*='[kurang][nominal]']").each(function () {
+          totalKlaim += parseInt($(this).val()) || 0;
+        });
+
+        $("input[name*='[tambah][nominal]']").each(function () {
+          totalPiutang += parseInt($(this).val()) || 0;
+        });
+
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
-        let total_cut = parseFloat($('input[name="total_cut"]').val()) || 0;
         let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
-        let rest_payment = total_bill - total_cut - total_payment;
+        let totalTagihan = total_bill + totalPiutang - totalKlaim;
+        let rest_payment = total_bill - total_payment + totalPiutang - totalKlaim;
+        $('#totalTagihan').val(totalTagihan);
+        $('input[name="total_tagihan"]').val(totalTagihan);
         $('.total_payment').val(total_payment);
         $('.rest_payment').val(rest_payment);
-        $('input[name=total_bill]').val(total_bill);
+        $('.total_klaim').val(totalKlaim);
+        $('.total_piutang').val(totalPiutang);
       }
 
       $('input[name="payment[payment]"],input[name="total_cut"],#diskon').on('keyup', function () {

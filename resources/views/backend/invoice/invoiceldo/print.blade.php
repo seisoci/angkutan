@@ -128,14 +128,27 @@
           <td>{{ number_format($item->roadmoneydetail_sum_amount ?? 0, 2, '.', ',') }}</td>
           <td>{{ number_format($item->total_netto_ldo ?? 0, 2, '.', ',')}}</td>
         </tr>
+        @foreach($item->piutangklaim as $piutangklaim)
+          <tr>
+            <td></td>
+            <td colspan="12">{{ $piutangklaim->description }}</td>
+            <td style="text-align: right">
+              @if($piutangklaim->type == "tambah")
+                {{ number_format($piutangklaim->amount , 2, ',','.') }}
+              @else
+                -{{ number_format($piutangklaim->amount , 2, ',','.') }}
+              @endif
+            </td>
+          </tr>
+        @endforeach
       @endforeach
       <tr>
-        <td colspan="11" class="text-left font-weight-bolder">
-          {{ ucwords(Terbilang::terbilang($data->total_bill)) }}
-        </td>
-        <td class="text-right font-weight-bolder text-uppercase" colspan="2">TOTAL DITERIMA:</td>
-        <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0, 2, '.', ',') }}</td>
-      </tr>
+          <td colspan="10" class="text-left font-weight-bolder">
+            {{ ucwords(Terbilang::terbilang($data->total_bill)) }}
+          </td>
+          <td class="text-right font-weight-bolder text-uppercase" colspan="3">TOTAL DITERIMA:</td>
+          <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0, 2, '.', ',') }}</td>
+        </tr>
       </tbody>
     </table>
     <h4 class="text-dark"><u>Pembayaran</u></h4>
@@ -162,6 +175,10 @@
         <td class="text-right font-weight-bolder">{{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
       </tr>
       <tr>
+        <td colspan="3" class="text-right font-weight-bolder">Total Piutang</td>
+        <td class="text-right font-weight-bolder">{{ number_format($data->total_piutang ?? 0,2, ',', '.') }}</td>
+      </tr>
+      <tr>
         <td colspan="3" class="text-right font-weight-bolder">Total Pemotongan</td>
         <td class="text-right font-weight-bolder">{{ number_format($data->total_cut ?? 0,2, ',', '.') }}</td>
       </tr>
@@ -181,8 +198,9 @@
         <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  auth()->user()->name }}</u></h5>
       </div>
       <div class="ml-20">
-        <h4  class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
-        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  $data->anotherexpedition->name }}</u></h5>
+        <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
+        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  $data->anotherexpedition->name }}</u>
+        </h5>
       </div>
     </div>
   </div>

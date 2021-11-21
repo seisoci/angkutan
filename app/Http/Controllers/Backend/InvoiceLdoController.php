@@ -12,6 +12,8 @@ use App\Models\InvoiceLdo;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\PaymentLdo;
+use App\Models\PiutangKlaim;
+use App\Models\PiutangKlaimLDO;
 use App\Models\Prefix;
 use DataTables;
 use DB;
@@ -138,6 +140,23 @@ class InvoiceLdoController extends Controller
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
+        $totalCut = 0;
+        $totalPiutang = 0;
+        foreach ($request['job_orderid'] ?? array() as $key => $item):
+          foreach ($item as $type => $jo) {
+            if ($type == 'tambah') {
+              $totalPiutang += $jo['nominal'];
+            } else {
+              $totalCut += $jo['nominal'];
+            }
+            PiutangKlaim::create([
+              'job_order_id' => $key,
+              'amount' => $jo['nominal'],
+              'description' => $jo['keterangan'],
+              'type' => $type,
+            ]);
+          }
+        endforeach;
         $prefix = Prefix::findOrFail($request->prefix);
         $coa = Coa::findOrFail($request->coa_id);
         $checksaldo = DB::table('journals')
@@ -157,23 +176,19 @@ class InvoiceLdoController extends Controller
           'invoice_date' => $request->input('invoice_date'),
           'due_date' => $request->input('due_date'),
           'total_bill' => $request->input('total_bill'),
-          'total_cut' => $request->input('total_cut') ?? 0,
+          'total_piutang' => $totalPiutang,
+          'total_cut' => $totalCut,
           'total_payment' => $request->input('payment.payment') ?? 0,
           'rest_payment' => $request->input('rest_payment'),
           'memo' => $request->input('memo'),
         ]);
 
         foreach ($request->job_order_id as $item):
-          JobOrder::where('id', $item)->update([
-            'invoice_ldo_id' => $data->id,
-            'status_payment_ldo' => '1',
-          ]);
+          JobOrder::where('id', $item)->update(['invoice_ldo_id' => $data->id, 'status_payment_ldo' => '1']);
         endforeach;
-
 
         if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
           if (($checksaldo->saldo ?? FALSE) && ($request->input('payment.payment') ?? 0) <= $checksaldo->saldo) {
-
             PaymentLdo::create([
               'invoice_ldo_id' => $data->id,
               'date_payment' => $request->input('payment.date_payment'),
@@ -203,7 +218,6 @@ class InvoiceLdoController extends Controller
               'code_ref' => $data->id,
               'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill') . ""
             ]);
-
           } else {
             DB::rollBack();
             return response()->json([
@@ -282,17 +296,24 @@ class InvoiceLdoController extends Controller
     ];
     $data = InvoiceLdo::select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
       ->with(['joborders' => function ($q) {
-        $q->withSum('operationalexpense', 'amount');
-      }, 'anotherexpedition', 'paymentldos.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
+        $q->withSum('roadmoneydetail', 'amount');
+      }, 'anotherexpedition', 'paymentldos.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'joborders.piutangklaim'])
+      ->withSum('paymentldos', 'payment')
       ->findOrFail($id);
+
+    $plucked = $data->joborders->pluck('id');
+    $total = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+      ->withSum('roadmoneydetail', 'amount')
+      ->whereIn('id', $plucked)
+      ->get();
+
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoiceldo')->sole();
-    return view('backend.invoice.invoiceldo.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
+    return view('backend.invoice.invoiceldo.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa', 'total'));
   }
 
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
-      'total_cut' => 'required|regex:/^\d+(\.\d{1,2})?$/',
       'coa_id' => 'required|integer',
     ]);
     if ($validator->passes()) {
@@ -311,15 +332,40 @@ class InvoiceLdoController extends Controller
           ->first();
         $payment = PaymentLdo::where('invoice_ldo_id', $data->id)->sum('payment');
         $payment += $request->input('payment.payment');
+        $totalCut = 0;
+        $totalPiutang = 0;
+
+        foreach ($data->joborders as $item):
+          PiutangKlaim::where('job_order_id', $item->id)->delete();
+        endforeach;
+
+        foreach ($request['job_orderid'] ?? array() as $key => $item):
+          PiutangKlaim::where('job_order_id', $key)->delete();
+          foreach ($item as $type => $jo) {
+            if ($type == 'tambah') {
+              $totalPiutang += $jo['nominal'];
+            } else {
+              $totalCut += $jo['nominal'];
+            }
+            PiutangKlaim::create([
+              'job_order_id' => $key,
+              'amount' => $jo['nominal'],
+              'description' => $jo['keterangan'],
+              'type' => $type,
+            ]);
+          }
+        endforeach;
+
+        $data->update([
+          'total_cut' => $totalCut,
+          'total_piutang' => $totalPiutang,
+          'rest_payment' => $request['rest_payment'],
+          'total_payment' => $payment,
+          'total_bill' => $request['total_bill'],
+        ]);
 
         if (($checksaldo->saldo ?? FALSE) && $request->input('payment.payment') <= $checksaldo->saldo) {
           $LDO = AnotherExpedition::findOrFail($data->another_expedition_id);
-
-          $data->update([
-            'total_cut' => $request->input('total_cut'),
-            'rest_payment' => $request->input('rest_payment'),
-            'total_payment' => $payment,
-          ]);
 
           if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
             PaymentLdo::create([
@@ -390,19 +436,4 @@ class InvoiceLdoController extends Controller
     return Datatables::of($data)->make(true);
   }
 
-  public function findbypk(Request $request)
-  {
-    $data = json_decode($request->data);
-    $response = NULL;
-    if ($request->data) {
-      $result = JobOrder::with(['anotherexpedition:id,name','driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
-        ->withSum('roadmoneydetail', 'amount')
-        ->whereIn('id', $data)->get();
-
-      $response = response()->json([
-        'data' => $result,
-      ]);
-    }
-    return $response;
-  }
 }

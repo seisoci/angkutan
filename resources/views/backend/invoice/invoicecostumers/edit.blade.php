@@ -336,7 +336,6 @@
         let totalTagihan = total_bill + totalPiutang;
         let rest_payment = total_bill - total_payment + totalPiutang - totalKlaim - totalPaymentDB;
         let totalPaymentFull = total_payment + totalPaymentDB;
-        console.log(totalTagihan);
         $('.total_bill').val(totalTagihan);
         $('input[name="payment[total_payment]"]').val(total_payment);
         $('.total_payment').val(totalPaymentFull);

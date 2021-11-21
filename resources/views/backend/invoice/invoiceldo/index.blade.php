@@ -59,7 +59,8 @@
           <th>Nama LDO</th>
           <th>Total Tagihan</th>
           <th>Total Pembayaran</th>
-          <th>Potongan</th>
+          <th>Total Piutang</th>
+          <th>Potongan Klaim</th>
           <th>Sisa Tagihan</th>
           <th>Created At</th>
           <th>Action</th>
@@ -102,7 +103,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[9, 'desc']],
+        order: [[2, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.invoiceldo.index') }}",
@@ -127,6 +128,12 @@
           {
             data: 'total_payment',
             name: 'total_payment',
+            render: $.fn.dataTable.render.number(',', '.', 2),
+            className: 'dt-right'
+          },
+          {
+            data: 'total_piutang',
+            name: 'total_piutang',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },

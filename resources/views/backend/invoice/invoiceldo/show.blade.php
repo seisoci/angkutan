@@ -92,13 +92,23 @@
                   <td>{{ number_format($item->roadmoneydetail_sum_amount ?? 0, 2, '.', ',') }}</td>
                   <td>{{ number_format($item->total_netto_ldo ?? 0, 2, '.', ',')}}</td>
                 </tr>
+                @foreach($item->piutangklaim as $piutangklaim)
+                  <tr>
+                    <td></td>
+                    <td>
+                      <span class="badge {{ $piutangklaim->type == 'tambah' ? 'badge-success' : 'badge-danger' }}">{{ $piutangklaim->type == 'tambah' ? 'Penambahan' : 'Pengurangan' }}</span>
+                    </td>
+                    <td colspan="11">{{ $piutangklaim->description }}<input type="hidden" name="job_orderid['+jobOrderId+'][tambah][keterangan]" value="{{ $piutangklaim->description }}"></td>
+                    <td class="text-right currency">{{ number_format($piutangklaim->amount ?? 0, 2, '.', ',')}}</td>
+                  </tr>
+                @endforeach
               @endforeach
               <tr>
-                <td colspan="12" class="text-left font-weight-bolder">
+                <td colspan="10" class="text-left font-weight-bolder">
                   {{ ucwords(Terbilang::terbilang($data->total_bill)) }}
                 </td>
-                <td class="text-right font-weight-bolder text-uppercase">TOTAL DITERIMA:</td>
-                <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0, 2, '.', ',') }}</td>
+                <td class="text-right font-weight-bolder text-uppercase" colspan="3">TOTAL DITERIMA(Ex: Klaim & Piutang):</td>
+                <td class="text-right font-weight-bolder">{{ number_format(($data->joborders->sum('total_basic_price_ldo') - $data->joborders->sum('roadmoneydetail_sum_amount') )?? 0, 2, '.', ',') }}</td>
               </tr>
               </tbody>
             </table>
@@ -127,11 +137,15 @@
               <td class="text-right font-weight-bolder">{{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
             </tr>
             <tr>
+              <td colspan="3" class="text-right font-weight-bolder">Total Piutang</td>
+              <td class="text-right font-weight-bolder">{{ number_format($data->total_piutang ?? 0,2, ',', '.') }}</td>
+            </tr>
+            <tr>
               <td colspan="3" class="text-right font-weight-bolder">Total Pemotongan</td>
               <td class="text-right font-weight-bolder">{{ number_format($data->total_cut ?? 0,2, ',', '.') }}</td>
             </tr>
             <tr>
-              <td colspan="3" class="text-right font-weight-bolder">Total Tagihan</td>
+              <td colspan="3" class="text-right font-weight-bolder">Total Tagihan (Inc. Piutang & Klaim)</td>
               <td class="text-right font-weight-bolder">{{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
             </tr>
             <tr>

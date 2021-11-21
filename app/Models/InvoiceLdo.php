@@ -29,6 +29,7 @@ class InvoiceLdo extends Model
     'due_date',
     'total_bill',
     'total_cut',
+    'total_piutang',
     'total_payment',
     'rest_payment',
     'memo',
