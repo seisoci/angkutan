@@ -13,7 +13,6 @@ use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\PaymentLdo;
 use App\Models\PiutangKlaim;
-use App\Models\PiutangKlaimLDO;
 use App\Models\Prefix;
 use DataTables;
 use DB;
@@ -434,6 +433,22 @@ class InvoiceLdoController extends Controller
     $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
       ->withSum('operationalexpense', 'amount')->where('invoice_ldo_id', $id);
     return Datatables::of($data)->make(true);
+  }
+
+  public function findbypk(Request $request)
+  {
+    $data = json_decode($request->data);
+    $response = NULL;
+    if ($request->data) {
+      $result = JobOrder::with(['anotherexpedition:id,name','driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        ->withSum('roadmoneydetail', 'amount')
+        ->whereIn('id', $data)->get();
+
+      $response = response()->json([
+        'data' => $result,
+      ]);
+    }
+    return $response;
   }
 
 }
