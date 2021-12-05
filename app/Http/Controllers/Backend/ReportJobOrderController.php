@@ -7,6 +7,7 @@ use App\Models\Cooperation;
 use App\Models\Costumer;
 use App\Models\JobOrder;
 use App\Models\Setting;
+use App\Models\Transport;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -39,6 +40,7 @@ class ReportJobOrderController extends Controller
     if ($request->ajax()) {
       $date = $request->date;
       $costumer_id = $request->costumer_id;
+      $transport_id = $request->transport_id;
       $data = JobOrder::with('costumer:id,name', 'routefrom:id,name', 'routeto:id,name',
         'transport:id,num_pol', 'cargo:id,name')
         ->when($date, function ($query, $date) {
@@ -49,6 +51,9 @@ class ReportJobOrderController extends Controller
         })
         ->when($costumer_id, function ($query, $costumer_id) {
           return $query->where('costumer_id', $costumer_id);
+        })
+        ->when($transport_id, function ($query, $transport_id) {
+          return $query->where('transport_id', $transport_id);
         })
         ->where('status_cargo', '!=','batal')
         ->orderBy('date_begin', 'asc');
@@ -64,7 +69,9 @@ class ReportJobOrderController extends Controller
     $type = $request->type;
     $date = $request->date;
     $costumer_id = $request->costumer_id;
+    $transport_id = $request->transport_id;
     $costumer = Costumer::find($costumer_id);
+    $transport = Transport::find($transport_id);
     $data = JobOrder::with('costumer:id,name', 'routefrom:id,name', 'routeto:id,name',
       'transport:id,num_pol', 'cargo:id,name')
       ->when($date, function ($query, $date) {
@@ -75,6 +82,9 @@ class ReportJobOrderController extends Controller
       })
       ->when($costumer_id, function ($query, $costumer_id) {
         return $query->where('costumer_id', $costumer_id);
+      })
+      ->when($transport_id, function ($query, $transport_id) {
+        return $query->where('transport_id', $transport_id);
       })
       ->where('status_cargo', '!=','batal')
       ->orderBy('date_begin', 'asc')
@@ -138,14 +148,16 @@ class ReportJobOrderController extends Controller
     $sheet->setCellValue('A3', 'Priode: ' . (!empty($date) ? $date : 'All Date'));
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Costumer: ' . (!empty($costumer) ? $costumer->name : 'All'));
-    $sheet->mergeCells('L1:O1');
-    $sheet->setCellValue('L1', $cooperationDefault['nickname']);
-    $sheet->mergeCells('L2:O2');
-    $sheet->setCellValue('L2', $cooperationDefault['address']);
-    $sheet->mergeCells('L3:O3');
-    $sheet->setCellValue('L3', 'Telp: ' . $cooperationDefault['phone']);
-    $sheet->mergeCells('L4:O4');
-    $sheet->setCellValue('L4', 'Fax: ' . $cooperationDefault['fax']);
+    $sheet->mergeCells('A5:C5');
+    $sheet->setCellValue('A5', 'No. Polisi: ' . (!empty($transport) ? $transport->num_pol : 'All'));
+    $sheet->mergeCells('I1:M1');
+    $sheet->setCellValue('I1', $cooperationDefault['nickname']);
+    $sheet->mergeCells('I2:M2');
+    $sheet->setCellValue('I2', $cooperationDefault['address']);
+    $sheet->mergeCells('I3:M3');
+    $sheet->setCellValue('I3', 'Telp: ' . $cooperationDefault['phone']);
+    $sheet->mergeCells('I4:M4');
+    $sheet->setCellValue('I4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(10);
@@ -160,41 +172,41 @@ class ReportJobOrderController extends Controller
     $sheet->getColumnDimension('K')->setWidth(14);
     $sheet->getColumnDimension('L')->setWidth(8);
     $sheet->getColumnDimension('M')->setWidth(14);
-    $sheet->getColumnDimension('N')->setWidth(14);
-    $sheet->getColumnDimension('O')->setWidth(14);
+//    $sheet->getColumnDimension('N')->setWidth(14);
+//    $sheet->getColumnDimension('O')->setWidth(14);
 
-    $sheet->getStyle('A6')->getAlignment()->setHorizontal('center');
-    $sheet->getStyle('I6:O6')->getAlignment()->setHorizontal('right');
-    $sheet->getStyle('J6')->getAlignment()->setHorizontal('center');
-    $sheet->setCellValue('A6', 'No.');
-    $sheet->setCellValue('B6', 'Tanggal.');
-    $sheet->setCellValue('C6', 'No. Polisi');
-    $sheet->setCellValue('D6', 'No. Prefix');
-    $sheet->setCellValue('E6', 'No. SJ');
-    $sheet->setCellValue('F6', 'No. Shipment');
-    $sheet->setCellValue('G6', 'Nama Pelanggan');
-    $sheet->setCellValue('H6', 'Rute Dari');
-    $sheet->setCellValue('I6', 'Rute Tujuan');
-    $sheet->setCellValue('J6', 'Jenis Barang');
-    $sheet->setCellValue('K6', 'Tarif (Rp.)');
-    $sheet->setCellValue('L6', 'Qty');
-    $sheet->setCellValue('M6', 'Total');
-    $sheet->setCellValue('N6', 'Tax (%)');
-    $sheet->setCellValue('O6', 'Total (Inc. Tax)');
-    $sheet->setCellValue('P6', 'Fee Thanks');
-    $sheet->setCellValue('Q6', 'Total (Inc. Tax, Thanks))');
+    $sheet->getStyle('A7')->getAlignment()->setHorizontal('center');
+    $sheet->getStyle('I7:O7')->getAlignment()->setHorizontal('right');
+    $sheet->getStyle('J7')->getAlignment()->setHorizontal('center');
+    $sheet->setCellValue('A7', 'No.');
+    $sheet->setCellValue('B7', 'Tanggal.');
+    $sheet->setCellValue('C7', 'No. Polisi');
+    $sheet->setCellValue('D7', 'No. Prefix');
+    $sheet->setCellValue('E7', 'No. SJ');
+    $sheet->setCellValue('F7', 'No. Shipment');
+    $sheet->setCellValue('G7', 'Nama Pelanggan');
+    $sheet->setCellValue('H7', 'Rute Dari');
+    $sheet->setCellValue('I7', 'Rute Tujuan');
+    $sheet->setCellValue('J7', 'Jenis Barang');
+    $sheet->setCellValue('K7', 'Tarif (Rp.)');
+    $sheet->setCellValue('L7', 'Qty');
+    $sheet->setCellValue('M7', 'Total');
+//    $sheet->setCellValue('N7', 'Tax (%)');
+//    $sheet->setCellValue('O7', 'Total (Inc. Tax)');
+//    $sheet->setCellValue('P7', 'Fee Thanks');
+//    $sheet->setCellValue('Q7', 'Total (Inc. Tax, Thanks))');
 
-    $startCell = 6;
-    $startCellFilter = 6;
+    $startCell = 7;
+    $startCellFilter = 7;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':Q' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':M' . $startCell . '')
       ->applyFromArray($borderTopBottom)
       ->applyFromArray($borderLeftRight);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':Q' . $startCell . '')->applyFromArray($borderLeftRight);
+      $sheet->getStyle('A' . $startCell . ':M' . $startCell . '')->applyFromArray($borderLeftRight);
       $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('center');
-      $sheet->getStyle('I' . $startCell . ':Q' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('I' . $startCell . ':M' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->date_begin);
       $sheet->setCellValue('C' . $startCell, $item->transport->num_pol);
@@ -208,30 +220,30 @@ class ReportJobOrderController extends Controller
       $sheet->setCellValue('K' . $startCell, $item->basic_price);
       $sheet->setCellValue('L' . $startCell, $item->payload);
       $sheet->setCellValue('M' . $startCell, $item->total_basic_price);
-      $sheet->setCellValue('N' . $startCell, $item->tax_percent);
-      $sheet->setCellValue('O' . $startCell, $item->total_basic_price_after_tax);
-      $sheet->setCellValue('P' . $startCell, $item->fee_thanks);
-      $sheet->setCellValue('Q' . $startCell, $item->total_basic_price_after_thanks);
+//      $sheet->setCellValue('N' . $startCell, $item->tax_percent);
+//      $sheet->setCellValue('O' . $startCell, $item->total_basic_price_after_tax);
+//      $sheet->setCellValue('P' . $startCell, $item->fee_thanks);
+//      $sheet->setCellValue('Q' . $startCell, $item->total_basic_price_after_thanks);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':Q' . $startCell);
-    $sheet->getStyle('A' . $startCell . ':Q' . $startCell . '')->applyFromArray($borderBottom);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':M' . $startCell);
+    $sheet->getStyle('A' . $startCell . ':M' . $startCell . '')->applyFromArray($borderBottom);
 
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':Q' . $startCell . '')->applyFromArray($borderAll);
-    $sheet->getStyle('E' . $startCell . ':Q' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':M' . $startCell . '')->applyFromArray($borderAll);
+    $sheet->getStyle('E' . $startCell . ':M' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total Rp.');
     $sheet->mergeCells('A' . $startCell . ':J' . $startCell . '');
-    $sheet->getStyle('A' . $startCell . ':Q' . $startCell)->getFont()->setBold(true);
+    $sheet->getStyle('A' . $startCell . ':M' . $startCell)->getFont()->setBold(true);
     $sheet->setCellValue('K' . $startCell, '=SUM(K' . $startCellFilter . ':K' . $endForSum . ')');
     $sheet->setCellValue('L' . $startCell, '=SUM(L' . $startCellFilter . ':L' . $endForSum . ')');
     $sheet->setCellValue('M' . $startCell, '=SUM(M' . $startCellFilter . ':M' . $endForSum . ')');
-    $sheet->setCellValue('N' . $startCell, '=SUM(N' . $startCellFilter . ':N' . $endForSum . ')');
-    $sheet->setCellValue('O' . $startCell, '=SUM(O' . $startCellFilter . ':O' . $endForSum . ')');
-    $sheet->setCellValue('P' . $startCell, '=SUM(P' . $startCellFilter . ':P' . $endForSum . ')');
-    $sheet->setCellValue('Q' . $startCell, '=SUM(Q' . $startCellFilter . ':Q' . $endForSum . ')');
+//    $sheet->setCellValue('N' . $startCell, '=SUM(N' . $startCellFilter . ':N' . $endForSum . ')');
+//    $sheet->setCellValue('O' . $startCell, '=SUM(O' . $startCellFilter . ':O' . $endForSum . ')');
+//    $sheet->setCellValue('P' . $startCell, '=SUM(P' . $startCellFilter . ':P' . $endForSum . ')');
+//    $sheet->setCellValue('Q' . $startCell, '=SUM(Q' . $startCellFilter . ':Q' . $endForSum . ')');
 
     $filename = 'Laporan Tagihan Job Order ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
@@ -253,7 +265,9 @@ class ReportJobOrderController extends Controller
   {
     $date = $request->date;
     $costumer_id = $request->costumer_id;
+    $transport_id = $request->transport_id;
     $costumer = Costumer::find($costumer_id);
+    $transport = Transport::find($transport_id);
     $data = JobOrder::with('costumer:id,name', 'routefrom:id,name', 'routeto:id,name',
       'transport:id,num_pol', 'cargo:id,name')
       ->when($date, function ($query, $date) {
@@ -264,6 +278,9 @@ class ReportJobOrderController extends Controller
       })
       ->when($costumer_id, function ($query, $costumer_id) {
         return $query->where('costumer_id', $costumer_id);
+      })
+      ->when($transport_id, function ($query, $transport_id) {
+        return $query->where('transport_id', $transport_id);
       })
       ->where('status_cargo', '!=','batal')
       ->orderBy('date_begin', 'asc')
@@ -277,7 +294,7 @@ class ReportJobOrderController extends Controller
 
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    return view('backend.report.reportjoborders.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'costumer'));
+    return view('backend.report.reportjoborders.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'costumer', 'transport'));
   }
 
 }

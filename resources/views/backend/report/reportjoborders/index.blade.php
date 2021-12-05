@@ -78,7 +78,14 @@
             <div class="row align-items-center">
               <div class="col-md-3 my-md-0">
                 <div class="form-group">
-                  <label>Nama Costumer:</label>
+                  <label>No Polisi:</label>
+                  <select class="form-control" id="select2Transport">
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Nama Pelanggan:</label>
                   <select class="form-control" id="select2Costumer">
                   </select>
                 </div>
@@ -115,10 +122,6 @@
           <th>Tarif (Rp.)</th>
           <th>Qty</th>
           <th>Total</th>
-          <th>Tax (%)</th>
-          <th>Total (Inc. Tax)</th>
-          <th>Fee Thanks</th>
-          <th>Total (Inc. Tax, Thaks)</th>
         </tr>
         </thead>
         <tfoot>
@@ -150,6 +153,7 @@
         let params = new URLSearchParams({
           date: $("input[name=date]").val(),
           costumer_id: $('#select2Costumer').find(':selected').val() || '',
+          transport_id: $('#select2Transport').find(':selected').val() || '',
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
@@ -159,6 +163,7 @@
         let params = new URLSearchParams({
           date: $("input[name=date]").val(),
           costumer_id: $('#select2Costumer').find(':selected').val() || '',
+          transport_id: $('#select2Transport').find(':selected').val() || '',
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
@@ -168,6 +173,7 @@
         let params = new URLSearchParams({
           date: $("input[name=date]").val(),
           costumer_id: $('#select2Costumer').find(':selected').val() || '',
+          transport_id: $('#select2Transport').find(':selected').val() || '',
         });
         window.open('{{ $config['print_url'] }}?' + params.toString());
       });
@@ -187,6 +193,7 @@
           data: function (d) {
             d.date = $("input[name=date]").val();
             d.costumer_id = $('#select2Costumer').find(':selected').val();
+            d.transport_id = $('#select2Transport').find(':selected').val();
           }
         },
         columns: [
@@ -214,35 +221,6 @@
           },
           {
             data: 'total_basic_price', name: 'total_basic_price',
-            defaultContent: 0,
-            className: 'dt-right',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2)
-          },
-          {
-            data: 'tax_percent', name: 'tax_percent',
-            orderable: false,
-            searchable: false,
-          },
-          {
-            data: 'total_basic_price_after_tax', name: 'total_basic_price_after_tax',
-            defaultContent: 0,
-            className: 'dt-right',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2)
-          },
-          {
-            data: 'fee_thanks', name: 'fee_thanks',
-            defaultContent: 0,
-            className: 'dt-right',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2)
-          },
-          {
-            data: 'total_basic_price_after_thanks', name: 'total_basic_price_after_thanks',
             defaultContent: 0,
             className: 'dt-right',
             orderable: false,
@@ -277,6 +255,25 @@
         allowClear: true,
         ajax: {
           url: "{{ route('backend.costumers.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
+      $("#select2Transport").select2({
+        placeholder: "Search Supir",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.transports.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,

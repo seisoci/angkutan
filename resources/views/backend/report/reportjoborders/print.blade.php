@@ -64,27 +64,28 @@
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
+        <td class="font-weight-normal" style="width:30%">Printed: {{ $config['current_time'] }}
         </td>
         <td class="text-left" style="width:10%"></td>
-        <td class="text-left" style="width:20%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
+        <td class="text-left" style="width:25%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
       </tr>
       <tr>
-        <td class="font-weight-normal" style="width:50%">Priode: {{ $date ?? 'All' }}
+        <td class="font-weight-normal" style="width:30%">Priode: {{ $date ?? 'All' }}
         </td>
         <td class="text-left" style="width:10%"></td>
         <td class="text-left" style="width:25%">{{ $cooperationDefault['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td class="font-weight-normal" style="width:50%">Costumer: {{ !empty($costumer) ? $costumer->name : 'All' }}
+        <td class="font-weight-normal" style="width:30%">Costumer: {{ !empty($costumer) ? $costumer->name : 'All' }}
         </td>
         <td class="text-left" style="width:10%"></td>
-        <td class="text-left" style="width:18%">Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
+        <td class="text-left" style="width:25%">Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
       </tr>
       <tr>
-        <td></td>
+        <td class="font-weight-normal" style="width:30%">No. Polisi: {{ !empty($transport) ? $transport->num_pol : 'All' }}
+        </td>
         <td class="text-left" style="width:10%"></td>
-        <td class="text-left" style="width:18%">Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
+        <td class="text-left" style="width:25%">Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
       </tr>
       </tbody>
     </table>
@@ -105,10 +106,6 @@
         <th class="text-right">Tarif (Rp.)</th>
         <th class="center">Qty</th>
         <th class="text-right">Total</th>
-        <th class="text-right">Tax (%)</th>
-        <th class="text-right">Total (Inc. Tax)</th>
-        <th class="text-right">Fee Thanks</th>
-        <th class="text-right">Total (Inc. Tax, Thaks)</th>
       </tr>
       </thead>
       <tbody>
@@ -116,8 +113,8 @@
         <tr>
           <td>{{ $loop->iteration }}</td>
           <td>{{ $item->date_begin }}</td>
-          <td>{{ $item->transport->num_pol }}</td>
-          <td>{{ $item->num_prefix }}</td>
+          <td style="width: 100px">{{ $item->transport->num_pol }}</td>
+          <td style="width: 100px">{{ $item->num_prefix }}</td>
           <td>{{ $item->no_sj }}</td>
           <td>{{ $item->no_shipment }}</td>
           <td>{{ $item->costumer->name }}</td>
@@ -127,10 +124,6 @@
           <td class="text-right">{{ number_format($item->basic_price, 2, ',', '.') }}</td>
           <td class="text-center">{{ number_format($item->payload, 2, ',', '.') }}</td>
           <td class="text-center">{{ number_format($item->total_basic_price, 2, ',', '.') }}</td>
-          <td class="text-center">{{ number_format($item->tax_percent, 2, ',', '.') }}</td>
-          <td class="text-center">{{ number_format($item->total_basic_price_after_tax, 2, ',', '.') }}</td>
-          <td class="text-center">{{ number_format($item->fee_thanks, 2, ',', '.') }}</td>
-          <td class="text-center">{{ number_format($item->total_basic_price_after_thanks, 2, ',', '.') }}</td>
         </tr>
       @endforeach
       </tbody>
@@ -139,10 +132,6 @@
       <td class="text-right">{{ number_format($data->sum('basic_price'), 2, ',', '.') }}</td>
       <td class="text-right">{{ number_format($data->sum('payload'), 2, ',', '.') }}</td>
       <td class="text-right">{{ number_format($data->sum('total_basic_price'), 2, ',', '.') }}</td>
-      <td class="text-right">{{ number_format($data->sum('tax_percent'), 2, ',', '.') }}</td>
-      <td class="text-right">{{ number_format($data->sum('total_basic_price_after_tax'), 2, ',', '.') }}</td>
-      <td class="text-right">{{ number_format($data->sum('fee_thanks'), 2, ',', '.') }}</td>
-      <td class="text-right">{{ number_format($data->sum('total_basic_price_after_thanks'), 2, ',', '.') }}</td>
       </tfoot>
     </table>
   </div>
