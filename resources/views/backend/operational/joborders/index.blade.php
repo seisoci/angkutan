@@ -260,6 +260,7 @@
             <div class="form-group">
               <label>No Surat Jalan:</label>
               <input type="text" class="form-control" name="no_sj">
+              <input type="hidden" class="form-control" name="type" readonly>
             </div>
             <div class="form-group" style="display: none">
               <label>Ongkosan Dasar Ldo:</label>
@@ -541,11 +542,19 @@
         }
       });
 
-      $('#tonaseModal').on('keyup', function () {
-        let tonase = $(this).val();
-        let basic_price = $('input[name=basic_price]').val();
-        let totalOngkosan = tonase * basic_price;
-        $('#totalOngkosan').val(totalOngkosan);
+      $('#tonaseModal, input[name=basic_price_ldo]').on('keyup', function () {
+        let tonase = $('#tonaseModal').val();
+        let type = $('input[name=type]').val();
+        if (type == 'ldo') {
+          let basic_price = $('input[name=basic_price_ldo]').val();
+          let totalOngkosan = tonase * basic_price;
+          $('#totalOngkosan').val(totalOngkosan);
+
+        } else {
+          let basic_price = $('input[name=basic_price]').val();
+          let totalOngkosan = tonase * basic_price;
+          $('#totalOngkosan').val(totalOngkosan);
+        }
       });
 
 
@@ -818,13 +827,15 @@
           $('#tonaseModal').prop('disabled', false);
         }
         if (type === 'ldo') {
+          $(this).find('.modal-body').find('input[name="type"]').val(type);
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').val(basic_price_ldo);
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', '');
           $(this).find('.modal-body').find('input[name="basic_price"]').parent().css('display', 'none');
-
+          $('#totalOngkosan').val(basic_price_ldo * payload);
         } else {
+          $(this).find('.modal-body').find('input[name="type"]').val(type);
           $(this).find('.modal-body').find('input[name="basic_price"]').val(basic_price);
-          $('#totalOngkosan').val(basic_price*payload);
+          $('#totalOngkosan').val(basic_price * payload);
           $(this).find('.modal-body').find('input[name="basic_price"]').parent().css('display', '');
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', 'none');
         }
@@ -835,7 +846,7 @@
         $(this).find('.modal-body').find('input[name="no_shipment"]').val(no_shipment);
       });
       $('#modalEditTonase').on('hidden.bs.modal', function (event) {
-
+        $(this).find('.modal-body').find('input[name="type"]').val('');
         $(this).find('.modal-body').find('input[name="payload"]').val('');
         $(this).find('.modal-body').find('input[name="payload"]').val('');
         $(this).find('.modal-body').find('input[name="type_payload"]').val('');
