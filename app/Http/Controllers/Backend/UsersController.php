@@ -87,7 +87,7 @@ class UsersController extends Controller
       DB::beginTransaction();
       try {
         if (isset($request->profile_avatar) && !empty($request->profile_avatar)) {
-          $image = Fileupload::uploadImagePublic('profile_avatar', $dimensions, 'public');
+          $image = Fileupload::uploadImagePublic('profile_avatar', $dimensions, 'storage');
         }
 
         $user = User::create([
@@ -164,7 +164,7 @@ class UsersController extends Controller
       DB::beginTransaction();
       try {
         if (isset($request->profile_avatar) && !empty($request->profile_avatar)) {
-          $image = Fileupload::uploadImagePublic('profile_avatar', $dimensions, 'public');
+          $image = Fileupload::uploadImagePublic('profile_avatar', $dimensions, 'storage');
           File::delete(["images/original/$data->image", "images/thumbnail/$data->image"]);
         }
         $data->update([
@@ -199,7 +199,7 @@ class UsersController extends Controller
   public function destroy($id)
   {
     $data = User::find($id);
-    File::delete(["images/original/$data->image", "images/thumbnail/$data->image"]);
+    File::delete(["storage/images/original/$data->image", "storage/images/thumbnail/$data->image"]);
     if ($data->delete()) {
       $response = response()->json([
         'status' => 'success',

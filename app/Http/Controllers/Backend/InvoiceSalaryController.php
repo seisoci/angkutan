@@ -89,6 +89,7 @@ class InvoiceSalaryController extends Controller
         ->where('type', 'self')
         ->where('status_salary', '0')
         ->where('status_cargo', 'selesai')
+        ->where('status_document', '1')
         ->when($driver_id, function ($query, $driver_id) {
           return $query->where('driver_id', $driver_id);
         })

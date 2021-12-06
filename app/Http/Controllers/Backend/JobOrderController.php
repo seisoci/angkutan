@@ -134,7 +134,7 @@ class JobOrderController extends Controller
           }
           if ($row->status_cargo == 'selesai' && $row->status_document == 1 && !$row->invoice_costumer_id && in_array(Auth::user()->roles[0]->name, ['super-admin', 'admin', 'akunting'])) {
             $btnShowTonase = '
-            <a href="#" data-toggle="modal" data-target="#modalEditTonase" data-id="' . $row->id . '" data-type_payload="' . $row->type_payload . '" data-payload="' . $row->payload . '" data-no_sj="' . $row->no_sj . '"   data-no_shipment="' . $row->no_shipment . '" data-type="' . $row->type . '" data-basic_price_ldo="' . $row->basic_price_ldo . '"  class="edit dropdown-item">Input Tonase</a>';
+            <a href="#" data-toggle="modal" data-target="#modalEditTonase" data-id="' . $row->id . '" data-basic_price="' . $row->basic_price . '" data-type_payload="' . $row->type_payload . '" data-payload="' . $row->payload . '" data-no_sj="' . $row->no_sj . '"   data-no_shipment="' . $row->no_shipment . '" data-type="' . $row->type . '" data-basic_price_ldo="' . $row->basic_price_ldo . '"  class="edit dropdown-item">Input Tonase</a>';
           }
           if ($row->status_cargo == 'transfer') {
             $btnTransfer = '

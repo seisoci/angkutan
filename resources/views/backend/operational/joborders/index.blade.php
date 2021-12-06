@@ -270,6 +270,10 @@
               <input type="text" class="form-control" name="no_shipment">
             </div>
             <div class="form-group">
+              <label>Ongkosan Dasar:</label>
+              <input type="text" class="form-control currency" name="basic_price" disabled>
+            </div>
+            <div class="form-group">
               <label>Kubiknasi / Tonase:</label>
               <div class="input-group">
                 <input id="tonaseModal" type="text" name="payload" class="form-control text-right currencyKG"
@@ -278,6 +282,10 @@
                   <span class="input-group-text">KG</span>
                 </div>
               </div>
+            </div>
+            <div class="form-group">
+              <label>Total Ongkosan:</label>
+              <input id="totalOngkosan" type="text" class="form-control currency" disabled>
             </div>
           </div>
           <div class="modal-footer">
@@ -532,6 +540,14 @@
           tr.next().find('td').addClass('no-padding bg-gray');
         }
       });
+
+      $('#tonaseModal').on('keyup', function () {
+        let tonase = $(this).val();
+        let basic_price = $('input[name=basic_price]').val();
+        let totalOngkosan = tonase * basic_price;
+        $('#totalOngkosan').val(totalOngkosan);
+      });
+
 
       function initTable(tableId, data) {
         $('#' + tableId).DataTable({
@@ -793,6 +809,7 @@
         let type_payload = $(event.relatedTarget).data('type_payload');
         let type = $(event.relatedTarget).data('type');
         let no_sj = $(event.relatedTarget).data('no_sj');
+        let basic_price = $(event.relatedTarget).data('basic_price');
         let basic_price_ldo = $(event.relatedTarget).data('basic_price_ldo');
         let no_shipment = $(event.relatedTarget).data('no_shipment');
         if (type_payload === 'fix') {
@@ -800,10 +817,15 @@
         } else {
           $('#tonaseModal').prop('disabled', false);
         }
-        if(type === 'ldo'){
+        if (type === 'ldo') {
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').val(basic_price_ldo);
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', '');
-        }else{
+          $(this).find('.modal-body').find('input[name="basic_price"]').parent().css('display', 'none');
+
+        } else {
+          $(this).find('.modal-body').find('input[name="basic_price"]').val(basic_price);
+          $('#totalOngkosan').val(basic_price*payload);
+          $(this).find('.modal-body').find('input[name="basic_price"]').parent().css('display', '');
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', 'none');
         }
         $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/' + id);
@@ -854,7 +876,6 @@
             $('#restRoadMoney').val(restRoadMoney);
           },
           error: function (response) {
-            console.log(data);
           }
         });
       });

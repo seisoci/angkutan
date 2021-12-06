@@ -47,11 +47,6 @@ class DriverController extends Controller
     return view('backend.masteroperational.drivers.index', compact('config', 'page_breadcrumbs'));
   }
 
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
   public function create()
   {
     $config['page_title'] = "Create Supir";
@@ -62,12 +57,6 @@ class DriverController extends Controller
     return view('backend.masteroperational.drivers.create', compact('config', 'page_breadcrumbs'));
   }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @return \Illuminate\Http\Response
-   */
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
@@ -91,9 +80,9 @@ class DriverController extends Controller
     if ($validator->passes()) {
       $dimensions = [array('1280', '720', 'thumbnail')];
       $dimensions_profile = [array('300', '300', 'thumbnail')];
-      $image = isset($request->profile_avatar) && !empty($request->profile_avatar) ? Fileupload::uploadImagePublic('profile_avatar', $dimensions_profile, 'public') : NULL;
-      $photo_ktp = isset($request->photo_ktp) && !empty($request->photo_ktp) ? Fileupload::uploadImagePublic('photo_ktp', $dimensions, 'public') : NULL;
-      $photo_sim = isset($request->photo_sim) && !empty($request->photo_sim) ? Fileupload::uploadImagePublic('photo_sim', $dimensions, 'public') : NULL;
+      $image = isset($request->profile_avatar) && !empty($request->profile_avatar) ? Fileupload::uploadImagePublic('profile_avatar', $dimensions_profile, 'storage') : NULL;
+      $photo_ktp = isset($request->photo_ktp) && !empty($request->photo_ktp) ? Fileupload::uploadImagePublic('photo_ktp', $dimensions, 'storage') : NULL;
+      $photo_sim = isset($request->photo_sim) && !empty($request->photo_sim) ? Fileupload::uploadImagePublic('photo_sim', $dimensions, 'storage') : NULL;
       Driver::create([
         'another_expedition_id' => $request->input('another_expedition_id') ?? NULL,
         'name' => $request->input('name'),
@@ -123,12 +112,6 @@ class DriverController extends Controller
     return $response;
   }
 
-  /**
-   * Display the specified resource.
-   *
-   * @param \App\Models\Driver $driver
-   * @return \Illuminate\Http\Response
-   */
   public function show(Driver $driver)
   {
     $config['page_title'] = "Detail Supir";
@@ -141,12 +124,6 @@ class DriverController extends Controller
     return view('backend.masteroperational.drivers.show', compact('config', 'page_breadcrumbs', 'data'));
   }
 
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param \App\Models\Driver $driver
-   * @return \Illuminate\Http\Response
-   */
   public function edit(Driver $driver)
   {
     $config['page_title'] = "Edit Supir";
@@ -160,13 +137,6 @@ class DriverController extends Controller
     return view('backend.masteroperational.drivers.edit', compact('config', 'page_breadcrumbs', 'data'));
   }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @param \App\Models\Driver $driver
-   * @return \Illuminate\Http\Response
-   */
   public function update(Request $request, Driver $driver)
   {
     $validator = Validator::make($request->all(), [
@@ -190,9 +160,9 @@ class DriverController extends Controller
     if ($validator->passes()) {
       $dimensions = [array('1280', '720', 'thumbnail')];
       $dimensions_profile = [array('300', '300', 'thumbnail')];
-      $image = isset($request->profile_avatar) && !empty($request->profile_avatar) ? Fileupload::uploadImagePublic('profile_avatar', $dimensions_profile, 'public', $driver->photo) : $driver->photo;
-      $photo_ktp = isset($request->photo_ktp) && !empty($request->photo_ktp) ? Fileupload::uploadImagePublic('photo_ktp', $dimensions, 'public', $driver->photo_ktp) : $driver->photo_ktp;
-      $photo_sim = isset($request->photo_sim) && !empty($request->photo_sim) ? Fileupload::uploadImagePublic('photo_sim', $dimensions, 'public', $driver->photo_sim) : $driver->photo_sim;
+      $image = isset($request->profile_avatar) && !empty($request->profile_avatar) ? Fileupload::uploadImagePublic('profile_avatar', $dimensions_profile, 'storage', $driver->photo) : $driver->photo;
+      $photo_ktp = isset($request->photo_ktp) && !empty($request->photo_ktp) ? Fileupload::uploadImagePublic('photo_ktp', $dimensions, 'storage', $driver->photo_ktp) : $driver->photo_ktp;
+      $photo_sim = isset($request->photo_sim) && !empty($request->photo_sim) ? Fileupload::uploadImagePublic('photo_sim', $dimensions, 'storage', $driver->photo_sim) : $driver->photo_sim;
       $driver->update([
         'another_expedition_id' => $request->input('another_expedition_id') ?? NULL,
         'name' => $request->input('name'),
@@ -221,21 +191,15 @@ class DriverController extends Controller
     return $response;
   }
 
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param \App\Models\Driver $driver
-   * @return \Illuminate\Http\Response
-   */
   public function destroy(Driver $driver)
   {
     $response = response()->json([
       'status' => 'error',
       'message' => 'Data cannot be deleted',
     ]);
-    File::delete(["images/original/$driver->photo", "images/thumbnail/$driver->photo",
-      "images/original/$driver->photo_ktp", "images/thumbnail/$driver->photo_ktp",
-      "images/original/$driver->photo_sim", "images/thumbnail/$driver->photo_sim"]);
+    File::delete(["storage/images/original/$driver->photo", "storage/images/thumbnail/$driver->photo",
+      "storage/images/original/$driver->photo_ktp", "storage/images/thumbnail/$driver->photo_ktp",
+      "storage/images/original/$driver->photo_sim", "storage/images/thumbnail/$driver->photo_sim"]);
     if ($driver->delete()) {
       $response = response()->json([
         'status' => 'success',
