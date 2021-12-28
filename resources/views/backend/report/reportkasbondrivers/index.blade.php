@@ -172,9 +172,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [0, 'desc'],
-        searching: false,
-        bSort: false,
+        order: [1, 'desc'],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
@@ -186,7 +184,7 @@
           }
         },
         columns: [
-          {data: 'driver.name', name: 'driver.name'},
+          {data: 'nama_supir', name: 'nama_supir'},
           {data: 'date_payment', name: 'date_payment'},
 
           {

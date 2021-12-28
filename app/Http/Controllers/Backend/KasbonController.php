@@ -58,7 +58,8 @@ class KasbonController extends Controller
     });
 
     if ($request->ajax()) {
-      $data = Kasbon::with('driver');
+      $data = Kasbon::selectRaw("`kasbons`.*, `drivers`.`name` as `nama_supir`, `drivers`.`id` as `driver_id`")
+      ->leftJoin('drivers', 'drivers.id', '=', 'kasbons.driver_id');
       return DataTables::of($data)
         ->addColumn('action', function ($row) {
           return '
@@ -67,7 +68,7 @@ class KasbonController extends Controller
                       <i class="fas fa-eye"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a href="kasbon/' . $row->id . '" class="dropdown-item">Detail Seluruh Kasbon</a>
+                    <a href="kasbon/' . $row->driver_id . '" class="dropdown-item">Detail Seluruh Kasbon</a>
                   </div>
               </div>
             ';

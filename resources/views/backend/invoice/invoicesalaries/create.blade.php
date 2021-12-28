@@ -120,6 +120,8 @@
           <th>No. Job Order</th>
           <th>Supir</th>
           <th>No. Pol</th>
+          <th>Rute Awal</th>
+          <th>Rute Tujuan</th>
           <th>Gaji</th>
           <th>Created At</th>
         </tr>
@@ -153,7 +155,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[7, 'desc']],
+        order: [[9, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
@@ -169,6 +171,8 @@
             {data: 'num_bill', name: 'num_bill'},
             {data: 'driver.name', name: 'driver.name'},
             {data: 'transport.num_pol', name: 'transport.num_pol'},
+            {data: 'routefrom.name', name: 'routefrom.name'},
+            {data: 'routeto.name', name: 'routeto.name'},
             {data: 'total_salary', name: 'total_salary', render: $.fn.dataTable.render.number( '.', '.', 2), orderable:false, searchable: false},
             {data: 'created_at', name: 'created_at'},
         ],

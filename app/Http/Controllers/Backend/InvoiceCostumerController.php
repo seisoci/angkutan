@@ -54,25 +54,21 @@ class InvoiceCostumerController extends Controller
           return route('backend.invoicecostumers.datatabledetail', $invoiceCostumer->id);
         })
         ->addColumn('action', function ($row) {
-          $restPayment = $row->rest_payment != 0 ? '<a href="invoicecostumers/' . $row->id . '/edit" class="dropdown-item">Input Pembayaran</a>' : NULL;
-          $tax_coa_id = !$row->tax_coa_id && $row->total_tax > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditTax" data-id="' . $row->id . '"  data-tax="' . $row->total_tax . '" class="edit dropdown-item">Bayar Pajak</a>' : NULL;
-          $fee_coa_id = !$row->fee_coa_id && $row->total_fee_thanks > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditFee" data-id="' . $row->id . '"  class="edit dropdown-item">Bayar Fee</a>' : NULL;
+          $restPayment = $row->rest_payment != 0 ? '<a href="invoicecostumers/' . $row->id . '/edit" class="btn btn-primary" title="Input Pembayaran"><i class="la la-edit"></i></a>' : NULL;
+          $tax_coa_id = !$row->tax_coa_id && $row->total_tax > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditTax" data-id="' . $row->id . '"  data-tax="' . $row->total_tax . '" class="edit btn btn-warning" title="Bayar Pajak"><i class="la la-money-bill-wave"></i></a>' : NULL;
+          $fee_coa_id = !$row->fee_coa_id && $row->total_fee_thanks > 0 ? '<a href="#" data-toggle="modal" data-target="#modalEditFee" data-id="' . $row->id . '"  class="edit btn btn-warning" title="Bayar Fee"><i class="la la-money-check"></i></a>' : NULL;
           if (Auth::user()->can('delete invoicecostumers')) {
-            $deleteBtn = '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
+            $deleteBtn = '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete btn btn-danger"  title="Delete"><i class="la la-trash"></i></a>';
           } else {
             $deleteBtn = '';
           }
           $actionBtn = '
-            <div class="dropdown">
-                  <button class="btn btn-secondary dropdown-toggle" type = "button" id = "dropdownMenuButton" data-toggle = "dropdown" aria-haspopup = "true" aria-expanded = "false" >
-                      <i class="fas fa-eye" ></i >
-                  </button >
-                  <div class="dropdown-menu" aria-labelledby = "dropdownMenuButton" >
-                    ' . $restPayment . $tax_coa_id . $fee_coa_id . '
-                    <a href = "invoicecostumers/' . $row->id . '" class="dropdown-item" > Invoice Detail </a >
-                    ' . $deleteBtn . '
-                  </div >
-              </div >
+          <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+              <div class="btn-group" role="group" aria-label="First group">
+                 <a href = "invoicecostumers/' . $row->id . '" class="btn btn-primary btn-icon" title="Invoice Detail"><i class="la la-print"></i></a >
+                 ' . $restPayment . $tax_coa_id . $fee_coa_id . $deleteBtn.'
+              </div>
+          </div>
           ';
           return $actionBtn;
         })

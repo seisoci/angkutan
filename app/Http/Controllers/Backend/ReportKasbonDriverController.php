@@ -40,8 +40,10 @@ class ReportKasbonDriverController extends Controller
     $status = $request->status;
     $date = $request->date;
 
+
     if ($request->ajax()) {
-      $data = PaymentKasbon::with('driver:id,name')
+      $data = PaymentKasbon::selectRaw("`payment_kasbons`.*, `drivers`.`name` as `nama_supir`")
+        ->leftJoin('drivers', 'drivers.id', '=', 'payment_kasbons.driver_id')
         ->when($status, function ($query, $status) {
           return $query->where('payment_kasbons.type', $status);
         })
@@ -53,8 +55,7 @@ class ReportKasbonDriverController extends Controller
           $date_begin = $this->toDateServerStart($date_format[0]);
           $date_end = $this->toDateServerEnd($date_format[1]);
           return $query->whereBetween('payment_kasbons.date_payment', [$date_begin, $date_end]);
-        })
-        ->orderBy('payment_kasbons.date_payment', 'desc');
+        });
 
       return DataTables::of($data)
         ->make(true);
