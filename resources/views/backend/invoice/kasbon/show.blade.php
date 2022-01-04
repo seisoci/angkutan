@@ -90,7 +90,7 @@
         pageLength: 10,
         ajax: "{{ route('backend.kasbon.datatableshow', $id) }}",
         columns: [
-          {data: 'driver.name', name: 'driver.name'},
+          {data: 'nama_supir', name: 'nama_supir'},
           {data: 'date_payment', name: 'date_payment'},
           {data: 'description', name: 'description'},
           {data: 'payment', name: 'payment', render: $.fn.dataTable.render.number('.', '.', 2), className: 'dt-right'},

@@ -48,7 +48,7 @@ use App\Http\Controllers\Backend\InvoiceKasbonEmployeeController as BackendInvoi
 use App\Http\Controllers\Backend\KasbonEmployeeController as BackendKasbonEmployeeController;
 use App\Http\Controllers\Backend\ReportCostumerController as BackendReportCostumerController;
 use App\Http\Controllers\Backend\ReportDriverController as BackendReportDriverController;
-use App\Http\Controllers\Backend\ReportKasbonDriverController as BackendReportKasbonDriverController;
+use App\Http\Controllers\Backend\ReportKasbonDriverContfroller as BackendReportKasbonDriverController;
 use App\Http\Controllers\Backend\ReportTransportController as BackendReportTransportController;
 use App\Http\Controllers\Backend\ReportJobOrderController as BackendReportJoborderController;
 use App\Http\Controllers\Backend\ReportRecapJobOrderController as BackendReportRecapJobOrderController;
@@ -255,6 +255,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
       Route::get('{id}/datatable_driver/', [BackendAnotherExpeditionController::class, 'datatable_driver'])->name('datatable_driver');
     });
     Route::post('roadmonies/typecapacities', [BackendRoadMoneyController::class, 'typecapacities'])->name('roadmonies.typecapacities');
+    Route::put('joborders/{id}/updateJobOrder', [BackendJobOrderController::class, 'updateJobOrder'])->name('joborders.updateJobOrder');
     Route::post('joborders/roadmoney', [BackendJobOrderController::class, 'roadmoney'])->name('joborders.roadmoney');
     Route::put('roadmonies/{id}/updatetypecapacities', [BackendRoadMoneyController::class, 'updatetypecapacities'])->name('roadmonies.updatetypecapacities');
     Route::get('invoicepurchases/{id}/cetakpdf', [BackendInvoicePurchaseController::class, 'cetakPdfInvoice'])->name('invoicepurchases.cetakpdf');

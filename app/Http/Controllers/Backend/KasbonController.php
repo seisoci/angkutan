@@ -9,7 +9,6 @@ use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Cooperation;
 use App\Models\Driver;
-use App\Models\InvoiceKasbon;
 use App\Models\Journal;
 use App\Models\Kasbon;
 use App\Models\PaymentKasbon;
@@ -59,7 +58,7 @@ class KasbonController extends Controller
 
     if ($request->ajax()) {
       $data = Kasbon::selectRaw("`kasbons`.*, `drivers`.`name` as `nama_supir`, `drivers`.`id` as `driver_id`")
-      ->leftJoin('drivers', 'drivers.id', '=', 'kasbons.driver_id');
+        ->leftJoin('drivers', 'drivers.id', '=', 'kasbons.driver_id');
       return DataTables::of($data)
         ->addColumn('action', function ($row) {
           return '
@@ -104,10 +103,10 @@ class KasbonController extends Controller
           ->groupBy('journals.coa_id')
           ->first();
 
-
         $data = Kasbon::firstOrNew([
           'driver_id' => $request['driver_id']
         ]);
+
         $paymentKasbon = PaymentKasbon::create([
           'coa_id' => $request['coa_id'],
           'driver_id' => $request['driver_id'],
@@ -316,8 +315,9 @@ class KasbonController extends Controller
 
   public function datatableShow($id)
   {
-    $data = PaymentKasbon::where('driver_id', $id)->with('driver');
-
+    $data = PaymentKasbon::leftJoin('drivers', 'drivers.id', '=', 'payment_kasbons.driver_id')
+      ->where('payment_kasbons.driver_id', $id)
+      ->selectRaw("`payment_kasbons`.*, `drivers`.`name` as `nama_supir`");
     return DataTables::of($data)
       ->addColumn('action', function ($row) use ($id) {
         return '
@@ -340,11 +340,6 @@ class KasbonController extends Controller
   {
     try {
       DB::beginTransaction();
-      Journal::where([
-        ['table_ref', 'kasbon'],
-        ['code_ref', $id]
-      ])->delete();
-
       $data = PaymentKasbon::find($id);
 
       $kasbon = Kasbon::firstOrNew([
@@ -353,23 +348,23 @@ class KasbonController extends Controller
 
       if ($data['type'] == 'hutang') {
         $kasbon->amount = ($kasbon->exists ? $kasbon['amount'] : 0) - $data['payment'];
-        if($kasbon->amount < 0){
+        if ($kasbon->amount < 0) {
           DB::rollBack();
           return response()->json([
             'status' => 'error',
             'message' => 'Kasbon tidak boleh negative',
           ]);
         }
-      }else{
+      } else {
         $kasbon->amount = ($kasbon->exists ? $kasbon['amount'] : 0) + $data['payment'];
       }
       $kasbon->save();
       $data->delete();
+      $journal = Journal::where('table_ref', 'kasbon')->where('code_ref', $id)->delete();;
       $response = response()->json([
         'status' => 'success',
         'message' => 'Data has been deleted',
       ]);
-
 
       DB::commit();
     } catch (\Throwable $throw) {

@@ -4,23 +4,19 @@ namespace App\Http\Controllers\Backend;
 
 use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
-use App\Models\Coa;
 use App\Models\ConfigCoa;
-use App\Models\Costumer;
 use App\Models\Driver;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\OperationalExpense;
 use App\Models\Prefix;
 use App\Models\RoadMoney;
-use App\Models\Route;
 use App\Models\Setting;
 use App\Models\Transport;
 use App\Models\TypeCapacity;
 use Carbon\Carbon;
 use DataTables;
 use Illuminate\Http\Request;
-use Illuminate\Queue\Jobs\Job;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
@@ -96,10 +92,10 @@ class JobOrderController extends Controller
           return $query->where('route_to', $route_to);
         })
         ->when($date_begin, function ($query, $date_begin) {
-          return $query->where('date_begin', $date_begin);
+          return $query->where('date_begin', '>=', $date_begin);
         })
         ->when($date_end, function ($query, $date_end) {
-          return $query->where('date_end', $date_end);
+          return $query->where('date_end', '<=', $date_end);
         })
         ->when($status_cargo, function ($query, $status_cargo) {
           return $query->where('status_cargo', $status_cargo);
@@ -124,9 +120,11 @@ class JobOrderController extends Controller
           $btnEditDocument = '';
           $btnShowTonase = '';
           $btnTransfer = '';
+          $btnEditDetail = '<a href="'.route('backend.joborders.edit', $row->id).'" class="edit dropdown-item">Edit Detail</a>';
           if ($row->status_cargo != 'selesai' && $row->status_cargo != 'batal') {
             $btnEdit = '
-            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" data-type_payload="' . $row->type_payload . '" data-payload="' . $row->payload . '"  data-status_cargo="' . $row->status_cargo . '" data-date_end="' . $row->date_end . '" class="edit dropdown-item">Edit</a>';
+            <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" data-type_payload="' . $row->type_payload . '" data-payload="' . $row->payload . '"  data-status_cargo="' . $row->status_cargo . '" data-date_end="' . $row->date_end . '" class="edit dropdown-item">Edit</a>
+            ';
           }
           if ($row->status_document != 1 && $row->status_cargo === 'selesai') {
             $btnEditDocument = '
@@ -147,7 +145,7 @@ class JobOrderController extends Controller
                 </button>
                 <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop1">
               <a href="joborders/' . $row->id . '" class="dropdown-item">Show Detail</a>
-              ' . $btnTransfer . $btnEdit . $btnEditDocument . $btnShowTonase . '
+              ' . $btnTransfer . $btnEdit . $btnEditDetail .$btnEditDocument . $btnShowTonase . '
                 </div>
             </div>
           </div>
@@ -317,6 +315,161 @@ class JobOrderController extends Controller
     return view('backend.operational.joborders.show', compact('config', 'page_breadcrumbs', 'data', 'selectCoa'));
   }
 
+  public function edit($id)
+  {
+    $config['page_title'] = "Edit Job Order";
+    $page_breadcrumbs = [
+      ['page' => '/backend/joborders', 'title' => "List Job Order"],
+      ['page' => '#', 'title' => "Edit Job Order"],
+    ];
+    $sparepart = Setting::where('name', 'potongan sparepart')->first();
+    $gaji = Setting::where('name', 'gaji supir')->first();
+    $selectCoa = ConfigCoa::with('coa')->where('name_page', 'joborders')->sole();
+    $data = JobOrder::with(['anotherexpedition:id,name','driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+      ->find($id);
+//    dd($data->toArray());
+    $typeCapacity = TypeCapacity::where('name', $data->type_capacity)->sole();
+    return view('backend.operational.joborders.edit', compact('config', 'page_breadcrumbs', 'data', 'sparepart', 'gaji', 'selectCoa', 'typeCapacity'));
+  }
+
+  public function updateJobOrder(Request $request, $id){
+    $validator = Validator::make($request->all(), [
+      'type' => 'required|in:self,ldo',
+      'transport_id' => 'required',
+      'driver_id' => 'required',
+      'costumer_id' => 'required|integer',
+      'route_from' => 'required|integer',
+      'route_to' => 'required|integer',
+      'cargo_id' => 'required|integer',
+      'basic_price' => 'required|gt:0',
+    ]);
+
+    if ($validator->passes()) {
+      try {
+        DB::beginTransaction();
+        $qsparepart = Setting::where('name', 'potongan sparepart')->first();
+        $qsalary = Setting::where('name', 'gaji supir')->first();
+
+        $data = JobOrder::find($id);
+        if ($request->type === 'self') {
+          //CALCULATE
+          $basicPrice = $request->basic_price;
+          $payload = $request->payload ?? 0;
+          $sumPayload = $basicPrice * $payload;
+          //MODEL DB
+          $data->type = $request->type;
+          $data->another_expedition_id = $request->another_expedition_id ?? NULL;
+          $data->driver_id = $request->driver_id;
+          $data->transport_id = $request->transport_id;
+          $data->costumer_id = $request->costumer_id;
+          $data->cargo_id = $request->cargo_id;
+          $data->route_from = $request->route_from;
+          $data->route_to = $request->route_to;
+          $data->type_capacity = $request->type_capacity;
+          $data->type_payload = $request->type_payload;
+          $data->payload = $request->payload ?? 1;
+          $data->basic_price = $request->basic_price;
+          $data->road_money = $request->road_money;
+          $data->cut_sparepart_percent = $qsparepart->value;
+          $data->salary_percent = $qsalary->value;
+          $data->tax_percent = $request->tax_percent ?? 0;
+          $data->fee_thanks = $request->fee_thanks ?? 0;
+          $data->invoice_bill = $sumPayload;
+          $data->description = $request->description;
+          $data->km = $request->km;
+          $data->save();
+
+        } elseif ($request->type == 'ldo') {
+          if (is_numeric($request->driver_id)) {
+            $driverId = Driver::findOrFail($request->driver_id)->id;
+          } else {
+            $driverId = Driver::create([
+              'another_expedition_id' => $request->another_expedition_id,
+              'name' => $request->driver_id,
+              'status' => 'active'
+            ])->id;
+          }
+
+          if (is_numeric($request->transport_id)) {
+            $transportId = Transport::findOrFail($request->transport_id)->id;
+          } else {
+            $transportId = Transport::create([
+              'another_expedition_id' => $request->another_expedition_id,
+              'num_pol' => $request->transport_id,
+              'type_car' => 'engkel'
+            ])->id;
+          }
+
+          //CALCULATE
+          $basicPrice = $request->basic_price;
+          $payload = $request->payload ?? 1;
+          $sumPayload = $basicPrice * $payload;
+          //MODEL DB
+          $data->type = $request->type;
+          $data->another_expedition_id = $request->another_expedition_id ?? NULL;
+          $data->driver_id = $driverId;
+          $data->transport_id = $transportId;
+          $data->costumer_id = $request->costumer_id;
+          $data->cargo_id = $request->cargo_id;
+          $data->route_from = $request->route_from;
+          $data->route_to = $request->route_to;
+          $data->type_capacity = $request->type_capacity;
+          $data->type_payload = $request->type_payload;
+          $data->payload = $request->payload ?? 1;
+          $data->basic_price = $request->basic_price;
+          $data->basic_price_ldo = $request->basic_price_ldo;
+          $data->road_money = 0;
+          $data->tax_percent = $request->tax_percent ?? 0;
+          $data->fee_thanks = $request->fee_thanks ?? 0;
+          $data->invoice_bill = $sumPayload;
+          $data->description = $request->description;
+          $data->km = $request->km;
+          $data->save();
+        }
+
+        if($data['status_cargo'] == 'selesai'){
+          Journal::where([
+            ['table_ref', 'joborders'],
+            ['code_ref', $data->id]
+          ])->delete();
+
+          Journal::create([
+            'coa_id' => 43,
+            'date_journal' => $data->date_begin,
+            'debit' => $data->total_basic_price,
+            'kredit' => 0,
+            'table_ref' => 'joborders',
+            'code_ref' => $data->id,
+            'description' => "Penambahan piutang usaha dari joborder $data->prefix" . "-" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
+          ]);
+
+          Journal::create([
+            'coa_id' => 52,
+            'date_journal' => $data->date_begin,
+            'debit' => 0,
+            'kredit' => $data->total_basic_price,
+            'table_ref' => 'joborders',
+            'code_ref' => $data->id,
+            'description' => "Penambahan Pendapatan joborder $data->prefix" . "-" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
+          ]);
+        }
+
+        DB::commit();
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been saved',
+          'redirect' => '/backend/joborders',
+        ]);
+      } catch (\Throwable $throw) {
+        DB::rollBack();
+        $response = $throw;
+      }
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
+    }
+    return $response;
+  }
+
   public function print($id)
   {
     $config['page_title'] = "Detail Job Order";
@@ -340,7 +493,7 @@ class JobOrderController extends Controller
         'nama' => 'Uang Jalan Ke-' . $no,
         'nominal' => number_format($item->amount, 0, '.', ',')
       ];
-    $no++;
+      $no++;
       $totalRoadMoney += $item->amount;
     endforeach;
 
@@ -407,6 +560,34 @@ class JobOrderController extends Controller
 
       if ($request->no_sj || $request->shipement) {
         $data->update($request->all());
+
+        if($data['status_cargo'] == 'selesai'){
+          Journal::where([
+            ['table_ref', 'joborders'],
+            ['code_ref', $data->id]
+          ])->delete();
+
+          Journal::create([
+            'coa_id' => 43,
+            'date_journal' => $data->date_begin,
+            'debit' => $data->total_basic_price,
+            'kredit' => 0,
+            'table_ref' => 'joborders',
+            'code_ref' => $data->id,
+            'description' => "Penambahan piutang usaha dari joborder $data->prefix" . "-" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
+          ]);
+
+          Journal::create([
+            'coa_id' => 52,
+            'date_journal' => $data->date_begin,
+            'debit' => 0,
+            'kredit' => $data->total_basic_price,
+            'table_ref' => 'joborders',
+            'code_ref' => $data->id,
+            'description' => "Penambahan Pendapatan joborder $data->prefix" . "-" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
+          ]);
+        }
+
         return response()->json([
           'status' => 'success',
           'message' => 'Data has been updated',
@@ -684,4 +865,5 @@ class JobOrderController extends Controller
 
     return Datatables::of($data)->make(true);
   }
+
 }
