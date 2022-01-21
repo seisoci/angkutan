@@ -5,13 +5,16 @@ namespace App\Models;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @mixin IdeHelperJobOrder
  */
 class JobOrder extends Model
 {
-  use HasFactory;
+  use HasFactory, LogsActivity;
+  protected static $logName = 'Job Order';
+  protected static $logFillable = true;
 
   protected $fillable = [
     'no_sj',

@@ -39,6 +39,7 @@ class ReportRecapPurchaseOrderController extends Controller
     if ($request->ajax()) {
       $date = $request->date;
       $supplier_id = $request->supplier_id;
+      $statusPembayaran = $request->status_pembayaran;
 
       $data = InvoicePurchase::with('supplier')
         ->when($date, function ($query, $date) {
@@ -49,6 +50,13 @@ class ReportRecapPurchaseOrderController extends Controller
         })
         ->when($supplier_id, function ($query, $supplier_id) {
           return $query->where('invoice_purchases.supplier_sparepart_id', $supplier_id);
+        })
+        ->when($statusPembayaran, function ($query, $statusPembayaran) {
+          if ($statusPembayaran == 'lunas') {
+            return $query->where('invoice_purchases.rest_payment', '=', 0);
+          } elseif ($statusPembayaran == 'belum lunas') {
+            return $query->where('invoice_purchases.rest_payment', '>', 0);
+          }
         })
         ->orderBy('invoice_date');
       return DataTables::of($data)

@@ -33,6 +33,7 @@ class JournalController extends Controller
     if ($request->ajax()) {
       $date = $request->date;
       $data = Journal::with('coa')
+        ->whereNotIn('table_ref', ['monthlysalarydetail'])
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $date_format[0];

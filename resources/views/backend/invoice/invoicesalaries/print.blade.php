@@ -104,7 +104,7 @@
           </tr>
         </thead>
         <tbody>
-          @foreach ($data->joborders as $item)
+          @foreach ($data as $item)
           <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $item->date_begin }}</td>

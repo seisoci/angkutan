@@ -47,7 +47,6 @@
               <th>Total Pembayaran</th>
               <th>Pajak (Rp.)</th>
               <th>Potongan Klaim</th>
-              <th>Potongan Fee</th>
               <th>Sisa Tagihan</th>
               <th>Created At</th>
               <th>Action</th>
@@ -186,7 +185,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[11, 'desc']],
+        order: [[10, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         stateSave: true,
@@ -228,12 +227,6 @@
           {
             data: 'total_cut',
             name: 'total_cut',
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_fee_thanks',
-            name: 'total_fee_thanks',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },

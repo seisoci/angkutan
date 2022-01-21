@@ -327,7 +327,6 @@ class JobOrderController extends Controller
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'joborders')->sole();
     $data = JobOrder::with(['anotherexpedition:id,name','driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
       ->find($id);
-//    dd($data->toArray());
     $typeCapacity = TypeCapacity::where('name', $data->type_capacity)->sole();
     return view('backend.operational.joborders.edit', compact('config', 'page_breadcrumbs', 'data', 'sparepart', 'gaji', 'selectCoa', 'typeCapacity'));
   }
@@ -349,7 +348,7 @@ class JobOrderController extends Controller
         DB::beginTransaction();
         $qsparepart = Setting::where('name', 'potongan sparepart')->first();
         $qsalary = Setting::where('name', 'gaji supir')->first();
-
+        $type_capacity = TypeCapacity::findOrFail($request->type_capacity);
         $data = JobOrder::find($id);
         if ($request->type === 'self') {
           //CALCULATE
@@ -365,7 +364,7 @@ class JobOrderController extends Controller
           $data->cargo_id = $request->cargo_id;
           $data->route_from = $request->route_from;
           $data->route_to = $request->route_to;
-          $data->type_capacity = $request->type_capacity;
+          $data->type_capacity = $type_capacity->name;
           $data->type_payload = $request->type_payload;
           $data->payload = $request->payload ?? 1;
           $data->basic_price = $request->basic_price;

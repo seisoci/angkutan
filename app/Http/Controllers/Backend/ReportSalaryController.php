@@ -39,7 +39,7 @@ class ReportSalaryController extends Controller
       $date = $request->date;
       $driver_id = $request->driver_id;
       $status_salary = $request->status;
-      $data = JobOrder::with('costumer:id,name', 'driver:id,name')
+      $data = JobOrder::with('costumer:id,name', 'driver:id,name', 'routefrom:id,name', 'routeto:id,name', 'cargo:id,name')
         ->withSum('operationalexpense', 'amount')
         ->where('type', 'self')
         ->where('status_cargo', 'selesai')
@@ -164,14 +164,14 @@ class ReportSalaryController extends Controller
     $sheet->setCellValue('A4', 'Supir: ' . (!empty($driver) ? $driver->name : 'ALL'));
     $sheet->mergeCells('A5:C5');
     $sheet->setCellValue('A5', 'Status Gaji: ' . $status_salary);
-    $sheet->mergeCells('G1:I1');
-    $sheet->setCellValue('G1', $cooperationDefault['nickname']);
-    $sheet->mergeCells('G2:I2');
-    $sheet->setCellValue('G2', $cooperationDefault['address']);
-    $sheet->mergeCells('G3:I3');
-    $sheet->setCellValue('G3', 'Telp: ' . $cooperationDefault['phone']);
-    $sheet->mergeCells('G4:I4');
-    $sheet->setCellValue('G4', 'Fax: ' . $cooperationDefault['fax']);
+    $sheet->mergeCells('E1:G1');
+    $sheet->setCellValue('E1', $cooperationDefault['nickname']);
+    $sheet->mergeCells('E2:G2');
+    $sheet->setCellValue('E2', $cooperationDefault['address']);
+    $sheet->mergeCells('E3:G3');
+    $sheet->setCellValue('E3', 'Telp: ' . $cooperationDefault['phone']);
+    $sheet->mergeCells('E4:G4');
+    $sheet->setCellValue('E4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(20);
@@ -181,59 +181,50 @@ class ReportSalaryController extends Controller
     $sheet->getColumnDimension('F')->setWidth(15);
     $sheet->getColumnDimension('G')->setWidth(15);
     $sheet->getColumnDimension('H')->setWidth(15);
-    $sheet->getColumnDimension('I')->setWidth(15);
 
     $sheet->getStyle('A7')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A7', 'No.');
     $sheet->setCellValue('B7', 'Nama Supir');
     $sheet->setCellValue('C7', 'Nama Pelanggan');
     $sheet->setCellValue('D7', 'T. Muat');
-    $sheet->setCellValue('E7', 'Sub Total (Inc. Tax, Fee)');
-    $sheet->setCellValue('F7', 'Biaya Operasional');
-    $sheet->setCellValue('G7', 'Spare Part');
-    $sheet->setCellValue('H7', 'Gaji Supir');
-    $sheet->setCellValue('I7', 'Sisa Bersih');
-    $sheet->setCellValue('J7', 'Status');
+    $sheet->setCellValue('E7', 'Dari');
+    $sheet->setCellValue('F7', 'Tujuan');
+    $sheet->setCellValue('G7', 'Gaji Supir');
+    $sheet->setCellValue('H7', 'Status');
 
     $startCell = 7;
     $startCellFilter = 7;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')
       ->applyFromArray($borderTopBottom)
       ->applyFromArray($borderLeftRight);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderLeftRight);
+      $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderLeftRight);
       $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('center');
-      $sheet->getStyle('D' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('D' . $startCell . ':H' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->driver->name);
       $sheet->setCellValue('C' . $startCell, $item->costumer->name);
       $sheet->setCellValue('D' . $startCell, $item->date_begin);
-      $sheet->setCellValue('E' . $startCell, $item->total_basic_price_after_thanks);
-      $sheet->setCellValue('F' . $startCell, $item->total_operational);
-      $sheet->setCellValue('G' . $startCell, $item->total_sparepart);
-      $sheet->setCellValue('H' . $startCell, $item->total_salary);
-      $sheet->setCellValue('I' . $startCell, '=E' . $startCell . '-F' . $startCell . '-G' . $startCell . '-H' . $startCell . '');
-      $sheet->setCellValue('J' . $startCell, $item->status_salary == 0 ? 'Unpaid' : 'Paid');
+      $sheet->setCellValue('E' . $startCell, $item->routefrom->name);
+      $sheet->setCellValue('F' . $startCell, $item->routeto->name);
+      $sheet->setCellValue('G' . $startCell, $item->total_salary);
+      $sheet->setCellValue('H' . $startCell, $item->status_salary == 0 ? 'Unpaid' : 'Paid');
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':J' . $startCell);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':H' . $startCell);
     $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderBottom);
 
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderAll);
-    $sheet->getStyle('E' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderAll);
+    $sheet->getStyle('E' . $startCell . ':H' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total Rp.');
     $sheet->mergeCells('A' . $startCell . ':D' . $startCell . '');
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell)->getFont()->setBold(true);
-    $sheet->setCellValue('E' . $startCell, '=SUM(E' . $startCellFilter . ':E' . $endForSum . ')');
-    $sheet->setCellValue('F' . $startCell, '=SUM(F' . $startCellFilter . ':F' . $endForSum . ')');
+    $sheet->getStyle('A' . $startCell . ':H' . $startCell)->getFont()->setBold(true);
     $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startCellFilter . ':G' . $endForSum . ')');
-    $sheet->setCellValue('H' . $startCell, '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
-    $sheet->setCellValue('I' . $startCell, '=SUM(I' . $startCellFilter . ':I' . $endForSum . ')');
 
     $filename = 'Laporan Gaji Supir ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
@@ -257,7 +248,7 @@ class ReportSalaryController extends Controller
     $driver_id = $request->driver_id;
     $driver = Driver::find($driver_id);
     $status_salary = $request->status;
-    $data = JobOrder::with('costumer:id,name', 'driver:id,name')
+    $data = JobOrder::with('costumer:id,name', 'driver:id,name', 'routefrom:id,name', 'routeto:id,name')
       ->withSum('operationalexpense', 'amount')
       ->where('type', 'self')
       ->where('status_cargo', 'selesai')

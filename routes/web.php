@@ -48,7 +48,7 @@ use App\Http\Controllers\Backend\InvoiceKasbonEmployeeController as BackendInvoi
 use App\Http\Controllers\Backend\KasbonEmployeeController as BackendKasbonEmployeeController;
 use App\Http\Controllers\Backend\ReportCostumerController as BackendReportCostumerController;
 use App\Http\Controllers\Backend\ReportDriverController as BackendReportDriverController;
-use App\Http\Controllers\Backend\ReportKasbonDriverContfroller as BackendReportKasbonDriverController;
+use App\Http\Controllers\Backend\ReportKasbonDriverController as BackendReportKasbonDriverController;
 use App\Http\Controllers\Backend\ReportTransportController as BackendReportTransportController;
 use App\Http\Controllers\Backend\ReportJobOrderController as BackendReportJoborderController;
 use App\Http\Controllers\Backend\ReportRecapJobOrderController as BackendReportRecapJobOrderController;

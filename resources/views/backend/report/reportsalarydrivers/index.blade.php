@@ -115,17 +115,13 @@
           <th>Nama Supir</th>
           <th>Nama Pelanggan</th>
           <th>T. Muat</th>
-          <th>Sub Total (Inc. Tax, Fee)</th>
-          <th>Biaya Operasional</th>
-          <th>Spare Part</th>
+          <th>Dari</th>
+          <th>Tujuan</th>
           <th>Gaji Supir</th>
-          <th>Sisa Bersih</th>
           <th>Status</th>
         </tr>
         </thead>
         <tfoot>
-        <th></th>
-        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -203,36 +199,10 @@
           {data: 'driver.name', name: 'driver.name'},
           {data: 'costumer.name', name: 'costumer.name'},
           {data: 'date_begin', name: 'date_begin'},
-          {
-            data: 'total_basic_price_after_thanks', name: 'total_basic_price_after_thanks',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_operational', name: 'total_operational',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_sparepart', name: 'total_sparepart',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
+          {data: 'routefrom.name', name: 'routefrom.name'},
+          {data: 'routeto.name', name: 'routeto.name'},
           {
             data: 'total_salary', name: 'total_salary',
-            orderable: false,
-            searchable: false,
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_clean_summary', name: 'total_clean_summary',
             orderable: false,
             searchable: false,
             render: $.fn.dataTable.render.number(',', '.', 2),
@@ -245,12 +215,12 @@
         columnDefs: [
           {
             className: 'dt-center',
-            targets: 8,
+            targets: 6,
             width: '75px',
             render: function(data, type, full, meta) {
               var status = {
-                0: {'title': 'Unapid', 'class': ' label-light-danger'},
-                1: {'title': 'Paid', 'class': ' label-light-success'},
+                0: {'title': 'Belum Lunas', 'class': ' label-light-danger'},
+                1: {'title': 'Lunas', 'class': ' label-light-success'},
               };
               if (typeof status[data] === 'undefined') {
                 return data;
@@ -268,48 +238,15 @@
                 i : 0;
           };
 
-          let totalBasic = api
-            .column(3)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalOperatinal = api
-            .column(4)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalSparepart = api
+          let totalSalary = api
             .column(5)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
-          let totalSalary = api
-            .column(6)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalClean = api
-            .column(7)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
           $(api.column(2).footer()).html('Total');
-          $(api.column(3).footer()).html(format(totalBasic));
-          $(api.column(4).footer()).html(format(totalOperatinal));
-          $(api.column(5).footer()).html(format(totalSparepart));
-          $(api.column(6).footer()).html(format(totalSalary));
-          $(api.column(7).footer()).html(format(totalClean));
-
+          $(api.column(5).footer()).html(format(totalSalary));
         },
       });
 

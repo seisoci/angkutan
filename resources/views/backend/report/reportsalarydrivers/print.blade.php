@@ -51,7 +51,7 @@
       }
 
       @page {
-        size: A4 portrait;
+        size: A4 landscape;
       }
     }
   </style>
@@ -96,11 +96,9 @@
         <th>Nama Supir</th>
         <th>Nama Pelanggan</th>
         <th>T. Muat</th>
-        <th>Sub Total (Inc. Tax, Fee)</th>
-        <th>Biaya Operasional</th>
-        <th>Spare Part</th>
+        <th>Dari</th>
+        <th>Tujuan</th>
         <th>Gaji Supir</th>
-        <th>Sisa Bersih</th>
       </tr>
       </thead>
       <tbody>
@@ -110,21 +108,15 @@
           <td>{{ $item->driver->name }}</td>
           <td>{{ $item->costumer->name }}</td>
           <td>{{ $item->date_begin }}</td>
-          <td class="text-right">{{ number_format($item->total_basic_price_after_thanks, 2, ',', '.') }}</td>
-          <td class="text-right">{{ number_format($item->total_operational, 2, ',', '.') }}</td>
-          <td class="text-right">{{ number_format($item->total_sparepart, 2, ',', '.') }}</td>
+          <td>{{ $item->routefrom->name }}</td>
+          <td>{{ $item->routeto->name }}</td>
           <td class="text-right">{{ number_format($item->total_salary, 2, ',', '.') }}</td>
-          <td class="text-right">{{ number_format($item->total_clean_summary, 2, ',', '.') }}</td>
         </tr>
       @endforeach
       </tbody>
       <tfoot>
-      <td colspan="4" class="text-right">Total:</td>
-      <td class="text-right">{{ number_format($data->sum('total_basic_price_after_thanks'), 2, ',', '.') }}</td>
-      <td class="text-right">{{ number_format($data->sum('total_operational'), 2, ',', '.') }}</td>
-      <td class="text-right">{{ number_format($data->sum('total_sparepart'), 2, ',', '.') }}</td>
+      <td colspan="6" class="text-right">Total:</td>
       <td class="text-right">{{ number_format($data->sum('total_salary'), 2, ',', '.') }}</td>
-      <td class="text-right">{{ number_format($data->sum('total_clean_summary'), 2, ',', '.') }}</td>
       </tfoot>
     </table>
   </div>
@@ -136,9 +128,6 @@
     window.onload = function (e) {
       window.print();
     }
-    window.setTimeout(function () {
-      window.close();
-    }, 2000);
   </script>
 @endforeach
 

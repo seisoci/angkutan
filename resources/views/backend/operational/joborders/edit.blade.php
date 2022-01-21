@@ -107,7 +107,7 @@
             <div class="form-group">
               <label for="activeSelect">Pilih Kapasitas<span class="text-danger">*</span></label>
               <select id="select2TypeCapacity" name="type_capacity" class="form-control">
-                <option value="{{ $typeCapacity->name ?? '' }}">{{ $typeCapacity->name ?? '' }}</option>
+                <option value="{{ $typeCapacity->id ?? '' }}">{{ $typeCapacity->name ?? '' }}</option>
               </select>
             </div>
             <div class="form-group">
@@ -223,6 +223,10 @@
                   <input type="text" id="totalPayloadAfterThanks" class="form-control currency" value="{{ $data->total_basic_price_after_tax ?? '' }}" disabled/>
                 </div>
                 @endhasanyrole
+                <div class="form-group">
+                  <label style="display: none">Uang Jalan</label>
+                  <input type="text" name="road_money" class="form-control currency" value="{{ $data->road_money ?? '' }}" style="display: none" readonly/>
+                </div>
                 @hasanyrole('super-admin|admin|akunting')
                 <div class="form-group">
                   <label>Grand Total Kotor</label>

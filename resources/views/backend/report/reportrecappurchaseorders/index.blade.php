@@ -92,6 +92,16 @@
                   </div>
                 </div>
               </div>
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Status Pembayaran:</label>
+                  <select id="selectStatus" class="form-control">
+                    <option value="null">Pilih Status</option>
+                    <option value="lunas">Lunas</option>
+                    <option value="belum lunas">Belum Lunas</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -180,7 +190,7 @@
           data: function (d) {
             d.date = $("input[name=date]").val();
             d.supplier_id = $('#select2Supplier').find(':selected').val();
-
+            d.status_pembayaran = $('#selectStatus').val();
           }
         },
         columns: [
@@ -299,6 +309,10 @@
       }).on('change', function (e) {
         dataTable.draw();
       });
+
+      $('#selectStatus').on('change', function () {
+        dataTable.draw();
+      })
 
 
       $('#dateRangePicker').daterangepicker({
