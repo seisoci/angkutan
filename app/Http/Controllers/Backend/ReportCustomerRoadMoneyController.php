@@ -355,10 +355,19 @@ class ReportCustomerRoadMoneyController extends Controller
   public function datatabledetail($id)
   {
     $data = DB::table('road_money')
-      ->select(DB::raw('road_money.id, routefrom.name as routefrom, routeto.name as routeto, cargos.name as cargo, road_money.tax_pph, road_money.fee_thanks'))
+      ->select(DB::raw('road_money.id, routefrom.name as routefrom, routeto.name as routeto,
+      cargos.name as cargo, road_money.tax_pph, road_money.fee_thanks,
+      `roadmoney_typecapacity`.`road_engkel`,
+      `roadmoney_typecapacity`.`type`,
+      `roadmoney_typecapacity`.`expense`,
+      `type_capacities`.`name`'))
       ->leftJoin('routes as routefrom', 'road_money.route_from', '=', 'routefrom.id')
       ->leftJoin('routes as routeto', 'road_money.route_to', '=', 'routeto.id')
       ->leftJoin('cargos', 'road_money.cargo_id', '=', 'cargos.id')
+      ->join('roadmoney_typecapacity', function ($join){
+        $join->on('roadmoney_typecapacity.road_money_id', '=', 'road_money.id');
+        $join->leftJoin('type_capacities', 'type_capacities.id', '=', 'roadmoney_typecapacity.type_capacity_id');
+      })
       ->where('road_money.costumer_id', $id)
       ->orderBy('routefrom.name', 'asc')
       ->orderBy('routeto.name', 'asc');

@@ -92,7 +92,7 @@
                   <td>{{ number_format($item->roadmoneydetail_sum_amount ?? 0, 2, '.', ',') }}</td>
                   <td>{{ number_format($item->total_netto_ldo ?? 0, 2, '.', ',')}}</td>
                 </tr>
-                @foreach($item->piutangklaim as $piutangklaim)
+                @foreach($item->piutangklaimldo as $piutangklaim)
                   <tr>
                     <td></td>
                     <td>

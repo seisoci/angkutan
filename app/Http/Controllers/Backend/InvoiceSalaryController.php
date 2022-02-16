@@ -13,6 +13,7 @@ use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\Prefix;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -43,14 +44,14 @@ class InvoiceSalaryController extends Controller
       $driverId = $request['driver_id'];
       $data = InvoiceSalary::with(['transport:id,num_pol', 'driver:id,name'])
         ->when($date, function ($query, $date) {
-          $date_format = explode(" / ", $date);
-          $date_begin = $date_format[0];
-          $date_end = $date_format[1];
-          return $query->whereBetween('created_at', [$date_begin, $date_end]);
+          $date_begin = $date."-01";
+          $date_end = Carbon::createFromFormat('Y-m', $date)->endOfMonth()->toDateString();
+          return $query->whereBetween('invoice_date', [$date_begin, $date_end]);
         })
         ->when($driverId, function ($query, $driverId) {
           return $query->where('driver_id', $driverId);
-        });;
+        });
+
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('details_url', function (InvoiceSalary $invoiceSalary) {

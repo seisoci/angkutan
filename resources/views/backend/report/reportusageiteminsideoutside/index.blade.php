@@ -70,6 +70,7 @@
         </div>
       </div>
     </div>
+
     <div class="card-body">
       <div class="mb-10">
         <div class="row align-items-center">
@@ -84,22 +85,26 @@
               </div>
               <div class="col-md-3 my-md-0">
                 <div class="form-group">
-                  <label>Status:</label>
-                  <select class="form-control" id="selectStatusSalary">
-                    <option value="">All</option>
-                    <option value="none">Belum Lunas</option>
-                    <option value="1">Lunas</option>
+                  <label>No. Polisi :</label>
+                  <select class="form-control" id="select2Transport">
                   </select>
                 </div>
               </div>
-              <div class="col-md-4 my-md-0">
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Nama Sparepart :</label>
+                  <select class="form-control" id="select2SparePart">
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3 my-md-0">
                 <div class="form-group">
                   <label>Priode:</label>
-                  <div class="input-group">
+                  <div class="input-group" id="dateRangePicker">
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="la la-calendar-check-o"></i></span>
                     </div>
-                    <input id="datePicker" type="text" class="form-control" name="date" placeholder="Choose Date" readonly>
+                    <input type="text" class="form-control" name="date" placeholder="Choose Date">
                   </div>
                 </div>
               </div>
@@ -112,23 +117,27 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
+          <th>No. Pemakaian</th>
+          <th>Tgl Pemakaian</th>
+          <th>Nama Sparepart</th>
           <th>Nama Supir</th>
-          <th>Nama Pelanggan</th>
-          <th>T. Muat</th>
-          <th>Dari</th>
-          <th>Tujuan</th>
-          <th>Gaji Supir</th>
-          <th>Status</th>
+          <th>No. Polisi</th>
+          <th>Jumlah</th>
+          <th>Harga</th>
+          <th>Total</th>
         </tr>
         </thead>
         <tfoot>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
         </tfoot>
       </table>
     </div>
@@ -150,9 +159,10 @@
       $('#btn_excel').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          status: $('#selectStatusSalary').val() || '',
           date: $("input[name=date]").val(),
+          driver_id: $('#select2Driver').find(':selected').val() || '',
+          transport_id: $('#select2Transport').find(':selected').val() || '',
+          sparepart_id: $('#select2SparePart').find(':selected').val() || '',
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
@@ -160,9 +170,10 @@
       $('#btn_pdf').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          status: $('#selectStatusSalary').val() || '',
           date: $("input[name=date]").val(),
+          driver_id: $('#select2Driver').find(':selected').val() || '',
+          transport_id: $('#select2Transport').find(':selected').val() || '',
+          sparepart_id: $('#select2SparePart').find(':selected').val() || '',
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
@@ -170,63 +181,44 @@
       $('#btn_print').on('click', function (e) {
         e.preventDefault();
         let params = new URLSearchParams({
-          driver_id: $('#select2Driver').find(':selected').val() || '',
-          status: $('#selectStatusSalary').val() || '',
           date: $("input[name=date]").val(),
+          driver_id: $('#select2Driver').find(':selected').val() || '',
+          transport_id: $('#select2Transport').find(':selected').val() || '',
+          sparepart_id: $('#select2SparePart').find(':selected').val() || '',
         });
-        window.open('{{ $config['print_url'] }}?' + params.toString(), '_blank');
+        window.open('{{ $config['print_url'] }}?' + params.toString());
       });
-
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         processing: true,
         serverSide: true,
-        bSort: false,
         searching: false,
-        order: [[0, 'asc']],
+        order: [[1, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
-          url: "{{ route('backend.reportsalarydrivers.index') }}",
+          url: "{{ route('backend.reportusageinsideoutside.index') }}",
           data: function (d) {
-            d.driver_id = $('#select2Driver').find(':selected').val();
-            d.status = $('#selectStatusSalary').val();
             d.date = $("input[name=date]").val();
+            d.driver_id = $('#select2Driver').find(':selected').val();
+            d.transport_id = $('#select2Transport').find(':selected').val();
+            d.sparepart_id = $('#select2SparePart').find(':selected').val();
           }
         },
         columns: [
-          {data: 'driver.name', name: 'driver.name'},
-          {data: 'costumer.name', name: 'costumer.name'},
-          {data: 'date_begin', name: 'date_begin'},
-          {data: 'routefrom.name', name: 'routefrom.name'},
-          {data: 'routeto.name', name: 'routeto.name'},
+          {data: 'num_invoice', name: 'num_invoice'},
+          {data: 'invoice_date', name: 'invoice_usage_items.invoice_date'},
+          {data: 'sparepart_name', name: 'sparepart_name'},
+          {data: 'driver_name', name: 'driver_name'},
+          {data: 'num_pol', name: 'num_pol'},
+          {data: 'qty', name: 'qty', className: 'text-right'},
+          {data: 'price', name: 'price', render: $.fn.dataTable.render.number(',', '.', 2), className: 'text-right'},
           {
-            data: 'total_salary', name: 'total_salary',
-            orderable: false,
-            searchable: false,
+            data: 'total_price',
+            name: 'total_price',
             render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'status_salary', name: 'status_salary',
-          },
-        ],
-        columnDefs: [
-          {
-            className: 'dt-center',
-            targets: 6,
-            width: '75px',
-            render: function(data, type, full, meta) {
-              var status = {
-                0: {'title': 'Belum Lunas', 'class': ' label-light-danger'},
-                1: {'title': 'Lunas', 'class': ' label-light-success'},
-              };
-              if (typeof status[data] === 'undefined') {
-                return data;
-              }
-              return status[data].title;
-            },
+            className: 'text-right'
           },
         ],
         footerCallback: function (row, data, start, end, display) {
@@ -237,27 +229,31 @@
               typeof i === 'number' ?
                 i : 0;
           };
-
-          let totalSalary = api
+          let qty = api
             .column(5)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
-          $(api.column(2).footer()).html('Total');
-          $(api.column(5).footer()).html(format(totalSalary));
-        },
-      });
+          let price = api
+            .column(6)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
 
-      $('#datePicker').datepicker({
-        format: 'yyyy-mm',
-        startView: "months",
-        minViewMode: "months",
-        orientation: "bottom",
-        autoclose: true,
-      }).on('change', function (e) {
-        dataTable.draw();
+          let totalPrice = api
+            .column(7)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+          $(api.column(4).footer()).html('Total');
+          $(api.column(5).footer()).html(qty);
+          $(api.column(6).footer()).html(format(price));
+          $(api.column(7).footer()).html(format(totalPrice));
+        },
       });
 
       let format = function (num) {
@@ -299,6 +295,44 @@
         dataTable.draw();
       });
 
+      $("#select2Transport").select2({
+        placeholder: "Search No. Polisi",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.transports.select2self') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
+      $("#select2SparePart").select2({
+        placeholder: "Search Sparepart",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.spareparts.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
       $('#dateRangePicker').daterangepicker({
         buttonClasses: ' btn',
         applyClass: 'btn-primary',
@@ -310,12 +344,7 @@
         $('#dateRangePicker .form-control').val('');
         dataTable.draw();
       });
-
-      $('#selectStatusSalary').on('change', function () {
-        dataTable.draw();
-      });
-
-
-    });
+    })
+    ;
   </script>
 @endsection

@@ -7,7 +7,6 @@ use App\Models\AnotherExpedition;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Cooperation;
-use App\Models\Costumer;
 use App\Models\InvoiceLdo;
 use App\Models\JobOrder;
 use App\Models\Journal;
@@ -17,6 +16,7 @@ use App\Models\Prefix;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
+use Throwable;
 use Validator;
 
 class InvoiceLdoController extends Controller
@@ -153,6 +153,7 @@ class InvoiceLdoController extends Controller
               'amount' => $jo['nominal'],
               'description' => $jo['keterangan'],
               'type' => $type,
+              'invoice_type' => 'ldo'
             ]);
           }
         endforeach;
@@ -242,7 +243,7 @@ class InvoiceLdoController extends Controller
           'redirect' => '/backend/invoiceldo',
         ]);
 
-      } catch (\Throwable $throw) {
+      } catch (Throwable $throw) {
         DB::rollBack();
         $response = $throw;
       }
@@ -264,7 +265,7 @@ class InvoiceLdoController extends Controller
 
     $data = InvoiceLdo::with(['joborders' => function ($q) {
       $q->withSum('roadmoneydetail', 'amount');
-    }, 'joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name'])
+    }, 'joborders.costumer:id,name', 'anotherexpedition', 'paymentldos', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'anotherexpedition:id,name', 'joborders.piutangklaimldo'])
       ->findOrFail($id);
 
     return view('backend.invoice.invoiceldo.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
@@ -296,7 +297,7 @@ class InvoiceLdoController extends Controller
     $data = InvoiceLdo::select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
       ->with(['joborders' => function ($q) {
         $q->withSum('roadmoneydetail', 'amount');
-      }, 'anotherexpedition', 'paymentldos.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'joborders.piutangklaim'])
+      }, 'anotherexpedition', 'paymentldos.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'joborders.piutangklaimldo'])
       ->withSum('paymentldos', 'payment')
       ->findOrFail($id);
 
@@ -335,11 +336,11 @@ class InvoiceLdoController extends Controller
         $totalPiutang = 0;
 
         foreach ($data->joborders as $item):
-          PiutangKlaim::where('job_order_id', $item->id)->delete();
+          PiutangKlaim::where('job_order_id', $item->id)->where('invoice_type', 'ldo')->delete();
         endforeach;
 
         foreach ($request['job_orderid'] ?? array() as $key => $item):
-          PiutangKlaim::where('job_order_id', $key)->delete();
+          PiutangKlaim::where('job_order_id', $key)->where('invoice_type', 'ldo')->delete();
           foreach ($item as $type => $jo) {
             if ($type == 'tambah') {
               $totalPiutang += $jo['nominal'];
@@ -351,6 +352,7 @@ class InvoiceLdoController extends Controller
               'amount' => $jo['nominal'],
               'description' => $jo['keterangan'],
               'type' => $type,
+              'invoice_type' => 'ldo',
             ]);
           }
         endforeach;
@@ -418,7 +420,7 @@ class InvoiceLdoController extends Controller
             'message' => "Saldo $coa->name tidak ada/kurang",
           ]);
         }
-      } catch (\Throwable $throw) {
+      } catch (Throwable $throw) {
         DB::rollBack();
         $response = $throw;
       }
@@ -440,7 +442,7 @@ class InvoiceLdoController extends Controller
     $data = json_decode($request->data);
     $response = NULL;
     if ($request->data) {
-      $result = JobOrder::with(['anotherexpedition:id,name','driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+      $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
         ->withSum('roadmoneydetail', 'amount')
         ->whereIn('id', $data)->get();
 

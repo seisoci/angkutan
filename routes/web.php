@@ -152,6 +152,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
 
     //Print
     Route::get('kasbon/{id}/dotmatrix', [Backend\KasbonController::class, 'dotMatrix']);
+    Route::post('kasbon/dotMatrixMultiple', [Backend\KasbonController::class, 'dotMatrixMultiple'])->name('kasbon.dotMatrixMultiple');
     Route::get('invoicesalaries/{id}/dotmatrix', [Backend\InvoiceSalaryController::class, 'dotMatrix']);
     Route::get('invoicesalaries/{id}/print', [Backend\InvoiceSalaryController::class, 'print']);
     Route::get('invoiceldo/{id}/print', [BackendInvoiceLdoController::class, 'print']);
@@ -198,6 +199,8 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('reportrecapreturpurchases/document', [ReportRecapReturPurchaseController::class, 'document']);
     Route::get('reportusageitems/print', [BackendReportUsageItemsController::class, 'print']);
     Route::get('reportusageitems/document', [BackendReportUsageItemsController::class, 'document']);
+    Route::get('reportusageinsideoutside/print', [Backend\ReportUsageItemInsideOutsideController::class, 'print']);
+    Route::get('reportusageinsideoutside/document', [Backend\ReportUsageItemInsideOutsideController::class, 'document']);
     Route::get('reportrecapusageitems/print', [BackendReportRecapUsageItemsController::class, 'print']);
     Route::get('reportrecapusageitems/document', [BackendReportRecapUsageItemsController::class, 'document']);
     Route::get('reportusageitemoutside/print', [BackendReportUsageItemOutsideController::class, 'print']);
@@ -382,5 +385,6 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('reportpiutanglunas', Backend\ReportPiutangLunasController::class);
     Route::resource('reportpiutangbelumlunas', Backend\ReportPiutangBelumLunasController::class);
     Route::resource('completepurchaseorder', Backend\CompletePurchaseOrderController::class);
+    Route::resource('reportusageinsideoutside', Backend\ReportUsageItemInsideOutsideController::class);
   });
 });

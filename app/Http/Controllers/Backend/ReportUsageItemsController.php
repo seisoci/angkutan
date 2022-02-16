@@ -76,7 +76,7 @@ class ReportUsageItemsController extends Controller
         ->when($sparepart_id, function ($query, $sparepart_id) {
           return $query->where('usage_items.sparepart_id', $sparepart_id);
         })
-        ->orderBy('invoice_usage_items.invoice_date', 'asc');
+        ->orderBy('invoice_usage_items.invoice_date', 'desc');
 
       return DataTables::of($data)
         ->addIndexColumn()
@@ -128,7 +128,7 @@ class ReportUsageItemsController extends Controller
       ->when($sparepart_id, function ($query, $sparepart_id) {
         return $query->where('usage_items.sparepart_id', $sparepart_id);
       })
-      ->orderBy('invoice_usage_items.invoice_date', 'asc')
+      ->orderBy('invoice_usage_items.invoice_date', 'desc')
       ->get();
 
     $spreadsheet = new Spreadsheet();
@@ -345,7 +345,7 @@ class ReportUsageItemsController extends Controller
       ->when($sparepart_id, function ($query, $sparepart_id) {
         return $query->where('usage_items.sparepart_id', $sparepart_id);
       })
-      ->orderBy('invoice_usage_items.invoice_date', 'asc')
+      ->orderBy('invoice_usage_items.invoice_date', 'desc')
       ->get();
 
     return view('backend.report.reportusageitems.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'transport', 'driver', 'sparepart'));

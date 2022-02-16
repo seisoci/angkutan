@@ -105,7 +105,7 @@
                   <td class="text-right currency">{{ $item->fee_thanks }}</td>
                   <td class="text-right currency">{{ $item->total_basic_price }}</td>
                 </tr>
-                @foreach($item->piutangklaim as $piutangklaim)
+                @foreach($item->piutangklaimcustomer as $piutangklaim)
                   <tr>
                     <td></td>
                     <td>

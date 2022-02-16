@@ -7,7 +7,7 @@
           type="text/css"/>
   @endforeach
 
-  <style>
+  <style type="text/css">
     @media print {
 
       .table-title td,
@@ -51,7 +51,7 @@
       }
 
       @page {
-        size: A4 portrait;
+        size: A4 potrait;
       }
     }
   </style>
@@ -60,31 +60,34 @@
 <body>
 <div class="row justify-content-center py-8 px-8 px-md-0">
   <div class="col-md-11">
-    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>LAPORAN REKAP GAJI SUPIR</u></h2>
+    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>{{ $config['page_title'] }}</u>
+    </h2>
     <table class="table table-borderless table-title">
       <tbody>
       <tr>
-        <td class="font-weight-normal" style="width:50%">Printed: {{ $config['current_time'] }}
+        <td class="font-weight-normal" style="width:10%">Printed: {{ $config['current_time'] }}
         </td>
         <td class="text-left" style="width:10%"></td>
-        <td class="text-left" style="width:20%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
+        <td class="text-left" style="width:10%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
       </tr>
       <tr>
-        <td class="font-weight-normal" style="width:50%">Priode: {{ $date ?? 'All' }}
+        <td class="font-weight-normal">Priode: {{ $date ?? 'All' }}
         </td>
-        <td class="text-left" style="width:10%"></td>
-        <td class="text-left" style="width:25%">{{ $cooperationDefault['address'] ?? '' }}</td>
+        <td class="text-left"></td>
+        <td class="text-left">{{ $cooperationDefault['address'] ?? '' }}</td>
       </tr>
       <tr>
-        <td class="font-weight-normal" style="width:50%">Supir: {{ $driver->name ?? 'All' }}
-        </td>
-        <td class="text-left" style="width:10%"></td>
-        <td class="text-left" style="width:18%">Telp: {{ $cooperationDefault['telp'] ?? ''}}</td>
+        <td class="font-weight-normal">Nama Supir: {{ $driver }}
+        <td class="text-left"></td>
+        <td class="text-left">Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
       </tr>
       <tr>
-        <td class="font-weight-normal" style="width:50%">Status Gaji: {{ $status_salary}} </td>
-        <td class="text-left" style="width:10%"></td>
-        <td class="text-left" style="width:18%">Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
+        <td class="font-weight-normal">No. Polisi: {{ $transport }}
+        <td class="text-left"></td>
+        <td class="text-left">Fax: {{ $cooperationDefault['fax'] ?? ''}}</td>
+      </tr>
+      <tr>
+        <td class="font-weight-normal">Nama Sparepart: {{ $sparepart }}
       </tr>
       </tbody>
     </table>
@@ -92,25 +95,37 @@
     <table class="table">
       <thead>
       <tr>
-        <th>No</th>
+        <th scope="col">#</th>
+        <th>No. Pemakaian</th>
+        <th>Tgl Pemakaian</th>
+        <th>Nama Sparepart</th>
         <th>Nama Supir</th>
-        <th class="text-center">Jml</th>
-        <th class="text-right">Total Gaji Supir</th>
+        <th>No. Polisi</th>
+        <th class="text-center">Jumlah</th>
+        <th class="text-right">Jumlah</th>
+        <th class="text-right">Jumlah</th>
       </tr>
       </thead>
       <tbody>
       @foreach ($data as $item)
         <tr>
           <td>{{ $loop->iteration }}</td>
+          <td>{{ $item->num_invoice }}</td>
+          <td>{{ $item->invoice_date }}</td>
+          <td>{{ $item->sparepart_name }}</td>
           <td>{{ $item->driver_name }}</td>
-          <td class="text-center">{{ $item->report_qty }}</td>
-          <td class="text-right">{{ number_format($item->report_salary, 2, ',', '.') }}</td>
+          <td>{{ $item->num_pol }}</td>
+          <td class="text-center">{{ $item->qty }}</td>
+          <td class="text-right">{{ number_format($item->price, 2, '.', ',') }}</td>
+          <td class="text-right">{{ number_format($item->total_price, 2, '.', ',') }}</td>
         </tr>
       @endforeach
       </tbody>
       <tfoot>
-      <td colspan="3" class="text-right">Total:</td>
-      <td class="text-right">{{ number_format($data->sum('report_salary'), 2, ',', '.') }}</td>
+      <td colspan="6" class="text-right">Total</td>
+      <td class="text-center">{{ $data->sum('qty') }}</td>
+      <td class="text-right">{{ number_format($data->sum('price'), 2, '.', ',') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_price'), 2, '.', ',') }}</td>
       </tfoot>
     </table>
   </div>

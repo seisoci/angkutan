@@ -203,7 +203,13 @@ class CompletePurchaseOrderController extends Controller
         }
 
         if ($restPayment == 0) {
-          InvoicePurchase::whereIn('id', $request['invoice_purchase_id'])->update(['rest_payment' => 0]);
+          foreach ($request['invoice_purchase_id'] as $item):
+            $invoicePurchase = InvoicePurchase::findOrFail($item);
+            $invoicePurchase->update([
+              'total_payment' => $invoicePurchase->total_bill,
+              'rest_payment' => 0,
+            ]);
+          endforeach;
         }
         if ($restPayment <= -1) {
           return response()->json([
@@ -314,7 +320,13 @@ class CompletePurchaseOrderController extends Controller
           }
 
           if ($restPayment == 0) {
-            InvoicePurchase::whereIn('id', $pluckInvoicePurchase)->update(['rest_payment' => 0]);
+            foreach ($pluckInvoicePurchase as $item):
+              $invoicePurchase = InvoicePurchase::findOrFail($item);
+              $invoicePurchase->update([
+                'total_payment' => $invoicePurchase->total_bill,
+                'rest_payment' => 0,
+              ]);
+            endforeach;
           }
           DB::commit();
           $response = response()->json([

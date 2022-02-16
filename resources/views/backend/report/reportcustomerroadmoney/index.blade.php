@@ -139,9 +139,12 @@
         <th>Rute Dari</th>
         <th>Rute Ke</th>
         <th>Muatan</th>
+        <th>Jenis Muatan</th>
+        <th>Tipe Perhitungan</th>
+        <th>Uang Jalan Engkel</th>
+        <th>Ongkosan</th>
         <th>Fee Thanks</th>
         <th>Tax PPH (%)</th>
-        <th>Detail</th>
       </tr>
       </thead>
     </table>
@@ -227,13 +230,39 @@
             {data: 'routeto', name: 'routeto'},
             {data: 'cargo', name: 'cargo'},
             {
+              data: 'type',
+              name: 'roadmoney_typecapacity.type',
+              render: function (data, type, full, meta) {
+                let status = {
+                  'calculate': {'title': 'Kalkulasi', 'class': ' badge-info'},
+                  'fix': {'title': 'Fix', 'class': ' badge-success'},
+                };
+                if (typeof status[data] === 'undefined') {
+                  return data;
+                }
+                return '<span class="rounded-pill ms-1 badge badge-pill' + status[data].class + '">' + status[data].title + '</span>';
+              },
+            },
+            {data: 'name', name: 'type_capacities.name'},
+            {
+              data: 'road_engkel',
+              name: 'roadmoney_typecapacity.road_engkel',
+              render: $.fn.dataTable.render.number(',', '.', 2),
+              className: 'dt-right'
+            },
+            {
+              data: 'expense',
+              name: 'roadmoney_typecapacity.expense',
+              render: $.fn.dataTable.render.number(',', '.', 2),
+              className: 'dt-right'
+            },
+            {
               data: 'fee_thanks',
               name: 'fee_thanks',
               render: $.fn.dataTable.render.number(',', '.', 2),
               className: 'dt-right'
             },
             {data: 'tax_pph', name: 'tax_pph'},
-            {data: 'action', name: 'action'}
           ]
         })
       }

@@ -162,7 +162,7 @@
         pageLength: 10,
         ajax: "{{ route('backend.kasbon.index') }}",
         columns: [
-          {data: 'nama_supir', name: 'nama_supir'},
+          {data: 'nama_supir', name: 'drivers.name'},
           {data: 'amount', name: 'amount', render: $.fn.dataTable.render.number('.', '.', 2), className: 'dt-right'},
           {data: 'action', name: 'action'},
         ],

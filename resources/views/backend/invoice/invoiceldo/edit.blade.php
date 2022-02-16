@@ -108,7 +108,7 @@
                   <td class="text-center currency">{{ $item->roadmoneydetail_sum_amount }}</td>
                   <td class="text-right currency">{{ $item->total_netto_ldo }}</td>
                 </tr>
-                @foreach($item->piutangklaim as $piutangklaim)
+                @foreach($item->piutangklaimldo as $piutangklaim)
                   <tr>
                     <td>
                       <button type="button" class="btn btn-sm btn-danger deleteItem">-</button>

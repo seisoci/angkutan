@@ -298,7 +298,7 @@ return [
       'arrow' => true,
       'list' => ['ledger', 'finance', 'profitloss', 'ledgeraccounting', 'ledgeroperational', 'ledgersparepart',
         'recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
-        'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportldonetprofit',
+        'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportusageinsideoutside','reportldonetprofit',
         'reportcostumers', 'reportdrivers', 'reporttransports', 'reportpiutangbelumlunas', 'reportpiutanglunas',
         'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo',
         'reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees',
@@ -456,7 +456,7 @@ return [
           'title' => 'Laporan Barang',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks'],
+          'list' => ['reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks', 'reportusageinsideoutside'],
           'submenu' => [
             [
               'title' => 'Laporan Purchase Order',
@@ -473,6 +473,10 @@ return [
             [
               'title' => 'Laporan Pembelian Barang Diluar',
               'page' => 'backend/reportusageitemoutside'
+            ],
+            [
+              'title' => 'Laporan Seluruh Pembelian Barang',
+              'page' => 'backend/reportusageinsideoutside'
             ],
             [
               'title' => 'Laporan Stok Barang',

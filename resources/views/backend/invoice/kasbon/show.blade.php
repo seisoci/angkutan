@@ -12,16 +12,25 @@
           <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
       </div>
     </div>
-
     <div class="card-body">
       <div class="mb-10">
-        <div class="row align-items-center">
+        <div class="row d-flex justify-content-end">
+           <meta name="csrf-token" content="{{ csrf_token() }}">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fas fa-print"></i>Cetak
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a id="btnPrintDotMatrix" href="#" class="dropdown-item">Print DotMatrix</a>
+            </div>
+          </div>
         </div>
       </div>
       <!--begin: Datatable-->
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
+          <th></th>
           <th>Nama</th>
           <th>Tanggal Transaksi</th>
           <th>Deskripsi</th>
@@ -61,6 +70,7 @@
 {{-- Styles Section --}}
 @section('styles')
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
+  <link href="{{ asset('css/backend/datatables/dataTables.checkboxes.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
 
 
@@ -68,6 +78,7 @@
 @section('scripts')
   {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
+  <script src="{{ asset('js/backend/datatables/dataTables.checkboxes.js') }}" type="text/javascript"></script>
   {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
@@ -85,11 +96,12 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[1, 'desc']],
+        order: [[2, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.kasbon.datatableshow', $id) }}",
         columns: [
+          {data: 'id', name: 'id'},
           {data: 'nama_supir', name: 'nama_supir'},
           {data: 'date_payment', name: 'date_payment'},
           {data: 'description', name: 'description'},
@@ -98,10 +110,19 @@
           {data: 'created_at', name: 'created_at'},
           {data: 'action', name: 'action', orderable: false},
         ],
+        select: {
+          style: 'multi'
+        },
         columnDefs: [
           {
+            targets: 0,
+            checkboxes: {
+              selectRow: true
+            }
+          },
+          {
             className: 'dt-center',
-            targets: 4,
+            targets: 5,
             width: '75px',
             render: function (data, type, full, meta) {
               var status = {
@@ -130,6 +151,31 @@
               });
             }
           });
+        });
+      });
+
+      $('#btnPrintDotMatrix').on('click', function (e) {
+        e.preventDefault();
+        let selected = dataTable.column(0).checkboxes.selected();
+        let dataSelected = [];
+        $.each(selected, function (index, data) {
+          dataSelected.push(data);
+        });
+
+        $.ajax({
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          type: 'POST',
+          url: "{{ route('backend.kasbon.dotMatrixMultiple') }}",
+          data: {data: dataSelected},
+          success: function (response) {
+            if (response.status === "error") {
+              toastr.error(response.message, 'Failed !');
+            } else {
+              toastr.success("Print berhasil dicetak", 'Success !');
+            }
+          }
         });
       });
 

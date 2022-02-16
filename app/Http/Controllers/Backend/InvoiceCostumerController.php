@@ -3,20 +3,17 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdditionalInvoiceCostumer;
 use App\Models\Bank;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Cooperation;
 use App\Models\Costumer;
-use App\Models\Employee;
 use App\Models\InvoiceCostumer;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\PaymentCostumer;
 use App\Models\PiutangKlaim;
 use App\Models\Prefix;
-use App\Models\Setting;
 use App\Traits\CarbonTrait;
 use DataTables;
 use Illuminate\Http\Request;
@@ -66,7 +63,7 @@ class InvoiceCostumerController extends Controller
           <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
               <div class="btn-group" role="group" aria-label="First group">
                  <a href = "invoicecostumers/' . $row->id . '" class="btn btn-primary btn-icon" title="Invoice Detail"><i class="la la-print"></i></a >
-                 ' . $restPayment . $tax_coa_id . $fee_coa_id . $deleteBtn.'
+                 ' . $restPayment . $tax_coa_id . $fee_coa_id . $deleteBtn . '
               </div>
           </div>
           ';
@@ -146,6 +143,7 @@ class InvoiceCostumerController extends Controller
               'amount' => $jo['nominal'],
               'description' => $jo['keterangan'],
               'type' => $type,
+              'invoice_type' => 'customer'
             ]);
           }
         endforeach;
@@ -280,7 +278,7 @@ class InvoiceCostumerController extends Controller
       ['page' => '#', 'title' => "Detail Detail Pembayaran Pelanggan"],
     ];
     $data = InvoiceCostumer::select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
-      ->with(['joborders.piutangklaim', 'costumer.cooperation', 'paymentcostumers.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
+      ->with(['joborders.piutangklaimcustomer', 'costumer.cooperation', 'paymentcostumers.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
       ->findOrFail($id);
     return view('backend.invoice.invoicecostumers.show', compact('config', 'page_breadcrumbs', 'data'));
   }
@@ -297,7 +295,7 @@ class InvoiceCostumerController extends Controller
 
     $bank = Bank::findOrFail($request->bank_id);
     $data = InvoiceCostumer::select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
-      ->with(['joborders.piutangklaim', 'costumer', 'paymentcostumers', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
+      ->with(['joborders.piutangklaimcustomer', 'costumer', 'paymentcostumers', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
       ->findOrFail($id);
     return view('backend.invoice.invoicecostumers.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault', 'bank'));
   }
@@ -310,7 +308,7 @@ class InvoiceCostumerController extends Controller
       ['page' => '#', 'title' => "Edit Pembayaran Pelanggan"],
     ];
     $data = InvoiceCostumer::select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
-      ->with(['joborders', 'costumer', 'paymentcostumers.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
+      ->with(['joborders', 'joborders.piutangklaimcustomer','costumer', 'paymentcostumers.coa', 'joborders.anotherexpedition:id,name', 'joborders.driver:id,name', 'joborders.costumer:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol', 'joborders.routefrom:id,name', 'joborders.routeto:id,name'])
       ->withSum('paymentcostumers', 'payment')
       ->findOrFail($id);
 
@@ -319,6 +317,16 @@ class InvoiceCostumerController extends Controller
 
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoicecostumers')->sole();
     return view('backend.invoice.invoicecostumers.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa', 'total'));
+  }
+
+  public function findbyid($id)
+  {
+    $result = NULL;
+    if ($id) {
+      $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+        ->whereIn('id', $id)->get();
+    }
+    return $result;
   }
 
   public function update(Request $request, $id)
@@ -337,11 +345,11 @@ class InvoiceCostumerController extends Controller
         $totalPiutang = 0;
 
         foreach ($data->joborders as $item):
-          PiutangKlaim::where('job_order_id', $item->id)->delete();
+          PiutangKlaim::where('job_order_id', $item->id)->where('invoice_type', 'customer')->delete();
         endforeach;
 
         foreach ($request['job_orderid'] ?? array() as $key => $item):
-          PiutangKlaim::where('job_order_id', $key)->delete();
+          PiutangKlaim::where('job_order_id', $key)->where('invoice_type', 'customer')->delete();
           foreach ($item as $type => $jo) {
             if ($type == 'tambah') {
               $totalPiutang += $jo['nominal'];
@@ -353,6 +361,7 @@ class InvoiceCostumerController extends Controller
               'amount' => $jo['nominal'],
               'description' => $jo['keterangan'],
               'type' => $type,
+              'invoice_type' => 'customer'
             ]);
           }
         endforeach;
@@ -487,7 +496,7 @@ class InvoiceCostumerController extends Controller
         Journal::where('table_ref', 'invoicecostumers')->where('code_ref', $id)->delete();
         JobOrder::where('invoice_costumer_id', $id)->update(['status_payment' => '0']);
         $data = InvoiceCostumer::find($id);
-        PiutangKlaim::whereIn('job_order_id', $data->joborders->pluck('id'))->delete();
+        PiutangKlaim::whereIn('job_order_id', $data->joborders->pluck('id'))->where('invoice_type', 'customer')->delete();
         $data->delete();
       });
       $response = response()->json([
@@ -513,16 +522,6 @@ class InvoiceCostumerController extends Controller
       ]);
     }
     return $response;
-  }
-
-  public function findbyid($id)
-  {
-    $result = NULL;
-    if ($id) {
-      $result = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
-        ->whereIn('id', $id)->get();
-    }
-    return $result;
   }
 
   public function datatabledetail($id)

@@ -116,7 +116,7 @@
             "defaultContent": ''
           },
           {data: 'num_invoice', name: 'num_bill'},
-          {data: 'invoice_date', name: 'invoice_date', orderable: false},
+          {data: 'invoice_date', name: 'invoice_date'},
           {data: 'due_date', name: 'due_date'},
           {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},
           {

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Cooperation;
 use App\Models\Driver;
+use App\Models\JobOrder;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -40,69 +42,63 @@ class ReportRecapSalaryController extends Controller
       $date = $request->date;
       $driver_id = $request->driver_id;
       $status_salary = $request->status;
-      $data = DB::table('job_orders')
+    $data = DB::table('job_orders')
         ->select(
           DB::raw('
  COUNT(`job_orders`.`costumer_id`)                                                          AS `report_qty`,
        `costumers`.`name`                                                                         AS `costumer_name`,
        `drivers`.`name`                                                                           AS `driver_name`,
        `costumers`.`address`                                                                      AS `costumer_address`,
-       @basic_price := SUM(`job_orders`.`invoice_bill`)                                           AS `report_basic_price`,
+       @basic_price := SUM((`job_orders`.`basic_price` * `job_orders`.`payload`))                                           AS `report_basic_price`,
        @total_operational := (SUM(`job_orders`.`road_money`) +
-                              IFNULL((SELECT SUM(`operational_expenses`.`amount`)
-                                      FROM `operational_expenses`
-                                      WHERE `job_order_id` = `job_orders`.`id`),
-                                     0))                                                          AS `report_operational`,
-       @total_tax := SUM(`job_orders`.`invoice_bill` *
+          SUM((SELECT SUM(`operational_expenses`.`amount`) FROM `operational_expenses`
+            WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1")))   AS `report_operational`,
+       @total_tax := SUM((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                          (IFNULL(`job_orders`.`tax_percent`, 0) / 100))                           AS `total_tax`,
        @percent_tax := SUM(IFNULL(`job_orders`.`tax_percent`, 0))                                 AS `tax_percent`,
-       @total_basic_price_after_tax :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
-                                                  (IFNULL(`job_orders`.`tax_percent`, 0) / 100))) AS `report_basic_price_after_tax`,
+       @total_basic_price_after_tax := SUM(((`job_orders`.`basic_price` * `job_orders`.`payload`) - (`job_orders`.`basic_price` * `job_orders`.`payload`) * (`job_orders`.`tax_percent` / 100))) AS `report_basic_price_after_tax`,
        @fee_thanks := SUM(IFNULL(`job_orders`.`fee_thanks`, 0))                                   AS `fee_thanks`,
        @total_basic_price_after_thanks :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
+               SUM((`job_orders`.`basic_price` * `job_orders`.`payload`) - ((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                                                   (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                    IFNULL(`job_orders`.`fee_thanks`, 0))
                                                                                                   AS `report_basic_price_after_thanks`,
-       @total_sparepart := (SUM((`job_orders`.`invoice_bill` -
-                                 (`job_orders`.`invoice_bill` *
+       @total_sparepart := (SUM(((`job_orders`.`basic_price` * `job_orders`.`payload`) -
+                                 ((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                                   (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                                  IFNULL(`job_orders`.`fee_thanks`, 0)) -
                                 (`job_orders`.`road_money` + IFNULL((SELECT SUM(`operational_expenses`.`amount`)
                                                                      FROM `operational_expenses`
-                                                                     WHERE `job_order_id` = `job_orders`.`id`),
+                                                                     WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1"),
                                                                     0))) *
                             (IFNULL(`job_orders`.`cut_sparepart_percent`, 0) / 100))              AS `report_total_sparepart`,
-       @total_gaji := (SUM((`job_orders`.`invoice_bill` -
-                            (`job_orders`.`invoice_bill` * (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
+       @total_gaji := (SUM(((`job_orders`.`basic_price` * `job_orders`.`payload`) -
+                            ((`job_orders`.`basic_price` * `job_orders`.`payload`) * (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                             IFNULL(`job_orders`.`fee_thanks`, 0)) -
                            ((`job_orders`.`road_money`) +
                             IFNULL((SELECT SUM(`operational_expenses`.`amount`)
                                     FROM `operational_expenses`
-                                    WHERE `job_order_id` = `job_orders`.`id`),
+                                    WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1"),
                                    0)) -
-                           (((`job_orders`.`invoice_bill` -
-                              (`job_orders`.`invoice_bill` *
+                           ((((`job_orders`.`basic_price` * `job_orders`.`payload`) -
+                              ((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                                (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                               IFNULL(`job_orders`.`fee_thanks`, 0)) -
                              (`job_orders`.`road_money` + IFNULL((SELECT SUM(`operational_expenses`.`amount`)
                                                                   FROM `operational_expenses`
-                                                                  WHERE `job_order_id` = `job_orders`.`id`),
+                                                                  WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1"),
                                                                  0))) *
                             (IFNULL(`job_orders`.`cut_sparepart_percent`, 0) / 100))) *
                        (IFNULL(`job_orders`.`salary_percent`, 0) / 100)
-           )
-                                                                                                  AS `report_salary`
+           ) AS `report_salary`
         '))
         ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
         ->leftJoin('drivers', 'drivers.id', '=', 'job_orders.driver_id')
         ->where('type', 'self')
         ->where('job_orders.status_cargo', 'selesai')
         ->when($date, function ($query, $date) {
-          $date_format = explode(" / ", $date);
-          $date_begin = $date_format[0];
-          $date_end = $date_format[1];
+          $date_begin = $date."-01";
+          $date_end = Carbon::createFromFormat('Y-m', $date)->endOfMonth()->toDateString();
           return $query->whereBetween('date_begin', [$date_begin, $date_end]);
         })
         ->when($driver_id, function ($query, $driver_id) {
@@ -115,10 +111,10 @@ class ReportRecapSalaryController extends Controller
             return $query->where('job_orders.status_salary', $status_salary);
           }
         })
-        ->groupBy('job_orders.costumer_id');
+        ->groupBy('job_orders.driver_id');
+
       return DataTables::of($data)
         ->addIndexColumn()
-        ->addColumn('total_netto', '{{$report_basic_price_after_thanks - $report_operational - $report_total_sparepart - $report_salary }}')
         ->make(true);
     }
     return view('backend.report.reportrecapsalaries.index', compact('config', 'page_breadcrumbs'));
@@ -134,66 +130,60 @@ class ReportRecapSalaryController extends Controller
     $data = DB::table('job_orders')
       ->select(
         DB::raw('
- COUNT(`job_orders`.`costumer_id`)                                                          AS `report_qty`,
+        COUNT(`job_orders`.`costumer_id`)                                                          AS `report_qty`,
        `costumers`.`name`                                                                         AS `costumer_name`,
        `drivers`.`name`                                                                           AS `driver_name`,
        `costumers`.`address`                                                                      AS `costumer_address`,
-       @basic_price := SUM(`job_orders`.`invoice_bill`)                                           AS `report_basic_price`,
+       @basic_price := SUM((`job_orders`.`basic_price` * `job_orders`.`payload`))                                           AS `report_basic_price`,
        @total_operational := (SUM(`job_orders`.`road_money`) +
-                              IFNULL((SELECT SUM(`operational_expenses`.`amount`)
-                                      FROM `operational_expenses`
-                                      WHERE `job_order_id` = `job_orders`.`id`),
-                                     0))                                                          AS `report_operational`,
-       @total_tax := SUM(`job_orders`.`invoice_bill` *
+          SUM((SELECT SUM(`operational_expenses`.`amount`) FROM `operational_expenses`
+            WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1")))   AS `report_operational`,
+       @total_tax := SUM((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                          (IFNULL(`job_orders`.`tax_percent`, 0) / 100))                           AS `total_tax`,
        @percent_tax := SUM(IFNULL(`job_orders`.`tax_percent`, 0))                                 AS `tax_percent`,
-       @total_basic_price_after_tax :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
-                                                  (IFNULL(`job_orders`.`tax_percent`, 0) / 100))) AS `report_basic_price_after_tax`,
+       @total_basic_price_after_tax := SUM(((`job_orders`.`basic_price` * `job_orders`.`payload`) - (`job_orders`.`basic_price` * `job_orders`.`payload`) * (`job_orders`.`tax_percent` / 100))) AS `report_basic_price_after_tax`,
        @fee_thanks := SUM(IFNULL(`job_orders`.`fee_thanks`, 0))                                   AS `fee_thanks`,
        @total_basic_price_after_thanks :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
+               SUM((`job_orders`.`basic_price` * `job_orders`.`payload`) - ((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                                                   (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                    IFNULL(`job_orders`.`fee_thanks`, 0))
                                                                                                   AS `report_basic_price_after_thanks`,
-       @total_sparepart := (SUM((`job_orders`.`invoice_bill` -
-                                 (`job_orders`.`invoice_bill` *
+       @total_sparepart := (SUM(((`job_orders`.`basic_price` * `job_orders`.`payload`) -
+                                 ((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                                   (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                                  IFNULL(`job_orders`.`fee_thanks`, 0)) -
                                 (`job_orders`.`road_money` + IFNULL((SELECT SUM(`operational_expenses`.`amount`)
                                                                      FROM `operational_expenses`
-                                                                     WHERE `job_order_id` = `job_orders`.`id`),
+                                                                     WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1"),
                                                                     0))) *
                             (IFNULL(`job_orders`.`cut_sparepart_percent`, 0) / 100))              AS `report_total_sparepart`,
-       @total_gaji := (SUM((`job_orders`.`invoice_bill` -
-                            (`job_orders`.`invoice_bill` * (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
+       @total_gaji := (SUM(((`job_orders`.`basic_price` * `job_orders`.`payload`) -
+                            ((`job_orders`.`basic_price` * `job_orders`.`payload`) * (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                             IFNULL(`job_orders`.`fee_thanks`, 0)) -
                            ((`job_orders`.`road_money`) +
                             IFNULL((SELECT SUM(`operational_expenses`.`amount`)
                                     FROM `operational_expenses`
-                                    WHERE `job_order_id` = `job_orders`.`id`),
+                                    WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1"),
                                    0)) -
-                           (((`job_orders`.`invoice_bill` -
-                              (`job_orders`.`invoice_bill` *
+                           ((((`job_orders`.`basic_price` * `job_orders`.`payload`) -
+                              ((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                                (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                               IFNULL(`job_orders`.`fee_thanks`, 0)) -
                              (`job_orders`.`road_money` + IFNULL((SELECT SUM(`operational_expenses`.`amount`)
                                                                   FROM `operational_expenses`
-                                                                  WHERE `job_order_id` = `job_orders`.`id`),
+                                                                  WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1"),
                                                                  0))) *
                             (IFNULL(`job_orders`.`cut_sparepart_percent`, 0) / 100))) *
                        (IFNULL(`job_orders`.`salary_percent`, 0) / 100)
-           )
-                                                                                                  AS `report_salary`
+           ) AS `report_salary`
         '))
       ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'job_orders.driver_id')
       ->where('type', 'self')
       ->where('job_orders.status_cargo', 'selesai')
       ->when($date, function ($query, $date) {
-        $date_format = explode(" / ", $date);
-        $date_begin = $date_format[0];
-        $date_end = $date_format[1];
+        $date_begin = $date."-01";
+        $date_end = Carbon::createFromFormat('Y-m', $date)->endOfMonth()->toDateString();
         return $query->whereBetween('date_begin', [$date_begin, $date_end]);
       })
       ->when($driver_id, function ($query, $driver_id) {
@@ -206,7 +196,7 @@ class ReportRecapSalaryController extends Controller
           return $query->where('job_orders.status_salary', $status_salary);
         }
       })
-      ->groupBy('job_orders.costumer_id')
+      ->groupBy('job_orders.driver_id')
       ->get();
 
     if ($status_salary == 'none') {
@@ -265,7 +255,7 @@ class ReportRecapSalaryController extends Controller
     ];
 
     $sheet->mergeCells('A1:C1');
-    $sheet->setCellValue('A1', 'Laporan Rekap Gaji Supir');
+    $sheet->setCellValue('A1', 'Laporan Rekap Hutang Pelanggan');
     $sheet->mergeCells('A2:C2');
     $sheet->setCellValue('A2', 'Printed: ' . $this->dateTimeNow());
     $sheet->mergeCells('A3:C3');
@@ -287,59 +277,43 @@ class ReportRecapSalaryController extends Controller
     $sheet->getColumnDimension('B')->setWidth(35);
     $sheet->getColumnDimension('C')->setWidth(5);
     $sheet->getColumnDimension('D')->setWidth(20);
-    $sheet->getColumnDimension('E')->setWidth(15);
-    $sheet->getColumnDimension('F')->setWidth(15);
-    $sheet->getColumnDimension('G')->setWidth(15);
-    $sheet->getColumnDimension('H')->setWidth(15);
 
     $sheet->getStyle('A7')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A7', 'No.');
-    $sheet->setCellValue('B7', 'Nama Pelanggan');
+    $sheet->setCellValue('B7', 'Nama Supir');
     $sheet->setCellValue('C7', 'Jml');
-    $sheet->setCellValue('D7', 'Sub Total (Inc. Tax, Fee)');
-    $sheet->setCellValue('E7', 'Biaya Operasional');
-    $sheet->setCellValue('F7', 'Spare Part');
-    $sheet->setCellValue('G7', 'Gaji Supir');
-    $sheet->setCellValue('H7', 'Sisa Bersih');
+    $sheet->setCellValue('D7', 'Gaji Supir');
 
     $startCell = 7;
     $startCellFilter = 7;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':D' . $startCell . '')
       ->applyFromArray($borderTopBottom);
     foreach ($data as $item):
       $startCell++;
       $sheet->getStyle('A' . $startCell)->getAlignment()->setHorizontal('center');
       $sheet->getStyle('C' . $startCell)->getAlignment()->setHorizontal('center');
-      $sheet->getStyle('D' . $startCell . ':H' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('D' . $startCell . ':D' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->setCellValue('A' . $startCell, $no++);
-      $sheet->setCellValue('B' . $startCell, $item->costumer_name);
+      $sheet->setCellValue('B' . $startCell, $item->driver_name);
       $sheet->setCellValue('C' . $startCell, $item->report_qty);
-      $sheet->setCellValue('D' . $startCell, $item->report_basic_price_after_thanks);
-      $sheet->setCellValue('E' . $startCell, $item->report_operational);
-      $sheet->setCellValue('F' . $startCell, $item->report_total_sparepart);
-      $sheet->setCellValue('G' . $startCell, $item->report_salary);
-      $sheet->setCellValue('H' . $startCell, '=D' . $startCell . '-E' . $startCell . '-F' . $startCell . '-G' . $startCell . '');
+      $sheet->setCellValue('D' . $startCell, $item->report_salary);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':H' . $startCell);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':D' . $startCell);
     $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderBottom);
 
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderTopBottom);
-    $sheet->getStyle('D' . $startCell . ':H' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':D' . $startCell . '')->applyFromArray($borderTopBottom);
+    $sheet->getStyle('D' . $startCell . ':D' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total Rp.');
     $sheet->mergeCells('A' . $startCell . ':C' . $startCell . '');
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell)->getFont()->setBold(true);
+    $sheet->getStyle('A' . $startCell . ':D' . $startCell)->getFont()->setBold(true);
     $sheet->setCellValue('D' . $startCell, '=SUM(D' . $startCellFilter . ':D' . $endForSum . ')');
-    $sheet->setCellValue('E' . $startCell, '=SUM(E' . $startCellFilter . ':E' . $endForSum . ')');
-    $sheet->setCellValue('F' . $startCell, '=SUM(F' . $startCellFilter . ':F' . $endForSum . ')');
-    $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startCellFilter . ':G' . $endForSum . ')');
-    $sheet->setCellValue('H' . $startCell, '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
 
-    $filename = 'Laporan Rekap Gaji Supir ' . $this->dateTimeNow();
+    $filename = 'Laporan Rekap Hutang Pelanggan ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
       $writer = new Xlsx($spreadsheet);
       header('Content-Type: application/vnd.ms-excel');
@@ -364,66 +338,60 @@ class ReportRecapSalaryController extends Controller
     $data = DB::table('job_orders')
       ->select(
         DB::raw('
- COUNT(`job_orders`.`costumer_id`)                                                          AS `report_qty`,
+        COUNT(`job_orders`.`costumer_id`)                                                          AS `report_qty`,
        `costumers`.`name`                                                                         AS `costumer_name`,
        `drivers`.`name`                                                                           AS `driver_name`,
        `costumers`.`address`                                                                      AS `costumer_address`,
-       @basic_price := SUM(`job_orders`.`invoice_bill`)                                           AS `report_basic_price`,
+       @basic_price := SUM((`job_orders`.`basic_price` * `job_orders`.`payload`))                                           AS `report_basic_price`,
        @total_operational := (SUM(`job_orders`.`road_money`) +
-                              IFNULL((SELECT SUM(`operational_expenses`.`amount`)
-                                      FROM `operational_expenses`
-                                      WHERE `job_order_id` = `job_orders`.`id`),
-                                     0))                                                          AS `report_operational`,
-       @total_tax := SUM(`job_orders`.`invoice_bill` *
+          SUM((SELECT SUM(`operational_expenses`.`amount`) FROM `operational_expenses`
+            WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1")))   AS `report_operational`,
+       @total_tax := SUM((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                          (IFNULL(`job_orders`.`tax_percent`, 0) / 100))                           AS `total_tax`,
        @percent_tax := SUM(IFNULL(`job_orders`.`tax_percent`, 0))                                 AS `tax_percent`,
-       @total_basic_price_after_tax :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
-                                                  (IFNULL(`job_orders`.`tax_percent`, 0) / 100))) AS `report_basic_price_after_tax`,
+       @total_basic_price_after_tax := SUM(((`job_orders`.`basic_price` * `job_orders`.`payload`) - (`job_orders`.`basic_price` * `job_orders`.`payload`) * (`job_orders`.`tax_percent` / 100))) AS `report_basic_price_after_tax`,
        @fee_thanks := SUM(IFNULL(`job_orders`.`fee_thanks`, 0))                                   AS `fee_thanks`,
        @total_basic_price_after_thanks :=
-               SUM(`job_orders`.`invoice_bill` - (`job_orders`.`invoice_bill` *
+               SUM((`job_orders`.`basic_price` * `job_orders`.`payload`) - ((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                                                   (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                    IFNULL(`job_orders`.`fee_thanks`, 0))
                                                                                                   AS `report_basic_price_after_thanks`,
-       @total_sparepart := (SUM((`job_orders`.`invoice_bill` -
-                                 (`job_orders`.`invoice_bill` *
+       @total_sparepart := (SUM(((`job_orders`.`basic_price` * `job_orders`.`payload`) -
+                                 ((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                                   (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                                  IFNULL(`job_orders`.`fee_thanks`, 0)) -
                                 (`job_orders`.`road_money` + IFNULL((SELECT SUM(`operational_expenses`.`amount`)
                                                                      FROM `operational_expenses`
-                                                                     WHERE `job_order_id` = `job_orders`.`id`),
+                                                                     WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1"),
                                                                     0))) *
                             (IFNULL(`job_orders`.`cut_sparepart_percent`, 0) / 100))              AS `report_total_sparepart`,
-       @total_gaji := (SUM((`job_orders`.`invoice_bill` -
-                            (`job_orders`.`invoice_bill` * (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
+       @total_gaji := (SUM(((`job_orders`.`basic_price` * `job_orders`.`payload`) -
+                            ((`job_orders`.`basic_price` * `job_orders`.`payload`) * (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                             IFNULL(`job_orders`.`fee_thanks`, 0)) -
                            ((`job_orders`.`road_money`) +
                             IFNULL((SELECT SUM(`operational_expenses`.`amount`)
                                     FROM `operational_expenses`
-                                    WHERE `job_order_id` = `job_orders`.`id`),
+                                    WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1"),
                                    0)) -
-                           (((`job_orders`.`invoice_bill` -
-                              (`job_orders`.`invoice_bill` *
+                           ((((`job_orders`.`basic_price` * `job_orders`.`payload`) -
+                              ((`job_orders`.`basic_price` * `job_orders`.`payload`) *
                                (IFNULL(`job_orders`.`tax_percent`, 0) / 100)) -
                               IFNULL(`job_orders`.`fee_thanks`, 0)) -
                              (`job_orders`.`road_money` + IFNULL((SELECT SUM(`operational_expenses`.`amount`)
                                                                   FROM `operational_expenses`
-                                                                  WHERE `job_order_id` = `job_orders`.`id`),
+                                                                  WHERE `job_order_id` = `job_orders`.`id` AND `type` = "operational" AND `approved` = "1"),
                                                                  0))) *
                             (IFNULL(`job_orders`.`cut_sparepart_percent`, 0) / 100))) *
                        (IFNULL(`job_orders`.`salary_percent`, 0) / 100)
-           )
-                                                                                                  AS `report_salary`
+           ) AS `report_salary`
         '))
       ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'job_orders.driver_id')
       ->where('type', 'self')
       ->where('job_orders.status_cargo', 'selesai')
       ->when($date, function ($query, $date) {
-        $date_format = explode(" / ", $date);
-        $date_begin = $date_format[0];
-        $date_end = $date_format[1];
+        $date_begin = $date."-01";
+        $date_end = Carbon::createFromFormat('Y-m', $date)->endOfMonth()->toDateString();
         return $query->whereBetween('date_begin', [$date_begin, $date_end]);
       })
       ->when($driver_id, function ($query, $driver_id) {
@@ -436,7 +404,7 @@ class ReportRecapSalaryController extends Controller
           return $query->where('job_orders.status_salary', $status_salary);
         }
       })
-      ->groupBy('job_orders.costumer_id')
+      ->groupBy('job_orders.driver_id')
       ->get();
 
     if ($status_salary == 'none') {
@@ -447,11 +415,11 @@ class ReportRecapSalaryController extends Controller
       $status_salary = "All";
     }
 
-    $config['page_title'] = "Laporan Rekap Gaji Supir";
-    $config['page_description'] = "Laporan Rekap Gaji Supir";
+    $config['page_title'] = "Laporan Rekap Hutang Pelanggan";
+    $config['page_description'] = "Laporan Rekap Hutang Pelanggan";
     $config['current_time'] = $this->dateTimeNow();
     $page_breadcrumbs = [
-      ['page' => '#', 'title' => "Laporan Rekap Gaji Supir"],
+      ['page' => '#', 'title' => "Laporan Rekap Hutang Pelanggan"],
     ];
 
     $cooperationDefault = Cooperation::where('default', '1')->first();

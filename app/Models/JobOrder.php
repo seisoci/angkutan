@@ -66,11 +66,15 @@ class JobOrder extends Model
     return $this->belongsTo(Route::class, 'route_to');
   }
 
-  public function piutangklaim()
+  public function piutangklaimcustomer()
   {
-    return $this->hasMany(PiutangKlaim::class);
+    return $this->hasMany(PiutangKlaim::class)->where('invoice_type', 'customer');
   }
 
+  public function piutangklaimldo()
+  {
+    return $this->hasMany(PiutangKlaim::class)->where('invoice_type', 'ldo');
+  }
 
   public function routefrom()
   {

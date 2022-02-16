@@ -7,6 +7,7 @@ use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\JobOrder;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -38,15 +39,15 @@ class ReportSalaryController extends Controller
     if ($request->ajax()) {
       $date = $request->date;
       $driver_id = $request->driver_id;
+      $customer_id = $request->customer_id;
       $status_salary = $request->status;
       $data = JobOrder::with('costumer:id,name', 'driver:id,name', 'routefrom:id,name', 'routeto:id,name', 'cargo:id,name')
         ->withSum('operationalexpense', 'amount')
         ->where('type', 'self')
         ->where('status_cargo', 'selesai')
         ->when($date, function ($query, $date) {
-          $date_format = explode(" / ", $date);
-          $date_begin = $date_format[0];
-          $date_end = $date_format[1];
+          $date_begin = $date."-01";
+          $date_end = Carbon::createFromFormat('Y-m', $date)->endOfMonth()->toDateString();
           return $query->whereBetween('date_begin', [$date_begin, $date_end]);
         })
         ->when($status_salary, function ($query, $status_salary) {
@@ -58,6 +59,9 @@ class ReportSalaryController extends Controller
         })
         ->when($driver_id, function ($query, $driver_id) {
           return $query->where('driver_id', $driver_id);
+        })
+        ->when($customer_id, function ($query, $customer_id) {
+          return $query->where('costumer_id', $customer_id);
         });
 
       return DataTables::of($data)
@@ -79,9 +83,8 @@ class ReportSalaryController extends Controller
       ->where('type', 'self')
       ->where('status_cargo', 'selesai')
       ->when($date, function ($query, $date) {
-        $date_format = explode(" / ", $date);
-        $date_begin = $date_format[0];
-        $date_end = $date_format[1];
+        $date_begin = $date."-01";
+        $date_end = Carbon::createFromFormat('Y-m', $date)->endOfMonth()->toDateString();
         return $query->whereBetween('date_begin', [$date_begin, $date_end]);
       })
       ->when($status_salary, function ($query, $status_salary) {
@@ -253,9 +256,8 @@ class ReportSalaryController extends Controller
       ->where('type', 'self')
       ->where('status_cargo', 'selesai')
       ->when($date, function ($query, $date) {
-        $date_format = explode(" / ", $date);
-        $date_begin = $date_format[0];
-        $date_end = $date_format[1];
+        $date_begin = $date."-01";
+        $date_end = Carbon::createFromFormat('Y-m', $date)->endOfMonth()->toDateString();
         return $query->whereBetween('date_begin', [$date_begin, $date_end]);
       })
       ->when($status_salary, function ($query, $status_salary) {

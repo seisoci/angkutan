@@ -95,11 +95,11 @@
               <div class="col-md-4 my-md-0">
                 <div class="form-group">
                   <label>Priode:</label>
-                  <div class="input-group" id="dateRangePicker">
+                  <div class="input-group">
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="la la-calendar-check-o"></i></span>
                     </div>
-                    <input type="text" class="form-control" name="date" placeholder="Choose Date">
+                    <input id="datePicker" type="text" class="form-control" name="date" placeholder="Choose Date" readonly>
                   </div>
                 </div>
               </div>
@@ -112,20 +112,12 @@
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
-          <th>Nama Pelanggan</th>
+          <th>Nama Supir</th>
           <th>Jml</th>
-          <th>Sub Total (Inc. Tax, Fee)</th>
-          <th>Biaya Operasional</th>
-          <th>Spare Part</th>
-          <th>Gaji Supir</th>
-          <th>Sisa Bersih</th>
+          <th>Total Gaji Supir</th>
         </tr>
         </thead>
         <tfoot>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -193,30 +185,10 @@
           }
         },
         columns: [
-          {data: 'costumer_name', name: 'costumer_name'},
+          {data: 'driver_name', name: 'driver_name'},
           {data: 'report_qty', name: 'report_qty'},
           {
-            data: 'report_basic_price_after_thanks', name: 'report_basic_price_after_thanks',
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'report_operational', name: 'report_operational',
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'report_total_sparepart', name: 'report_total_sparepart',
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
             data: 'report_salary', name: 'report_salary',
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
-          },
-          {
-            data: 'total_netto', name: 'total_netto',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },
@@ -237,40 +209,8 @@
               return intVal(a) + intVal(b);
             }, 0);
 
-          let totalOperatinal = api
-            .column(3)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalSparepart = api
-            .column(4)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalSalary = api
-            .column(5)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let totalClean = api
-            .column(6)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
           $(api.column(1).footer()).html('Total');
           $(api.column(2).footer()).html(format(totalBasic));
-          $(api.column(3).footer()).html(format(totalOperatinal));
-          $(api.column(4).footer()).html(format(totalSparepart));
-          $(api.column(5).footer()).html(format(totalSalary));
-          $(api.column(6).footer()).html(format(totalClean));
 
         },
       });
@@ -313,6 +253,17 @@
       }).on('change', function (e) {
         dataTable.draw();
       });
+
+      $('#datePicker').datepicker({
+        format: 'yyyy-mm',
+        startView: "months",
+        minViewMode: "months",
+        orientation: "bottom",
+        autoclose: true,
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
 
       $('#dateRangePicker').daterangepicker({
         buttonClasses: ' btn',

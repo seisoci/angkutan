@@ -54,9 +54,9 @@
         <tr>
           <th>Prefix</th>
           <th>No. Invoice</th>
+          <th>Tgl Pembelian</th>
           <th>Supir</th>
           <th>No. Polisi</th>
-          <th>Tgl Pembelian</th>
           <th>Total Biaya</th>
           <th>Created At</th>
           <th>Action</th>

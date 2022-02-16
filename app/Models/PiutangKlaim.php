@@ -22,6 +22,7 @@ class PiutangKlaim extends Model
     'amount',
     'description',
     'type',
+    'invoice_type',
   ];
 
   public function joborders()

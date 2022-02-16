@@ -111,7 +111,7 @@
         pageLength: 10,
         ajax: "{{ route('backend.completepurchaseorder.index') }}",
         columns: [
-          {data: 'num_invoice', name: 'num_invoice', orderable: false},
+          {data: 'num_invoice', name: 'num_bill', orderable: false},
           {data: 'invoice_date', name: 'invoice_date'},
           {
             data: 'total_bill',

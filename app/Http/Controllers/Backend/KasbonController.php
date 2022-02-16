@@ -13,6 +13,7 @@ use App\Models\Journal;
 use App\Models\Kasbon;
 use App\Models\PaymentKasbon;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -296,6 +297,63 @@ class KasbonController extends Controller
         ['align' => 'center', 'data' => ['', '']],
         ['align' => 'center', 'data' => ['', '']],
         ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
+      ],
+      'table' => [
+        'header' => ['No', 'Keterangan', 'Nominal'],
+        'produk' => $item,
+        'footer' => array(
+          'catatan' => ''
+        )
+      ]
+    );
+//    $paper['footer'][] = [
+//      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
+//    ];
+    $printed = new ContinousPaper($paper);
+    $result .= $printed->output() . "\n";
+    return response($result, 200)->header('Content-Type', 'text/plain');
+  }
+
+  public function dotMatrixMultiple(Request $request)
+  {
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+    if (!$request['data']) {
+      return response()->json([
+        'status' => 'error',
+        'message' => 'Pilih Data Kasbon Terlebih Dahulu',
+      ]);
+    }
+    $data = PaymentKasbon::with('driver')
+      ->whereIn('id', $request['data'])
+      ->orderBy('date_payment', 'asc')
+      ->get();
+    $result = '';
+    foreach ($data as $key => $itemKasbon):
+      $tgl  = Carbon::parse($itemKasbon->date_payment)->isoFormat('DD MMM YYYY');
+      $item[] = ['no' => ($key+1), 'nama' => ucfirst($itemKasbon->type)." ".$tgl, 'nominal' => number_format($itemKasbon->payment, 0, '.', ',')];
+    endforeach;
+    $paper = array(
+      'panjang' => 35,
+      'baris' => 31,
+      'spasi' => 2,
+      'column_width' => [
+        'header' => [35, 0],
+        'table' => [2, 23, 10],
+        'footer' => [18, 17]
+      ],
+      'header' => [
+        'left' => [
+          strtoupper($cooperationDefault['nickname']),
+          $cooperationDefault['address'],
+          'KASBON SUPIR',
+          'Nama: ' . $data[0]->driver->name,
+        ],
+      ],
+      'footer' => [
+        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => ['', '']],
+        ['align' => 'center', 'data' => [Auth::user()->name, $data[0]->driver->name]],
       ],
       'table' => [
         'header' => ['No', 'Keterangan', 'Nominal'],

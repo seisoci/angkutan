@@ -226,7 +226,7 @@
       <td>{{ $item->transport->no_shipment }}</td>
       <td style="text-align: right">{{ number_format($item->total_basic_price , 2, ',','.') }}</td>
     </tr>
-    @foreach($item->piutangklaim as $piutangklaim)
+    @foreach($item->piutangklaimcustomer as $piutangklaim)
       @if($piutangklaim->type == 'tambah')
         <tr>
           <td></td>

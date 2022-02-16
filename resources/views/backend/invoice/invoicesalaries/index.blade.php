@@ -45,11 +45,11 @@
         <div class="col-md-4 my-md-0">
           <div class="form-group">
             <label>Priode:</label>
-            <div class="input-group" id="dateRangePicker">
+            <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="la la-calendar-check-o"></i></span>
               </div>
-              <input type="text" class="form-control" name="date" placeholder="Choose Date">
+              <input id="datePicker" type="text" class="form-control" name="date" placeholder="Choose Date" readonly>
             </div>
           </div>
         </div>
@@ -113,7 +113,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[5, 'desc']],
+        order: [[2, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
@@ -202,15 +202,25 @@
         dataTable.draw();
       });
 
-      $('#dateRangePicker').daterangepicker({
-        buttonClasses: ' btn',
-        applyClass: 'btn-primary',
-        cancelClass: 'btn-secondary'
-      }, function (start, end, label) {
-        $('#dateRangePicker .form-control').val(start.format('YYYY-MM-DD') + ' / ' + end.format('YYYY-MM-DD'));
-        dataTable.draw();
-      }).on('cancel.daterangepicker', function (ev, picker) {
-        $('#dateRangePicker .form-control').val('');
+      // $('#dateRangePicker').daterangepicker({
+      //   buttonClasses: ' btn',
+      //   applyClass: 'btn-primary',
+      //   cancelClass: 'btn-secondary'
+      // }, function (start, end, label) {
+      //   $('#dateRangePicker .form-control').val(start.format('YYYY-MM-DD') + ' / ' + end.format('YYYY-MM-DD'));
+      //   dataTable.draw();
+      // }).on('cancel.daterangepicker', function (ev, picker) {
+      //   $('#dateRangePicker .form-control').val('');
+      //   dataTable.draw();
+      // });
+
+      $('#datePicker').datepicker({
+        format: 'yyyy-mm',
+        startView: "months",
+        minViewMode: "months",
+        orientation: "bottom",
+        autoclose: true,
+      }).on('change', function (e) {
         dataTable.draw();
       });
 
