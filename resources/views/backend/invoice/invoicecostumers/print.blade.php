@@ -145,7 +145,7 @@
   </tr>
   <tr>
     <td style="width: 175px;">Uang Sejumlah</td>
-    <td>: {{ ucwords(Terbilang::terbilang($data->total_bill)) }}</td>
+    <td>: {{ ucwords(Terbilang::terbilang(($data->total_bill+$data->total_piutang))) }}</td>
   </tr>
   <tr>
     <td style="width: 175px;">Untuk Keperluan</td>
@@ -153,7 +153,7 @@
   </tr>
   <tr>
     <td style="width: 175px;">Jumlah IDR</td>
-    <td>: Rp. {{ number_format($data->total_bill, 2,',','.') }}</td>
+    <td>: Rp. {{ number_format(($data->total_bill+$data->total_piutang), 2,',','.') }}</td>
   </tr>
   <tr style="border-top: 1px solid black; height: 10px">
     <td colspan="2"></td>
