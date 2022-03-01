@@ -104,7 +104,6 @@ class InvoiceUsageItemOutsideController extends Controller
       'items.name.*' => 'required|string',
       'items.qty' => 'required|array',
       'items.qty.*' => 'required|integer',
-      'prefix' => 'required|integer',
       'driver_id' => 'required|integer',
       'transport_id' => 'required|integer',
       'type' => 'required|in:self,outside',
@@ -137,7 +136,7 @@ class InvoiceUsageItemOutsideController extends Controller
           $invoiceUsageItem = InvoiceUsageItem::create([
             'invoice_date' => $request->input('invoice_date'),
             'num_bill' => $request->input('num_bill'),
-            'prefix' => $prefix->name,
+            'prefix' => 'PBL',
             'driver_id' => $request->input('driver_id'),
             'transport_id' => $request->input('transport_id'),
             'type' => $request->input('type'),
@@ -159,7 +158,7 @@ class InvoiceUsageItemOutsideController extends Controller
             'kredit' => $totalPayment,
             'table_ref' => 'invoiceusageitemsoutside',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Pembelian barang diluar dengan No. Invoice: ".$prefix->name.'-'.$request->input('num_bill')." dengan supir $driver->name dan No. Pol: $transport->num_pol"
+            'description' => "Pembelian barang diluar dengan No. Invoice: ".'PBL-'.$request->input('num_bill')." dengan supir $driver->name dan No. Pol: $transport->num_pol"
           ]);
 
           Journal::create([
@@ -169,7 +168,7 @@ class InvoiceUsageItemOutsideController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoiceusageitemsoutside',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Beban pembelian barang diluar $coa->name dengan No. Invoice:  " .$prefix->name.'-'.$request->input('num_bill')." dengan supir $driver->name dan No. Pol: $transport->num_pol"
+            'description' => "Beban pembelian barang diluar $coa->name dengan No. Invoice:  " .'PBL-'.$request->input('num_bill')." dengan supir $driver->name dan No. Pol: $transport->num_pol"
           ]);
           DB::commit();
           $response = response()->json([

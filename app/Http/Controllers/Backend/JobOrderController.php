@@ -120,7 +120,7 @@ class JobOrderController extends Controller
           $btnEditDocument = '';
           $btnShowTonase = '';
           $btnTransfer = '';
-          $btnEditDetail = '<a href="'.route('backend.joborders.edit', $row->id).'" class="edit dropdown-item">Edit Detail</a>';
+          $btnEditDetail = '<a href="' . route('backend.joborders.edit', $row->id) . '" class="edit dropdown-item">Edit Detail</a>';
           if ($row->status_cargo != 'selesai' && $row->status_cargo != 'batal') {
             $btnEdit = '
             <a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" data-type_payload="' . $row->type_payload . '" data-payload="' . $row->payload . '"  data-status_cargo="' . $row->status_cargo . '" data-date_end="' . $row->date_end . '" class="edit dropdown-item">Edit</a>
@@ -145,7 +145,7 @@ class JobOrderController extends Controller
                 </button>
                 <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop1">
               <a href="joborders/' . $row->id . '" class="dropdown-item">Show Detail</a>
-              ' . $btnTransfer . $btnEdit . $btnEditDetail .$btnEditDocument . $btnShowTonase . '
+              ' . $btnTransfer . $btnEdit . $btnEditDetail . $btnEditDocument . $btnShowTonase . '
                 </div>
             </div>
           </div>
@@ -173,7 +173,6 @@ class JobOrderController extends Controller
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'prefix' => 'required|integer',
       'type' => 'required|in:self,ldo',
       'transport_id' => 'required',
       'driver_id' => 'required',
@@ -194,7 +193,6 @@ class JobOrderController extends Controller
         $type_capacity = TypeCapacity::findOrFail($request->type_capacity);
         $qsparepart = Setting::where('name', 'potongan sparepart')->first();
         $qsalary = Setting::where('name', 'gaji supir')->first();
-        $prefix = Prefix::findOrFail($request->prefix);
 
         $jobOrderPrev = JobOrder::where([
           ['driver_id', $request['driver_id']],
@@ -212,7 +210,7 @@ class JobOrderController extends Controller
           $data->date_begin = $request->date_begin;
           $data->type = $request->type;
           $data->num_bill = $jo_date . "-" . $jo_num;
-          $data->prefix = $prefix->name;
+          $data->prefix = 'JO';
           $data->another_expedition_id = $request->another_expedition_id ?? NULL;
           $data->driver_id = $request->driver_id;
           $data->transport_id = $request->transport_id;
@@ -264,7 +262,7 @@ class JobOrderController extends Controller
           $data->date_begin = $request->date_begin;
           $data->type = $request->type;
           $data->num_bill = $jo_date . "-" . $jo_num;
-          $data->prefix = $prefix->name;
+          $data->prefix = 'LDO';
           $data->another_expedition_id = $request->another_expedition_id ?? NULL;
           $data->driver_id = $driverId;
           $data->transport_id = $transportId;
@@ -325,13 +323,14 @@ class JobOrderController extends Controller
     $sparepart = Setting::where('name', 'potongan sparepart')->first();
     $gaji = Setting::where('name', 'gaji supir')->first();
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'joborders')->sole();
-    $data = JobOrder::with(['anotherexpedition:id,name','driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
+    $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name'])
       ->find($id);
     $typeCapacity = TypeCapacity::where('name', $data->type_capacity)->sole();
     return view('backend.operational.joborders.edit', compact('config', 'page_breadcrumbs', 'data', 'sparepart', 'gaji', 'selectCoa', 'typeCapacity'));
   }
 
-  public function updateJobOrder(Request $request, $id){
+  public function updateJobOrder(Request $request, $id)
+  {
     $validator = Validator::make($request->all(), [
       'type' => 'required|in:self,ldo',
       'transport_id' => 'required',
@@ -356,8 +355,9 @@ class JobOrderController extends Controller
           $payload = $request->payload ?? 0;
           $sumPayload = $basicPrice * $payload;
           //MODEL DB
+          $data->prefix = 'JO';
           $data->type = $request->type;
-          $data->another_expedition_id = $request->another_expedition_id ?? NULL;
+          $data->another_expedition_id = NULL;
           $data->driver_id = $request->driver_id;
           $data->transport_id = $request->transport_id;
           $data->costumer_id = $request->costumer_id;
@@ -377,7 +377,6 @@ class JobOrderController extends Controller
           $data->description = $request->description;
           $data->km = $request->km;
           $data->save();
-
         } elseif ($request->type == 'ldo') {
           if (is_numeric($request->driver_id)) {
             $driverId = Driver::findOrFail($request->driver_id)->id;
@@ -388,7 +387,6 @@ class JobOrderController extends Controller
               'status' => 'active'
             ])->id;
           }
-
           if (is_numeric($request->transport_id)) {
             $transportId = Transport::findOrFail($request->transport_id)->id;
           } else {
@@ -404,6 +402,7 @@ class JobOrderController extends Controller
           $payload = $request->payload ?? 1;
           $sumPayload = $basicPrice * $payload;
           //MODEL DB
+          $data->prefix = 'LDO';
           $data->type = $request->type;
           $data->another_expedition_id = $request->another_expedition_id ?? NULL;
           $data->driver_id = $driverId;
@@ -412,7 +411,7 @@ class JobOrderController extends Controller
           $data->cargo_id = $request->cargo_id;
           $data->route_from = $request->route_from;
           $data->route_to = $request->route_to;
-          $data->type_capacity = $request->type_capacity;
+          $data->type_capacity = $type_capacity->name;
           $data->type_payload = $request->type_payload;
           $data->payload = $request->payload ?? 1;
           $data->basic_price = $request->basic_price;
@@ -426,11 +425,17 @@ class JobOrderController extends Controller
           $data->save();
         }
 
-        if($data['status_cargo'] == 'selesai'){
+        if ($data['status_cargo'] == 'selesai') {
           Journal::where([
             ['table_ref', 'joborders'],
             ['code_ref', $data->id]
           ])->delete();
+
+          if ($request->type === 'self') {
+            $prefix = 'JO';
+          } else {
+            $prefix = 'LDO';
+          }
 
           Journal::create([
             'coa_id' => 43,
@@ -439,7 +444,7 @@ class JobOrderController extends Controller
             'kredit' => 0,
             'table_ref' => 'joborders',
             'code_ref' => $data->id,
-            'description' => "Penambahan piutang usaha dari joborder $data->prefix" . "-" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
+            'description' => "Penambahan piutang usaha dari joborder $prefix" . "-" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
           ]);
 
           Journal::create([
@@ -449,7 +454,7 @@ class JobOrderController extends Controller
             'kredit' => $data->total_basic_price,
             'table_ref' => 'joborders',
             'code_ref' => $data->id,
-            'description' => "Penambahan Pendapatan joborder $data->prefix" . "-" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
+            'description' => "Penambahan Pendapatan joborder $prefix" . "-" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
           ]);
         }
 
@@ -558,9 +563,11 @@ class JobOrderController extends Controller
       $data = JobOrder::with('transport', 'routeto', 'routeto', 'operationalexpense')->withSum('operationalexpense', 'amount')->find($id);
 
       if ($request->no_sj || $request->shipement) {
+
         $data->update($request->all());
 
-        if($data['status_cargo'] == 'selesai'){
+
+        if ($data['status_cargo'] == 'selesai') {
           Journal::where([
             ['table_ref', 'joborders'],
             ['code_ref', $data->id]
@@ -615,6 +622,7 @@ class JobOrderController extends Controller
           ]);
           break;
         case 'selesai':
+
           Journal::create([
             'coa_id' => 43,
             'date_journal' => $data->date_begin,

@@ -39,15 +39,15 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <div class="form-group row">
-                    <label class="col-lg-3 col-form-label">Prefix:</label>
-                    <div class="col-lg-6">
-                      <select name="prefix" class="form-control" id="select2Prefix">
-                      </select>
-                    </div>
-                  </div>
-                </div>
+{{--                <div class="col-md-6">--}}
+{{--                  <div class="form-group row">--}}
+{{--                    <label class="col-lg-3 col-form-label">Prefix:</label>--}}
+{{--                    <div class="col-lg-6">--}}
+{{--                      <select name="prefix" class="form-control" id="select2Prefix">--}}
+{{--                      </select>--}}
+{{--                    </div>--}}
+{{--                  </div>--}}
+{{--                </div>--}}
                 <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">Memo:</label>

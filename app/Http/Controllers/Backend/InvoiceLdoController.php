@@ -128,7 +128,6 @@ class InvoiceLdoController extends Controller
     $validator = Validator::make($request->all(), [
       'job_order_id' => 'required|array',
       'job_order_id.*' => 'required|integer',
-      'prefix' => 'required|integer',
       'num_bill' => 'required|integer',
       'another_expedition_id' => 'required|integer',
       'coa_id' => 'required|integer',
@@ -157,7 +156,7 @@ class InvoiceLdoController extends Controller
             ]);
           }
         endforeach;
-        $prefix = Prefix::findOrFail($request->prefix);
+//        $prefix = Prefix::findOrFail($request->prefix);
         $coa = Coa::findOrFail($request->coa_id);
         $checksaldo = DB::table('journals')
           ->select(DB::raw('
@@ -170,7 +169,7 @@ class InvoiceLdoController extends Controller
           ->first();
 
         $data = InvoiceLdo::create([
-          'prefix' => $prefix->name,
+          'prefix' => 'TAGLDO',
           'num_bill' => $request->input('num_bill'),
           'another_expedition_id' => $request->input('another_expedition_id'),
           'invoice_date' => $request->input('invoice_date'),
@@ -206,7 +205,7 @@ class InvoiceLdoController extends Controller
               'kredit' => $request->input('payment.payment'),
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill') . ""
+              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " . 'TAGLDO-' . $request->input('num_bill') . ""
             ]);
 
             Journal::create([
@@ -216,7 +215,7 @@ class InvoiceLdoController extends Controller
               'kredit' => 0,
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill') . ""
+              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " . 'TAGLDO-' . $request->input('num_bill') . ""
             ]);
           } else {
             DB::rollBack();

@@ -82,7 +82,6 @@ class CompletePurchaseOrderController extends Controller
 
     }
 
-
     return view('backend.invoice.completepurchaseorder.index', compact('config', 'page_breadcrumbs', 'saldoGroup'));
   }
 
@@ -124,7 +123,6 @@ class CompletePurchaseOrderController extends Controller
     $validator = Validator::make($request->all(), [
       'invoice_purchase_id' => 'required|array',
       'invoice_purchase_id.*' => 'required|integer',
-      'prefix' => 'required|integer',
       'num_bill' => 'required|integer',
       'supplier_sparepart_id' => 'required|integer',
       'memo' => 'nullable|string',
@@ -133,14 +131,14 @@ class CompletePurchaseOrderController extends Controller
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
-        $prefix = Prefix::find($request['prefix']);
+//        $prefix = Prefix::find($request['prefix']);
         $totalBill = InvoicePurchase::whereIn('id', $request['invoice_purchase_id'])->sum('rest_payment');
         $totalPayment = $request['payment']['payment'] ?? 0;
         $restPayment = $totalBill - $totalPayment;
 
         $invoice = CompletePurchaseOrder::create([
           'num_bill' => $request['num_bill'],
-          'prefix' => $prefix->name,
+          'prefix' => 'PAYKASBON',
           'supplier_sparepart_id' => $request['supplier_sparepart_id'],
           'invoice_date' => $request['invoice_date'],
           'total_bill' => $totalBill,
@@ -181,7 +179,7 @@ class CompletePurchaseOrderController extends Controller
               'kredit' => $request['payment']['payment'],
               'table_ref' => 'completepurchaseorder',
               'code_ref' => $invoice->id,
-              'description' => "Pembayaran barang supplier $supplier->name dengan No. Pelunasan Barang: " . $prefix->name . '-' . $request->num_bill . ""
+              'description' => "Pembayaran barang supplier $supplier->name dengan No. Pelunasan Barang: " . 'PAYKASBON-' . $request->num_bill . ""
             ]);
 
             Journal::create([
@@ -191,7 +189,7 @@ class CompletePurchaseOrderController extends Controller
               'kredit' => 0,
               'table_ref' => 'completepurchaseorder',
               'code_ref' => $invoice->id,
-              'description' => "Pembayaran utang pembelian barang $supplier->name dengan No. Pelunasan Barang: " . $prefix->name . '-' . $request->num_bill . ""
+              'description' => "Pembayaran utang pembelian barang $supplier->name dengan No. Pelunasan Barang: " . 'PAYKASBON-' . $request->num_bill . ""
             ]);
           }
         } else {

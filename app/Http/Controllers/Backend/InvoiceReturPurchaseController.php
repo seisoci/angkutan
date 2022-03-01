@@ -90,7 +90,6 @@ class InvoiceReturPurchaseController extends Controller
       'coa_id' => 'required|integer'
     ]);
 
-
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
@@ -115,7 +114,7 @@ class InvoiceReturPurchaseController extends Controller
         $invoice = InvoiceReturPurchase::create([
           'supplier_sparepart_id' => $request->input('supplier_sparepart_id'),
           'invoice_purchase_id' => $request->input('invoice_purchase_id'),
-          'prefix' => $prefix->name,
+          'prefix' => 'RETUR',
           'num_bill' => $request->input('num_bill'),
           'invoice_date' => $request->input('invoice_date'),
           'discount' => $discount,
@@ -141,7 +140,7 @@ class InvoiceReturPurchaseController extends Controller
           'kredit' => $totalPayment + $discount,
           'table_ref' => 'invoicereturpurchases',
           'code_ref' => $invoice->id,
-          'description' => "Retur pembelian barang $supplier->name dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+          'description' => "Retur pembelian barang $supplier->name dengan No. Invoice: " .'RETUR-'.$request->input('num_bill')
         ]);
 
         Journal::create([
@@ -151,7 +150,7 @@ class InvoiceReturPurchaseController extends Controller
           'kredit' => 0,
           'table_ref' => 'invoicereturpurchases',
           'code_ref' => $invoice->id,
-          'description' => "Penambahan $coa->name dari retur pembelian dengan No. Invoice: " .$prefix->name.'-'.$request->input('num_bill')
+          'description' => "Penambahan $coa->name dari retur pembelian dengan No. Invoice: " .'RETUR-'.$request->input('num_bill')
         ]);
 
         foreach ($items['sparepart_id'] as $key => $item):

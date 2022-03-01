@@ -28,13 +28,13 @@
                            placeholder="Tanggal Invoice" readonly>
                   </div>
                 </div>
-                <div class="form-group row">
+{{--                <div class="form-group row">
                   <label class="col-lg-5 col-form-label">Prefix:</label>
                   <div class="col-lg-6">
                     <select name="prefix" class="form-control" id="select2Prefix">
                     </select>
                   </div>
-                </div>
+                </div>--}}
                 <div class="form-group row">
                   <label class="col-lg-5 col-form-label">No. Retur Pembelian:</label>
                   <div class="col-lg-6">

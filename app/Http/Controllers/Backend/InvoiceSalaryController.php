@@ -110,7 +110,6 @@ class InvoiceSalaryController extends Controller
     $validator = Validator::make($request->all(), [
       'job_order_id' => 'required|array',
       'job_order_id.*' => 'required|integer',
-      'prefix' => 'required|integer',
       'num_bill' => 'required|integer',
       'driver_id' => 'required|integer',
       'coa_id' => 'required|integer',
@@ -120,7 +119,7 @@ class InvoiceSalaryController extends Controller
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
-        $prefix = Prefix::findOrFail($request->prefix);
+//        $prefix = Prefix::findOrFail($request->prefix);
         $driver = Driver::findOrFail($request->driver_id);
         $coa = Coa::findOrFail($request->coa_id);
         $checksaldo = DB::table('journals')
@@ -134,7 +133,7 @@ class InvoiceSalaryController extends Controller
           ->first();
         if (($checksaldo->saldo ?? FALSE) && $request->grand_total <= $checksaldo->saldo) {
           $data = InvoiceSalary::create([
-            'prefix' => $prefix->name,
+            'prefix' => 'GAJI',
             'num_bill' => $request->input('num_bill'),
             'driver_id' => $request->input('driver_id'),
             'invoice_date' => $request->input('invoice_date'),

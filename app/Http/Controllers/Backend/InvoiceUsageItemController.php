@@ -82,7 +82,6 @@ class InvoiceUsageItemController extends Controller
       'items.sparepart_id.*' => 'required|integer',
       'items.qty' => 'required|array',
       'items.qty.*' => 'required|integer',
-      'prefix' => 'required|integer',
       'driver_id' => 'required|integer',
       'transport_id' => 'required|integer',
       'type' => 'required|in:self,outside',
@@ -92,13 +91,13 @@ class InvoiceUsageItemController extends Controller
         DB::beginTransaction();
         $grandTotal = 0;
         $items = $request->items;
-        $prefix = Prefix::findOrFail($request->input('prefix'));
+//        $prefix = Prefix::findOrFail($request->input('prefix'));
         foreach ($items['sparepart_id'] as $key => $item):
           $grandTotal += $items['qty'][$key] * $items['price'][$key];
         endforeach;
         $invoiceUsageItem = InvoiceUsageItem::create([
           'num_bill' => $request->input('num_bill'),
-          'prefix' => $prefix->name,
+          'prefix' => 'PBPKM',
           'invoice_date' => $request->input('invoice_date'),
           'driver_id' => $request->input('driver_id'),
           'transport_id' => $request->input('transport_id'),
@@ -126,7 +125,7 @@ class InvoiceUsageItemController extends Controller
             'kredit' => $totalPrice,
             'table_ref' => 'invoiceusageitems',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Pengurangan stok di persediaan barang dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill') . " untuk supir $driver->name dengan No. Pol: $transport->num_pol"
+            'description' => "Pengurangan stok di persediaan barang dengan No. Invoice: " . 'PBPKM-' . $request->input('num_bill') . " untuk supir $driver->name dengan No. Pol: $transport->num_pol"
           ]);
 
           Journal::create([
@@ -136,7 +135,7 @@ class InvoiceUsageItemController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoiceusageitems',
             'code_ref' => $invoiceUsageItem->id,
-            'description' => "Beban pemakaian barang dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill') . " untuk supir $driver->name  dengan No. Pol: $transport->num_pol"
+            'description' => "Beban pemakaian barang dengan No. Invoice: " . 'PBPKM-' . $request->input('num_bill') . " untuk supir $driver->name  dengan No. Pol: $transport->num_pol"
           ]);
 
           $stock->qty = $stock->qty - $items['qty'][$key];

@@ -143,7 +143,7 @@ class InvoicePurchaseController extends Controller
         $items = $request->items;
         $discount = $request->discount ?? 0;
         $payments = $request->payment;
-        $prefix = Prefix::find($request->prefix);
+//        $prefix = Prefix::find($request->prefix);
         $supplier = SupplierSparepart::findOrFail($request->supplier_sparepart_id);
         foreach ($items['sparepart_id'] as $key => $item):
           $totalBill += $items['qty'][$key] * $items['price'][$key];
@@ -157,7 +157,7 @@ class InvoicePurchaseController extends Controller
 
         $invoice = InvoicePurchase::create([
           'supplier_sparepart_id' => $request->input('supplier_sparepart_id'),
-          'prefix' => $prefix->name,
+          'prefix' => 'PB',
           'num_bill' => $request->input('num_bill'),
           'invoice_date' => $request->invoice_date,
           'due_date' => $request->due_date,
@@ -213,7 +213,7 @@ class InvoicePurchaseController extends Controller
                 'kredit' => $payments['payment'][$key],
                 'table_ref' => 'invoicepurchases',
                 'code_ref' => $invoice->id,
-                'description' => "Pembayaran barang supplier $supplier->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
+                'description' => "Pembayaran barang supplier $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
               ]);
 
             } else {
@@ -241,7 +241,7 @@ class InvoicePurchaseController extends Controller
             'kredit' => $restPayment,
             'table_ref' => 'invoicepurchases',
             'code_ref' => $invoice->id,
-            'description' => "Utang pembelian barang $supplier->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
+            'description' => "Utang pembelian barang $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
           ]);
         }
 
@@ -253,7 +253,7 @@ class InvoicePurchaseController extends Controller
             'kredit' => $discount,
             'table_ref' => 'invoicepurchases',
             'code_ref' => $invoice->id,
-            'description' => "Diskon Pembelian barang barang $supplier->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
+            'description' => "Diskon Pembelian barang barang $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
           ]);
         }
 
@@ -264,7 +264,7 @@ class InvoicePurchaseController extends Controller
           'kredit' => 0,
           'table_ref' => 'invoicepurchases',
           'code_ref' => $invoice->id,
-          'description' => "Penambahan persediaan barang $supplier->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
+          'description' => "Penambahan persediaan barang $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
         ]);
 
         DB::commit();

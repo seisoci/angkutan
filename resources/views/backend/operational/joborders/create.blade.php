@@ -35,11 +35,11 @@
                 </div>
               </div>
             </div>
-            <div class="form-group">
+{{--            <div class="form-group">
               <label>Prefix:</label>
               <select name="prefix" class="form-control" id="select2Prefix">
               </select>
-            </div>
+            </div>--}}
             <div class="form-group">
               <label for="activeSelect">Expedisi<span class="text-danger">*</span></label>
               <select id="selectExpedition" name="type" class="form-control">

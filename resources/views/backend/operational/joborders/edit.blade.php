@@ -37,10 +37,6 @@
               </div>
             </div>
             <div class="form-group">
-              <label>Prefix:</label>
-              <input type="text" class="form-control" value="{{ $data->prefix ?? '' }}" readonly>
-            </div>
-            <div class="form-group">
               <label for="activeSelect">Expedisi<span class="text-danger">*</span></label>
               <select id="selectExpedition" name="type" class="form-control" readonly>
                 <option>Pilih Jenis Expedisi</option>
@@ -387,6 +383,7 @@
       $('#selectExpedition').on('change', function (e) {
         if (this.value === 'self') {
           initTransportDriverSelf();
+          $("#select2AnotherExpedition").val("").trigger('change');
           $('input[name=road_money]').parent().find('label').css("display", "block");
           $('input[name=road_money]').attr('display', 'block');
           $("#select2AnotherExpedition").parent().css("display", "none");

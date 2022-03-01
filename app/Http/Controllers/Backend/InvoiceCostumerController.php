@@ -118,7 +118,6 @@ class InvoiceCostumerController extends Controller
     $validator = Validator::make($request->all(), [
       'job_order_id' => 'required|array',
       'job_order_id.*' => 'required|integer',
-      'prefix' => 'required|integer',
       'num_bill' => 'required|integer',
       'costumer_id' => 'required|integer',
       'invoice_date' => 'required|date_format:Y-m-d',
@@ -148,10 +147,10 @@ class InvoiceCostumerController extends Controller
           }
         endforeach;
 
-        $prefix = Prefix::findOrFail($request->prefix);
+//        $prefix = Prefix::findOrFail($request->prefix);
         $costumer = Costumer::findOrFail($request->input('costumer_id'));
         $data = InvoiceCostumer::create([
-          'prefix' => $prefix->name,
+          'prefix' => 'TAG',
           'num_bill' => $request->input('num_bill'),
           'costumer_id' => $request->input('costumer_id'),
           'invoice_date' => $request->input('invoice_date'),
@@ -178,7 +177,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => $totalCut,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name dan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
+            'description' => "Potongan Klaim tagihan JO pelanggan $costumer->name dan No. Invoice: " .  'TAG-' . $request->input('num_bill')
           ]);
 
           Journal::create([
@@ -188,7 +187,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Potongan Pendapatan untuk Potongan Klaim dengan No. Invoice " . $prefix->name . '-' . $request->input('num_bill')
+            'description' => "Potongan Pendapatan untuk Potongan Klaim dengan No. Invoice " .  'TAG-' . $request->input('num_bill')
           ]);
         }
 
@@ -200,7 +199,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => $totalPiutang,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: " . $prefix->name . '-' . $request->input('num_bill')
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: "  . 'TAG-' . $request->input('num_bill')
           ]);
 
           Journal::create([
@@ -210,7 +209,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: " . $prefix->name . '-' . $request->input('num_bill')
+            'description' => "Piutang Pendapatan untuk klaim pelanggan $costumer->name dengan No.Invoice: "  . 'TAG-' . $request->input('num_bill')
           ]);
         }
 
@@ -230,7 +229,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name dengan No. Invoice: " . $prefix->name . '-' . $request->input('num_bill')
+            'description' => "Penambahan saldo dari tagihan JO pelanggan $costumer->name dengan No. Invoice: "  . 'TAG-' . $request->input('num_bill')
           ]);
 
           Journal::create([
@@ -240,7 +239,7 @@ class InvoiceCostumerController extends Controller
             'kredit' => ($request->input('payment.payment') ?? 0),
             'table_ref' => 'invoicecostumers',
             'code_ref' => $data->id,
-            'description' => "Pembayaran tagihan JO pelanggan $costumer->name dengan No.Invoice: " . $prefix->name . '-' . $request->input('num_bill')
+            'description' => "Pembayaran tagihan JO pelanggan $costumer->name dengan No.Invoice: "  . 'TAG-' . $request->input('num_bill')
           ]);
         }
 
