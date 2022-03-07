@@ -7,6 +7,7 @@ use App\Models\AnotherExpedition;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Cooperation;
+use App\Models\InvoiceCostumer;
 use App\Models\InvoiceLdo;
 use App\Models\JobOrder;
 use App\Models\Journal;
@@ -16,6 +17,7 @@ use App\Models\Prefix;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Throwable;
 use Validator;
 
@@ -168,9 +170,15 @@ class InvoiceLdoController extends Controller
           ->groupBy('journals.coa_id')
           ->first();
 
+        $noUrut = InvoiceLdo::selectRaw("IFNULL(MAX(SUBSTRING(`num_bill`, 7, 3)), 0) + 1 AS max")
+            ->whereMonth('invoice_date', Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('m'))
+            ->whereYear('invoice_date', Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('Y'))
+            ->first()->max ?? 0;
+
+        $noUrutNext = Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('Ym') . "" . str_pad($noUrut, 3, "0", STR_PAD_LEFT);
         $data = InvoiceLdo::create([
           'prefix' => 'TAGLDO',
-          'num_bill' => $request->input('num_bill'),
+          'num_bill' => $noUrutNext,
           'another_expedition_id' => $request->input('another_expedition_id'),
           'invoice_date' => $request->input('invoice_date'),
           'due_date' => $request->input('due_date'),

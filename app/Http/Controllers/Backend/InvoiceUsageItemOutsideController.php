@@ -113,7 +113,7 @@ class InvoiceUsageItemOutsideController extends Controller
       try {
         $items = $request->items;
         DB::beginTransaction();
-        $prefix = Prefix::findOrFail($request->prefix);
+//        $prefix = Prefix::findOrFail($request->prefix);
         $coa = Coa::findOrFail($request->coa_id);
         $checksaldo = DB::table('journals')
           ->select(DB::raw('

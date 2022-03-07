@@ -17,6 +17,7 @@ use App\Models\Prefix;
 use App\Traits\CarbonTrait;
 use DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
@@ -149,9 +150,15 @@ class InvoiceCostumerController extends Controller
 
 //        $prefix = Prefix::findOrFail($request->prefix);
         $costumer = Costumer::findOrFail($request->input('costumer_id'));
+        $noUrut = InvoiceCostumer::selectRaw("IFNULL(MAX(SUBSTRING(`num_bill`, 7, 3)), 0) + 1 AS max")
+            ->whereMonth('invoice_date', Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('m'))
+            ->whereYear('invoice_date', Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('Y'))
+            ->first()->max ?? 0;
+       $noUrutNext = Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('Ym') . "" . str_pad($noUrut, 3, "0", STR_PAD_LEFT);
+
         $data = InvoiceCostumer::create([
           'prefix' => 'TAG',
-          'num_bill' => $request->input('num_bill'),
+          'num_bill' => $noUrutNext,
           'costumer_id' => $request->input('costumer_id'),
           'invoice_date' => $request->input('invoice_date'),
           'due_date' => $request->input('due_date'),
