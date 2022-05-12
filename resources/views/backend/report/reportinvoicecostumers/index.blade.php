@@ -88,6 +88,13 @@
               </div>
               <div class="col-md-4 my-md-0">
                 <div class="form-group">
+                  <label>Nama Pelanggan:</label>
+                  <select class="form-control" id="select2Costumer">
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4 my-md-0">
+                <div class="form-group">
                   <label>Priode:</label>
                   <div class="input-group" id="dateRangePicker">
                     <div class="input-group-prepend">
@@ -120,6 +127,18 @@
           <th>Created At</th>
         </tr>
         </thead>
+        <tfoot>
+        <tr>
+          <td colspan="5">Total</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        </tfoot>
       </table>
     </div>
   </div>
@@ -160,6 +179,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           date: $("input[name=date]").val(),
+          costumer_id: $('#select2Costumer').find(':selected').val() || '',
           status_payment: $('#statusPayment').find(':selected').val() || '',
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
@@ -169,6 +189,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           date: $("input[name=date]").val(),
+          costumer_id: $('#select2Costumer').find(':selected').val() || '',
           status_payment: $('#statusPayment').find(':selected').val() || '',
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
@@ -178,6 +199,7 @@
         e.preventDefault();
         let params = new URLSearchParams({
           date: $("input[name=date]").val(),
+          costumer_id: $('#select2Costumer').find(':selected').val() || '',
           status_payment: $('#statusPayment').find(':selected').val() || '',
         });
         window.open('{{ $config['print_url'] }}?' + params.toString());
@@ -198,6 +220,7 @@
           url: "{{ route('backend.reportinvoicecostumers.index') }}",
           data: function (d) {
             d.status_payment = $('#statusPayment').find(':selected').val();
+            d.costumer_id = $('#select2Costumer').find(':selected').val();
             d.date = $("input[name=date]").val();
           }
         },
@@ -250,7 +273,68 @@
             className: 'dt-right'
           },
           {data: 'created_at', name: 'created_at'},
+
         ],
+        footerCallback: function (row, data, start, end, display) {
+          var api = this.api();
+
+          var intVal = function (i) {
+            return typeof i === 'string' ?
+              i.replace(/[\$,]/g, '') * 1 :
+              typeof i === 'number' ?
+                i : 0;
+          };
+
+          var totalTagihan = api
+            .column(5)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          var totalPembayaran = api
+            .column(6)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          var totalPotongan = api
+            .column(7)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          var totalPajak = api
+            .column(8)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          var totalFee = api
+            .column(9)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          var sisaTagihan = api
+            .column(10)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          // Update footer
+          $(api.column(5).footer()).html($.fn.dataTable.render.number(',', '.', 2, '').display(totalTagihan));
+          $(api.column(6).footer()).html($.fn.dataTable.render.number(',', '.', 2, '').display(totalPembayaran));
+          $(api.column(7).footer()).html($.fn.dataTable.render.number(',', '.', 2, '').display(totalPotongan));
+          $(api.column(8).footer()).html($.fn.dataTable.render.number(',', '.', 2, '').display(totalPajak));
+          $(api.column(9).footer()).html($.fn.dataTable.render.number(',', '.', 2, '').display(totalFee));
+          $(api.column(10).footer()).html($.fn.dataTable.render.number(',', '.', 2, '').display(sisaTagihan));
+        }
       });
 
       $('#dateRangePicker').daterangepicker({
@@ -266,6 +350,25 @@
       });
 
       $('#statusPayment').on('change', function () {
+        dataTable.draw();
+      });
+
+      $("#select2Costumer").select2({
+        placeholder: "Search Supir",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.costumers.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
         dataTable.draw();
       });
 

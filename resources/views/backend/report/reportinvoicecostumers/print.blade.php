@@ -89,8 +89,7 @@
         <td class="text-left" style="width:20%">{{ $cooperationDefault['nickname'] ?? '' }}</td>
       </tr>
       <tr>
-        <td class="font-weight-normal" style="width:50%">Priode: {{ $date ?? 'All' }}
-        </td>
+        <td class="font-weight-normal" style="width:50%">Priode: {{ $date ?? 'All' }}</td>
         <td class="text-left" style="width:10%"></td>
         <td class="text-left" style="width:18%">{{ $cooperationDefault['address'] ?? '' }}</td>
       </tr>
@@ -101,7 +100,7 @@
         <td class="text-left" style="width:18%"> {{ $cooperationDefault['phone'] ?? ''}}</td>
       </tr>
       <tr>
-        <td></td>
+        <td class="font-weight-normal" style="width:50%">Nama Pelanggan: {{ $namaPelanggan['name'] ?? 'All' }}</td>
         <td class="text-left" style="width:10%"></td>
         <td class="text-left" style="width:18%">FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
       </tr>

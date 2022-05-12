@@ -139,6 +139,14 @@
               <span id="roadMoney"></span>
             </div>
             <div class="form-group">
+              <label for="">Tanggal Pengajuan</label>
+              <input class="form-control" name="tgl" type="text" disabled>
+            </div>
+            <div class="form-group">
+              <label for="">Nominal Pengajuan</label>
+              <input class="form-control currency" name="amount" type="text" disabled>
+            </div>
+            <div class="form-group">
               <label>Status Pengajuan</label>
               <select class="form-control form-control-solid" name="approved">
                 <option>Pilih Status</option>
@@ -297,8 +305,12 @@
       $('#modalEdit').on('show.bs.modal', function (event) {
         let id = $(event.relatedTarget).data('id');
         let description = $(event.relatedTarget).data('description');
+        let tgl = $(event.relatedTarget).data('tgl');
+        let amount = $(event.relatedTarget).data('amount');
         $(this).find('#formUpdate').attr('action', '{{ route("backend.submission.index") }}/' + id)
         $(this).find('.modal-body').find('textarea[name="description"]').text(description);
+        $(this).find('.modal-body').find('input[name="amount"]').val(amount);
+        $(this).find('.modal-body').find('input[name="tgl"]').val(tgl);
         let url = '{{ route("backend.submission.index") }}/findbypk/' + id;
         $.ajax({
           type: 'GET',

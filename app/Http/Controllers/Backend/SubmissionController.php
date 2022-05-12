@@ -8,6 +8,7 @@ use App\Models\ConfigCoa;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\OperationalExpense;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -102,7 +103,14 @@ class SubmissionController extends Controller
         ->addColumn('action', function ($row) {
           $btnEdit = '';
           if ($row->approved == NULL) {
-            $btnEdit = '<a href="#" data-toggle="modal" data-target="#modalEdit" data-id="' . $row->id . '" data-description="' . $row->description . '" class="delete btn btn-primary">Aksi</a>';
+            $btnEdit = '<a href="#" data-toggle="modal"
+            data-target="#modalEdit"
+            data-id="' . $row->id . '"
+            data-amount="' . $row->amount . '"
+            data-tgl="' . Carbon::createFromFormat('Y-m-d H:i:s', $row->created_at)->isoFormat('DD MMM YYYY') . '"
+            data-id="' . $row->id . '"
+            data-description="' . $row->description . '"
+            class="delete btn btn-primary">Aksi</a>';
           }
           $actionBtn = "$btnEdit";
           return $actionBtn;

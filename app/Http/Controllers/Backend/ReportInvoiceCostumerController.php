@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cooperation;
+use App\Models\Costumer;
 use App\Models\InvoiceCostumer;
 use App\Models\JobOrder;
 use App\Traits\CarbonTrait;
@@ -39,6 +40,7 @@ class ReportInvoiceCostumerController extends Controller
     if ($request->ajax()) {
       $date = $request->date;
       $status_payment = $request->status_payment;
+      $customer_id = $request->costumer_id;
       $data = InvoiceCostumer::with(['costumer:id,name'])
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
@@ -52,6 +54,9 @@ class ReportInvoiceCostumerController extends Controller
           } elseif ($status_payment == 'paid') {
             return $query->where('rest_payment', '=', '0');
           }
+        })
+        ->when($customer_id, function ($query, $customer_id) {
+          return $query->where('costumer_id', $customer_id);
         })
         ->orderBy('invoice_date', 'asc');
 
@@ -72,6 +77,7 @@ class ReportInvoiceCostumerController extends Controller
     $type = $request->type;
     $date = $request->date;
     $status_payment = $request->status_payment;
+    $customer_id = $request->costumer_id;
     $data = InvoiceCostumer::with(['costumer:id,name', 'joborders.driver:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol'])
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
@@ -85,6 +91,9 @@ class ReportInvoiceCostumerController extends Controller
         } elseif ($status_payment == 'paid') {
           return $query->where('rest_payment', '=', '0');
         }
+      })
+      ->when($customer_id, function ($query, $customer_id) {
+        return $query->where('costumer_id', $customer_id);
       })
       ->orderBy('invoice_date', 'asc')
       ->get();
@@ -169,6 +178,8 @@ class ReportInvoiceCostumerController extends Controller
       ],
     ];
 
+    $namaPelanggan = Costumer::find($customer_id);
+
     $sheet->mergeCells('A1:C1');
     $sheet->setCellValue('A1', 'Laporan Invoice Pelanggan & Fee');
     $sheet->mergeCells('A2:C2');
@@ -177,6 +188,8 @@ class ReportInvoiceCostumerController extends Controller
     $sheet->setCellValue('A3', 'Priode: ' . (!empty($date) ? $date : 'All Date'));
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Status Pembayaran: ' . (!empty($status_pembayaran) ? ucwords($status_pembayaran) : 'All'));
+    $sheet->mergeCells('A5:C7');
+    $sheet->setCellValue('A5', 'Nama Pelanggan: ' . (!empty($namaPelanggan) ? ucwords($namaPelanggan['name']) : 'All'));
     $sheet->mergeCells('H1:J1');
     $sheet->setCellValue('H1', $cooperationDefault['nickname']);
     $sheet->mergeCells('H2:J2');
@@ -315,11 +328,11 @@ class ReportInvoiceCostumerController extends Controller
     exit();
   }
 
-
   public function print(Request $request)
   {
     $date = $request->date;
     $status_payment = $request->status_payment;
+    $customer_id = $request->costumer_id;
     $data = InvoiceCostumer::with(['costumer:id,name', 'joborders.driver:id,name', 'joborders.routefrom:id,name', 'joborders.routeto:id,name', 'joborders.cargo:id,name', 'joborders.transport:id,num_pol'])
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
@@ -334,6 +347,9 @@ class ReportInvoiceCostumerController extends Controller
           return $query->where('rest_payment', '=', '0');
         }
       })
+      ->when($customer_id, function ($query, $customer_id) {
+        return $query->where('costumer_id', $customer_id);
+      })
       ->orderBy('invoice_date', 'asc')
       ->get();
 
@@ -343,10 +359,11 @@ class ReportInvoiceCostumerController extends Controller
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "Laporan Invoice Pelanggan & Fee"],
     ];
+    $namaPelanggan = Costumer::find($customer_id);
 
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    return view('backend.report.reportinvoicecostumers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'status_payment'));
+    return view('backend.report.reportinvoicecostumers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'status_payment', 'namaPelanggan'));
   }
 
 
