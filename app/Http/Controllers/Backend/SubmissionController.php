@@ -69,13 +69,13 @@ class SubmissionController extends Controller
           if ($request['status'] == 'all') {
           } else if ($request['status'] == 'pending') {
             return $query->whereNull('approved');
-          } else if($request['status'] == "ditolak"){
+          } else if ($request['status'] == "ditolak") {
             return $query->where('approved', "0");
-          }else if($request['status'] == "disetujui"){
+          } else if ($request['status'] == "disetujui") {
             return $query->where('approved', "1");
           }
         })
-        ->whereHas('joborder', function ($query) use($transport_id, $driver_id, $another_expedition_id, $request) {
+        ->whereHas('joborder', function ($query) use ($transport_id, $driver_id, $another_expedition_id, $request) {
           $query->when($driver_id, function ($query, $driver_id) {
             return $query->where('driver_id', $driver_id);
           });
@@ -89,7 +89,7 @@ class SubmissionController extends Controller
             if ($request['statusLDO'] == 'all') {
             } else if ($request['statusLDO'] == 'self') {
               return $query->whereNull('another_expedition_id');
-            } else if($request['statusLDO'] == "ldo"){
+            } else if ($request['statusLDO'] == "ldo") {
               return $query->WhereNotNull('another_expedition_id');
             }
           });
@@ -276,16 +276,49 @@ class SubmissionController extends Controller
   {
     $operationalExpense = OperationalExpense::find($id);
     $jobOrder = JobOrder::withSum('roadmoneydetail', 'amount')->find($operationalExpense->job_order_id);
+    $history = OperationalExpense::whereJobOrderId($operationalExpense['job_order_id'])
+      ->where('id', '!=', $id)
+      ->get()
+      ->map(function ($data) {
+        $arr['created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $data['created_at'])->isoFormat('DD MMM YYYY');
+        $arr['amount'] = $data['amount'];
+        return $arr;
+      });
+
     if ($jobOrder->type == "self") {
       $roadMoney = ($jobOrder->road_money + $jobOrder->road_money_prev) - $jobOrder->roadmoneydetail_sum_amount;
-    }else{
+    } else {
       $roadMoney = $jobOrder->roadmoneydetail_sum_amount;
     }
     return response()->json([
-      'roadMoneyFormat' => number_format($roadMoney,0,'.',','),
+      'roadMoneyFormat' => number_format($roadMoney, 0, '.', ','),
       'roadMoney' => $roadMoney,
-      'type' => $jobOrder->type
+      'type' => $jobOrder->type,
+      'history' => $history,
+      'jobOrder' => $jobOrder
     ]);
 
+  }
+
+  public function datatable_history(Request $request)
+  {
+    if ($request->ajax()) {
+      $data = JobOrder::selectRaw('
+        `operational_expenses`.`created_at` AS `tgl_dibuat`,
+        `operational_expenses`.`amount`
+      ')
+        ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
+        ->where([
+          ['driver_id', $request['driver_id']],
+          ['transport_id', $request['transport_id']],
+          ['costumer_id', $request['costumer_id']],
+          ['route_from', $request['route_from']],
+          ['route_to', $request['route_to']],
+        ]);
+
+      return DataTables::of($data)
+        ->addIndexColumn()
+        ->make(true);
+    }
   }
 }

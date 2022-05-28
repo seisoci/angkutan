@@ -326,6 +326,7 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
 
     //Job Order
     Route::resource('joborders', BackendJobOrderController::class);
+    Route::get('submission/datatable_history', [BackendSubmissionController::class, 'datatable_history'])->name('submission.datatable-history');
     Route::resource('submission', BackendSubmissionController::class);
     Route::resource('operationalexpenses', BackendOperationalExpenseController::class)->only(['store', 'update', 'destroy', 'index']);
     Route::resource('salaries', BackendSalaryController::class);

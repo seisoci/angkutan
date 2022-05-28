@@ -84,9 +84,9 @@
           <div class="form-group">
             <label>Pengajual JO:</label>
             <select class="form-control" id="select2TypeExpedition">
-                <option value="all">All</option>
-                <option value="self">Expedisi sendiri</option>
-                <option value="ldo">LDO</option>
+              <option value="all">All</option>
+              <option value="self">Expedisi sendiri</option>
+              <option value="ldo">LDO</option>
             </select>
           </div>
         </div>
@@ -115,7 +115,7 @@
   </div>
   {{-- Modal --}}
   <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-md" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Edit {{ $config['page_title'] }}</h5>
@@ -135,37 +135,65 @@
               </div>
             </div>
             <input type="hidden" name="approved_by" value="{{ Auth::id() }}">
+            <input type="hidden" name="driver_id">
+            <input type="hidden" name="transport_id">
+            <input type="hidden" name="costumer_id">
+            <input type="hidden" name="route_from">
+            <input type="hidden" name="route_to">
             <div class="form-group">
               <span id="roadMoney"></span>
             </div>
-            <div class="form-group">
-              <label for="">Tanggal Pengajuan</label>
-              <input class="form-control" name="tgl" type="text" disabled>
+            <h6>History Pengajuan Uang Jalan</h6>
+            <div class="table-responsive mb-4">
+              <table class="table table-bordered" id="DatatableHistory">
+                <thead>
+                <tr>
+                  <th>Tgl</th>
+                  <th>Nominal</th>
+                </tr>
+                </thead>
+              </table>
             </div>
-            <div class="form-group">
-              <label for="">Nominal Pengajuan</label>
-              <input class="form-control currency" name="amount" type="text" disabled>
-            </div>
-            <div class="form-group">
-              <label>Status Pengajuan</label>
-              <select class="form-control form-control-solid" name="approved">
-                <option>Pilih Status</option>
-                <option value="0">Di Tolak</option>
-                <option value="1">Setuju</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Akun COA</label>
-              <select class="form-control form-control-solid" name="coa_id">
-                @foreach($selectCoa->coa as $item)
-                  <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
-                @endforeach
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Deskripsi</label>
-              <textarea type="text" name="description" class="form-control form-control-solid"
-                        placeholder="Keterangan" rows="3"></textarea>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="">Tanggal Pengajuan</label>
+                  <input class="form-control" name="tgl" type="text" disabled>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="">Nominal Pengajuan</label>
+                  <input class="form-control currency" name="amount" type="text" disabled>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Status Pengajuan</label>
+                  <select class="form-control form-control-solid" name="approved">
+                    <option>Pilih Status</option>
+                    <option value="0">Di Tolak</option>
+                    <option value="1">Setuju</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Akun COA</label>
+                  <select class="form-control form-control-solid" name="coa_id">
+                    @foreach($selectCoa->coa as $item)
+                      <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Deskripsi</label>
+                  <textarea type="text" name="description" class="form-control form-control-solid"
+                            placeholder="Keterangan" rows="3"></textarea>
+                </div>
+              </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -302,6 +330,35 @@
         ]
       });
 
+      var dataTableHistory = $('#DatatableHistory').DataTable({
+        responsive: false,
+        scrollX: true,
+        processing: true,
+        serverSide: true,
+        order: [[0, 'desc']],
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        pageLength: 10,
+        ajax: {
+          url: "{{ route('backend.submission.datatable-history') }}",
+          data: function (d) {
+            d.driver_id = $('input[name=driver_id]').val() || 0;
+            d.transport_id = $('input[name=transport_id]').val() || 0;
+            d.costumer_id = $('input[name=costumer_id]').val() || 0;
+            d.route_from = $('input[name=route_from]').val() || 0;
+            d.route_to = $('input[name=route_to]').val() || 0;
+          }
+        },
+        columns: [
+          {data: 'tgl_dibuat', name: 'operational_expenses.created_at'},
+          {
+            data: 'amount',
+            name: 'operational_expenses.amount',
+            render: $.fn.dataTable.render.number(',', '.', 2),
+            className: 'dt-right',
+          },
+        ],
+      });
+
       $('#modalEdit').on('show.bs.modal', function (event) {
         let id = $(event.relatedTarget).data('id');
         let description = $(event.relatedTarget).data('description');
@@ -318,6 +375,12 @@
           dataType: 'json',
           success: function (response) {
             $('#roadMoney').empty();
+            $('input[name=driver_id]').val(response.jobOrder.driver_id);
+            $('input[name=transport_id]').val(response.jobOrder.transport_id);
+            $('input[name=costumer_id]').val(response.jobOrder.costumer_id);
+            $('input[name=route_from]').val(response.jobOrder.route_from);
+            $('input[name=route_to]').val(response.jobOrder.route_to);
+            dataTableHistory.draw();
             if (response.type == "self") {
               if (response.roadMoney > 0) {
                 $('#roadMoney').text('Sisa uang jalan: ' + response.roadMoneyFormat)
@@ -329,9 +392,15 @@
             } else {
               $('#roadMoney').text('Total Uang jalan LDO telah diambil: ' + response.roadMoneyFormat)
             }
+
+            $(".currency").inputmask('decimal', {
+              groupSeparator: '.',
+              digits: 0,
+              rightAlign: true,
+              removeMaskOnSubmit: true
+            });
           },
           error: function (response) {
-            console.log(data);
           }
         });
       });
