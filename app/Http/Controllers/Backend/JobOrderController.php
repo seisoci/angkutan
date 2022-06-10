@@ -19,6 +19,7 @@ use DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Validator;
 
 class JobOrderController extends Controller
@@ -465,6 +466,7 @@ class JobOrderController extends Controller
           'redirect' => '/backend/joborders',
         ]);
       } catch (\Throwable $throw) {
+        Log::error($throw);
         DB::rollBack();
         $response = $throw;
       }
