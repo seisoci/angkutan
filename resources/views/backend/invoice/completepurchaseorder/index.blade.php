@@ -53,6 +53,7 @@
         <thead>
         <tr>
           <th>Invoice Number</th>
+          <th>Supplier</th>
           <th>Tgl Invoice</th>
           <th>Total Tagihan</th>
           <th>Total Pembayaran</th>
@@ -106,12 +107,13 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[1, 'desc']],
+        order: [[2, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.completepurchaseorder.index') }}",
         columns: [
           {data: 'num_invoice', name: 'num_bill', orderable: false},
+          {data: 'supplier.name', name: 'supplier.name'},
           {data: 'invoice_date', name: 'invoice_date'},
           {
             data: 'total_bill',

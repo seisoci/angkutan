@@ -54,7 +54,7 @@ class CompletePurchaseOrderController extends Controller
       ];
     });
     if ($request->ajax()) {
-      $data = CompletePurchaseOrder::with(['invoice_purchase']);
+      $data = CompletePurchaseOrder::with(['invoice_purchase', 'supplier']);
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
