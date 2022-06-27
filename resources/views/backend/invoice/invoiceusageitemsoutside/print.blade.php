@@ -79,14 +79,14 @@
             <td scope="col" class="text-left" style="width:23%"> {{ $data->num_invoice }}</td>
           </tr>
           <tr>
-            <td scope="col">{{ $profile['telp'] ?? ''}}</td>
+            <td scope="col">{{ $profile['phone'] ?? ''}}</td>
             <td scope="col" class="text-left" style="width:10%"></td>
             <td scope="col" colspan="2" class="text-left" style="width:15%">Nama Supir</td>
             <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
             <td scope="col" class="text-left" style="width:23%"> {{ $data->driver->name }}</td>
           </tr>
           <tr>
-            <td scope="col">FAX {{ $profile['fax'] ?? ''}}</td>
+            <td scope="col">Fax: {{ $profile['fax'] ?? ''}}</td>
             <td scope="col" class="text-left" style="width:10%"></td>
             <td scope="col" colspan="2" class="text-left" style="width:15%">No. Polisi</td>
             <td scope="col" class="text-left" style="width:2%">: &ensp;</td>

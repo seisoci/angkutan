@@ -91,7 +91,6 @@ class InvoiceUsageItemController extends Controller
         DB::beginTransaction();
         $grandTotal = 0;
         $items = $request->items;
-//        $prefix = Prefix::findOrFail($request->input('prefix'));
         foreach ($items['sparepart_id'] as $key => $item):
           $grandTotal += $items['qty'][$key] * $items['price'][$key];
         endforeach;
@@ -160,7 +159,8 @@ class InvoiceUsageItemController extends Controller
   public function show($id)
   {
     $config['page_title'] = "Detail Pemakaian Barang";
-    $config['print_url'] = "/backend/invoiceusageitems/$id/print";
+    $config['print_url'] = route('backend.invoiceusageitems.print', $id);
+    $config['print_dotmatrix_url'] = route('backend.invoiceusageitems.print-dotmatrix', $id);
     $page_breadcrumbs = [
       ['page' => '/backend/invoiceusageitems', 'title' => "List Pemakaian Barang"],
       ['page' => '#', 'title' => "Detail Pemakaian Barang"],
@@ -178,15 +178,20 @@ class InvoiceUsageItemController extends Controller
       ['page' => '/backend/invoiceusageitems', 'title' => "List Pemakaian Barang"],
       ['page' => '#', 'title' => "Detail Pemakaian Barang"],
     ];
-    $cooperationDefault = Cooperation::where('default', '1')->first();
+    $profile = Cooperation::where('default', '1')->first();
+    $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name', 'usageitem.invoicepurchase:id,supplier_sparepart_id', 'usageitem.invoicepurchase.supplier'])->findOrFail($id);
 
+    return view('backend.invoice.invoiceusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+  }
+
+  public function printDotMatrix($id){
+    $cooperationDefault = Cooperation::where('default', '1')->first();
     $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name', 'usageitem.invoicepurchase:id,supplier_sparepart_id', 'usageitem.invoicepurchase.supplier'])->findOrFail($id);
     $result = '';
     $no = 1;
     foreach ($data->usageitem as $val):
       $item[] = ['no' => $no++, 'nama' => $val->sparepart->name, 'supplier' => $val->invoicepurchase->supplier->name, 'nominal' => $val->qty];
     endforeach;
-
 
     $paper = array(
       'panjang' => 35,

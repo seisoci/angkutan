@@ -7,18 +7,19 @@
 <div class="card card-custom overflow-hidden">
   {{-- Header --}}
   <div class="card-header d-flex justify-content-end align-items-center">
-    <div class="">
-      <div class="btn-group btn-group-md" role="group" aria-label="Large button group">
-        <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
-            class="fa fa-arrow-left"></i> Back</button>
-{{--        <a href="{{ $config['print_url'] }}" target="_blank" class="btn btn-outline-secondary"><i--}}
-{{--            class="fa fa-print"></i> Print</a>--}}
-        <a href="#" id="btn_print" class="btn btn-outline-secondary font-weight-bold" target="_blank">
-                  <span class="navi-icon">
-                    <i class="la la-print"></i>
-                  </span>
-          <span class="navi-text">Print</span>
-        </a>
+    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+      <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
+          class="fa fa-arrow-left"></i> Back
+      </button>
+      <div class="btn-group" role="group">
+        <button id="btnGroupDrop1" type="button" class="btn btn-outline-secondary font-weight-bold dropdown-toggle"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Cetak
+        </button>
+        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+          <a id="btnPrint" href="#" class="dropdown-item">Print DotMatrix</a>
+          <a target="_blank" href="{{ $config['print_url'] }}" class="dropdown-item">Print Biasa</a>
+        </div>
       </div>
     </div>
   </div>
@@ -156,15 +157,13 @@
     $('#btn_print').on('click', function (e) {
       e.preventDefault();
       $.ajax({
-        url: "{{ $config['print_url'] }}",
+        url: "{{ $config['print_dotmatrix_url'] }}",
         success: function (text) {
-          console.log(text);
           $.post('http://localhost/dotmatrix/', JSON.stringify({
             printer: 'DotMatrix',
             data: text,
             autocut: true
           }), function (response) {
-            console.log(response);
           });
         }
       });

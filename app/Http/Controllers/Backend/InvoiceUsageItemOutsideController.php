@@ -196,7 +196,8 @@ class InvoiceUsageItemOutsideController extends Controller
   public function show($id)
   {
     $config['page_title'] = "Detail Pembelian Barang Diluar";
-    $config['print_url'] = "/backend/invoiceusageitemsoutside/$id/print";
+    $config['print_url'] = route('backend.invoiceusageitemsoutside.print', $id);
+    $config['print_dotmatrix_url'] = route('backend.invoiceusageitemsoutside.print-dotmatrix', $id);
     $page_breadcrumbs = [
       ['page' => '/backend/invoiceusageitemsoutside', 'title' => "List Pembelian Barang Diluar"],
       ['page' => '#', 'title' => "Detail Pembelian Barang Diluar"],
@@ -211,9 +212,15 @@ class InvoiceUsageItemOutsideController extends Controller
   {
     $config['page_title'] = "Detail Pembelian Barang Diluar";
     $page_breadcrumbs = [
-      ['page' => '/backend/invoiceusageitemsoutside', 'title' => "List Pembelian Barang Diluar"],
+      ['page' => route('backend.invoiceusageitemsoutside.index'), 'title' => "List Pembelian Barang Diluar"],
       ['page' => '#', 'title' => "Detail Pembelian Barang Diluar"],
     ];
+    $profile = Cooperation::where('default', '1')->first();
+    $data = InvoiceUsageItem::where('type', 'outside')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
+    return view('backend.invoice.invoiceusageitemsoutside.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
+  }
+
+  public function printDotMatrix($id){
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $data = InvoiceUsageItem::where('type', 'outside')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
@@ -271,7 +278,6 @@ class InvoiceUsageItemOutsideController extends Controller
     $printed = new ContinousPaper($paper);
     $result .= $printed->output() . "\n";
     return response($result, 200)->header('Content-Type', 'text/plain');
-//    return view('backend.invoice.invoiceusageitemsoutside.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
   }
 
   public function destroy($id)

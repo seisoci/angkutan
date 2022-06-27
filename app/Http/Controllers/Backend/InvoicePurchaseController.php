@@ -10,10 +10,8 @@ use App\Models\Cooperation;
 use App\Models\InvoicePurchase;
 use App\Models\InvoiceReturPurchase;
 use App\Models\Journal;
-use App\Models\Prefix;
 use App\Models\Purchase;
 use App\Models\PurchasePayment;
-use App\Models\Setting;
 use App\Models\Stock;
 use App\Models\SupplierSparepart;
 use App\Models\UsageItem;
@@ -149,9 +147,9 @@ class InvoicePurchaseController extends Controller
           $totalBill += $items['qty'][$key] * $items['price'][$key];
         endforeach;
 
-   /*     foreach ($payments['date'] as $key => $item):
-          $totalPayment += $payments['payment'][$key];
-        endforeach;*/
+        /*     foreach ($payments['date'] as $key => $item):
+               $totalPayment += $payments['payment'][$key];
+             endforeach;*/
 
         $restPayment = ($totalBill - $discount) - $totalPayment;
 
@@ -185,46 +183,46 @@ class InvoicePurchaseController extends Controller
 
         endforeach;
 
-   /*     foreach ($payments['date'] as $key => $item):
-          $coa = Coa::findOrFail($payments['coa'][$key]);
-          if ($item) {
-            $checksaldo = DB::table('journals')
-              ->select(DB::raw('
-          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
-          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
-          '))
-              ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
-              ->where('journals.coa_id', $payments['coa'][$key])
-              ->groupBy('journals.coa_id')
-              ->first();
+        /*     foreach ($payments['date'] as $key => $item):
+               $coa = Coa::findOrFail($payments['coa'][$key]);
+               if ($item) {
+                 $checksaldo = DB::table('journals')
+                   ->select(DB::raw('
+               IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+               (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+               '))
+                   ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+                   ->where('journals.coa_id', $payments['coa'][$key])
+                   ->groupBy('journals.coa_id')
+                   ->first();
 
-            if (($checksaldo->saldo ?? FALSE) && $payments['payment'][$key] <= $checksaldo->saldo && $payments['payment'][$key] != NULL) {
-              PurchasePayment::create([
-                'invoice_purchase_id' => $invoice->id,
-                'date_payment' => $payments['date'][$key],
-                'coa_id' => $payments['coa'][$key],
-                'payment' => $payments['payment'][$key],
-              ]);
+                 if (($checksaldo->saldo ?? FALSE) && $payments['payment'][$key] <= $checksaldo->saldo && $payments['payment'][$key] != NULL) {
+                   PurchasePayment::create([
+                     'invoice_purchase_id' => $invoice->id,
+                     'date_payment' => $payments['date'][$key],
+                     'coa_id' => $payments['coa'][$key],
+                     'payment' => $payments['payment'][$key],
+                   ]);
 
-              Journal::create([
-                'coa_id' => $payments['coa'][$key],
-                'date_journal' => $payments['date'][$key],
-                'debit' => 0,
-                'kredit' => $payments['payment'][$key],
-                'table_ref' => 'invoicepurchases',
-                'code_ref' => $invoice->id,
-                'description' => "Pembayaran barang supplier $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
-              ]);
+                   Journal::create([
+                     'coa_id' => $payments['coa'][$key],
+                     'date_journal' => $payments['date'][$key],
+                     'debit' => 0,
+                     'kredit' => $payments['payment'][$key],
+                     'table_ref' => 'invoicepurchases',
+                     'code_ref' => $invoice->id,
+                     'description' => "Pembayaran barang supplier $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
+                   ]);
 
-            } else {
-              DB::rollBack();
-              return response()->json([
-                'status' => 'errors',
-                'message' => "Saldo $coa->name tidak ada/kurang",
-              ]);
-            }
-          }
-        endforeach;*/
+                 } else {
+                   DB::rollBack();
+                   return response()->json([
+                     'status' => 'errors',
+                     'message' => "Saldo $coa->name tidak ada/kurang",
+                   ]);
+                 }
+               }
+             endforeach;*/
 
         if ($restPayment <= -1) {
           return response()->json([
@@ -241,7 +239,7 @@ class InvoicePurchaseController extends Controller
             'kredit' => $restPayment,
             'table_ref' => 'invoicepurchases',
             'code_ref' => $invoice->id,
-            'description' => "Utang pembelian barang $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
+            'description' => "Utang pembelian barang $supplier->name dengan No. Invoice: " . 'PB-' . $request->input('num_bill')
           ]);
         }
 
@@ -253,7 +251,7 @@ class InvoicePurchaseController extends Controller
             'kredit' => $discount,
             'table_ref' => 'invoicepurchases',
             'code_ref' => $invoice->id,
-            'description' => "Diskon Pembelian barang barang $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
+            'description' => "Diskon Pembelian barang barang $supplier->name dengan No. Invoice: " . 'PB-' . $request->input('num_bill')
           ]);
         }
 
@@ -264,7 +262,7 @@ class InvoicePurchaseController extends Controller
           'kredit' => 0,
           'table_ref' => 'invoicepurchases',
           'code_ref' => $invoice->id,
-          'description' => "Penambahan persediaan barang $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
+          'description' => "Penambahan persediaan barang $supplier->name dengan No. Invoice: " . 'PB-' . $request->input('num_bill')
         ]);
 
         DB::commit();
@@ -287,7 +285,8 @@ class InvoicePurchaseController extends Controller
   public function show($id)
   {
     $config['page_title'] = "Detail Purchase Order";
-    $config['print_url'] = "/backend/invoicepurchases/$id/print";
+    $config['print_url'] = route('backend.invoicepurchase.print', $id);
+    $config['print_dotmatrix_url'] = route('backend.invoicepurchase.print-dotmatrix', $id);
     $page_breadcrumbs = [
       ['page' => '/backend/invoicepurchases', 'title' => "List Purchase Order"],
       ['page' => '#', 'title' => "Detail Purchase Order"],
@@ -301,11 +300,22 @@ class InvoicePurchaseController extends Controller
   public function print($id)
   {
     $config['page_title'] = "Detail Purchase Order";
-    $config['print_url'] = "/backend/invoicepurchases/$id/print";
+
     $page_breadcrumbs = [
       ['page' => '/backend/invoicepurchases', 'title' => "List Purchase Order"],
       ['page' => '#', 'title' => "Detail Purchase Order"],
     ];
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+    $data = InvoicePurchase::where('id', $id)
+      ->with(['purchases', 'supplier'])
+      ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
+      ->firstOrFail();
+    
+    return view('backend.sparepart.invoicepurchases.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
+  }
+
+  public function printDotMatrix($id)
+  {
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $data = InvoicePurchase::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['purchases', 'supplier'])->firstOrFail();
@@ -384,7 +394,6 @@ class InvoicePurchaseController extends Controller
     $printed = new ContinousPaperLong($paper);
     $result .= $printed->output() . "\n";
     return response($result, 200)->header('Content-Type', 'text/plain');
-//    return view('backend.sparepart.invoicepurchases.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
   public function showpayment($id)
