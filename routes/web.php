@@ -70,8 +70,6 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('journals/select2', [Backend\JournalController::class, 'select2'])->name('journals.select2');
 
     //Print
-    Route::get('kasbon/{id}/dotmatrix', [Backend\KasbonController::class, 'dotMatrix']);
-    Route::post('kasbon/dotMatrixMultiple', [Backend\KasbonController::class, 'dotMatrixMultiple'])->name('kasbon.dotMatrixMultiple');
     Route::get('invoicesalaries/{id}/dotmatrix', [Backend\InvoiceSalaryController::class, 'dotMatrix']);
     Route::get('invoicesalaries/{id}/print', [Backend\InvoiceSalaryController::class, 'print']);
     Route::get('invoiceldo/{id}/print', [Backend\InvoiceLdoController::class, 'print']);
@@ -152,7 +150,11 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('invoicecostumers/{id}/print', [Backend\InvoiceCostumerController::class, 'print']);
     Route::get('monthlysalarydetail/{id}/print', [Backend\MonthlySalaryDetailController::class, 'print']);
     Route::get('invoicekasbonemployees/{id}/print', [Backend\InvoiceKasbonEmployeeController::class, 'print']);
-    Route::get('kasbon/{id}/print', [Backend\KasbonController::class, 'print']);
+    Route::get('kasbon/{id}/print', [Backend\KasbonController::class, 'print'])->name('kasbon.print');
+    Route::get('kasbon/{id}/dotmatrix', [Backend\KasbonController::class, 'printDotMatrix'])->name('kasbon.print-dotmatrix');
+    Route::post('kasbon/dotMatrixMultiple', [Backend\KasbonController::class, 'printDotMatrixMultiple'])->name('kasbon.print-dotMatrixMultiple');
+    Route::get('kasbon/printMultiple', [Backend\KasbonController::class, 'printMultiple'])->name('kasbon.printMultiple');
+
     Route::get('kasbonemployees/{id}/print', [Backend\KasbonEmployeeController::class, 'print']);
     Route::get('reportpiutanglunas/print', [Backend\ReportPiutangLunasController::class, 'print']);
     Route::get('reportpiutangbelumlunas/print', [Backend\ReportPiutangBelumLunasController::class, 'print']);

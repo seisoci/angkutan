@@ -154,7 +154,7 @@
 {{-- vendors --}}
 <script>
   $(document).ready(function () {
-    $('#btn_print').on('click', function (e) {
+    $('#btnPrint').on('click', function (e) {
       e.preventDefault();
       $.ajax({
         url: "{{ $config['print_dotmatrix_url'] }}",

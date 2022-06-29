@@ -15,13 +15,15 @@
     <div class="card-body">
       <div class="mb-10">
         <div class="row d-flex justify-content-end">
-           <meta name="csrf-token" content="{{ csrf_token() }}">
+          <meta name="csrf-token" content="{{ csrf_token() }}">
           <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="fas fa-print"></i>Cetak
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a id="btnPrintDotMatrix" href="#" class="dropdown-item">Print DotMatrix</a>
+              <a id="btnPrint" href="#" class="dropdown-item">Print DotMatrix</a>
+              <a id="btnPrintBiasa" href="#" class="dropdown-item">Print Biasa</a>
             </div>
           </div>
         </div>
@@ -105,8 +107,28 @@
           {data: 'nama_supir', name: 'nama_supir'},
           {data: 'date_payment', name: 'date_payment'},
           {data: 'description', name: 'description'},
-          {data: 'payment', name: 'payment', render: $.fn.dataTable.render.number('.', '.', 2), className: 'dt-right'},
-          {data: 'type', name: 'type'},
+          {
+            data: 'payment',
+            name: 'payment',
+            render: $.fn.dataTable.render.number('.', '.', 2),
+            className: 'dt-right'
+          },
+          {
+            data: 'type',
+            name: 'type',
+            width: '75px',
+            render: function (data, type, full, meta) {
+              let status = {
+                'hutang': {'title': 'Hutang', 'class': ' label-light-danger'},
+                'pembayaran': {'title': 'Hutang Dibayar', 'class': ' label-light-success'},
+              };
+              if (typeof status[data] === 'undefined') {
+                return data;
+              }
+              return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
+                '</span>';
+            },
+          },
           {data: 'created_at', name: 'created_at'},
           {data: 'action', name: 'action', orderable: false},
         ],
@@ -120,25 +142,9 @@
               selectRow: true
             }
           },
-          {
-            className: 'dt-center',
-            targets: 5,
-            width: '75px',
-            render: function (data, type, full, meta) {
-              var status = {
-                'hutang': {'title': 'Hutang', 'class': ' label-light-danger'},
-                'pembayaran': {'title': 'Hutang Dibayar', 'class': ' label-light-success'},
-              };
-              if (typeof status[data] === 'undefined') {
-                return data;
-              }
-              return '<span class="label label-lg font-weight-bold' + status[data].class + ' label-inline">' + status[data].title +
-                '</span>';
-            },
-          },
         ],
       }).on('draw', function () {
-        $('.btnPrintDotMatrix').on('click', function (e) {
+        $('.btnPrint').on('click', function (e) {
           e.preventDefault();
           $.ajax({
             url: '/backend/kasbon/' + $(this).attr('data-id') + '/dotmatrix',
@@ -154,7 +160,7 @@
         });
       });
 
-      $('#btnPrintDotMatrix').on('click', function (e) {
+      $('#btnPrint').on('click', function (e) {
         e.preventDefault();
         let selected = dataTable.column(0).checkboxes.selected();
         let dataSelected = [];
@@ -167,7 +173,7 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           },
           type: 'POST',
-          url: "{{ route('backend.kasbon.dotMatrixMultiple') }}",
+          url: "{{ route('backend.kasbon.print-dotMatrixMultiple') }}",
           data: {data: dataSelected},
           success: function (response) {
             if (response.status === "error") {
@@ -177,6 +183,16 @@
             }
           }
         });
+      });
+
+      $('#btnPrintBiasa').on('click', function (e) {
+        let selected = dataTable.column(0).checkboxes.selected();
+        let dataSelected = [];
+        $.each(selected, function (index, data) {
+          dataSelected.push(data);
+        });
+        let url = '{{ route('backend.kasbon.printMultiple') }}'+'?payment_kasbon_id='+dataSelected
+        window.open(url, '_blank');
       });
 
       $('#modalDelete').on('show.bs.modal', function (event) {

@@ -2,121 +2,80 @@
 <html>
 
 <head>
-  @foreach(config('layout.resources.css') as $style)
-    <link href="{{ config('layout.self.rtl') ? asset(Metronic::rtlCssPath($style)) : asset($style) }}" rel="stylesheet"
-          type="text/css"/>
-  @endforeach
   <style type="text/css">
-    .table-title tbody tr td {
-      padding-top: 0;
-      padding-bottom: 0;
-      line-height: 10px;
-    }
-
     @media print {
-      .table-title tbody tr td {
-        padding-top: 0;
-        padding-bottom: 0;
-        line-height: 10px;
-      }
-
       table {
-        page-break-after: auto;
+        border-collapse: collapse;
       }
 
-      tr {
-        page-break-inside: avoid;
-        page-break-after: auto;
+      .tableData, .tableData th, .tableData td {
+        border: 1px solid black;
+        padding: 2px;
       }
 
-      td {
-        page-break-inside: avoid;
-        page-break-after: auto;
-      }
 
-      thead {
-        display: table-row-group;
-      }
-
-      tfoot {
-        display: table-row-group;
-      }
-
-      body {
-        padding: 4em;
-        color: #fff;
-        background-color: #000;
-      }
-
-      hr {
-        border: 1px #000 solid;
-        width: 100%;
-        display: block;
-      }
-
-      @page {
-        size: A4 potrait;
-      }
     }
   </style>
 </head>
-
 <body>
-<div class="row justify-content-center py-8 px-8 px-md-0">
-  <div class="col-md-11">
-    <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Kasbon</u></h2>
-    <table class="table table-borderless table-title">
-      <tbody>
-      <tr>
-        <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $cooperationDefault['nickname'] ?? '' }}
-        </td>
-      </tr>
-      <tr>
-        <td scope="col" style="width:50%">{{ $cooperationDefault['address'] ?? '' }}</td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Supir</td>
-        <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $data->driver->name }}</td>
-      </tr>
-      <tr>
-        <td scope="col">{{ $cooperationDefault['telp'] ?? ''}}</td>
-        <td scope="col" class="text-left" style="width:10%"></td>
-        <td scope="col" class="text-left" style="padding-left:4rem;width:20%">Tanggal</td>
-        <td scope="col" class="text-left" style="width:2%">&ensp;: &ensp;</td>
-        <td scope="col" class="text-left" style="width:18%"> {{ $data->created_at }}</td>
-      </tr>
-      <tr>
-        <td scope="col">FAX {{ $cooperationDefault['fax'] ?? ''}}</td>
-      </tr>
-      </tbody>
-    </table>
-    <div class="separator separator-solid separator-border-1"></div>
-    <table class="table">
-      <thead>
-      <tr>
-        <th scope="col" class="text-left">Keterangan</th>
-        <th scope="col" class="text-right">Nominal</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td class="text-left">{{ $data->memo }}</td>
-        <td class="text-right">{{ number_format($data->amount, 2, '.', ',') }}</td>
-      </tr>
-      </tbody>
-    </table>
-    <div class="d-flex justify-content-around mt-20">
-      <div class="mr-20">
-        <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
-        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  auth()->user()->name }}</u></h5>
-      </div>
-      <div class="ml-20">
-        <h4 class="font-weight-bolder text-dark pb-30 text-center">Mengetahui</h4>
-        <h5 class="font-weight-bolder text-dark text-center text-uppercase"><u>{{  $data->driver->name }}</u></h5>
-      </div>
-    </div>
-  </div>
-</div>
+<table>
+  <tbody>
+  <tr>
+    <td colspan="3" style="width:50%; text-align: center; font-weight: bold">{{ $cooperationDefault['nickname'] ?? '' }}
+    </td>
+  </tr>
+  <tr>
+    <td style="width:33%;">{{ $cooperationDefault['address'] ?? '' }}</td>
+    <td style="width:33%"></td>
+    <td style="width:33%">Supir : {{ $data['driver']['name'] ?? '' }}</td>
+  </tr>
+  <tr>
+    <td style="width:33%;">Telp: {{ $cooperationDefault['phone'] ?? ''}}</td>
+    <td style="width:33%"></td>
+    <td style="width:33%">Tanggal: {{ \Carbon\Carbon::now()->format('d M Y') }}</td>
+  </tr>
+  </tbody>
+</table>
+<table class="tableData" style="margin-top: 30px; width: 100%; border: 1px solid black">
+  <thead>
+  <tr>
+    <th colspan="4" style="text-align: center">Kasbon</th>
+  </tr>
+  <tr>
+    <th style="text-align: center">Keterangan</th>
+    <th style="text-align: center">Tgl</th>
+    <th style="text-align: center">Jenis</th>
+    <th style="text-align: center">Nominal</th>
+  </tr>
+  </thead>
+  <tbody>
+  @foreach($data ?? array() as $item)
+    <tr>
+      <td style="text-align: left;">{{ $item['description'] ?? '' }}</td>
+      <td
+        style="text-align: left;">{{ $item['date_payment'] ? \Carbon\Carbon::createFromFormat('Y-m-d', $item['date_payment'])->format('d M Y') : '' }}</td>
+      <td style="text-align: left;">{{ ucwords($item['type']) ?? '' }}</td>
+      <td style="text-align: right; width: 125px">{{ number_format($item['payment'], 0, '.', ',') }}</td>
+    </tr>
+  @endforeach
+  </tbody>
+</table>
+<table style="width: 100%; margin-top: 50px">
+  <thead>
+  <tr>
+    <th style="text-align: center">Mengetahui</th>
+    <th style="width: 100px"></th>
+    <th style="text-align: center">Mengetahui</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr style="height: 120px">
+    <td style="text-align: center">{{ auth()->user()->name }}</td>
+    <td></td>
+    <td style="text-align: center">{{ $driverName ?? '' }}</td>
+  </tr>
+  </tbody>
+</table>
 </body>
 @foreach(config('layout.resources.js') as $script)
   <script src="{{ asset($script) }}" type="text/javascript"></script>

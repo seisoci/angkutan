@@ -58,8 +58,13 @@ class KasbonController extends Controller
     });
 
     if ($request->ajax()) {
-      $data = Kasbon::selectRaw("`kasbons`.*, `drivers`.`name` as `nama_supir`, `drivers`.`id` as `driver_id`")
+      $data = Kasbon::selectRaw("
+      `kasbons`.*,
+      `drivers`.`name` as `nama_supir`,
+      `drivers`.`id` as `driver_id`
+      ")
         ->leftJoin('drivers', 'drivers.id', '=', 'kasbons.driver_id');
+
       return DataTables::of($data)
         ->addColumn('action', function ($row) {
           return '
@@ -76,7 +81,6 @@ class KasbonController extends Controller
         ->addIndexColumn()
         ->make(true);
     }
-
 
     return view('backend.invoice.kasbon.index', compact('config', 'page_breadcrumbs', 'selectCoa', 'saldoGroup'));
   }
@@ -204,76 +208,74 @@ class KasbonController extends Controller
   {
     $config['page_title'] = "Detail Kasbon";
     $config['page_description'] = "Detail List Kasbon";
+    $config['print_url'] = route('backend.kasbon.print', $id);
+    $config['print_dotmatrix_url'] = route('backend.kasbon.print-dotmatrix', $id);
 
     $page_breadcrumbs = [
       ['page' => '/backend/kasbon', 'title' => "Kasbon"],
       ['page' => '#', 'title' => "Detail Kasbon"],
     ];
-    $data = Kasbon::with('driver')->where('driver_id', $id)->sole();
+    $data = Kasbon::with('driver')
+      ->where('driver_id', $id)
+      ->sole();
+
     return view('backend.invoice.kasbon.show', compact('config', 'page_breadcrumbs', 'data', 'id'));
   }
 
   public function print($id)
   {
     $config['page_title'] = "Detail Kasbon";
-    $config['print_url'] = "/backend/kasbon/$id/print";
     $page_breadcrumbs = [
       ['page' => '/backend/kasbon', 'title' => "Kasbon"],
       ['page' => '#', 'title' => "Detail Kasbon"],
     ];
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = Kasbon::with('driver')->findOrFail($id);
-    $result = '';
-    $item[] = ['no' => 1, 'nama' => $data->memo, 'nominal' => number_format($data->amount, 0, '.', ',')];
-    $paper = array(
-      'panjang' => 35,
-      'baris' => 31,
-      'spasi' => 2,
-      'column_width' => [
-        'header' => [35, 0],
-        'table' => [3, 21, 11],
-        'footer' => [18, 17]
-      ],
-      'header' => [
-        'left' => [
-          strtoupper($cooperationDefault['nickname']),
-          $cooperationDefault['address'],
-          'KASBON SUPIR',
-          'Nama: ' . $data->driver->name,
-          'Tgl Kasbon: ' . $this->convertToDate($data->created_at),
-        ],
-      ],
-      'footer' => [
-        ['align' => 'center', 'data' => ['Mengetahui', 'Mengetahui']],
-        ['align' => 'center', 'data' => ['', '']],
-        ['align' => 'center', 'data' => ['', '']],
-        ['align' => 'center', 'data' => [Auth::user()->name, $data->driver->name]],
-      ],
-      'table' => [
-        'header' => ['No', 'Keterangan', 'Nominal'],
-        'produk' => $item,
-        'footer' => array(
-          'catatan' => ''
-        )
-      ]
-    );
-//    $paper['footer'][] = [
-//      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
-//    ];
-    $printed = new ContinousPaper($paper);
-    $result .= $printed->output() . "\n";
-    return response($result, 200)->header('Content-Type', 'text/plain');
-//    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'profile'));
+    $item = PaymentKasbon::with('driver')->findOrFail($id);
+
+    $data[] = $item;
+    $driverName = $item['driver']['name'];
+
+    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'driverName', 'cooperationDefault'));
   }
 
-  public function dotMatrix($id)
+  public function printMultiple(Request $request){
+    $config['page_title'] = "Detail Kasbon";
+    $page_breadcrumbs = [
+      ['page' => '/backend/kasbon', 'title' => "Kasbon"],
+      ['page' => '#', 'title' => "Detail Kasbon"],
+    ];
+
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+    if (!$request['payment_kasbon_id']) {
+      return response()->json([
+        'status' => 'error',
+        'message' => 'Pilih Data Kasbon Terlebih Dahulu',
+      ]);
+    }
+    $split = explode(",", $request['payment_kasbon_id']);
+    $data = PaymentKasbon::with('driver')
+      ->whereIn('id', $split)
+      ->orderBy('date_payment', 'asc')
+      ->get();
+
+    $driverName = $data[0]['driver']['name'];
+
+    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault', 'driverName'));
+  }
+
+  public function printDotMatrix($id)
   {
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
     $data = PaymentKasbon::with('driver')->findOrFail($id);
     $result = '';
-    $item[] = ['no' => 1, 'nama' => $data->description, 'nominal' => number_format($data->payment, 0, '.', ',')];
+    $item[] = [
+      'no' => 1,
+      'nama' => $data->description,
+      'nominal' => number_format($data->payment, 0, '.', ',')
+    ];
+
     $paper = array(
       'panjang' => 35,
       'baris' => 31,
@@ -314,7 +316,7 @@ class KasbonController extends Controller
     return response($result, 200)->header('Content-Type', 'text/plain');
   }
 
-  public function dotMatrixMultiple(Request $request)
+  public function printDotMatrixMultiple(Request $request)
   {
     $cooperationDefault = Cooperation::where('default', '1')->first();
     if (!$request['data']) {
@@ -329,8 +331,8 @@ class KasbonController extends Controller
       ->get();
     $result = '';
     foreach ($data as $key => $itemKasbon):
-      $tgl  = Carbon::parse($itemKasbon->date_payment)->isoFormat('DD MMM YYYY');
-      $item[] = ['no' => ($key+1), 'nama' => ucfirst($itemKasbon->type)." ".$tgl, 'nominal' => number_format($itemKasbon->payment, 0, '.', ',')];
+      $tgl = Carbon::parse($itemKasbon->date_payment)->isoFormat('DD MMM YYYY');
+      $item[] = ['no' => ($key + 1), 'nama' => ucfirst($itemKasbon->type) . " " . $tgl, 'nominal' => number_format($itemKasbon->payment, 0, '.', ',')];
     endforeach;
     $paper = array(
       'panjang' => 35,
@@ -379,16 +381,17 @@ class KasbonController extends Controller
     return DataTables::of($data)
       ->addColumn('action', function ($row) use ($id) {
         return '
-              <div class="dropdown">
-                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-eye"></i>
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a href="#" class="dropdown-item btnPrintDotMatrix" data-id="' . $row->id . '">Print DotMatrix</a>
-                    <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="dropdown-item">Delete</a>
-                  </div>
-              </div>
-            ';
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a href="#" class="dropdown-item btnPrint" data-id="' . $row->id . '">Print DotMatrix</a>
+                  <a target="_blank" href="' . route('backend.kasbon.print', $row->id) . '" class="dropdown-item">Print Biasa</a>
+                  <a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="dropdown-item">Delete</a>
+                </div>
+            </div>
+          ';
       })
       ->addIndexColumn()
       ->make(true);
