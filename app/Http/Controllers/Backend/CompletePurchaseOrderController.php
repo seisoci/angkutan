@@ -10,7 +10,6 @@ use App\Models\Cooperation;
 use App\Models\InvoicePurchase;
 use App\Models\Journal;
 use App\Models\PaymentCompletePurchaseOrder;
-use App\Models\Prefix;
 use App\Models\SupplierSparepart;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;

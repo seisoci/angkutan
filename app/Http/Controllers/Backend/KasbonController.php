@@ -235,11 +235,13 @@ class KasbonController extends Controller
 
     $data[] = $item;
     $driverName = $item['driver']['name'];
+    $totalKasbon = $item['payment'];
 
-    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'driverName', 'cooperationDefault'));
+    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'driverName', 'cooperationDefault', 'totalKasbon'));
   }
 
-  public function printMultiple(Request $request){
+  public function printMultiple(Request $request)
+  {
     $config['page_title'] = "Detail Kasbon";
     $page_breadcrumbs = [
       ['page' => '/backend/kasbon', 'title' => "Kasbon"],
@@ -259,9 +261,18 @@ class KasbonController extends Controller
       ->orderBy('date_payment', 'asc')
       ->get();
 
+    $totalKasbon = 0;
+    foreach ($data as $item):
+      if ($item['type'] == 'hutang') {
+        $totalKasbon += $item['payment'];
+      } else {
+        $totalKasbon -= $item['payment'];
+      }
+    endforeach;
+
     $driverName = $data[0]['driver']['name'];
 
-    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault', 'driverName'));
+    return view('backend.invoice.kasbon.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault', 'driverName', 'totalKasbon'));
   }
 
   public function printDotMatrix($id)
@@ -308,9 +319,9 @@ class KasbonController extends Controller
         )
       ]
     );
-//    $paper['footer'][] = [
-//      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
-//    ];
+    $paper['footer'][] = [
+      'align' => 'center', 'data' => [str_pad('_', strlen(Auth::user()->name) + 2, '_', STR_PAD_RIGHT), str_pad('_', strlen($data->driver->name) + 2, '_', STR_PAD_RIGHT)]
+    ];
     $printed = new ContinousPaper($paper);
     $result .= $printed->output() . "\n";
     return response($result, 200)->header('Content-Type', 'text/plain');

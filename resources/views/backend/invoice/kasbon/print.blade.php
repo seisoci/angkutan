@@ -59,6 +59,12 @@
     </tr>
   @endforeach
   </tbody>
+  <tfoot>
+  <tr>
+    <td colspan="3" style="text-align: right">Total Kasbon</td>
+    <td style="text-align: right">{{ number_format($totalKasbon, 0, '.', ',') ?? '' }}</td>
+  </tr>
+  </tfoot>
 </table>
 <table style="width: 100%; margin-top: 50px">
   <thead>

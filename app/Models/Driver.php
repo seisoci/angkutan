@@ -42,6 +42,6 @@ class Driver extends Model
 
   public function kasbon()
   {
-    return $this->hasMany(Kasbon::class, 'driver_id');
+    return $this->hasOne(Kasbon::class, 'driver_id');
   }
 }
