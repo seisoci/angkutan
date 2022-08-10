@@ -17,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yajra\DataTables\Facades\DataTables;
 
-class ReportJobOrderController extends Controller
+class ReportJoborderController extends Controller
 {
   use CarbonTrait;
 
