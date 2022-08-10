@@ -6,6 +6,7 @@ use App\Helpers\ContinousPaper;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigCoa;
 use App\Models\Driver;
+use App\Models\InvoiceSalary;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\OperationalExpense;
@@ -29,7 +30,7 @@ class JobOrderController extends Controller
   {
     $this->middleware('permission:joborders-list|joborders-create|joborders-edit|joborders-delete', ['only' => ['index']]);
     $this->middleware('permission:joborders-create', ['only' => ['create', 'store']]);
-    $this->middleware('permission:joborders-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:joborders-edit|role:super-admin', ['only' => ['edit', 'update']]);
   }
 
   public function index(Request $request)
@@ -456,6 +457,17 @@ class JobOrderController extends Controller
             'table_ref' => 'joborders',
             'code_ref' => $data->id,
             'description' => "Penambahan Pendapatan joborder $prefix" . "-" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
+          ]);
+        }
+
+        if($data->invoice_salary_id){
+          $jobOrder = JobOrder::where('invoice_salary_id', $data->invoice_salary_id)->withSum('operationalexpense', 'amount')->get();
+          $total = 0;
+          foreach ($jobOrder as $item) {
+            $total += $item['total_salary'];
+          }
+          InvoiceSalary::find($data->invoice_salary_id)->update([
+            'grandtotal' => $total
           ]);
         }
 

@@ -68,6 +68,8 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::get('cooperation/select2', [Backend\CooperationController::class, 'select2'])->name('cooperation.select2');
     Route::get('banks/select2', [Backend\BankController::class, 'select2'])->name('banks.select2');
     Route::get('journals/select2', [Backend\JournalController::class, 'select2'])->name('journals.select2');
+    Route::get('opname/select2opname', [Backend\OpnameController::class, 'select2Opname'])->name('opname.select2opname');
+    Route::get('opname/select2invoice', [Backend\OpnameController::class, 'select2Invoice'])->name('opname.select2invoice');
 
     //Print
     Route::get('invoicesalaries/{id}/dotmatrix', [Backend\InvoiceSalaryController::class, 'dotMatrix']);

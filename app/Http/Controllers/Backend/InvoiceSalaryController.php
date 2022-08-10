@@ -119,7 +119,6 @@ class InvoiceSalaryController extends Controller
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
-//        $prefix = Prefix::findOrFail($request->prefix);
         $driver = Driver::findOrFail($request->driver_id);
         $coa = Coa::findOrFail($request->coa_id);
         $checksaldo = DB::table('journals')

@@ -28,7 +28,7 @@
                   </button>
                 </th>
                 <th class="text-left" scope="col">Produk</th>
-                <th class="text-left" scope="col">No. Invoice</th>
+                <th class="text-left" scope="col">Invoice</th>
                 <th class="text-center" scope="col">Stok Sistem</th>
                 <th class="text-center" scope="col">Stok Fisik</th>
                 <th class="text-center" scope="col">Selisih</th>
@@ -38,25 +38,23 @@
               <tr class="items" id="items_1">
                 <td></td>
                 <td style="width: 300px">
-                  <select class="form-control select2Stocks" name="items[sparepart_id][]" style="width: 300px"></select>
+                  <select class="form-control select2Stocks" name="items[sparepart_id][]" style="width: 100%"></select>
                 </td>
-                <td style="width: 225px"><select class="form-control select2Invoice" name="items[stock_id][]"
-                                                 style="width: 225px"></select></td>
-                <td style="width: 75px"><input type="text" name="items[qty_system][]"
-                                               class="form-control rounded-0 unit" disabled style="min-width: 75px"/>
+                <td style="width: 300px">
+                  <select class="form-control select2Invoice" name="items[invoice_purchase_id][]"
+                          style="width: 100%"></select>
                 </td>
-                <td><input type="hidden" name="items[invoice_purchase_id][]">
+                <td style="width: 125px">
+                  <input type="text" name="items[qty_system][]" class="form-control rounded-0 unit" disabled/>
+                  <input type="hidden" name="items[price][]" class="form-control rounded-0 unit"/>
+                </td>
+                <td style="width: 125px">
                   <input
-                    type="number" name="items[qty_now][]"
-                    class="unit rounded-0 form-control"
-                    style="width: 75px"/>
+                    type="text" name="items[qty_now][]"
+                    class="unit rounded-0 form-control"/>
                 </td>
-                <td><input type="hidden" name="items[qty_difference][]" class="qtyDifference"><input type="hidden"
-                                                                                                     name="items[price][]">
-                  <input type="number"
-                         class="unit rounded-0 form-control qtyDifference"
-                         style="width: 75px"
-                         disabled/>
+                <td style="width: 125px"><input type="hidden" name="items[qty_difference][]" class="qtyDifference">
+                  <input type="text" class="unit rounded-0 form-control qtyDifference" disabled/>
                 </td>
               </tr>
               </tbody>
@@ -107,7 +105,7 @@
           placeholder: "Search SparePart",
           allowClear: true,
           ajax: {
-            url: "{{ route('backend.stocks.select2') }}",
+            url: "{{ route('backend.opname.select2opname') }}",
             dataType: "json",
             delay: 250,
             cache: true,
@@ -118,20 +116,14 @@
               }
             },
           },
-        }).on('change', function () {
-          let $row = $(this).closest("tr");
-          $row.find('select[name="items[stock_id][]"]').val("");
-          $row.find('select[name="items[stock_id][]"]').trigger("change");
-          $row.find('input[name="items[invoice_purchase_id][]"]').val('');
-          $row.find('input[name="items[qty_system][]"]').val('');
-          $row.find('input[name="items[price][]"]').val('');
+        }).on('change', function (e) {
         });
 
         $(".select2Invoice").select2({
-          placeholder: "Search Invoice",
+          placeholder: "Search SparePart",
           allowClear: true,
           ajax: {
-            url: "{{ route('backend.stocks.select2Opname') }}",
+            url: "{{ route('backend.opname.select2invoice') }}",
             dataType: "json",
             delay: 250,
             cache: true,
@@ -143,16 +135,11 @@
               }
             },
           },
-        }).on('change', function (evt) {
+        }).on('change', function (e) {
+        }).on('select2:select', function (e) {
           let $row = $(this).closest("tr");
-          $row.find('input[name="items[qty_system][]"]').val('');
-        }).on('select2:select', function (evt) {
-          let $row = $(this).closest("tr");
-          $row.find('input[name="items[qty_system][]"]').val(evt.params.data.qty);
-          $row.find('input[name="items[invoice_purchase_id][]"]').val(evt.params.data.invoice_purchase_id);
-          $row.find('input[name="items[price][]"]').val(evt.params.data.price);
-          $row.find('input[name="items[qty_now][]"]').attr('max', evt.params.data.qty);
-
+          $row.find('input[name="items[qty_system][]"]').val(e.params.data.qty);
+          $row.find('input[name="items[price][]"]').val(e.params.data.price);
         });
       }
 
@@ -171,15 +158,9 @@
           let $row = $(this).closest("tr"); //<table> class
           let qty_system = parseInt($row.find('input[name="items[qty_system][]"]').val());
           let qty_now = parseInt($row.find('input[name="items[qty_now][]"]').val());
-          qty_difference = qty_now - qty_system;
+          let qty_difference = qty_now - qty_system;
           $row.find('.qtyDifference').val(qty_difference);
-        });
-        $('input[name^="items[qty_now]"]').on('change', function () {
-          let $row = $(this).closest("tr"); //<table> class
-          let qty_system = parseInt($row.find('input[name="items[qty_system][]"]').val());
-          let qty_now = parseInt($row.find('input[name="items[qty_now][]"]').val());
-          qty_difference = qty_now - qty_system;
-          $row.find('.qtyDifference').val(qty_difference);
+          console.log(qty_difference);
         });
       }
 
@@ -208,21 +189,20 @@
       function raw_items(nextindex) {
         return "<td><button id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>" +
           '<td style="width: 300px">' +
-          '   <select class="form-control select2Stocks" name="items[sparepart_id][]" style="width: 300px"></select>' +
+          '   <select class="form-control select2Stocks" name="items[sparepart_id][]" style="width: 100%"></select></td>' +
+          '<td style="width: 300px">' +
+          '   <select class="form-control select2Invoice" name="items[invoice_purchase_id][]" style="width: 100%"></select>' +
           '</td>' +
-          '<td style="width: 225px"><select class="form-control select2Invoice" name="items[stock_id][]"' +
-          '   style="width: 225px"></select></td>' +
-          '<td style="width: 75px"><input type="text" name="items[qty_system][]"' +
-          '   class="form-control rounded-0 unit" disabled style="min-width: 75px"/>' +
+          '<td style="width: 125px">' +
+          '<input type="text" name="items[qty_system][]" class="form-control rounded-0 unit" disabled/>' +
+          '<input type="hidden" name="items[price][]" class="form-control rounded-0 unit"/>' +
           '</td>' +
-          '<td><input type="hidden" name="items[invoice_purchase_id][]">' +
-          '   <input' +
-          '      type="number" name="items[qty_now][]"' +
-          '      class="unit rounded-0 form-control"' +
-          '      style="width: 75px"/>' +
+          '<td style="width: 125px">' +
+          '   <input type="text" name="items[qty_now][]" class="form-control"/>' +
           '</td>' +
-          '<td><input type="hidden" name="items[qty_difference][]" class="qtyDifference"><input type="hidden" name="items[price][]"><input type="number" class="unit rounded-0 form-control qtyDifference"' +
-          '   style="width: 75px" disabled/>' +
+          '<td style="width: 125px"><input type="hidden" name="items[qty_difference][]" class="qtyDifference">' +
+          '<input type="text" class="unit rounded-0 form-control qtyDifference"' +
+          '    disabled/>' +
           '</td>'
       }
 

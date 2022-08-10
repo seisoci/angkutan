@@ -96,11 +96,12 @@
         <thead>
           <tr>
             <th style="width:5%">No</th>
-            <th style="width:10%">Tgl. Muat</th>
-            <th style="width:10%">Muatan</th>
-            <th style="width:50%">Rute</th>
-            <th style="width:15%">Muatan</th>
-            <th class="text-right" style="width:15%">Nominal</th>
+            <th style="width:100px">Tgl. Muat</th>
+            <th style="width:150px">No. JO</th>
+            <th style="width:100px">No. Pol</th>
+            <th style="width:200px">Pelanggan</th>
+            <th style="width:200px">Rute</th>
+            <th class="text-right" style="width:100px">Nominal</th>
           </tr>
         </thead>
         <tbody>
@@ -108,14 +109,15 @@
           <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $item->date_begin }}</td>
-            <td>{{ $item->costumer->cooperation->nickname, }}</td>
-            <td>{{ $item->routefrom->name . '-' . $item->routeto->name }}</td>
-            <td>{{ $item->cargo->name }}</td>
+            <td>{{ $item->num_prefix }}</td>
+            <td>{{ $item->transport->num_pol }}</td>
+            <td>{{ $item->costumer->name }}</td>
+            <td>{{ $item->routefrom->name }} -> {{ $item->routeto->name }}</td>
             <td class="text-right">{{ number_format($item->total_salary ?? 0, 2, ',', '.') }}</td>
           </tr>
           @endforeach
           <tr>
-            <td colspan="4" class="text-left font-weight-bolder">
+            <td colspan="5" class="text-left font-weight-bolder">
               {{ ucwords(Terbilang::terbilang($data->grandtotal)) }}
             </td>
             <td class="text-right font-weight-bolder text-uppercase">TOTAL DITERIMA:</td>

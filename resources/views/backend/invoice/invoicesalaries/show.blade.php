@@ -72,6 +72,7 @@
               <th style="width:5%">#</th>
               <th style="width:10%">Tgl Muat</th>
               <th style="width:15%">No. Job Order</th>
+              <th style="width:10%">No. Pol</th>
               <th style="width:30%">PELANGGAN</th>
               <th style="width:30%">RUTE</th>
               <th class="text-right" style="width:15%">JUMLAH</th>
@@ -83,13 +84,14 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $item->date_begin }}</td>
                 <td>{{ $item->num_prefix }}</td>
+                <td>{{ $item->transport->num_pol }}</td>
                 <td>{{ $item->costumer->name }}</td>
                 <td>{{ $item->routefrom->name }} -> {{ $item->routeto->name }}</td>
                 <td class="text-right">{{ number_format($item->total_salary ?? 0, 2, ',', '.') }}</td>
               </tr>
             @endforeach
             <tr>
-              <td colspan="4" class="text-left font-weight-bolder">
+              <td colspan="5" class="text-left font-weight-bolder">
                 {{ ucwords(Terbilang::terbilang($data->grandtotal)) }}
               </td>
               <td class="text-right font-weight-bolder text-uppercase">TOTAL DITERIMA:</td>
