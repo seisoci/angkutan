@@ -30,7 +30,7 @@ class JobOrderController extends Controller
   {
     $this->middleware('permission:joborders-list|joborders-create|joborders-edit|joborders-delete', ['only' => ['index']]);
     $this->middleware('permission:joborders-create', ['only' => ['create', 'store']]);
-    $this->middleware('permission:joborders-edit|role:super-admin', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:joborders-edit', ['only' => ['edit', 'update']]);
   }
 
   public function index(Request $request)
