@@ -432,8 +432,12 @@ return [
           'title' => 'Laporan Gaji & Hutang',
           'bullet' => 'dot',
           'arrow' => true,
-          'list' => ['reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees'],
+          'list' => ['reportkasbondrivers', 'reportsalarydrivers', 'reportrecapkasbondrivers', 'reportkasbonemployees', 'reportsalaryemployees'],
           'submenu' => [
+            [
+              'title' => 'Laporan Rekap Hutang Supir',
+              'page' => 'backend/reportrecapkasbondrivers'
+            ],
             [
               'title' => 'Laporan Hutang Supir',
               'page' => 'backend/reportkasbondrivers'
@@ -475,7 +479,7 @@ return [
               'page' => 'backend/reportusageitemoutside'
             ],
             [
-              'title' => 'Laporan Seluruh Pembelian Barang',
+              'title' => 'Laporan Pemakaian Barang',
               'page' => 'backend/reportusageinsideoutside'
             ],
             [

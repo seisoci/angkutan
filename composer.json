@@ -19,7 +19,6 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.2",
         "mike42/escpos-php": "^3.0",
-        "mpdf/mpdf": "8.0.7",
         "spatie/laravel-activitylog": "^3.17",
         "spatie/laravel-permission": "^4.0",
         "yajra/laravel-datatables-buttons": "^4.0",

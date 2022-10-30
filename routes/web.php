@@ -311,5 +311,6 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('reportpiutangbelumlunas', Backend\ReportPiutangBelumLunasController::class);
     Route::resource('completepurchaseorder', Backend\CompletePurchaseOrderController::class);
     Route::resource('reportusageinsideoutside', Backend\ReportUsageItemInsideOutsideController::class);
+    Route::resource('reportrecapkasbondrivers', Backend\ReportRecapKasbonDriverController::class);
   });
 });
