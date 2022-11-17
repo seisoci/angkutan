@@ -174,11 +174,11 @@ class SubmissionController extends Controller
 
             $roadMoneySystem = $data->road_money;
             $roadMoneyPrev = JobOrder::where([
-                ['driver_id', $data['driver_id']],
-                ['transport_id', $data['transport_id']],
-                ['status_cargo', 'selesai'],
-                ['id', '<', $data->id],
-              ])->orderBy('created_at', 'desc')->first()->road_money_extra ?? 0;
+              ['driver_id', $data['driver_id']],
+              ['transport_id', $data['transport_id']],
+              ['status_cargo', 'selesai'],
+              ['id', '<', $data->id],
+            ])->orderBy('created_at', 'desc')->first()->road_money_extra ?? 0;
 
             $roadMoney = OperationalExpense::where([
               ['type', 'roadmoney'],
@@ -199,11 +199,11 @@ class SubmissionController extends Controller
                 $roadMoneySystemNext = JobOrder::with('roadmoneydetail')->find($item->id);
 
                 $roadMoneyPrevNext = JobOrder::where([
-                    ['driver_id', $data['driver_id']],
-                    ['transport_id', $data['transport_id']],
-                    ['status_cargo', 'selesai'],
-                    ['id', '<', $item->id]
-                  ])->orderBy('created_at', 'desc')->first()->road_money_extra ?? 0;
+                  ['driver_id', $data['driver_id']],
+                  ['transport_id', $data['transport_id']],
+                  ['status_cargo', 'selesai'],
+                  ['id', '<', $item->id]
+                ])->orderBy('created_at', 'desc')->first()->road_money_extra ?? 0;
 
                 $roadMoneyNext = OperationalExpense::where([
                   ['type', 'roadmoney'],
@@ -305,9 +305,16 @@ class SubmissionController extends Controller
     if ($request->ajax()) {
       $data = JobOrder::selectRaw('
         `operational_expenses`.`created_at` AS `tgl_dibuat`,
-        `operational_expenses`.`amount`
+        `operational_expenses`.`amount`,
+        `operational_expenses`.`description`,
+        `costumers`.`name` AS `customer_name`,
+        `rf`.`name` AS `route_from`,
+        `rt`.`name` AS `route_to`
       ')
         ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
+        ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
+        ->leftJoin('routes AS rf', 'rf.id', '=', 'job_orders.route_from')
+        ->leftJoin('routes AS rt', 'rf.id', '=', 'job_orders.route_to')
         ->where([
           ['driver_id', $request['driver_id']],
           ['transport_id', $request['transport_id']],

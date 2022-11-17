@@ -145,11 +145,15 @@
             </div>
             <h6>History Pengajuan Uang Jalan</h6>
             <div class="table-responsive mb-4">
-              <table class="table table-bordered" id="DatatableHistory">
+              <table class="table table-bordered w-100" id="DatatableHistory">
                 <thead>
                 <tr>
-                  <th>Tgl</th>
+                  <th>Tgl Pengajuan</th>
+                  <th>Pelanggan</th>
+                  <th>Dari</th>
+                  <th>Tujuan</th>
                   <th>Nominal</th>
+                  <th>Deskripsi</th>
                 </tr>
                 </thead>
               </table>
@@ -331,8 +335,7 @@
       });
 
       var dataTableHistory = $('#DatatableHistory').DataTable({
-        responsive: false,
-        scrollX: true,
+        responsive: true,
         processing: true,
         serverSide: true,
         order: [[0, 'desc']],
@@ -350,12 +353,16 @@
         },
         columns: [
           {data: 'tgl_dibuat', name: 'operational_expenses.created_at'},
+          {data: 'customer_name', name: 'costumer.name'},
+          {data: 'route_from', name: 'rf.name'},
+          {data: 'route_to', name: 'rt.name'},
           {
             data: 'amount',
             name: 'operational_expenses.amount',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right',
           },
+          {data: 'description', name: 'operational_expenses.description'},
         ],
       });
 
