@@ -16,6 +16,7 @@ use App\Models\Setting;
 use App\Models\Stock;
 use App\Models\SupplierSparepart;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -116,7 +117,7 @@ class InvoiceReturPurchaseController extends Controller
           'invoice_purchase_id' => $request->input('invoice_purchase_id'),
           'prefix' => 'RETUR',
           'num_bill' => $request->input('num_bill'),
-          'invoice_date' => $request->input('invoice_date'),
+          'invoice_date' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
           'discount' => $discount,
           'total_payment' => $totalPayment,
         ]);
@@ -124,7 +125,7 @@ class InvoiceReturPurchaseController extends Controller
         if ($discount > 0) {
           Journal::create([
             'coa_id' => 42,
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'debit' => $discount,
             'kredit' => 0,
             'table_ref' => 'invoicereturpurchases',
@@ -135,7 +136,7 @@ class InvoiceReturPurchaseController extends Controller
 
         Journal::create([
           'coa_id' => 17,
-          'date_journal' => $request->input('invoice_date'),
+          'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
           'debit' => 0,
           'kredit' => $totalPayment + $discount,
           'table_ref' => 'invoicereturpurchases',
@@ -145,7 +146,7 @@ class InvoiceReturPurchaseController extends Controller
 
         Journal::create([
           'coa_id' => $request->input('coa_id'),
-          'date_journal' => $request->input('invoice_date'),
+          'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
           'debit' => $totalPayment,
           'kredit' => 0,
           'table_ref' => 'invoicereturpurchases',

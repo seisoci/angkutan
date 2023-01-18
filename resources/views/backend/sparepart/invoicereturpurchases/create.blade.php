@@ -28,19 +28,11 @@
                            placeholder="Tanggal Invoice" readonly>
                   </div>
                 </div>
-{{--                <div class="form-group row">
-                  <label class="col-lg-5 col-form-label">Prefix:</label>
-                  <div class="col-lg-6">
-                    <select name="prefix" class="form-control" id="select2Prefix">
-                    </select>
-                  </div>
-                </div>--}}
                 <div class="form-group row">
                   <label class="col-lg-5 col-form-label">No. Retur Pembelian:</label>
                   <div class="col-lg-6">
                     <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                     <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
-                    </select>
                   </div>
                 </div>
                 <div class="form-group row">
@@ -48,6 +40,11 @@
                   <div class="col-lg-6">
                     <select class="form-control rounded-0" name="supplier_sparepart_id" id="select2Suppliers">
                     </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-lg-5 col-form-label"></label>
+                  <div class="col-lg-6">
                   </div>
                 </div>
               </div>
@@ -319,11 +316,23 @@
       }
 
       function initDate() {
-        $('.datepicker').datepicker({
-          format: 'yyyy-mm-dd',
-          todayBtn: "linked",
-          clearBtn: true,
-          todayHighlight: true,
+        $(".datePicker").flatpickr({
+          disableMobile: true,
+          enableTime: true,
+          dateFormat: "Y-m-d H:i:s",
+          time_24hr: true,
+          defaultDate: new Date(),
+          onOpen: function(selectedDates, dateStr, instance) {
+            instance.setDate(new Date(), true, 'Y-m-d H:i:s');
+          },
+          onReady: function (dateObj, dateStr, instance) {
+            const $clear = $('<button class="btn btn-danger btn-sm flatpickr-clear mb-2">Clear</button>')
+              .on('click', () => {
+                instance.clear();
+                instance.close();
+              })
+              .appendTo($(instance.calendarContainer));
+          }
         });
       }
 

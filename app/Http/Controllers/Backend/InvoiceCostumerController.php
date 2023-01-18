@@ -179,7 +179,7 @@ class InvoiceCostumerController extends Controller
         if (($totalCut ?? 0) > 0) {
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $request['invoice_date'],
+            'date_journal' => $request['invoice_date']." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $totalCut,
             'table_ref' => 'invoicecostumers',
@@ -189,7 +189,7 @@ class InvoiceCostumerController extends Controller
 
           Journal::create([
             'coa_id' => 46,
-            'date_journal' => $request['invoice_date'],
+            'date_journal' => $request['invoice_date']." ".Carbon::now()->format('H:i:s'),
             'debit' => $totalCut,
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
@@ -201,7 +201,7 @@ class InvoiceCostumerController extends Controller
         if (($totalPiutang ?? 0) > 0) {
           Journal::create([
             'coa_id' => 52,
-            'date_journal' => $request['invoice_date'],
+            'date_journal' => $request['invoice_date']." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $totalPiutang,
             'table_ref' => 'invoicecostumers',
@@ -211,7 +211,7 @@ class InvoiceCostumerController extends Controller
 
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $request['invoice_date'],
+            'date_journal' => $request['invoice_date']." ".Carbon::now()->format('H:i:s'),
             'debit' => $totalPiutang,
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
@@ -395,7 +395,7 @@ class InvoiceCostumerController extends Controller
         if (($totalCut ?? 0) > 0) {
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $data->invoice_date,
+            'date_journal' => $data->invoice_date." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $totalCut,
             'table_ref' => 'invoicecostumers',
@@ -405,7 +405,7 @@ class InvoiceCostumerController extends Controller
 
           Journal::create([
             'coa_id' => 46,
-            'date_journal' => $data->invoice_date,
+            'date_journal' => $data->invoice_date." ".Carbon::now()->format('H:i:s'),
             'debit' => $totalCut,
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
@@ -417,7 +417,7 @@ class InvoiceCostumerController extends Controller
         if (($totalPiutang ?? 0) > 0) {
           Journal::create([
             'coa_id' => 52,
-            'date_journal' => $data->invoice_date,
+            'date_journal' => $data->invoice_date." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $totalPiutang,
             'table_ref' => 'invoicecostumers',
@@ -427,7 +427,7 @@ class InvoiceCostumerController extends Controller
 
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $data->invoice_date,
+            'date_journal' => $data->invoice_date." ".Carbon::now()->format('H:i:s'),
             'debit' => $totalPiutang,
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
@@ -440,14 +440,14 @@ class InvoiceCostumerController extends Controller
           PaymentCostumer::create([
             'invoice_costumer_id' => $data->id,
             'coa_id' => $request->input('coa_id'),
-            'date_payment' => $request->input('payment.date_payment'),
+            'date_payment' => $request->input('payment.date_payment')." ".Carbon::now()->format('H:i:s'),
             'payment' => $request->input('payment.payment'),
             'description' => $request->input('payment.description'),
           ]);
 
           Journal::create([
             'coa_id' => $request->input('coa_id'),
-            'date_journal' => $request->input('payment.date_payment'),
+            'date_journal' => $request->input('payment.date_payment')." ".Carbon::now()->format('H:i:s'),
             'debit' => $request->input('payment.payment'),
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',
@@ -457,7 +457,7 @@ class InvoiceCostumerController extends Controller
 
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $request->input('payment.date_payment'),
+            'date_journal' => $request->input('payment.date_payment')." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $request->input('payment.payment'),
             'table_ref' => 'invoicecostumers',
@@ -571,7 +571,7 @@ class InvoiceCostumerController extends Controller
         if (($checksaldo->saldo ?? FALSE) && $data->total_tax <= $checksaldo->saldo) {
           Journal::create([
             'coa_id' => $request->input('coa_id'),
-            'date_journal' => $this->dateNow(),
+            'date_journal' => Carbon::now()->toDateTimeString(),
             'debit' => 0,
             'kredit' => $request->input('type') == 'tax' ? $data->total_tax : $data->total_fee_thanks,
             'table_ref' => 'invoicecostumers',
@@ -581,7 +581,7 @@ class InvoiceCostumerController extends Controller
 
           Journal::create([
             'coa_id' => $request->input('type') == 'tax' ? 53 : 54,
-            'date_journal' => $this->dateNow(),
+            'date_journal' => Carbon::now()->toDateTimeString(),
             'debit' => $request->input('type') == 'tax' ? $data->total_tax : $data->total_fee_thanks,
             'kredit' => 0,
             'table_ref' => 'invoicecostumers',

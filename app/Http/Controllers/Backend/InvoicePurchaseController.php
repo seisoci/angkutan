@@ -16,6 +16,7 @@ use App\Models\Stock;
 use App\Models\SupplierSparepart;
 use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -234,7 +235,7 @@ class InvoicePurchaseController extends Controller
         } elseif ($restPayment > 0) {
           Journal::create([
             'coa_id' => 15,
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $restPayment,
             'table_ref' => 'invoicepurchases',
@@ -246,7 +247,7 @@ class InvoicePurchaseController extends Controller
         if (!($discount <= 0)) {
           Journal::create([
             'coa_id' => 42,
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $discount,
             'table_ref' => 'invoicepurchases',
@@ -257,7 +258,7 @@ class InvoicePurchaseController extends Controller
 
         Journal::create([
           'coa_id' => 17,
-          'date_journal' => $request->input('invoice_date'),
+          'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
           'debit' => $totalBill,
           'kredit' => 0,
           'table_ref' => 'invoicepurchases',
@@ -310,7 +311,7 @@ class InvoicePurchaseController extends Controller
       ->with(['purchases', 'supplier'])
       ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
       ->firstOrFail();
-    
+
     return view('backend.sparepart.invoicepurchases.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
@@ -470,7 +471,7 @@ class InvoicePurchaseController extends Controller
 
             Journal::create([
               'coa_id' => $payments['coa'][$key],
-              'date_journal' => $payments['date'][$key],
+              'date_journal' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
               'debit' => 0,
               'kredit' => $payments['payment'][$key],
               'table_ref' => 'invoicepurchases',
@@ -480,7 +481,7 @@ class InvoicePurchaseController extends Controller
 
             Journal::create([
               'coa_id' => 15,
-              'date_journal' => $payments['date'][$key],
+              'date_journal' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
               'debit' => $payments['payment'][$key],
               'kredit' => 0,
               'table_ref' => 'invoicepurchases',

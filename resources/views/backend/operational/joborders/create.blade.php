@@ -26,7 +26,7 @@
             <div class="form-group">
               <label>Tanggal Muat</label>
               <div class="input-group date">
-                <input type="text" class="form-control datepicker" name="date_begin" readonly="readonly"
+                <input type="text" class="form-control datePicker" name="date_begin" readonly="readonly"
                        placeholder="Tanggal Muat">
                 <div class="input-group-append">
                 <span class="input-group-text">
@@ -349,9 +349,21 @@
         placeholder: '0.00'
       });
 
-      $('.datepicker').datepicker({
-        format: 'yyyy-mm-dd',
-        todayHighlight: !0,
+      $(".datePicker").flatpickr({
+        disableMobile: true,
+        dateFormat: "Y-m-d",
+        defaultDate: new Date(),
+        onOpen: function(selectedDates, dateStr, instance) {
+          instance.setDate(new Date(), true, 'Y-m-d');
+        },
+        onReady: function (dateObj, dateStr, instance) {
+          const $clear = $('<button class="btn btn-danger btn-sm flatpickr-clear mb-2">Clear</button>')
+            .on('click', () => {
+              instance.clear();
+              instance.close();
+            })
+            .appendTo($(instance.calendarContainer));
+        }
       });
 
       $("#select2Prefix").select2({

@@ -441,7 +441,7 @@ class JobOrderController extends Controller
 
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $data->date_begin,
+            'date_journal' => $data['date_begin']." ".Carbon::now()->format('H:i:s'),
             'debit' => $data->total_basic_price,
             'kredit' => 0,
             'table_ref' => 'joborders',
@@ -451,7 +451,7 @@ class JobOrderController extends Controller
 
           Journal::create([
             'coa_id' => 52,
-            'date_journal' => $data->date_begin,
+            'date_journal' => $data['date_begin']." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $data->total_basic_price,
             'table_ref' => 'joborders',
@@ -589,7 +589,7 @@ class JobOrderController extends Controller
 
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $data->date_begin,
+            'date_journal' => $data['date_begin']." ".Carbon::now()->format('H:i:s'),
             'debit' => $data->total_basic_price,
             'kredit' => 0,
             'table_ref' => 'joborders',
@@ -599,7 +599,7 @@ class JobOrderController extends Controller
 
           Journal::create([
             'coa_id' => 52,
-            'date_journal' => $data->date_begin,
+            'date_journal' => $data['date_begin']." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $data->total_basic_price,
             'table_ref' => 'joborders',
@@ -639,7 +639,7 @@ class JobOrderController extends Controller
 
           Journal::create([
             'coa_id' => 43,
-            'date_journal' => $data->date_begin,
+            'date_journal' => $data['date_begin']." ".Carbon::now()->format('H:i:s'),
             'debit' => $data->total_basic_price,
             'kredit' => 0,
             'table_ref' => 'joborders',
@@ -649,7 +649,7 @@ class JobOrderController extends Controller
 
           Journal::create([
             'coa_id' => 52,
-            'date_journal' => $data->date_begin,
+            'date_journal' => $data['date_begin']." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $data->total_basic_price,
             'table_ref' => 'joborders',

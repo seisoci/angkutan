@@ -154,7 +154,7 @@ class SubmissionController extends Controller
           if (($checksaldo->saldo ?? FALSE) && $operationalExpense->amount <= $checksaldo->saldo) {
             Journal::create([
               'coa_id' => $request['coa_id'],
-              'date_journal' => $data->date_begin,
+              'date_journal' => $data['date_begin']." ".Carbon::now()->format('H:i:s'),
               'debit' => 0,
               'kredit' => $operationalExpense->amount,
               'table_ref' => 'operationalexpense',
@@ -164,7 +164,7 @@ class SubmissionController extends Controller
 
             Journal::create([
               'coa_id' => 50,
-              'date_journal' => $data->date_begin,
+              'date_journal' => $data['date_begin']." ".Carbon::now()->format('H:i:s'),
               'debit' => $operationalExpense->amount,
               'kredit' => 0,
               'table_ref' => 'operationalexpense',
@@ -222,7 +222,7 @@ class SubmissionController extends Controller
 
                   Journal::create([
                     'coa_id' => $request['coa_id'],
-                    'date_journal' => $item->date_begin,
+                    'date_journal' => $item['date_begin']." ".Carbon::now()->format('H:i:s'),
                     'debit' => 0,
                     'kredit' => $itemChild->amount,
                     'table_ref' => 'operationalexpense',
@@ -232,7 +232,7 @@ class SubmissionController extends Controller
 
                   Journal::create([
                     'coa_id' => 50,
-                    'date_journal' => $item->date_begin,
+                    'date_journal' => $item['date_begin']." ".Carbon::now()->format('H:i:s'),
                     'debit' => $itemChild->amount,
                     'kredit' => 0,
                     'table_ref' => 'operationalexpense',
@@ -314,7 +314,7 @@ class SubmissionController extends Controller
         ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
         ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
         ->leftJoin('routes AS rf', 'rf.id', '=', 'job_orders.route_from')
-        ->leftJoin('routes AS rt', 'rf.id', '=', 'job_orders.route_to')
+        ->leftJoin('routes AS rt', 'rt.id', '=', 'job_orders.route_to')
         ->where([
           ['driver_id', $request['driver_id']],
           ['transport_id', $request['transport_id']],

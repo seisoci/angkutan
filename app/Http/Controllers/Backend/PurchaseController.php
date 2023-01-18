@@ -45,12 +45,8 @@ class PurchaseController extends Controller
       ]);
 
       if($validator->passes()){
-        // dd($request->all());
         try {
           DB::beginTransaction();
-          // $invoice_date = Carbon::parse()->timezone('Asia/Jakarta')->format('Ymd');
-          // $invoice_num  = $invoice_db['num'] != NULL ? $invoice_db['num'] : 1;
-          // $invoice_db  = InvoicePurchase::select(DB::raw('MAX(SUBSTRING_INDEX(num_bill, "-", -1)+1) AS `num`'))->first();
           $totalBill    = 0;
           $totalPayment = 0;
           $restPayment  = 0;

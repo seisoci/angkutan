@@ -11,6 +11,7 @@ use App\Models\Employee;
 use App\Models\Journal;
 use App\Models\KasbonEmployee;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -127,7 +128,7 @@ class KasbonEmployeeController extends Controller
           ]);
           Journal::create([
             'coa_id' => 8,
-            'date_journal' => $this->dateNow(),
+            'date_journal' => Carbon::now()->toDateTimeString(),
             'debit' => $request->input('amount'),
             'kredit' => 0,
             'table_ref' => 'kasbonemployees',
@@ -136,7 +137,7 @@ class KasbonEmployeeController extends Controller
           ]);
           Journal::create([
             'coa_id' => $request->input('coa_id'),
-            'date_journal' => $this->dateNow(),
+            'date_journal' => Carbon::now()->toDateTimeString(),
             'debit' => 0,
             'kredit' => $request->input('amount'),
             'table_ref' => 'kasbonemployees',

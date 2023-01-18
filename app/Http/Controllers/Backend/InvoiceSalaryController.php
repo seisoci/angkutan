@@ -135,7 +135,7 @@ class InvoiceSalaryController extends Controller
             'prefix' => 'GAJI',
             'num_bill' => $request->input('num_bill'),
             'driver_id' => $request->input('driver_id'),
-            'invoice_date' => $request->input('invoice_date'),
+            'invoice_date' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'grandtotal' => $request->input('grand_total'),
             'description' => $request->input('description'),
             'memo' => $request->input('memo'),
@@ -151,7 +151,7 @@ class InvoiceSalaryController extends Controller
 
           Journal::create([
             'coa_id' => $request->input('coa_id'),
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $request->input('grand_total'),
             'table_ref' => 'invoicesalaries',
@@ -161,7 +161,7 @@ class InvoiceSalaryController extends Controller
 
           Journal::create([
             'coa_id' => 37,
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'debit' => $request->input('grand_total'),
             'kredit' => 0,
             'table_ref' => 'invoicesalaries',

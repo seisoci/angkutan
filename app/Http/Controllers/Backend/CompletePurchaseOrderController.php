@@ -12,6 +12,7 @@ use App\Models\Journal;
 use App\Models\PaymentCompletePurchaseOrder;
 use App\Models\SupplierSparepart;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -130,7 +131,6 @@ class CompletePurchaseOrderController extends Controller
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
-//        $prefix = Prefix::find($request['prefix']);
         $totalBill = InvoicePurchase::whereIn('id', $request['invoice_purchase_id'])->sum('rest_payment');
         $totalPayment = $request['payment']['payment'] ?? 0;
         $restPayment = $totalBill - $totalPayment;
@@ -146,7 +146,8 @@ class CompletePurchaseOrderController extends Controller
           'memo' => $request['memo'],
         ]);
 
-        InvoicePurchase::whereIn('id', $request['invoice_purchase_id'])->update(['complete_purchase_order_id' => $invoice->id]);
+        InvoicePurchase::whereIn('id', $request['invoice_purchase_id'])
+          ->update(['complete_purchase_order_id' => $invoice->id]);
 
         $coa = Coa::findOrFail($request['payment']['coa_id']);
         $checksaldo = DB::table('journals')
@@ -163,7 +164,7 @@ class CompletePurchaseOrderController extends Controller
           if ($totalPayment > 0) {
             PaymentCompletePurchaseOrder::create([
               'complete_purchase_order_id' => $invoice->id,
-              'date_payment' => $request['payment']['date_payment'],
+              'date_payment' => $request['payment']['date_payment']." ".Carbon::now()->format('H:i:s'),
               'coa_id' => $request['payment']['coa_id'],
               'payment' => $request['payment']['payment'],
               'description' => $request['payment']['description'],
@@ -173,7 +174,7 @@ class CompletePurchaseOrderController extends Controller
 
             Journal::create([
               'coa_id' => $request['payment']['coa_id'],
-              'date_journal' => $request['payment']['date_payment'],
+              'date_journal' => $request['payment']['date_payment']." ".Carbon::now()->format('H:i:s'),
               'debit' => 0,
               'kredit' => $request['payment']['payment'],
               'table_ref' => 'completepurchaseorder',
@@ -183,7 +184,7 @@ class CompletePurchaseOrderController extends Controller
 
             Journal::create([
               'coa_id' => 15,
-              'date_journal' => $request['payment']['date_payment'],
+              'date_journal' => $request['payment']['date_payment']." ".Carbon::now()->format('H:i:s'),
               'debit' => $request['payment']['payment'],
               'kredit' => 0,
               'table_ref' => 'completepurchaseorder',
@@ -281,7 +282,7 @@ class CompletePurchaseOrderController extends Controller
 
           PaymentCompletePurchaseOrder::create([
             'complete_purchase_order_id' => $data->id,
-            'date_payment' => $request['payment']['date_payment'],
+            'date_payment' => $request['payment']['date_payment']." ".Carbon::now()->format('H:i:s')." ".Carbon::now()->format('H:i:s'),
             'coa_id' => $request['payment']['coa_id'],
             'payment' => $request['payment']['payment'],
             'description' => $request['payment']['description'],
@@ -289,7 +290,7 @@ class CompletePurchaseOrderController extends Controller
 
           Journal::create([
             'coa_id' => $request['payment']['coa_id'],
-            'date_journal' => $request['payment']['date_payment'],
+            'date_journal' => $request['payment']['date_payment']." ".Carbon::now()->format('H:i:s')." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $request['payment']['payment'],
             'table_ref' => 'completepurchaseorder',
@@ -299,7 +300,7 @@ class CompletePurchaseOrderController extends Controller
 
           Journal::create([
             'coa_id' => 15,
-            'date_journal' => $request['payment']['date_payment'],
+            'date_journal' => $request['payment']['date_payment']." ".Carbon::now()->format('H:i:s')." ".Carbon::now()->format('H:i:s'),
             'debit' => $request['payment']['payment'],
             'kredit' => 0,
             'table_ref' => 'completepurchaseorder',

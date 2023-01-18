@@ -25,7 +25,7 @@
                 <div class="form-group row">
                   <label class="col-lg-3 col-form-label">Tanggal Invoice:</label>
                   <div class="col-md-6">
-                    <input type="text" class="form-control rounded-0 datepicker w-100" value="{{ $data->invoice_date ?? '' }}" disabled>
+                    <input type="text" class="form-control rounded-0 datePicker w-100" value="{{ $data->invoice_date ?? '' }}" disabled>
                   </div>
                 </div>
               </div>
@@ -33,7 +33,7 @@
                 <div class="form-group row">
                   <label class="col-lg-3 col-form-label">Supplier Sparepart:</label>
                   <div class="col-lg-9">
-                    <input type="text" class="form-control rounded-0 datepicker w-100" value="{{ $data->supplier->name ?? '' }}" disabled>
+                    <input type="text" class="form-control rounded-0 w-100" value="{{ $data->supplier->name ?? '' }}" disabled>
                   </div>
                 </div>
               </div>
@@ -41,7 +41,7 @@
                 <div class="form-group row">
                   <label class="col-lg-3 col-form-label">Prefix:</label>
                   <div class="col-lg-6">
-                    <input type="text" class="form-control rounded-0 datepicker w-100" value="{{ $data->prefix ?? '' }}" disabled>
+                    <input type="text" class="form-control rounded-0 w-100" value="{{ $data->prefix ?? '' }}" disabled>
                   </div>
                 </div>
               </div>
@@ -106,7 +106,7 @@
               <tbody>
               @foreach($data->payment_complete as $item)
                 <tr>
-                  <td><input type="text" class="form-control rounded-0 datepicker w-100" placeholder="Tanggal Invoice"
+                  <td><input type="text" class="form-control rounded-0 w-100" placeholder="Tanggal Invoice"
                              disabled value="{{ $item->date_payment }}"></td>
                   <td><input class="form-control rounded-0" value="{{ $item->description }}" disabled></td>
                   <td><input type="text" class="form-control rounded-0" value="{{ $item->coa->code." - ".$item->coa->name }}" disabled></td>
@@ -118,7 +118,7 @@
                 </tr>
               @endforeach
               <tr>
-                <td><input type="text" class="form-control rounded-0 datepicker w-100" name="payment[date_payment]"
+                <td><input type="text" class="form-control rounded-0 datePicker w-100" name="payment[date_payment]"
                            placeholder="Tanggal Invoice" readonly></td>
                 <td><input name="payment[description]" class="form-control rounded-0"></td>
                 <td><select name="payment[coa_id]" class="form-control rounded-0" style="min-width: 250px">
@@ -190,11 +190,21 @@
       initCalculate();
 
       function initDate() {
-        $('.datepicker').datepicker({
-          format: 'yyyy-mm-dd',
-          todayBtn: "linked",
-          clearBtn: true,
-          todayHighlight: true,
+        $(".datePicker").flatpickr({
+          disableMobile: true,
+          dateFormat: "Y-m-d",
+          defaultDate: new Date(),
+          onOpen: function(selectedDates, dateStr, instance) {
+            instance.setDate(new Date(), true, 'Y-m-d');
+          },
+          onReady: function (dateObj, dateStr, instance) {
+            const $clear = $('<button class="btn btn-danger btn-sm flatpickr-clear mb-2">Clear</button>')
+              .on('click', () => {
+                instance.clear();
+                instance.close();
+              })
+              .appendTo($(instance.calendarContainer));
+          }
         });
       }
 

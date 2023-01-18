@@ -82,7 +82,7 @@ class JournalController extends Controller
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'date_journal' => 'required|date_format:Y-m-d',
+      'date_journal' => 'required|date_format:Y-m-d H:i:s',
       'items.coa_id' => 'required|array',
       'items.coa_id.*' => 'required|integer',
       'items.description' => 'required|array',
@@ -172,7 +172,7 @@ class JournalController extends Controller
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
-      'date_journal' => 'required|date_format:Y-m-d',
+      'date_journal' => 'required|date_format:Y-m-d H:i:s',
       'items.coa_id' => 'required|array',
       'items.coa_id.*' => 'required|integer',
       'items.description' => 'required|array',

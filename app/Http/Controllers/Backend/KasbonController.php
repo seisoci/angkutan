@@ -126,7 +126,7 @@ class KasbonController extends Controller
           if (($checksaldo->saldo ?? FALSE) && $request->amount <= $checksaldo->saldo) {
             Journal::create([
               'coa_id' => 7,
-              'date_journal' => $request['date_payment'],
+              'date_journal' => $request['date_payment']." ".Carbon::now()->format('H:i:s'),
               'debit' => $request['amount'],
               'kredit' => 0,
               'table_ref' => 'kasbon',
@@ -135,7 +135,7 @@ class KasbonController extends Controller
             ]);
             Journal::create([
               'coa_id' => $request->input('coa_id'),
-              'date_journal' => $request['date_payment'],
+              'date_journal' => $request['date_payment']." ".Carbon::now()->format('H:i:s'),
               'debit' => 0,
               'kredit' => $request['amount'],
               'table_ref' => 'kasbon',
@@ -161,7 +161,7 @@ class KasbonController extends Controller
 
             Journal::create([
               'coa_id' => $request['coa_id'],
-              'date_journal' => $request['date_payment'],
+              'date_journal' => $request['date_payment']." ".Carbon::now()->format('H:i:s'),
               'debit' => $request['amount'],
               'kredit' => 0,
               'table_ref' => 'kasbon',
@@ -171,7 +171,7 @@ class KasbonController extends Controller
 
             Journal::create([
               'coa_id' => 7,
-              'date_journal' => $request['date_payment'],
+              'date_journal' => $request['date_payment']." ".Carbon::now()->format('H:i:s'),
               'debit' => 0,
               'kredit' => $request['amount'],
               'table_ref' => 'kasbon',

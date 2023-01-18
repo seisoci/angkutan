@@ -24,8 +24,8 @@
                 <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">Tanggal Invoice:</label>
-                    <div class="col-md-6">
-                      <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date"
+                    <div class="col-md-9">
+                      <input type="text" class="form-control rounded-0 datePicker w-100" name="invoice_date"
                              placeholder="Tanggal Invoice" readonly>
                     </div>
                   </div>
@@ -59,7 +59,7 @@
                 <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">No. Invoice Pelunasan:</label>
-                    <div class="col-lg-6">
+                    <div class="col-lg-9">
                       <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                       <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
                     </div>
@@ -97,7 +97,7 @@
                   </thead>
                   <tbody>
                   <tr>
-                    <td><input type="text" class="form-control rounded-0 datepicker w-100" name="payment[date_payment]"
+                    <td><input type="text" class="form-control rounded-0 datePicker w-100" name="payment[date_payment]"
                                placeholder="Tanggal Invoice" readonly></td>
                     <td><input name="payment[description]" class="form-control rounded-0"/></td>
                     <td><select name="payment[coa_id]" class="form-control rounded-0" style="min-width: 250px">
@@ -359,13 +359,22 @@
       });
 
       function initDate() {
-        $('.datepicker').datepicker({
-          format: 'yyyy-mm-dd',
-          todayBtn: "linked",
-          clearBtn: true,
-          todayHighlight: true,
-        });
-      }
+        $(".datePicker").flatpickr({
+          disableMobile: true,
+          dateFormat: "Y-m-d",
+          defaultDate: new Date(),
+          onOpen: function(selectedDates, dateStr, instance) {
+            instance.setDate(new Date(), true, 'Y-m-d');
+          },
+          onReady: function (dateObj, dateStr, instance) {
+            const $clear = $('<button class="btn btn-danger btn-sm flatpickr-clear mb-2">Clear</button>')
+              .on('click', () => {
+                instance.clear();
+                instance.close();
+              })
+              .appendTo($(instance.calendarContainer));
+          }
+        });      }
 
       function initCurrency() {
         $(".currency").inputmask('decimal', {

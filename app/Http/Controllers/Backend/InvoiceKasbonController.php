@@ -14,6 +14,7 @@ use App\Models\Kasbon;
 use App\Models\PaymentKasbon;
 use App\Models\Prefix;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -145,7 +146,7 @@ class InvoiceKasbonController extends Controller
           PaymentKasbon::create([
             'invoice_kasbon_id' => $data->id,
             'coa_id' => $payments['coa_id'][$key],
-            'date_payment' => $payments['date'][$key],
+            'date_payment' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'payment' => $payments['payment'][$key],
           ]);
 
@@ -322,14 +323,14 @@ class InvoiceKasbonController extends Controller
           PaymentKasbon::create([
             'invoice_kasbon_id' => $data->id,
             'coa_id' => $payments['coa_id'][$key],
-            'date_payment' => $payments['date'][$key],
+            'date_payment' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'payment' => $payments['payment'][$key],
           ]);
 
           $coa = Coa::findOrFail($payments['coa_id'][$key]);
           Journal::create([
             'coa_id' => $payments['coa_id'][$key],
-            'date_journal' => $payments['date'][$key],
+            'date_journal' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'debit' => $payments['payment'][$key],
             'kredit' => 0,
             'table_ref' => 'invoicekasbons',
@@ -339,7 +340,7 @@ class InvoiceKasbonController extends Controller
 
           Journal::create([
             'coa_id' => 7,
-            'date_journal' => $payments['date'][$key],
+            'date_journal' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbons',

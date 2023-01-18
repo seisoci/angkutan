@@ -15,6 +15,7 @@ use App\Models\PaymentKasbonEmployee;
 use App\Models\Prefix;
 use App\Models\Setting;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -144,14 +145,14 @@ class InvoiceKasbonEmployeeController extends Controller
           PaymentKasbonEmployee::create([
             'invoice_kasbon_employee_id' => $data->id,
             'coa_id' => $payments['coa_id'][$key],
-            'date_payment' => $payments['date'][$key],
+            'date_payment' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'payment' => $payments['payment'][$key],
           ]);
 
           $coa = Coa::findOrFail($payments['coa_id'][$key]);
           Journal::create([
             'coa_id' => $payments['coa_id'][$key],
-            'date_journal' => $payments['date'][$key],
+            'date_journal' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'debit' => $payments['payment'][$key],
             'kredit' => 0,
             'table_ref' => 'invoicekasbonemployees',
@@ -160,7 +161,7 @@ class InvoiceKasbonEmployeeController extends Controller
 
           Journal::create([
             'coa_id' => 8,
-            'date_journal' => $payments['date'][$key],
+            'date_journal' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbonemployees',
@@ -340,14 +341,14 @@ class InvoiceKasbonEmployeeController extends Controller
           PaymentKasbonEmployee::create([
             'invoice_kasbon_employee_id' => $data->id,
             'coa_id' => $payments['coa_id'][$key],
-            'date_payment' => $payments['date'][$key],
+            'date_payment' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'payment' => $payments['payment'][$key],
           ]);
 
           $coa = Coa::findOrFail($payments['coa_id'][$key]);
           Journal::create([
             'coa_id' => $payments['coa_id'][$key],
-            'date_journal' => $payments['date'][$key],
+            'date_journal' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'debit' => $payments['payment'][$key],
             'kredit' => 0,
             'table_ref' => 'invoicekasbonemployees',
@@ -357,7 +358,7 @@ class InvoiceKasbonEmployeeController extends Controller
 
           Journal::create([
             'coa_id' => 8,
-            'date_journal' => $payments['date'][$key],
+            'date_journal' => $payments['date'][$key]." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $payments['payment'][$key],
             'table_ref' => 'invoicekasbonemployees',

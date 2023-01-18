@@ -13,6 +13,7 @@ use App\Models\Stock;
 use App\Models\Transport;
 use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -119,7 +120,7 @@ class InvoiceUsageItemController extends Controller
 
           Journal::create([
             'coa_id' => 17,
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $totalPrice,
             'table_ref' => 'invoiceusageitems',
@@ -129,7 +130,7 @@ class InvoiceUsageItemController extends Controller
 
           Journal::create([
             'coa_id' => 41,
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'debit' => $totalPrice,
             'kredit' => 0,
             'table_ref' => 'invoiceusageitems',

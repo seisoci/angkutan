@@ -10,6 +10,7 @@ use App\Models\OpnameDetail;
 use App\Models\Sparepart;
 use App\Models\Stock;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -106,7 +107,7 @@ class OpnameController extends Controller
 
           Journal::create([
             'coa_id' => 49,
-            'date_journal' => $this->dateNow(),
+            'date_journal' => Carbon::now()->toDateTimeString(),
             'debit' => $price < 0 ? abs($price) : 0,
             'kredit' => max($price, 0),
             'table_ref' => 'opnames',
@@ -116,7 +117,7 @@ class OpnameController extends Controller
 
           Journal::create([
             'coa_id' => 17,
-            'date_journal' => $this->dateNow(),
+            'date_journal' => Carbon::now()->toDateTimeString(),
             'debit' => max($price, 0),
             'kredit' => $price < 0 ? abs($price) : 0,
             'table_ref' => 'opnames',

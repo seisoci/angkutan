@@ -27,7 +27,7 @@
             <div class="form-group">
               <label>Tanggal Muat</label>
               <div class="input-group date">
-                <input type="text" class="form-control datepicker" name="date_begin" readonly="readonly"
+                <input type="text" class="form-control datePicker" name="date_begin" readonly="readonly"
                        placeholder="Tanggal Muat" value="{{ $data->date_begin ?? '' }}" disabled>
                 <div class="input-group-append">
                 <span class="input-group-text">
@@ -43,7 +43,6 @@
                 <option value="self" {{ $data->type == 'self' ? 'selected' : ''}}>Sendiri</option>
                 <option value="ldo" {{ $data->type == 'ldo' ? 'selected' : ''}}>LDO (Luar)</option>
               </select>
-{{--              <input type="text" name="type" class="form-control" value="{{ $data->type == 'self' ? 'Sendiri' : 'LDO (Luar)'}}" readonly>--}}
             </div>
             <div class="form-group" id="ExpeditionLDO" style="display: none">
               <label>Pilih LDO<span class="text-danger">*</span></label>
@@ -289,13 +288,6 @@
           </div>
           @endhasanyrole
           <div class="offset-md-8 col-md-4">
-            {{--       <div class="form-group">
-                     <select name="coa_id" class="form-control">
-                       @foreach($selectCoa->coa as $item)
-                         <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
-                       @endforeach
-                     </select>
-                   </div>--}}
             <div class="form-group">
               <label>Keterangan</label>
               <textarea class="form-control" name="description" rows="5">
@@ -357,9 +349,21 @@
         placeholder: '0.00'
       });
 
-      $('.datepicker').datepicker({
-        format: 'yyyy-mm-dd',
-        todayHighlight: !0,
+      $(".datePicker").flatpickr({
+        disableMobile: true,
+        dateFormat: "Y-m-d",
+        defaultDate: new Date(),
+        onOpen: function(selectedDates, dateStr, instance) {
+          instance.setDate(new Date(), true, 'Y-m-d');
+        },
+        onReady: function (dateObj, dateStr, instance) {
+          const $clear = $('<button class="btn btn-danger btn-sm flatpickr-clear mb-2">Clear</button>')
+            .on('click', () => {
+              instance.clear();
+              instance.close();
+            })
+            .appendTo($(instance.calendarContainer));
+        }
       });
 
       $("#select2Prefix").select2({

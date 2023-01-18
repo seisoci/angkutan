@@ -7,17 +7,15 @@ use App\Models\AnotherExpedition;
 use App\Models\Coa;
 use App\Models\ConfigCoa;
 use App\Models\Cooperation;
-use App\Models\InvoiceCostumer;
 use App\Models\InvoiceLdo;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\PaymentLdo;
 use App\Models\PiutangKlaim;
-use App\Models\Prefix;
+use Carbon\Carbon;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Throwable;
 use Validator;
 
@@ -83,6 +81,140 @@ class InvoiceLdoController extends Controller
     return view('backend.invoice.invoiceldo.index', compact('config', 'page_breadcrumbs', 'saldoGroup'));
   }
 
+  public function store(Request $request)
+  {
+    $validator = Validator::make($request->all(), [
+      'job_order_id' => 'required|array',
+      'job_order_id.*' => 'required|integer',
+      'num_bill' => 'required|integer',
+      'another_expedition_id' => 'required|integer',
+      'coa_id' => 'required|integer',
+      'invoice_date' => 'required|date_format:Y-m-d',
+      'due_date' => 'required|date_format:Y-m-d'
+    ]);
+
+    if ($validator->passes()) {
+      try {
+        DB::beginTransaction();
+        $totalCut = 0;
+        $totalPiutang = 0;
+        foreach ($request['job_orderid'] ?? array() as $key => $item):
+          foreach ($item as $type => $jo) {
+            if ($type == 'tambah') {
+              $totalPiutang += $jo['nominal'];
+            } else {
+              $totalCut += $jo['nominal'];
+            }
+            PiutangKlaim::create([
+              'job_order_id' => $key,
+              'amount' => $jo['nominal'],
+              'description' => $jo['keterangan'],
+              'type' => $type,
+              'invoice_type' => 'ldo'
+            ]);
+          }
+        endforeach;
+        $coa = Coa::findOrFail($request->coa_id);
+        $checksaldo = DB::table('journals')
+          ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+          ->where('journals.coa_id', $request->coa_id)
+          ->groupBy('journals.coa_id')
+          ->first();
+
+        $noUrut = InvoiceLdo::selectRaw("IFNULL(MAX(SUBSTRING(`num_bill`, 7, 3)), 0) + 1 AS max")
+          ->whereMonth('invoice_date', Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('m'))
+          ->whereYear('invoice_date', Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('Y'))
+          ->first()->max ?? 0;
+
+        $noUrutNext = Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('Ym') . "" . str_pad($noUrut, 3, "0", STR_PAD_LEFT);
+        $data = InvoiceLdo::create([
+          'prefix' => 'TAGLDO',
+          'num_bill' => $noUrutNext,
+          'another_expedition_id' => $request->input('another_expedition_id'),
+          'invoice_date' => $request->input('invoice_date'),
+          'due_date' => $request->input('due_date'),
+          'total_bill' => $request->input('total_bill'),
+          'total_piutang' => $totalPiutang,
+          'total_cut' => $totalCut,
+          'total_payment' => $request->input('payment.payment') ?? 0,
+          'rest_payment' => $request->input('rest_payment'),
+          'memo' => $request->input('memo'),
+        ]);
+
+        foreach ($request->job_order_id as $item):
+          JobOrder::where('id', $item)->update(['invoice_ldo_id' => $data->id, 'status_payment_ldo' => '1']);
+        endforeach;
+
+        if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
+          if (($checksaldo->saldo ?? FALSE) && ($request->input('payment.payment') ?? 0) <= $checksaldo->saldo) {
+            PaymentLdo::create([
+              'invoice_ldo_id' => $data->id,
+              'date_payment' => $request->input('payment.date_payment')." ".Carbon::now()->format('H:i:s'),
+              'payment' => $request->input('payment.payment'),
+              'description' => $request->input('payment.description'),
+              'coa_id' => $request->input('coa_id')
+            ]);
+
+            $LDO = AnotherExpedition::findOrFail($request->another_expedition_id);
+
+            Journal::create([
+              'coa_id' => $request->input('coa_id'),
+              'date_journal' => $request->input('payment.date_payment')." ".Carbon::now()->format('H:i:s'),
+              'debit' => 0,
+              'kredit' => $request->input('payment.payment'),
+              'table_ref' => 'invoiceldo',
+              'code_ref' => $data->id,
+              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " . 'TAGLDO-' . $request->input('num_bill') . ""
+            ]);
+
+            Journal::create([
+              'coa_id' => 39,
+              'date_journal' => $request->input('payment.date_payment')." ".Carbon::now()->format('H:i:s'),
+              'debit' => $request->input('payment.payment'),
+              'kredit' => 0,
+              'table_ref' => 'invoiceldo',
+              'code_ref' => $data->id,
+              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " . 'TAGLDO-' . $request->input('num_bill') . ""
+            ]);
+          } else {
+            DB::rollBack();
+            return response()->json([
+              'status' => 'errors',
+              'message' => "Saldo $coa->name tidak ada/kurang",
+            ]);
+          }
+        }
+
+        if ($request->rest_payment <= -1) {
+          DB::rollBack();
+          return response()->json([
+            'status' => 'error',
+            'message' => 'Pastikan sisa tagihan tidak negative',
+            'redirect' => '/backend/invoiceldo',
+          ]);
+        }
+
+        DB::commit();
+        $response = response()->json([
+          'status' => 'success',
+          'message' => 'Data has been saved',
+          'redirect' => '/backend/invoiceldo',
+        ]);
+
+      } catch (Throwable $throw) {
+        DB::rollBack();
+        $response = $throw;
+      }
+    } else {
+      $response = response()->json(['error' => $validator->errors()->all()]);
+    }
+    return $response;
+  }
+
   public function create(Request $request)
   {
     $config['page_title'] = "Create Invoice LDO";
@@ -125,24 +257,36 @@ class InvoiceLdoController extends Controller
     return view('backend.invoice.invoiceldo.create', compact('config', 'page_breadcrumbs', 'selectCoa'));
   }
 
-  public function store(Request $request)
+  public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
-      'job_order_id' => 'required|array',
-      'job_order_id.*' => 'required|integer',
-      'num_bill' => 'required|integer',
-      'another_expedition_id' => 'required|integer',
       'coa_id' => 'required|integer',
-      'invoice_date' => 'required|date_format:Y-m-d',
-      'due_date' => 'required|date_format:Y-m-d'
     ]);
-
     if ($validator->passes()) {
       try {
         DB::beginTransaction();
+        $data = InvoiceLdo::findOrFail($id);
+        $coa = Coa::findOrFail($request->coa_id);
+        $checksaldo = DB::table('journals')
+          ->select(DB::raw('
+          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
+          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
+          '))
+          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
+          ->where('journals.coa_id', $request->coa_id)
+          ->groupBy('journals.coa_id')
+          ->first();
+        $payment = PaymentLdo::where('invoice_ldo_id', $data->id)->sum('payment');
+        $payment += $request->input('payment.payment');
         $totalCut = 0;
         $totalPiutang = 0;
+
+        foreach ($data->joborders as $item):
+          PiutangKlaim::where('job_order_id', $item->id)->where('invoice_type', 'ldo')->delete();
+        endforeach;
+
         foreach ($request['job_orderid'] ?? array() as $key => $item):
+          PiutangKlaim::where('job_order_id', $key)->where('invoice_type', 'ldo')->delete();
           foreach ($item as $type => $jo) {
             if ($type == 'tambah') {
               $totalPiutang += $jo['nominal'];
@@ -154,102 +298,74 @@ class InvoiceLdoController extends Controller
               'amount' => $jo['nominal'],
               'description' => $jo['keterangan'],
               'type' => $type,
-              'invoice_type' => 'ldo'
+              'invoice_type' => 'ldo',
             ]);
           }
         endforeach;
-//        $prefix = Prefix::findOrFail($request->prefix);
-        $coa = Coa::findOrFail($request->coa_id);
-        $checksaldo = DB::table('journals')
-          ->select(DB::raw('
-          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
-          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
-          '))
-          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
-          ->where('journals.coa_id', $request->coa_id)
-          ->groupBy('journals.coa_id')
-          ->first();
 
-        $noUrut = InvoiceLdo::selectRaw("IFNULL(MAX(SUBSTRING(`num_bill`, 7, 3)), 0) + 1 AS max")
-            ->whereMonth('invoice_date', Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('m'))
-            ->whereYear('invoice_date', Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('Y'))
-            ->first()->max ?? 0;
-
-        $noUrutNext = Carbon::createFromFormat('Y-m-d', $request->input('invoice_date'))->format('Ym') . "" . str_pad($noUrut, 3, "0", STR_PAD_LEFT);
-        $data = InvoiceLdo::create([
-          'prefix' => 'TAGLDO',
-          'num_bill' => $noUrutNext,
-          'another_expedition_id' => $request->input('another_expedition_id'),
-          'invoice_date' => $request->input('invoice_date'),
-          'due_date' => $request->input('due_date'),
-          'total_bill' => $request->input('total_bill'),
-          'total_piutang' => $totalPiutang,
+        $data->update([
           'total_cut' => $totalCut,
-          'total_payment' => $request->input('payment.payment') ?? 0,
-          'rest_payment' => $request->input('rest_payment'),
-          'memo' => $request->input('memo'),
+          'total_piutang' => $totalPiutang,
+          'rest_payment' => $request['rest_payment'],
+          'total_payment' => $payment,
+          'total_bill' => $request['total_bill'],
         ]);
 
-        foreach ($request->job_order_id as $item):
-          JobOrder::where('id', $item)->update(['invoice_ldo_id' => $data->id, 'status_payment_ldo' => '1']);
-        endforeach;
+        if (($checksaldo->saldo ?? FALSE) && $request->input('payment.payment') <= $checksaldo->saldo) {
+          $LDO = AnotherExpedition::findOrFail($data->another_expedition_id);
 
-        if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
-          if (($checksaldo->saldo ?? FALSE) && ($request->input('payment.payment') ?? 0) <= $checksaldo->saldo) {
+          if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
             PaymentLdo::create([
               'invoice_ldo_id' => $data->id,
-              'date_payment' => $request->input('payment.date_payment'),
+              'date_payment' => $request->input('payment.date_payment') . " " . Carbon::now()->format('H:i:s'),
               'payment' => $request->input('payment.payment'),
               'description' => $request->input('payment.description'),
               'coa_id' => $request->input('coa_id')
             ]);
 
-            $LDO = AnotherExpedition::findOrFail($request->another_expedition_id);
-
             Journal::create([
               'coa_id' => $request->input('coa_id'),
-              'date_journal' => $request->input('payment.date_payment'),
+              'date_journal' => $request->input('payment.date_payment') . " " . Carbon::now()->format('H:i:s'),
               'debit' => 0,
               'kredit' => $request->input('payment.payment'),
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " . 'TAGLDO-' . $request->input('num_bill') . ""
+              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill . ""
             ]);
 
             Journal::create([
               'coa_id' => 39,
-              'date_journal' => $request->input('payment.date_payment'),
+              'date_journal' => $request->input('payment.date_payment')." ".Carbon::now()->format('H:i:s'),
               'debit' => $request->input('payment.payment'),
               'kredit' => 0,
               'table_ref' => 'invoiceldo',
               'code_ref' => $data->id,
-              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " . 'TAGLDO-' . $request->input('num_bill') . ""
-            ]);
-          } else {
-            DB::rollBack();
-            return response()->json([
-              'status' => 'errors',
-              'message' => "Saldo $coa->name tidak ada/kurang",
+              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " . $data->prefix . '-' . $data->num_bill . ""
             ]);
           }
-        }
 
-        if ($request->rest_payment <= -1) {
-          DB::rollBack();
-          return response()->json([
-            'status' => 'error',
-            'message' => 'Pastikan sisa tagihan tidak negative',
+          if ($request->rest_payment <= -1) {
+            DB::rollBack();
+            return response()->json([
+              'status' => 'error',
+              'message' => 'Pastikan sisa tagihan tidak negative',
+              'redirect' => '/backend/invoiceldo',
+            ]);
+          }
+
+          DB::commit();
+          $response = response()->json([
+            'status' => 'success',
+            'message' => 'Data has been saved',
             'redirect' => '/backend/invoiceldo',
           ]);
+        } else {
+          DB::rollBack();
+          $response = response()->json([
+            'status' => 'errors',
+            'message' => "Saldo $coa->name tidak ada/kurang",
+          ]);
         }
-
-        DB::commit();
-        $response = response()->json([
-          'status' => 'success',
-          'message' => 'Data has been saved',
-          'redirect' => '/backend/invoiceldo',
-        ]);
-
       } catch (Throwable $throw) {
         DB::rollBack();
         $response = $throw;
@@ -316,125 +432,6 @@ class InvoiceLdoController extends Controller
 
     $selectCoa = ConfigCoa::with('coa')->where('name_page', 'invoiceldo')->sole();
     return view('backend.invoice.invoiceldo.edit', compact('config', 'page_breadcrumbs', 'data', 'selectCoa', 'total'));
-  }
-
-  public function update(Request $request, $id)
-  {
-    $validator = Validator::make($request->all(), [
-      'coa_id' => 'required|integer',
-    ]);
-    if ($validator->passes()) {
-      try {
-        DB::beginTransaction();
-        $data = InvoiceLdo::findOrFail($id);
-        $coa = Coa::findOrFail($request->coa_id);
-        $checksaldo = DB::table('journals')
-          ->select(DB::raw('
-          IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
-          (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
-          '))
-          ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
-          ->where('journals.coa_id', $request->coa_id)
-          ->groupBy('journals.coa_id')
-          ->first();
-        $payment = PaymentLdo::where('invoice_ldo_id', $data->id)->sum('payment');
-        $payment += $request->input('payment.payment');
-        $totalCut = 0;
-        $totalPiutang = 0;
-
-        foreach ($data->joborders as $item):
-          PiutangKlaim::where('job_order_id', $item->id)->where('invoice_type', 'ldo')->delete();
-        endforeach;
-
-        foreach ($request['job_orderid'] ?? array() as $key => $item):
-          PiutangKlaim::where('job_order_id', $key)->where('invoice_type', 'ldo')->delete();
-          foreach ($item as $type => $jo) {
-            if ($type == 'tambah') {
-              $totalPiutang += $jo['nominal'];
-            } else {
-              $totalCut += $jo['nominal'];
-            }
-            PiutangKlaim::create([
-              'job_order_id' => $key,
-              'amount' => $jo['nominal'],
-              'description' => $jo['keterangan'],
-              'type' => $type,
-              'invoice_type' => 'ldo',
-            ]);
-          }
-        endforeach;
-
-        $data->update([
-          'total_cut' => $totalCut,
-          'total_piutang' => $totalPiutang,
-          'rest_payment' => $request['rest_payment'],
-          'total_payment' => $payment,
-          'total_bill' => $request['total_bill'],
-        ]);
-
-        if (($checksaldo->saldo ?? FALSE) && $request->input('payment.payment') <= $checksaldo->saldo) {
-          $LDO = AnotherExpedition::findOrFail($data->another_expedition_id);
-
-          if ($request->input('payment.payment') && $request->input('payment.date_payment')) {
-            PaymentLdo::create([
-              'invoice_ldo_id' => $data->id,
-              'date_payment' => $request->input('payment.date_payment'),
-              'payment' => $request->input('payment.payment'),
-              'description' => $request->input('payment.description'),
-              'coa_id' => $request->input('coa_id')
-            ]);
-
-            Journal::create([
-              'coa_id' => $request->input('coa_id'),
-              'date_journal' => $request->input('payment.date_payment'),
-              'debit' => 0,
-              'kredit' => $request->input('payment.payment'),
-              'table_ref' => 'invoiceldo',
-              'code_ref' => $data->id,
-              'description' => "Pembayaran invoice ldo $LDO->name dengan No. Invoice: " . $data->prefix . '-' . $data->num_bill . ""
-            ]);
-
-            Journal::create([
-              'coa_id' => 39,
-              'date_journal' => $request->input('payment.date_payment'),
-              'debit' => $request->input('payment.payment'),
-              'kredit' => 0,
-              'table_ref' => 'invoiceldo',
-              'code_ref' => $data->id,
-              'description' => "Beban invoice ldo $LDO->name dengan $coa->name dan No. Invoice: " . $data->prefix . '-' . $data->num_bill . ""
-            ]);
-          }
-
-          if ($request->rest_payment <= -1) {
-            DB::rollBack();
-            return response()->json([
-              'status' => 'error',
-              'message' => 'Pastikan sisa tagihan tidak negative',
-              'redirect' => '/backend/invoiceldo',
-            ]);
-          }
-
-          DB::commit();
-          $response = response()->json([
-            'status' => 'success',
-            'message' => 'Data has been saved',
-            'redirect' => '/backend/invoiceldo',
-          ]);
-        } else {
-          DB::rollBack();
-          $response = response()->json([
-            'status' => 'errors',
-            'message' => "Saldo $coa->name tidak ada/kurang",
-          ]);
-        }
-      } catch (Throwable $throw) {
-        DB::rollBack();
-        $response = $throw;
-      }
-    } else {
-      $response = response()->json(['error' => $validator->errors()->all()]);
-    }
-    return $response;
   }
 
   public function datatabledetail($id)

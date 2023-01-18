@@ -16,6 +16,7 @@ use App\Models\Stock;
 use App\Models\Transport;
 use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
+use Carbon\Carbon;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
@@ -153,7 +154,7 @@ class InvoiceUsageItemOutsideController extends Controller
           endforeach;
           Journal::create([
             'coa_id' => $request->input('coa_id'),
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'debit' => 0,
             'kredit' => $totalPayment,
             'table_ref' => 'invoiceusageitemsoutside',
@@ -163,7 +164,7 @@ class InvoiceUsageItemOutsideController extends Controller
 
           Journal::create([
             'coa_id' => 40,
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request->input('invoice_date')." ".Carbon::now()->format('H:i:s'),
             'debit' => $totalPayment,
             'kredit' => 0,
             'table_ref' => 'invoiceusageitemsoutside',

@@ -32,6 +32,7 @@
 
   {{-- Includable CSS --}}
   @yield('styles')
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 
 <body {{ Metronic::printAttrs('body') }} {{ Metronic::printClasses('body') }}>
@@ -58,6 +59,7 @@
 
   {{-- Includable JS --}}
   @yield('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   @include('layout.base._changepassword')
 </body>
 </html>
