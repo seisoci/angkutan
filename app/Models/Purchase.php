@@ -28,6 +28,7 @@ class Purchase extends Model
     'supplier_sparepart_id',
     'qty',
     'price',
+    'description',
   ];
 
   protected function serializeDate(DateTimeInterface $date)

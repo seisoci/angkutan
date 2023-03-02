@@ -1,10 +1,7 @@
 {{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-  {{-- Dashboard 1 --}}
-  <!--begin::Card-->
   <div class="card card-custom">
     <div class="card-header flex-wrap py-3">
       <div class="card-title">
@@ -12,10 +9,8 @@
           <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
       </div>
       <div class="card-toolbar">
-        <!--begin::Button-->
         <a href="{{ route('backend.invoicecostumers.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
-          <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
                viewBox="0 0 24 24" version="1.1">
             <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -26,14 +21,11 @@
                 fill="#000000" opacity="0.3"></path>
             </g>
           </svg>
-          <!--end::Svg Icon-->
         </span>New Record</a>
-        <!--end::Button-->
       </div>
     </div>
 
     <div class="card-body">
-      <!--begin: Datatable-->
         <div class="table-responsive">
           <table class="table table-bordered table-hover" id="Datatable">
             <thead>
@@ -155,13 +147,11 @@
   </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
   <link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
   {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
@@ -202,7 +192,7 @@
             "data": null,
             "defaultContent": ''
           },
-          {data: 'num_invoice', name: 'num_bill', orderable: false},
+          {data: 'num_invoice', name: 'num_invoice', orderable: false},
           {data: 'invoice_date', name: 'invoice_date'},
           {data: 'due_date', name: 'due_date'},
           {data: 'costumer.name', name: 'costumer.name'},
@@ -263,7 +253,7 @@
           serverSide: true,
           ajax: data.details_url,
           columns: [
-            {data: 'num_prefix', name: 'num_bill', orderable: false},
+            {data: 'num_bill', name: 'num_bill', orderable: false},
             {
               data: 'total_basic_price',
               name: 'total_basic_price',

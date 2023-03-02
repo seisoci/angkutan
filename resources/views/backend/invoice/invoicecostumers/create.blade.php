@@ -1,10 +1,6 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-
-  <!--begin::Card-->
   <div class="card card-custom">
     <div class="card-header flex-wrap py-3">
       <div class="card-title">
@@ -24,24 +20,18 @@
                 <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">Tanggal Invoice:</label>
-                    <div class="col-md-6">
+                    <div class="col-md-9">
                       <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date"
                              placeholder="Tanggal Invoice" readonly>
                     </div>
                   </div>
-{{--                  <div class="form-group row">--}}
-{{--                    <label class="col-lg-3 col-form-label">Prefix:</label>--}}
-{{--                    <div class="col-lg-6">--}}
-{{--                      <select name="prefix" class="form-control" id="select2Prefix">--}}
-{{--                      </select>--}}
-{{--                    </div>--}}
-{{--                  </div>--}}
+                </div>
+                <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">No. Invoice Costumer:</label>
-                    <div class="col-lg-6">
+                    <div class="col-lg-9">
                       <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                       <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
-                      </select>
                     </div>
                   </div>
                 </div>
@@ -53,6 +43,8 @@
                              placeholder="Tgl Jatuh Tempo" readonly="">
                     </div>
                   </div>
+                </div>
+                <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">Pelanggan:</label>
                     <div class="col-lg-9">
@@ -60,6 +52,8 @@
                       </select>
                     </div>
                   </div>
+                </div>
+                <div class="col-md-6">
                   <div class="form-group row">
                     <label class="col-lg-3 col-form-label">Memo:</label>
                     <div class="col-lg-9">
@@ -116,7 +110,7 @@
                           <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
                         @endforeach
                       </select></td>
-                    <td><input type="text" name="payment[payment]" class="currency rounded-0 form-control"></td>
+                    <td><input type="text" name="total_payment" class="currency rounded-0 form-control"></td>
                     <td><input type="text" class="currency rounded-0 form-control total_payment" disabled></td>
                   </tr>
                   </tbody>
@@ -165,7 +159,6 @@
     </form>
   </div>
 
-  {{-- DataTables --}}
   <div class="card card-custom mt-10">
     <div class="card-header flex-wrap py-3">
       <div class="card-title">
@@ -178,13 +171,11 @@
       </div>
     </div>
     <div class="card-body">
-      <!--begin: Datatable-->
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
           <th></th>
           <th>Tanggal Mulai</th>
-          <th>Prefix</th>
           <th>No. Job Order</th>
           <th>No. Polisi</th>
           <th>No. SJ</th>
@@ -207,7 +198,6 @@
     </div>
   </div>
 
-  {{--  Modal--}}
   <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
        aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -247,7 +237,6 @@
   </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('css/backend/datatables/dataTables.checkboxes.css') }}" rel="stylesheet" type="text/css"/>
@@ -258,12 +247,9 @@
   </style>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
   <script src="{{ asset('js/backend/datatables/dataTables.checkboxes.js') }}" type="text/javascript"></script>
-  {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
       initDate();
@@ -286,7 +272,6 @@
         columns: [
           {data: 'id', name: 'id'},
           {data: 'date_begin', name: 'date_begin'},
-          {data: 'prefix', name: 'prefix'},
           {data: 'num_bill', name: 'num_bill'},
           {data: 'transport.num_pol', name: 'transport.num_pol'},
           {data: 'no_sj', name: 'no_sj'},
@@ -305,21 +290,26 @@
           {
             data: 'invoice_bill',
             name: 'invoice_bill',
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
+            className: 'dt-right',
+            render: $.fn.dataTable.render.number(',', '.', 2)
           },
-          {data: 'tax_percent', name: 'tax_percent', className: 'dt-center'},
+          {
+            data: 'tax_percent',
+            name: 'tax_percent',
+            className: 'dt-center',
+            render: $.fn.dataTable.render.number(',', '.', 2)
+          },
           {
             data: 'fee_thanks',
             name: 'fee_thanks',
-            render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
+            className: 'dt-right',
+            render: $.fn.dataTable.render.number(',', '.', 2)
           },
           {
             data: 'tax_amount',
             name: 'tax_amount',
-            render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right',
+            render: $.fn.dataTable.render.number(',', '.', 2),
             orderable: false,
             searchable: false
           },
@@ -384,7 +374,7 @@
         });
 
         let total_bill = parseFloat($('input[name="total_bill"]').val()) || 0;
-        let total_payment = parseFloat($('input[name="payment[payment]"]').val()) || 0;
+        let total_payment = parseFloat($('input[name="total_payment"]').val()) || 0;
         let totalTagihan = total_bill + totalPiutang;
         let rest_payment = total_bill - total_payment + totalPiutang - totalKlaim;
         $('#totalTagihan').val(totalTagihan);
@@ -395,7 +385,7 @@
         $('.total_piutang').val(totalPiutang);
       }
 
-      $('input[name="payment[payment]"],input[name="total_cut"],input[name="total_piutang"],#diskon').on('keyup', function () {
+      $('input[name="total_payment"],input[name="total_cut"],input[name="total_piutang"]').on('keyup', function () {
         initCalculate();
       });
 
@@ -471,9 +461,7 @@
           data: {data: JSON.stringify(dataSelected)},
           success: function (response) {
             if (response.data) {
-              $('#table_invoice tbody').empty();
-              $('#table_invoice tfoot').empty();
-              $('#TampungId').empty();
+              $('#table_invoice tbody, #table_invoice tfoot, #TampungId').empty();
               let total = 0;
               let totalBasicPriceAfterThanks = 0;
               let totalTax = 0;
@@ -489,7 +477,7 @@
                   '<td><button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#addModal" data-id="' + data.id + '">+</button></td>' +
                   ' <td class="text-center">' + (index + 1) + '</td>' +
                   ' <td>' + data.date_begin + '</td>' +
-                  ' <td>' + data.prefix + '-' + data.num_bill + '</td>' +
+                  ' <td>' + data.num_bill + '</td>' +
                   ' <td>' + data.transport.num_pol + '</td>' +
                   ' <td>' + (data.no_sj ?? '') + '</td>' +
                   ' <td>' + (data.no_shipment ?? '') + '</td>' +
@@ -498,8 +486,8 @@
                   ' <td>' + data.routeto.name + '</td>' +
                   ' <td>' + data.cargo.name + '</td>' +
                   ' <td class="text-center">' + data.payload + '</td>' +
-                  ' <td class="text-right money">' + data.basic_price + '</td>' +
-                  ' <td class="text-right money">' + data.total_basic_price + '</td>' +
+                  ' <td class="text-right currency">' + data.basic_price + '</td>' +
+                  ' <td class="text-right currency">' + data.total_basic_price + '</td>' +
                   '</tr>');
 
               });
@@ -512,16 +500,10 @@
 
               $('#table_invoice tfoot').append('<tr>' +
                 '<td colspan="13" class="text-right">Total</td>' +
-                '<td class="text-right money">' + total + '</td>' +
+                '<td class="text-right currency">' + total + '</td>' +
                 '</tr>');
 
-              $(".money").inputmask({
-                'alias': 'decimal',
-                'groupSeparator': ',',
-                'autoGroup': true,
-                'digits': 2,
-                'digitsOptional': false,
-              });
+              initCurrency();
               initCalculate();
             }
           }
@@ -536,24 +518,6 @@
           $("#dateEndModal").parent().css("display", "none");
           $("#dateEndModal").parent().find('label').css("display", "none");
         }
-      });
-
-      $("#select2Prefix").select2({
-        placeholder: "Choose Prefix",
-        allowClear: true,
-        ajax: {
-          url: "{{ route('backend.prefixes.select2') }}",
-          dataType: "json",
-          delay: 250,
-          cache: true,
-          data: function (e) {
-            return {
-              type: 'operational',
-              q: e.term || '',
-              page: e.page || 1
-            }
-          },
-        },
       });
 
       $("#select2Costumer").select2({
@@ -573,9 +537,7 @@
         },
       }).on('change', function (e) {
         dataTable.draw();
-        $('#table_invoice tbody').empty();
-        $('#table_invoice tfoot').empty();
-        $('#TampungId').empty();
+        $('#table_invoice tbody, #table_invoice tfoot, #TampungId').empty();
       });
 
       $("#formStore").submit(function (e) {

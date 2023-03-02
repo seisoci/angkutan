@@ -127,7 +127,7 @@
         @foreach ($data as $item)
           <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $item->num_prefix }}</td>
+            <td>{{ $item->num_bill }}</td>
             <td>{{ $item->date_begin }}</td>
             <td>{{ $item->date_end }}</td>
             <td>{{ $item->anotherexpedition->name }}</td>

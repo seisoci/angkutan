@@ -38,9 +38,9 @@ class ReportJoborderController extends Controller
     $config['print_url'] = 'reportjoborders/print';
 
     if ($request->ajax()) {
-      $date = $request->date;
-      $costumer_id = $request->costumer_id;
-      $transport_id = $request->transport_id;
+      $date = $request['date'];
+      $costumer_id = $request['costumer_id'];
+      $transport_id = $request['transport_id'];
       $data = JobOrder::with('costumer:id,name', 'routefrom:id,name', 'routeto:id,name',
         'transport:id,num_pol', 'cargo:id,name')
         ->when($date, function ($query, $date) {
@@ -67,9 +67,9 @@ class ReportJoborderController extends Controller
   public function document(Request $request)
   {
     $type = $request->type;
-    $date = $request->date;
-    $costumer_id = $request->costumer_id;
-    $transport_id = $request->transport_id;
+    $date = $request['date'];
+    $costumer_id = $request['costumer_id'];
+    $transport_id = $request['transport_id'];
     $costumer = Costumer::find($costumer_id);
     $transport = Transport::find($transport_id);
     $data = JobOrder::with('costumer:id,name', 'routefrom:id,name', 'routeto:id,name',
@@ -210,7 +210,7 @@ class ReportJoborderController extends Controller
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->date_begin);
       $sheet->setCellValue('C' . $startCell, $item->transport->num_pol);
-      $sheet->setCellValue('D' . $startCell, $item->num_prefix);
+      $sheet->setCellValue('D' . $startCell, $item->num_bill);
       $sheet->setCellValue('E' . $startCell, $item->no_sj);
       $sheet->setCellValue('F' . $startCell, $item->no_shipment);
       $sheet->setCellValue('G' . $startCell, $item->costumer->name);
@@ -263,9 +263,9 @@ class ReportJoborderController extends Controller
 
   public function print(Request $request)
   {
-    $date = $request->date;
-    $costumer_id = $request->costumer_id;
-    $transport_id = $request->transport_id;
+    $date = $request['date'];
+    $costumer_id = $request['costumer_id'];
+    $transport_id = $request['transport_id'];
     $costumer = Costumer::find($costumer_id);
     $transport = Transport::find($transport_id);
     $data = JobOrder::with('costumer:id,name', 'routefrom:id,name', 'routeto:id,name',

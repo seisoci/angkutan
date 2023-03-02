@@ -33,6 +33,7 @@ class InvoicePurchase extends Model
     'total_payment',
     'rest_payment',
     'method_payment',
+    'memo',
   ];
 
   protected function serializeDate(DateTimeInterface $date)

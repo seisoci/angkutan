@@ -64,33 +64,40 @@
       <table class="table table-borderless table-title">
         <tbody>
           <tr>
-            <td scope="col" class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
+            <td class="font-weight-bolder text-uppercase" style="width:50%">{{ $profile['name'] ?? '' }}
             </td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" colspan="2" class="text-left" style="width:15%">Tanggal</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:23%"> {{ $data->created_at }}</td>
+            <td class="text-left" style="width:10%"></td>
+            <td colspan="2" class="text-left" style="width:15%">Tanggal</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:23%"> {{ $data->created_at }}</td>
           </tr>
           <tr>
-            <td scope="col" style="width:50%">{{ $profile['address'] ?? '' }}</td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" colspan="2" class="text-left" style="width:15%">No. Pemakaian</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:23%"> {{ $data->num_invoice }}</td>
+            <td style="width:50%">{{ $profile['address'] ?? '' }}</td>
+            <td class="text-left" style="width:10%"></td>
+            <td colspan="2" class="text-left" style="width:15%">No. Pemakaian</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:23%"> {{ $data->num_invoice }}</td>
           </tr>
           <tr>
-            <td scope="col">{{ $profile['phone'] ?? ''}}</td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" colspan="2" class="text-left" style="width:15%">Nama Supir</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:23%"> {{ $data->driver->name }}</td>
+            <td>{{ $profile['phone'] ?? ''}}</td>
+            <td class="text-left" style="width:10%"></td>
+            <td colspan="2" class="text-left" style="width:15%">Nama Supir</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:23%"> {{ $data->driver->name }}</td>
           </tr>
           <tr>
-            <td scope="col">Fax: {{ $profile['fax'] ?? ''}}</td>
-            <td scope="col" class="text-left" style="width:10%"></td>
-            <td scope="col" colspan="2" class="text-left" style="width:15%">No. Polisi</td>
-            <td scope="col" class="text-left" style="width:2%">: &ensp;</td>
-            <td scope="col" class="text-left" style="width:23%"> {{ $data->transport->num_pol }}</td>
+            <td>Fax: {{ $profile['fax'] ?? ''}}</td>
+            <td class="text-left" style="width:10%"></td>
+            <td colspan="2" class="text-left" style="width:15%">No. Polisi</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:23%"> {{ $data->transport->num_pol }}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="text-left" style="width:10%"></td>
+            <td colspan="2" class="text-left" style="width:15%">Memo</td>
+            <td class="text-left" style="width:2%">: &ensp;</td>
+            <td class="text-left" style="width:23%"> {{ $data->memo }}</td>
           </tr>
         </tbody>
       </table>
@@ -98,9 +105,10 @@
       <table class="table" style="font-size: 11px !important">
         <thead>
           <tr>
-            <th scope="col" style="width:5%">#</th>
-            <th scope="col">Nama Barang</th>
-            <th scope="col" style="width:5%" class="text-center">Jumlah</th>
+            <th style="width:5%">#</th>
+            <th>Nama Barang</th>
+            <th style="width:5%" class="text-center">Jumlah</th>
+            <th style="width:5%">Keterangan</th>
           </tr>
         </thead>
         <tbody>
@@ -109,6 +117,7 @@
             <td>{{ $loop->iteration }}</td>
             <td>{{ $item->sparepart->name }}</td>
             <td class="text-center">{{ $item->qty }}</td>
+            <td>{{ $item->description }}</td>
           </tr>
           @endforeach
         </tbody>

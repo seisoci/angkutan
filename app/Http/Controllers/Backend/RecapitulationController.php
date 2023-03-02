@@ -6,10 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\JobOrder;
-use App\Models\Setting;
 use App\Models\Transport;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
@@ -129,10 +128,10 @@ class RecapitulationController extends Controller
       'date_end' => 'date_format:Y-m-d|required',
     ]);
     if ($validator->passes()) {
-      $driver_id = $request->driver_id;
-      $transport_id = $request->transport_id;
-      $date_begin = $request->date_begin;
-      $date_end = $request->date_end;
+      $driver_id = $request['driver_id'];
+      $transport_id = $request['transport_id'];
+      $date_begin = $request['date_begin'];
+      $date_end = $request['date_end'];
 
       $this->toDocument($driver_id, $transport_id, $date_begin, $date_end, $request->type);
 
@@ -144,13 +143,19 @@ class RecapitulationController extends Controller
   public function toDocument($driver_id = NULL, $transport_id = NULL, $date_begin = NULL, $date_end = NULL, $type)
   {
     $cooperationDefault = Cooperation::where('default', '1')->first();
-    $driver = isset($driver_id) || !empty($driver_id) ? Driver::select('id', 'name')->findOrFail($driver_id) : 'Semua Supir';
 
-    $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,name', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense'])
-      ->withSum('operationalexpense', 'amount')
+    $data = JobOrder::with([
+        'anotherexpedition:id,name',
+        'driver:id,name',
+        'costumer:id,name',
+        'cargo:id,name',
+        'transport:id,num_pol',
+        'routefrom:id,name',
+        'routeto:id,name',
+        'operationalexpense.expense'
+      ])
       ->where('type', 'self')
       ->where('status_cargo', 'selesai')
-      ->where('status_document', '1')
       ->when($driver_id, function ($query, $driver_id) {
         return isset($driver_id) ? $query->where('driver_id', $driver_id) : NULL;
       })
@@ -159,6 +164,7 @@ class RecapitulationController extends Controller
       })
       ->whereBetween('date_begin', [$date_begin, $date_end])
       ->get();
+
     $transport = isset($transport_id) || !empty($transport_id) ? Transport::findOrFail($transport_id) : 'Semua Mobil';
 
     $spreadsheet = new Spreadsheet();
@@ -225,15 +231,6 @@ class RecapitulationController extends Controller
       ],
     ];
 
-    $borderHorizontal = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-
-
     $sheet->getColumnDimension('A')->setWidth(3.55);
     $sheet->getColumnDimension('B')->setWidth(14);
     $sheet->getColumnDimension('C')->setWidth(18);
@@ -274,11 +271,9 @@ class RecapitulationController extends Controller
     $sheet->setCellValue('K6', 'Fee Pemberian');
     $sheet->setCellValue('L6', 'Total(Rp.)');
 
-    $cellBasicPrice = NULL;
     $arrayBasicPrice = [];
     $startCell = 6;
     $startForSum = 7;
-    $endForSum = 6;
     $no = 1;
     $sheet->getStyle('A' . $startCell . ':L' . $startCell . '')->applyFromArray($borderTopBottom)->applyFromArray($borderLeftRight);
     foreach ($data as $item):
@@ -288,10 +283,10 @@ class RecapitulationController extends Controller
       $sheet->getStyle('I' . $startCell)->getNumberFormat()->setFormatCode('0.00');
       $sheet->getStyle('J' . $startCell . ':L' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->getStyle('B' . $startCell)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
-      $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('center');
+      $sheet->getStyle('A' . $startCell)->getAlignment()->setHorizontal('center');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->date_begin);
-      $sheet->setCellValue('C' . $startCell, $item->prefix . '-' . $item->num_bill);
+      $sheet->setCellValue('C' . $startCell, $item->num_bill);
       $sheet->setCellValue('D' . $startCell, $item->costumer->name);
       $sheet->setCellValue('E' . $startCell, $item->routefrom->name);
       $sheet->setCellValue('F' . $startCell, $item->routeto->name);
@@ -334,7 +329,6 @@ class RecapitulationController extends Controller
     //-----------------Operasional-----------------
     foreach ($data as $key => $item):
       $no = 1;
-      $endForSum = $startCell;
       $startForSum = ($startCell) + 2;
       $startCell++;
       $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderTop);
@@ -356,7 +350,7 @@ class RecapitulationController extends Controller
       $sheet->setCellValue('B' . $startCell, $item->date_begin);
       $sheet->setCellValue('C' . $startCell, 'UANG JALAN');
       $sheet->setCellValue('E' . $startCell, $item->road_money);
-      $sheet->setCellValue('F' . $startCell, $item->prefix . '-' . $item->num_bill);
+      $sheet->setCellValue('F' . $startCell, $item->num_bill);
       foreach ($item->operationalexpense as $itemExpense):
         $startCell++;
         $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderTop);
@@ -369,7 +363,7 @@ class RecapitulationController extends Controller
         $sheet->setCellValue('C' . $startCell, $itemExpense->expense->name);
         $sheet->setCellValue('D' . $startCell, $itemExpense->description);
         $sheet->setCellValue('E' . $startCell, $itemExpense->amount);
-        $sheet->setCellValue('F' . $startCell, $item->prefix . '-' . $item->num_bill);
+        $sheet->setCellValue('F' . $startCell, $item->num_bill);
       endforeach;
       //Sub Total Operasional
       $endForSum = $startCell;
@@ -396,7 +390,6 @@ class RecapitulationController extends Controller
 
 
     //-----------------Sparepart-----------------
-    $cellSparepart = NULL;
     $startCell += 3;
     $arraySparepart = [];
     $sheet->mergeCells('A' . $startCell . ':C' . $startCell . '');
@@ -408,7 +401,6 @@ class RecapitulationController extends Controller
     $sheet->setCellValue('E' . ++$startCell, 'Telp: ' . $cooperationDefault['phone']);
     $sheet->setCellValue('E' . ++$startCell, 'Fax: ' . $cooperationDefault['fax']);
     $no = 1;
-    $endForSum = $startCell;
     $startForSum = ($startCell) + 2;
     $startCell++;
     $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderTop);
@@ -428,7 +420,7 @@ class RecapitulationController extends Controller
       $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('center');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->date_begin);
-      $sheet->setCellValue('C' . $startCell, $item->prefix . '-' . $item->num_bill);
+      $sheet->setCellValue('C' . $startCell, $item->num_bill);
       $sheet->setCellValue('D' . $startCell, $item->driver->name);
       $sheet->setCellValue('E' . $startCell, $item->transport->num_pol);
       $sheet->setCellValue('F' . $startCell, '=(' . $arrayBasicPrice[($no) - 2] . '-' . $arrayOperational[($no) - 2] . ')*(' . $item->cut_sparepart_percent . '/100)');
@@ -446,7 +438,6 @@ class RecapitulationController extends Controller
     $startCell++;
 
     //-----------------Gaji-----------------
-    $cellGaji = NULL;
     $startCell += 3;
     $sheet->mergeCells('A' . $startCell . ':B' . $startCell . '');
     $sheet->setCellValue('A' . $startCell, 'Laporan Gaji');
@@ -457,39 +448,40 @@ class RecapitulationController extends Controller
     $sheet->setCellValue('E' . ++$startCell, 'Telp: ' . $cooperationDefault['phone']);
     $sheet->setCellValue('E' . ++$startCell, 'Fax: ' . $cooperationDefault['fax']);
     $no = 1;
-    $endForSum = $startCell;
     $startForSum = ($startCell) + 2;
     $startCell++;
-    $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderTop);
-    $sheet->getStyle('F' . $startCell)->getAlignment()->setHorizontal('right');
+    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTop);
+    $sheet->getStyle('G' . $startCell)->getAlignment()->setHorizontal('right');
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A' . $startCell, 'No.');
     $sheet->setCellValue('B' . $startCell, 'Tanggal');
     $sheet->setCellValue('C' . $startCell, 'S. Jalan');
     $sheet->setCellValue('D' . $startCell, 'Nama Supir');
     $sheet->setCellValue('E' . $startCell, 'No. Polisi');
-    $sheet->setCellValue('F' . $startCell, 'Gaji');
+    $sheet->setCellValue('F' . $startCell, 'Jenis');
+    $sheet->setCellValue('G' . $startCell, 'Gaji');
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderTop);
+      $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTop);
       $sheet->getStyle('B' . $startCell)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
-      $sheet->getStyle('F' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('G' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('center');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->date_begin);
-      $sheet->setCellValue('C' . $startCell, $item->prefix . '-' . $item->num_bill);
+      $sheet->setCellValue('C' . $startCell, $item->num_bill);
       $sheet->setCellValue('D' . $startCell, $item->driver->name);
       $sheet->setCellValue('E' . $startCell, $item->transport->num_pol);
-      $sheet->setCellValue('F' . $startCell, '=(' . $arrayBasicPrice[($no) - 2] . '-' . $arrayOperational[($no) - 2] . '-' . $arraySparepart[($no) - 2] . ')*(' . $item->salary_percent . '/100)');
+      $sheet->setCellValue('F' . $startCell, $item->type_salary);
+      $sheet->setCellValue('G' . $startCell, $item->total_salary);
     endforeach;
     $endForSum = $startCell;
     $startCell++;
-    $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderBottom)->applyFromArray($borderTop);
-    $sheet->getStyle('F' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
-    $sheet->getStyle('E' . $startCell . ':F' . $startCell)->getFont()->setBold(true);
+    $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderBottom)->applyFromArray($borderTop);
+    $sheet->getStyle('G' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('E' . $startCell . ':G' . $startCell)->getFont()->setBold(true);
     $sheet->getStyle('E' . $startCell)->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('E' . $startCell, 'Total Rp.');
-    $sheet->setCellValue('F' . $startCell, '=SUM(F' . $startForSum . ':F' . $endForSum . ')');
+    $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startForSum . ':G' . $endForSum . ')');
     $cellGaji = "F" . $startCell;
     $startCell += 3;
 

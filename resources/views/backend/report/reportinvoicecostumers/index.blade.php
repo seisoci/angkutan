@@ -1,10 +1,6 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-  {{-- Dashboard 1 --}}
-  <!--begin::Card-->
   <div class="card card-custom">
     <div class="card-header flex-wrap py-3">
       <div class="card-title">
@@ -16,7 +12,6 @@
           <button type="button" class="btn btn-light-primary font-weight-bolder dropdown-toggle" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
             <span class="svg-icon svg-icon-md">
-              <!--begin::Svg Icon | path:/metronic/theme/html/demo1/dist/assets/media/svg/icons/Design/PenAndRuller.svg-->
               <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                    width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -29,12 +24,9 @@
                     fill="#000000"></path>
                 </g>
               </svg>
-              <!--end::Svg Icon-->
             </span>Export
           </button>
-          <!--begin::Dropdown Menu-->
           <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-            <!--begin::Navigation-->
             <ul class="navi flex-column navi-hover py-2">
               <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">Choose an
                 option:
@@ -64,9 +56,7 @@
                 </a>
               </li>
             </ul>
-            <!--end::Navigation-->
           </div>
-          <!--end::Dropdown Menu-->
         </div>
       </div>
     </div>
@@ -109,7 +99,6 @@
         </div>
       </div>
 
-      <!--begin: Datatable-->
       <table class="table table-bordered table-hover" id="Datatable">
         <thead>
         <tr>
@@ -144,15 +133,12 @@
   </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
   <link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
   <script id="details-template" type="text/x-handlebars-template">
     @verbatim
@@ -395,7 +381,7 @@
           orderable: false,
           ajax: data.details_url,
           columns: [
-            {data: 'num_prefix', name: 'num_bill'},
+            {data: 'num_bill', name: 'num_bill'},
             {data: 'date_begin', name: 'date_begin'},
             {data: 'transport.num_pol', name: 'transport.num_pol'},
             {data: 'driver.name', name: 'driver.name'},

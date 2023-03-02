@@ -61,7 +61,7 @@
       }
 
       @page {
-        size: A4 potrait;
+        size: A4 portrait;
       }
     }
   </style>

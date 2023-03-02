@@ -248,7 +248,7 @@
           serverSide: true,
           ajax: data.details_url,
           columns: [
-            {data: 'num_prefix', name: 'num_bill', orderable: false},
+            {data: 'num_bill', name: 'num_bill', orderable: false},
             {
               data: 'total_salary',
               name: 'total_salary',

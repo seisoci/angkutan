@@ -90,7 +90,7 @@
                 <td
                   class="pr-0 pt-7 text-right text-danger">{{ number_format($data->road_money_prev ?? 0,0, '.', '.') }}</td>
                 <td
-                  class="pr-0 pt-7 text-right">{{ number_format($data->roadmoneydetail_sum_amount ?? 0,0, '.', '.') }}</td>
+                  class="pr-0 pt-7 text-right">{{ number_format($data->roadmoneyreal_sum_amount ?? 0,0, '.', '.') }}</td>
               </tr>
               </tbody>
             </table>
@@ -123,13 +123,6 @@
                         badge-secondary
                       @endif
                       ">{{ $item->status }}</span></td>
-{{--                  @if ($data->status_cargo != 'selesai' && $data->status_cargo != 'batal')--}}
-{{--                    <td style="width: 20%">--}}
-{{--                      <button href="#" data-toggle="modal" data-target="#modalDelete"--}}
-{{--                              data-id="{{ $item->id }}" class="delete btn btn-danger btn-sm d-print-none">X--}}
-{{--                      </button>--}}
-{{--                    </td>--}}
-{{--                  @endif--}}
                 </tr>
               @endforeach
               @if ($data->status_document != 1 && $data->status_cargo != 'batal' && $data->type == 'self')

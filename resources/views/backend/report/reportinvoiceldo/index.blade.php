@@ -278,7 +278,7 @@
           orderable: false,
           ajax: data.details_url,
           columns: [
-            {data: 'num_prefix', name: 'num_bill'},
+            {data: 'num_bill', name: 'num_bill'},
             {data: 'date_begin', name: 'date_begin'},
             {data: 'transport.num_pol', name: 'transport.num_pol'},
             {data: 'driver.name', name: 'driver.name'},

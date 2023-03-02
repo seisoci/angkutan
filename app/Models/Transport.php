@@ -30,6 +30,7 @@ class Transport extends Model
     'expired_kir',
     'description',
     'photo',
+    'status',
   ];
 
   protected function serializeDate(DateTimeInterface $date)

@@ -64,7 +64,9 @@ class ReportLedgerAccountingController extends Controller
       return $query->whereIn('id', $coaIdPlucked);
     }, 'children.journal' => function ($query) use ($request, $date_begin, $date_end) {
       $query->when($request->input('date_begin'), function ($query) use ($date_begin, $date_end) {
-        return $query->whereBetween('journals.date_journal', [$date_begin, $date_end]);
+        return $query->whereBetween('journals.date_journal', [$date_begin, $date_end])
+          ->orderBy('journals.date_journal')
+          ->orderBy('journals.id');
       }, function ($query) {
         return $query->whereNull('journals.date_journal');
       });
@@ -121,7 +123,9 @@ class ReportLedgerAccountingController extends Controller
       return $query->whereIn('id', $coaIdPlucked);
     }, 'children.journal' => function ($query) use ($request, $date_begin, $date_end) {
       $query->when($request->input('date_begin'), function ($query) use ($date_begin, $date_end) {
-        return $query->whereBetween('journals.date_journal', [$date_begin, $date_end]);
+        return $query->whereBetween('journals.date_journal', [$date_begin, $date_end])
+          ->orderBy('journals.date_journal')
+          ->orderBy('journals.id');
       }, function ($query) {
         return $query->whereNull('journals.date_journal');
       });

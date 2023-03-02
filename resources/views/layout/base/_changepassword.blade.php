@@ -25,12 +25,12 @@
           </div>
           <div class="form-group">
             <label>New Password</label>
-            <input type="password" name="password" class="currency form-control form-control-solid"
+            <input type="password" name="password" class="form-control form-control-solid"
               placeholder="Input New Password" />
           </div>
           <div class="form-group">
             <label>Retype New Password</label>
-            <input type="password" name="password_confirmation" class="currency form-control form-control-solid"
+            <input type="password" name="password_confirmation" class="form-control form-control-solid"
               placeholder="Input Retype Password" />
           </div>
         </div>

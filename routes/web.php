@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Backend as Backend;
 use App\Http\Controllers\PagesController;
+use App\Models\TypeCapacity;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -312,5 +313,15 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('completepurchaseorder', Backend\CompletePurchaseOrderController::class);
     Route::resource('reportusageinsideoutside', Backend\ReportUsageItemInsideOutsideController::class);
     Route::resource('reportrecapkasbondrivers', Backend\ReportRecapKasbonDriverController::class);
+
+
+    /* Laporan Rekap Gaji Supir Bulanan */
+    Route::resource('l-rekap-gaji-bulanan', Backend\LaporanRekapGajiBulananController::class);
+
+    /* Laporan Rekap Pengeluaran Sparepart Mobil */
+    Route::resource('l-rekap-pengeluaran-sparepart', Backend\LaporanRekapPengeluaranMobilController::class);
+
+    /* Laporan Rekap Pendapatan Kotor Mobill */
+    Route::resource('l-rekap-pendapatan-kotor', Backend\LaporanRekapPendapatanKotorMobilController::class);
   });
 });

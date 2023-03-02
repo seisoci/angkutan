@@ -8,16 +8,15 @@ use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\InvoiceUsageItem;
 use App\Models\Journal;
-use App\Models\Prefix;
 use App\Models\Stock;
 use App\Models\Transport;
 use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
-use DataTables;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
 
 class InvoiceUsageItemController extends Controller
 {
@@ -63,17 +62,6 @@ class InvoiceUsageItemController extends Controller
     return view('backend.invoice.invoiceusageitems.index', compact('config', 'page_breadcrumbs'));
   }
 
-  function create(Request $request)
-  {
-    $config['page_title'] = "Create Pemakaian Barang";
-    $page_breadcrumbs = [
-      ['page' => '/backend/invoiceusageitems', 'title' => "List Pemakaian Barang"],
-      ['page' => '#', 'title' => "Create Pemakaian Barang"],
-    ];
-
-    return view('backend.invoice.invoiceusageitems.create', compact('config', 'page_breadcrumbs'));
-  }
-
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
@@ -94,15 +82,14 @@ class InvoiceUsageItemController extends Controller
         foreach ($items['sparepart_id'] as $key => $item):
           $grandTotal += $items['qty'][$key] * $items['price'][$key];
         endforeach;
-        $invoiceUsageItem = InvoiceUsageItem::create([
-          'num_bill' => $request->input('num_bill'),
+
+        $request->request->add([
           'prefix' => 'PBPKM',
-          'invoice_date' => $request->input('invoice_date'),
-          'driver_id' => $request->input('driver_id'),
-          'transport_id' => $request->input('transport_id'),
-          'type' => $request->input('type'),
-          'total_payment' => $grandTotal,
+          'total_payment' => $grandTotal
         ]);
+
+        $invoiceUsageItem = InvoiceUsageItem::create($request->all());
+
         $driver = Driver::findOrFail($request->input('driver_id'));
         $transport = Transport::findOrFail($request->input('transport_id'));
         foreach ($items['sparepart_id'] as $key => $item):
@@ -115,6 +102,7 @@ class InvoiceUsageItemController extends Controller
             'coa_id' => 17,
             'qty' => $items['qty'][$key],
             'price' => $items['price'][$key],
+            'description' => $items['description'][$key],
           ]);
 
           Journal::create([
@@ -156,6 +144,17 @@ class InvoiceUsageItemController extends Controller
     return $response;
   }
 
+  function create(Request $request)
+  {
+    $config['page_title'] = "Create Pemakaian Barang";
+    $page_breadcrumbs = [
+      ['page' => '/backend/invoiceusageitems', 'title' => "List Pemakaian Barang"],
+      ['page' => '#', 'title' => "Create Pemakaian Barang"],
+    ];
+
+    return view('backend.invoice.invoiceusageitems.create', compact('config', 'page_breadcrumbs'));
+  }
+
   public function show($id)
   {
     $config['page_title'] = "Detail Pemakaian Barang";
@@ -167,7 +166,15 @@ class InvoiceUsageItemController extends Controller
     ];
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name', 'usageitem.invoicepurchase:id,supplier_sparepart_id', 'usageitem.invoicepurchase.supplier'])->findOrFail($id);
+    $data = InvoiceUsageItem::with([
+      'driver',
+      'transport',
+      'usageitem.sparepart:id,name',
+      'usageitem.invoicepurchase:id,supplier_sparepart_id',
+      'usageitem.invoicepurchase.supplier'
+    ])->where('type', 'self')
+      ->findOrFail($id);
+
     return view('backend.invoice.invoiceusageitems.show', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 
@@ -184,7 +191,8 @@ class InvoiceUsageItemController extends Controller
     return view('backend.invoice.invoiceusageitems.print', compact('config', 'page_breadcrumbs', 'profile', 'data'));
   }
 
-  public function printDotMatrix($id){
+  public function printDotMatrix($id)
+  {
     $cooperationDefault = Cooperation::where('default', '1')->first();
     $data = InvoiceUsageItem::where('type', 'self')->with(['driver', 'transport', 'usageitem.sparepart:id,name', 'usageitem.invoicepurchase:id,supplier_sparepart_id', 'usageitem.invoicepurchase.supplier'])->findOrFail($id);
     $result = '';

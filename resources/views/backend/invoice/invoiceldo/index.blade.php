@@ -178,7 +178,7 @@
           serverSide: true,
           ajax: data.details_url,
           columns: [
-            {data: 'num_prefix', name: 'num_bill', orderable: false},
+            {data: 'num_bill', name: 'num_bill', orderable: false},
             {data: 'driver.name', name: 'driver.name', orderable: false},
             {data: 'transport.num_pol', name: 'transport.num_pol', orderable: false},
             {

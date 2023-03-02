@@ -98,6 +98,7 @@
         <th>Nama Sparepart</th>
         <th>Nama Supir</th>
         <th>No. Polisi</th>
+        <th>Keterangan</th>
         <th class="text-center">Jumlah</th>
         <th class="text-right">Harga</th>
         <th class="text-right">Total</th>
@@ -112,6 +113,7 @@
           <td>{{ $item->sparepart_name }}</td>
           <td>{{ $item->driver_name }}</td>
           <td>{{ $item->num_pol }}</td>
+          <td>{{ $item->description }}</td>
           <td class="text-center">{{ $item->qty}}</td>
           <td class="text-right">{{ number_format($item->price, 2, '.', ',')  }}</td>
           <td class="text-right">{{ number_format($item->total_price, 2, '.', ',') }}</td>
@@ -119,7 +121,7 @@
       @endforeach
       </tbody>
       <tfoot>
-      <td colspan="6" class="text-right">Total</td>
+      <td colspan="7" class="text-right">Total</td>
       <td class="text-center">{{$data->sum('qty') }}</td>
       <td class="text-right">{{ number_format($data->sum('price'), 2, '.', ',') }}</td>
       <td class="text-right">{{ number_format($data->sum('total_price'), 2, '.', ',') }}</td>

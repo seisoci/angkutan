@@ -1,7 +1,5 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
 <div class="row">
   <div class="col-md-6 col-sm-12">
@@ -11,7 +9,6 @@
           {{ $config['page_title'] }}
         </h3>
       </div>
-      <!--begin::Form-->
       <form id="formStore" action="{{ route('backend.transports.store') }}">
         @csrf
         <div class="card-body">
@@ -115,6 +112,13 @@
             <label>Keterangan</label>
             <textarea name="description" rows="5" class="form-control form-control"
               placeholder="Input Keterangan"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="d-block">Status</label>
+            <select class="form-control" name="status">
+              <option value="aktif">Aktif</option>
+              <option value="non_aktif">Non Aktif</option>
+            </select>
           </div>
           <div class="card-footer d-flex justify-content-end">
             <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>

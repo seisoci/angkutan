@@ -1,7 +1,5 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
   <div class="card card-custom">
     <div class="card-header">
@@ -9,7 +7,6 @@
         {{ $config['page_title'] }}
       </h3>
     </div>
-    <!--begin::Form-->
     <form id="formStore" method="POST" action="{{ route('backend.joborders.store') }}">
       @csrf
       <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -22,6 +19,8 @@
           </div>
         </div>
         <div class="row">
+          <input type="hidden" name="type_salary">
+          <input type="hidden" name="salary_amount">
           <div class="col-md-4">
             <div class="form-group">
               <label>Tanggal Muat</label>
@@ -35,11 +34,6 @@
                 </div>
               </div>
             </div>
-{{--            <div class="form-group">
-              <label>Prefix:</label>
-              <select name="prefix" class="form-control" id="select2Prefix">
-              </select>
-            </div>--}}
             <div class="form-group">
               <label for="activeSelect">Expedisi<span class="text-danger">*</span></label>
               <select id="selectExpedition" name="type" class="form-control">
@@ -283,13 +277,6 @@
           </div>
           @endhasanyrole
           <div class="offset-md-8 col-md-4">
-     {{--       <div class="form-group">
-              <select name="coa_id" class="form-control">
-                @foreach($selectCoa->coa as $item)
-                  <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
-                @endforeach
-              </select>
-            </div>--}}
             <div class="form-group">
               <label>Keterangan</label>
               <textarea class="form-control" name="description" rows="5"></textarea>
@@ -302,19 +289,13 @@
         <button type="submit" class="btn btn-primary">Submit</button>
       </div>
     </form>
-    <!--end::Form-->
   </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
-
-  {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
       function initCurrency() {
@@ -352,24 +333,6 @@
       $('.datepicker').datepicker({
         format: 'yyyy-mm-dd',
         todayHighlight: !0,
-      });
-
-      $("#select2Prefix").select2({
-        placeholder: "Choose Prefix",
-        allowClear: true,
-        ajax: {
-          url: "{{ route('backend.prefixes.select2') }}",
-          dataType: "json",
-          delay: 250,
-          cache: true,
-          data: function (e) {
-            return {
-              type: 'operational',
-              q: e.term || '',
-              page: e.page || 1
-            }
-          },
-        },
       });
 
       $('#selectExpedition').on('change', function (e) {
@@ -423,30 +386,13 @@
           $('input[name="salary"]').parent().css("display", "none");
           callLdo();
         }
-        $("#select2RoadFrom").val("");
-        $("#select2RoadFrom").trigger("change");
-        $("#select2RoadTo").val("");
-        $("#select2RoadTo").trigger("change");
-        $("#select2RoadTo").val("");
-        $("#select2RoadTo").trigger("change");
-        $("#select2TypeCapacity").val("");
-        $("#select2TypeCapacity").trigger("change");
-        $('.basicprice').val('');
-        $('#totalpayloadldo').val('');
-        $('#selectTypeOngkosan').val('');
-        $('#selectTypeOngkosan').val('');
-        $('#totalPayload').val('');
-        $('input[name=basic_price]').val('');
-        $('input[name=basic_price_ldo]').val('');
-        $('input[name=payload]').val('');
-        $('input[name=road_money]').val('');
-        $('input[name=grandtotalgross]').val('');
-        $('input[name=cut_sparepart]').val('');
-        $('input[name=salary]').val('');
-        $('input[name=grandtotalnetto]').val('');
-        $('input[name=tax_percent]').val('');
-        $('#taxPercent').val('');
-        $('.currency').val('');
+        $("#select2RoadFrom").empty().val("");
+        $("#select2RoadTo").empty().trigger("change");
+        $("#select2TypeCapacity").empty().trigger("change");
+        $('.basicprice, #totalpayloadldo, #selectTypeOngkosan, #selectTypeOngkosan, #totalPayload, input[name=basic_price],' +
+          'input[name=basic_price_ldo], input[name=basic_price_ldo], input[name=payload], input[name=road_money],' +
+          'input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary], input[name=grandtotalnetto]' +
+          'input[name=tax_percent], #taxPercent, .currency').val('');
       });
 
       $("#select2AnotherExpedition").select2({
@@ -465,10 +411,7 @@
           },
         },
       }).on('change', function () {
-        $("#select2Transport").val("");
-        $("#select2Transport").trigger("change");
-        $("#select2Drivers").val("");
-        $("#select2Drivers").trigger("change");
+        $("#select2Transport, #select2Drivers").empty().trigger('change');
       });
 
       function initTransportDriverSelf() {
@@ -483,31 +426,18 @@
             data: function (e) {
               return {
                 type: $('#select2AnotherExpedition').find(":selected").val() || null,
+                status: 'aktif',
                 q: e.term || '',
                 page: e.page || 1
               }
             },
           }
-        }).on('change', function(){
-          $("#select2TypeCapacity").val("");
-          $("#select2TypeCapacity").trigger("change");
-          $('.basicprice').val('');
-          $('#totalpayloadldo').val('');
-          $('#selectTypeOngkosan').val('');
-          $('#selectTypeOngkosan').val('');
-          $('#totalPayload').val('');
-          $('input[name=basic_price]').val('');
-          $('input[name=basic_price_ldo]').val('');
-          $('input[name=payload]').val('');
-          $('input[name=road_money]').val('');
-          $('input[name=grandtotalgross]').val('');
-          $('input[name=cut_sparepart]').val('');
-          $('input[name=salary]').val('');
-          $('input[name=grandtotalnetto]').val('');
-          $('input[name=tax_percent]').val('');
-          $('#taxPercent').val('');
-          $('.currency').val('');
-          $('input[name=km]').val('');
+        }).on('change', function () {
+          $("#select2TypeCapacity").empty().trigger("change");
+          $('.basicprice, .currency, #totalpayloadldo, #selectTypeOngkosan, #selectTypeOngkosan, #totalPayload, ' +
+            'input[name=basic_price], input[name=basic_price_ldo], input[name=payload], input[name=road_money], ' +
+            'input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary], input[name=grandtotalnetto], ' +
+            'input[name=tax_percent], #taxPercent, input[name=km]').val('');
         });
 
         $("#select2Drivers").select2({
@@ -526,26 +456,12 @@
               }
             },
           }
-        }).on('change', function(){
-          $("#select2TypeCapacity").val("");
-          $("#select2TypeCapacity").trigger("change");
-          $('.basicprice').val('');
-          $('#totalpayloadldo').val('');
-          $('#selectTypeOngkosan').val('');
-          $('#selectTypeOngkosan').val('');
-          $('#totalPayload').val('');
-          $('input[name=basic_price]').val('');
-          $('input[name=basic_price_ldo]').val('');
-          $('input[name=payload]').val('');
-          $('input[name=road_money]').val('');
-          $('input[name=grandtotalgross]').val('');
-          $('input[name=cut_sparepart]').val('');
-          $('input[name=salary]').val('');
-          $('input[name=grandtotalnetto]').val('');
-          $('input[name=tax_percent]').val('');
-          $('input[name=km]').val('');
-          $('#taxPercent').val('');
-          $('.currency').val('');
+        }).on('change', function () {
+          $("#select2TypeCapacity").empty().trigger("change");
+          $('.basicprice, .currency, #totalpayloadldo, #selectTypeOngkosan, #selectTypeOngkosan, #totalPayload, ' +
+            'input[name=basic_price], input[name=basic_price_ldo], input[name=payload], input[name=road_money], ' +
+            'input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary], input[name=grandtotalnetto], ' +
+            'input[name=tax_percent], #taxPercent, input[name=km]').val('');
         });
       }
 
@@ -561,6 +477,7 @@
             data: function (e) {
               return {
                 type: $('#select2AnotherExpedition').find(":selected").val() || null,
+                status: 'aktif',
                 q: e.term || '',
                 page: e.page || 1
               }
@@ -574,26 +491,12 @@
               newOption: true
             }
           }
-        }).on('change', function(){
-          $("#select2TypeCapacity").val("");
-          $("#select2TypeCapacity").trigger("change");
-          $('.basicprice').val('');
-          $('#totalpayloadldo').val('');
-          $('#selectTypeOngkosan').val('');
-          $('#selectTypeOngkosan').val('');
-          $('#totalPayload').val('');
-          $('input[name=basic_price]').val('');
-          $('input[name=basic_price_ldo]').val('');
-          $('input[name=payload]').val('');
-          $('input[name=road_money]').val('');
-          $('input[name=grandtotalgross]').val('');
-          $('input[name=cut_sparepart]').val('');
-          $('input[name=salary]').val('');
-          $('input[name=grandtotalnetto]').val('');
-          $('input[name=tax_percent]').val('');
-          $('input[name=km]').val('');
-          $('#taxPercent').val('');
-          $('.currency').val('');
+        }).on('change', function () {
+          $("#select2TypeCapacity").empty().trigger("change");
+          $('.basicprice, .currency, #totalpayloadldo, #selectTypeOngkosan, #selectTypeOngkosan, #totalPayload, ' +
+            'input[name=basic_price], input[name=basic_price_ldo], input[name=payload], input[name=road_money], ' +
+            'input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary], input[name=grandtotalnetto], ' +
+            'input[name=tax_percent], #taxPercent, input[name=km]').val('');
         });
 
         $("#select2Drivers").select2({
@@ -620,26 +523,12 @@
               newOption: true
             }
           }
-        }).on('change', function(){
-          $("#select2TypeCapacity").val("");
-          $("#select2TypeCapacity").trigger("change");
-          $('.basicprice').val('');
-          $('#totalpayloadldo').val('');
-          $('#selectTypeOngkosan').val('');
-          $('#selectTypeOngkosan').val('');
-          $('#totalPayload').val('');
-          $('input[name=basic_price]').val('');
-          $('input[name=basic_price_ldo]').val('');
-          $('input[name=payload]').val('');
-          $('input[name=road_money]').val('');
-          $('input[name=grandtotalgross]').val('');
-          $('input[name=cut_sparepart]').val('');
-          $('input[name=salary]').val('');
-          $('input[name=grandtotalnetto]').val('');
-          $('input[name=tax_percent]').val('');
-          $('input[name=km]').val('');
-          $('#taxPercent').val('');
-          $('.currency').val('');
+        }).on('change', function () {
+          $("#select2TypeCapacity").empty().trigger("change");
+          $('.basicprice, .currency, #totalpayloadldo, #selectTypeOngkosan, #selectTypeOngkosan, #totalPayload, ' +
+            'input[name=basic_price], input[name=basic_price_ldo], input[name=payload], input[name=road_money], ' +
+            'input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary], input[name=grandtotalnetto], ' +
+            'input[name=tax_percent], #taxPercent, input[name=km]').val('');
         });
       }
 
@@ -659,31 +548,13 @@
           },
         },
       }).on('change', function () {
-        $("#select2RoadFrom").val("");
-        $("#select2RoadFrom").trigger("change");
-        $("#select2RoadTo").val("");
-        $("#select2RoadTo").trigger("change");
-        $("#select2RoadTo").val("");
-        $("#select2RoadTo").trigger("change");
-        $("#select2TypeCapacity").val("");
-        $("#select2TypeCapacity").trigger("change");
-        $('.basicprice').val('');
+        $("#select2Cargo, #select2RoadFrom,#select2RoadTo, #select2TypeCapacity").empty().trigger("change");
         $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
-        $('#selectTypeOngkosan').val('');
         $('#totalPayload').val('');
-        $('input[name=basic_price]').val('');
-        $('input[name=basic_price_ldo]').val('');
-        $('input[name=payload]').val('');
-        $('input[name=road_money]').val('');
-        $('input[name=grandtotalgross]').val('');
-        $('input[name=cut_sparepart]').val('');
-        $('input[name=salary]').val('');
-        $('input[name=grandtotalnetto]').val('');
-        $('input[name=tax_percent]').val('');
-        $('input[name=km]').val('');
-        $('#taxPercent').val('');
-        $('.currency').val('');
+        $('.basicprice, .currency, #taxPercent, input[name=basic_price], input[name=basic_price_ldo], input[name=payload], ' +
+          'input[name=road_money], input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary]' +
+          'input[name=grandtotalnetto], input[name=tax_percent], input[name=km]').val('');
       });
 
       $("#select2RoadFrom").select2({
@@ -703,29 +574,13 @@
           },
         },
       }).on('change', function () {
-        $("#select2RoadTo").val("");
-        $("#select2RoadTo").trigger("change");
-        $("#select2Cargo").val("");
-        $("#select2Cargo").trigger("change");
-        $("#select2TypeCapacity").val("");
-        $("#select2TypeCapacity").trigger("change");
-        $('.basicprice').val('');
+        $("#select2Cargo, #select2RoadTo, #select2TypeCapacity").empty().trigger("change");
         $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
-        $('#selectTypeOngkosan').val('');
         $('#totalPayload').val('');
-        $('input[name=basic_price]').val('');
-        $('input[name=basic_price_ldo]').val('');
-        $('input[name=payload]').val('');
-        $('input[name=road_money]').val('');
-        $('input[name=grandtotalgross]').val('');
-        $('input[name=cut_sparepart]').val('');
-        $('input[name=salary]').val('');
-        $('input[name=grandtotalnetto]').val('');
-        $('input[name=tax_percent]').val('');
-        $('input[name=km]').val('');
-        $('#taxPercent').val('');
-        $('.currency').val('');
+        $('.basicprice, .currency, #taxPercent, input[name=basic_price], input[name=basic_price_ldo], input[name=payload], ' +
+          'input[name=road_money], input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary]' +
+          'input[name=grandtotalnetto], input[name=tax_percent], input[name=km]').val('');
       });
 
       $("#select2RoadTo").select2({
@@ -746,27 +601,13 @@
           },
         },
       }).on('change', function () {
-        $("#select2Cargo").val("");
-        $("#select2Cargo").trigger("change");
-        $("#select2TypeCapacity").val("");
-        $("#select2TypeCapacity").trigger("change");
-        $('.basicprice').val('');
+        $("#select2TypeCapacity, #select2Cargo").empty().trigger("change");
         $('#totalpayloadldo').val('');
         $('#selectTypeOngkosan').val('');
-        $('#selectTypeOngkosan').val('');
         $('#totalPayload').val('');
-        $('input[name=basic_price]').val('');
-        $('input[name=basic_price_ldo]').val('');
-        $('input[name=payload]').val('');
-        $('input[name=road_money]').val('');
-        $('input[name=grandtotalgross]').val('');
-        $('input[name=cut_sparepart]').val('');
-        $('input[name=salary]').val('');
-        $('input[name=grandtotalnetto]').val('');
-        $('input[name=tax_percent]').val('');
-        $('input[name=km]').val('');
-        $('#taxPercent').val('');
-        $('.currency').val('');
+        $('.basicprice, .currency, #taxPercent, input[name=basic_price], input[name=basic_price_ldo], input[name=payload], ' +
+          'input[name=road_money], input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary]' +
+          'input[name=grandtotalnetto], input[name=tax_percent], input[name=km]').val('');
       });
 
       $("#select2Cargo").select2({
@@ -778,36 +619,23 @@
           delay: 250,
           cache: true,
           data: function (e) {
-            let query = {
+            return {
               costumer_id: $('#select2Costumers').find(":selected").val() || null,
               route_from: $('#select2RoadFrom').find(":selected").val() || null,
               route_to: $('#select2RoadTo').find(":selected").val() || null,
               q: e.term || '',
               page: e.page || 1
             }
-            return query
           },
         },
       }).on('change', function () {
-        $("#select2TypeCapacity").val("");
-        $("#select2TypeCapacity").trigger("change");
-        $('#selectTypeOngkosan').val('');
-        $('#selectTypeOngkosan').val('');
-        $('.basicprice').val('');
+        $("#select2TypeCapacity").empty().trigger("change");
         $('#totalpayloadldo').val('');
+        $('#selectTypeOngkosan').val('');
         $('#totalPayload').val('');
-        $('input[name=basic_price]').val('');
-        $('input[name=basic_price_ldo]').val('');
-        $('input[name=payload]').val('');
-        $('input[name=road_money]').val('');
-        $('input[name=grandtotalgross]').val('');
-        $('input[name=cut_sparepart]').val('');
-        $('input[name=salary]').val('');
-        $('input[name=grandtotalnetto]').val('');
-        $('input[name=tax_percent]').val('');
-        $('input[name=km]').val('');
-        $('#taxPercent').val('');
-        $('.currency').val('');
+        $('.basicprice, .currency, #taxPercent, input[name=basic_price], input[name=basic_price_ldo], input[name=payload], ' +
+          'input[name=road_money], input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary]' +
+          'input[name=grandtotalnetto], input[name=tax_percent], input[name=km]').val('');
       });
 
       $("#select2TypeCapacity").select2({
@@ -827,34 +655,16 @@
         },
       }).on('change', function () {
         $('#selectTypeOngkosan').val('');
-        $('#selectTypeOngkosan').val('');
-        $('.basicprice').val('');
-        $('#totalpayloadldo').val('');
         $('#totalPayload').val('');
-        $('input[name=basic_price]').val('');
-        $('input[name=basic_price_ldo]').val('');
-        $('input[name=payload]').val('');
-        $('input[name=road_money]').val('');
-        $('input[name=grandtotalgross]').val('');
-        $('input[name=cut_sparepart]').val('');
-        $('input[name=salary]').val('');
-        $('input[name=grandtotalnetto]').val('');
-        $('input[name=km]').val('');
+        $('.basicprice, .currency, #taxPercent, input[name=basic_price], input[name=basic_price_ldo], input[name=payload], ' +
+          'input[name=road_money], input[name=grandtotalgross], input[name=cut_sparepart], input[name=salary]' +
+          'input[name=grandtotalnetto], input[name=tax_percent], input[name=km]').val('');
       });
 
       $('#selectTypeOngkosan').on('change', function () {
-        $('.basicprice').val('');
-        $('#totalpayloadldo').val('');
-        $('#totalPayload').val('');
-        $('input[name=basic_price]').val('');
-        $('input[name=basic_price_ldo]').val('');
-        $('input[name=payload]').val('');
-        $('input[name=road_money]').val('');
-        $('input[name=grandtotalgross]').val('');
-        $('input[name=cut_sparepart]').val('');
-        $('input[name=salary]').val('');
-        $('input[name=grandtotalnetto]').val('');
-        $('input[name=km]').val('');
+        $('.basicprice, #totalpayloadldo, #totalPayload, input[name=basic_price], input[name=basic_price_ldo],' +
+          'input[name=payload], input[name=road_money], input[name=grandtotalgross], input[name=cut_sparepart], ' +
+          'input[name=salary], input[name=grandtotalnetto], input[name=km]').val('');
         getData();
         if (this.value == 'fix') {
           $('input[name="payload"]').prop('disabled', true).val(1);
@@ -877,7 +687,9 @@
         let pecentSparePart = parseFloat('{{ $sparepart->value }}') / 100;
         let pecentSalary = parseFloat('{{ $gaji->value }}') / 100;
         let sparepart = totalGross * pecentSparePart;
-        let salary = (totalGross - sparepart) * pecentSalary;
+        let typeSalary = $('input[name=type_salary]').val();
+        let salaryAmont = parseFloat($('input[name=salary_amount]').val()) || 0;
+        let salary = typeSalary === "dynamic" ? (totalGross - sparepart) * pecentSalary : salaryAmont;
         let totalNetto = totalGross - sparepart - salary;
         $('#totalPayload').val(sumPayload);
         $('#taxFee').val(taxPPH);
@@ -903,7 +715,9 @@
         let pecentSparePart = parseFloat('{{ $sparepart->value }}') / 100;
         let pecentSalary = parseFloat('{{ $gaji->value }}') / 100;
         let sparepart = totalGross * pecentSparePart;
-        let salary = (totalGross - sparepart) * pecentSalary;
+        let typeSalary = $('input[name=type_salary]').val();
+        let salaryAmont = parseFloat($('input[name=salary_amount]').val()) || 0;
+        let salary = typeSalary === "dynamic" ? (totalGross - sparepart) * pecentSalary : salaryAmont;
         let totalNetto = totalGross - sparepart - salary;
         $('#totalPayload').val(sumPayload);
         $('#taxFee').val(taxPPH);
@@ -913,7 +727,6 @@
         $('input[name="cut_sparepart"]').val(sparepart);
         $('input[name="salary"]').val(salary);
         $('input[name="grandtotalnetto"]').val(totalNetto);
-        $('input[name="road_money_real"]').val(totalRoadMoneyReal);
       }
 
       function callLdo() {
@@ -929,6 +742,7 @@
         let taxPPH = sumPayload * tax_pph;
         let sumPayloadAfterTax = sumPayload - taxPPH;
         let sumPayloadAfterThanks = sumPayloadAfterTax - fee_thanks;
+
         //ldo
         let sumPayloadLDO = basicPriceLDO * payload;
         let totalGrossLDO = sumPayloadLDO - roadMoney;
@@ -979,8 +793,10 @@
               if (transport === 'engkel') {
                 $('input[name=road_money]').val(data.road_engkel);
                 $('.basicprice').val(data.expense);
-                $('input[name=tax_percent],#taxPercent').val(taxfee.tax_pph);
-                $('input[name=fee_thanks],#fee_thanks').val(taxfee.fee_thanks);
+                $('input[name=tax_percent], #taxPercent').val(taxfee.tax_pph);
+                $('input[name=fee_thanks], #fee_thanks').val(taxfee.fee_thanks);
+                $('input[name=type_salary]').val(taxfee.type_salary);
+                $('input[name=salary_amount]').val(taxfee.salary_amount);
                 if (type === 'fix') {
                   callBorongan();
                 }

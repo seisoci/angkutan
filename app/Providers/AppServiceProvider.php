@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\JobOrder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -31,5 +32,6 @@ class AppServiceProvider extends ServiceProvider
     ]);
     View::composer('layout.base._aside', 'App\Http\View\Composers\PermissionComposer');
     View::composer('layout.base._aside', 'App\Http\View\Composers\RoleComposer');
+    URL::forceScheme('https');
   }
 }

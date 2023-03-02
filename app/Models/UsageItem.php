@@ -28,6 +28,7 @@ class UsageItem extends Model
     'name',
     'qty',
     'price',
+    'description'
   ];
 
   protected function serializeDate(DateTimeInterface $date)

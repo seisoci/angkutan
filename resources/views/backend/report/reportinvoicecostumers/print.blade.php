@@ -183,7 +183,7 @@
         @foreach($item->joborders as $child)
           <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $child->num_prefix }}</td>
+            <td>{{ $child->num_bill }}</td>
             <td>{{ $child->date_begin }}</td>
             <td>{{ $child->transport->num_pol }}</td>
             <td>{{ $child->driver->name }}</td>

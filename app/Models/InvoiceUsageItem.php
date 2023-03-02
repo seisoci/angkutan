@@ -29,6 +29,7 @@ class InvoiceUsageItem extends Model
     'transport_id',
     'type',
     'total_payment',
+    'memo',
   ];
 
   protected function serializeDate(DateTimeInterface $date)

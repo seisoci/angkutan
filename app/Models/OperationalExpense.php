@@ -25,6 +25,7 @@ class OperationalExpense extends Model
     'description',
     'approved',
     'approved_by',
+    'approved_date',
     'created_by',
     'type',
   ];

@@ -52,6 +52,7 @@ class ReportUsageItemInsideOutsideController extends Controller
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
         `transports`.`num_pol` AS `num_pol`,
         `drivers`.`name` AS `driver_name`,
+        `usage_items`.`description`,
         `usage_items`.`price` AS `price`,
         (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
         '))
@@ -102,6 +103,7 @@ class ReportUsageItemInsideOutsideController extends Controller
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
         `transports`.`num_pol` AS `num_pol`,
         `drivers`.`name` AS `driver_name`,
+        `usage_items`.`description`,
         `usage_items`.`price` AS `price`,
         (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
         '))
@@ -133,20 +135,6 @@ class ReportUsageItemInsideOutsideController extends Controller
       ->setPaperSize(PageSetup::PAPERSIZE_A4)
       ->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
 
-    $borderLeftRight = [
-      'borders' => [
-        'left' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-        'right' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-        'vertical' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-
-      ],
-    ];
     $borderBottom = [
       'borders' => [
         'bottom' => [
@@ -167,27 +155,6 @@ class ReportUsageItemInsideOutsideController extends Controller
     $borderTop = [
       'borders' => [
         'top' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderOutline = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderAll = [
-      'borders' => [
-        'allBorders' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderHorizontal = [
-      'borders' => [
-        'outline' => [
           'borderStyle' => Border::BORDER_THIN,
         ],
       ],
@@ -223,7 +190,7 @@ class ReportUsageItemInsideOutsideController extends Controller
     $sheet->getColumnDimension('G')->setWidth(15);
     $sheet->getColumnDimension('H')->setWidth(15);
     $sheet->getColumnDimension('I')->setWidth(15);
-//    $sheet->getRowDimension('2')->setRowHeight(30);
+    $sheet->getColumnDimension('J')->setWidth(15);
     $sheet->getStyle('F2')->getAlignment()->setVertical(Alignment::VERTICAL_DISTRIBUTED);
 
     $sheet->getStyle('A8')->getAlignment()->setHorizontal('center');
@@ -233,9 +200,10 @@ class ReportUsageItemInsideOutsideController extends Controller
     $sheet->setCellValue('D8', 'Nama Sparepart');
     $sheet->setCellValue('E8', 'Nama Supir');
     $sheet->setCellValue('F8', 'No. Polisi');
-    $sheet->setCellValue('G8', 'Jumlah');
-    $sheet->setCellValue('H8', 'Harga');
-    $sheet->setCellValue('I8', 'Total');
+    $sheet->setCellValue('G8', 'Keterangan');
+    $sheet->setCellValue('H8', 'Jumlah');
+    $sheet->setCellValue('I8', 'Harga');
+    $sheet->setCellValue('J8', 'Total');
 
     $startCell = 8;
     $startCellFilter = 8;
@@ -244,35 +212,36 @@ class ReportUsageItemInsideOutsideController extends Controller
       ->applyFromArray($borderTopBottom);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('H' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
-      $sheet->getStyle('A' . $startCell . ':G' . $startCell . '')->applyFromArray($borderTopBottom);
+      $sheet->getStyle('H' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderTopBottom);
       $sheet->getStyle('A' . $startCell . ':' . 'F' . $startCell)->getAlignment()->setVertical('top');
-      $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
+      $sheet->getStyle('G' . $startCell)->getAlignment()->setHorizontal('right');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->num_invoice);
       $sheet->setCellValue('C' . $startCell, $item->invoice_date);
       $sheet->setCellValue('D' . $startCell, $item->sparepart_name);
       $sheet->setCellValue('E' . $startCell, $item->driver_name);
       $sheet->setCellValue('F' . $startCell, $item->num_pol);
-      $sheet->setCellValue('G' . $startCell, $item->qty);
-      $sheet->setCellValue('H' . $startCell, $item->price);
-      $sheet->setCellValue('I' . $startCell, $item->total_price);
+      $sheet->setCellValue('G' . $startCell, $item->description);
+      $sheet->setCellValue('H' . $startCell, $item->qty);
+      $sheet->setCellValue('I' . $startCell, $item->price);
+      $sheet->setCellValue('J' . $startCell, $item->total_price);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':I' . $startCell);
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderBottom);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':J' . $startCell);
+    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderBottom);
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
-    $sheet->getStyle('H' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
+    $sheet->getStyle('H' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total');
     $sheet->mergeCells('A' . $startCell . ':F' . $startCell . '');
     $sheet->getStyle('A' . $startCell . ':G' . $startCell)->getFont()->setBold(true);
-    $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startCellFilter . ':G' . $endForSum . ')');
     $sheet->setCellValue('H' . $startCell, '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
     $sheet->setCellValue('I' . $startCell, '=SUM(I' . $startCellFilter . ':I' . $endForSum . ')');
+    $sheet->setCellValue('J' . $startCell, '=SUM(J' . $startCellFilter . ':J' . $endForSum . ')');
 
     $filename = 'Laporan Pemakaian Barang ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
@@ -318,6 +287,7 @@ class ReportUsageItemInsideOutsideController extends Controller
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
         `transports`.`num_pol` AS `num_pol`,
         `drivers`.`name` AS `driver_name`,
+        `usage_items`.`description`,
         `usage_items`.`price` AS `price`,
         (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
         '))

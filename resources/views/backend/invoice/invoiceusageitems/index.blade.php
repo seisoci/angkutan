@@ -43,6 +43,7 @@
           <th>No. Pol</th>
           <th>Tanggal Pemakaian</th>
           <th>Total Pemakaian</th>
+          <th>Memo</th>
           <th>Created At</th>
           <th>Action</th>
         </tr>
@@ -93,7 +94,7 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[6, 'desc']],
+        order: [[7, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: "{{ route('backend.invoiceusageitems.index') }}",
@@ -109,6 +110,7 @@
             className: 'dt-right',
             render: $.fn.dataTable.render.number('.', ',', 2)
           },
+          {data: 'memo', name: 'memo'},
           {data: 'created_at', name: 'created_at'},
           {data: 'action', name: 'action', orderable: false, searchable: false},
         ],

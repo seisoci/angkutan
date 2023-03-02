@@ -1,7 +1,5 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
   <div class="row">
     <div class="col-12 mb-10">
@@ -11,16 +9,13 @@
             History Uang Jalan
           </h3>
         </div>
-        <!--begin::Form-->
         <div class="card-body">
           <div class="row">
             @foreach($data->typecapacities as $item)
             <div class="col-md-6">
               <div class="d-flex align-items-center mb-9 bg-light-success rounded p-5">
-                <!--begin::Icon-->
                 <span class="svg-icon svg-icon-success mr-5">
                 <span class="svg-icon svg-icon-lg">
-                  <!--begin::Svg Icon | path:/metronic/theme/html/demo1/dist/assets/media/svg/icons/Home/Library.svg-->
                   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                        width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -51,7 +46,6 @@
           </div>
 
         </div>
-        <!--end::Form-->
       </div>
     </div>
     <div class="col-md-6 col-sm-12">
@@ -61,7 +55,6 @@
             {{ $config['page_title'] }}
           </h3>
         </div>
-        <!--begin::Form-->
         <form id="formUpdate" action="{{ route('backend.roadmonies.update', Request::segment(3)) }}">
           <meta name="csrf-token" content="{{ csrf_token() }}">
           @method('PUT')
@@ -107,7 +100,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Fee Pemberian<span class="text-danger">*</span></label>
-                  <input type="text" class="form-control currency" name="fee_thanks"
+                  <input type="text" class="form-control autoNumeric" name="fee_thanks"
                          value="{{ $data->fee_thanks ?? 0 }}">
                 </div>
               </div>
@@ -115,7 +108,7 @@
                 <div class="form-group">
                   <label>Tax PPH<span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <input type="text" class="form-control currency" name="tax_pph" value="{{ $data->tax_pph ?? 0 }}"/>
+                    <input type="text" class="form-control autoNumeric" name="tax_pph" value="{{ $data->tax_pph ?? 0 }}"/>
                     <div class="input-group-append"><span class="input-group-text">%</span></div>
                   </div>
                 </div>
@@ -129,6 +122,24 @@
                   </div>
                 </div>
               </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Jenis Gaji<span class="text-danger">*</span></label>
+                  <select class="form-control" name="type_salary">
+                    <option value="dynamic" {{ $data['type_salary'] == 'dynamic' ? 'selected' : '' }}>Dinamis</option>
+                    <option value="fix" {{ $data['type_salary'] == 'fix' ? 'selected' : '' }}>Fix</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6 {{ $data['type_salary'] != 'fix' ? 'd-none' : '' }}">
+                <div class="form-group">
+                  <label>Gaji Supir Fix<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <input type="text" class="form-control autoNumeric" name="salary_amount" value="{{ $data['salary_amount'] ?? 0 }}"/>
+                    <div class="input-group-append"><span class="input-group-text">Rp</span></div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="card-footer d-flex justify-content-end">
               <button type="button" class="btn btn-secondary mr-2" onclick="window.history.back();">Cancel</button>
@@ -136,7 +147,6 @@
             </div>
           </div>
         </form>
-        <!--end::Form-->
       </div>
     </div>
     <div class="col-md-6 col-sm-12">
@@ -146,7 +156,6 @@
             Setting Uang Jalan
           </h3>
         </div>
-        <!--begin::Form-->
         <form id="formUpdateTypeCapacity"
               action="{{ route('backend.roadmonies.updatetypecapacities', Request::segment(3)) }}">
           <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -166,20 +175,20 @@
             </div>
             <div class="form-group">
               <label>Harga Ongkosan</label>
-              <input type="text" name="expense" class="currency form-control" placeholder="Input Harga Ongkosan"/>
+              <input type="text" name="expense" class="autoNumeric form-control" placeholder="Input Harga Ongkosan"/>
             </div>
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Uang Jalan Engkel</label>
-                  <input type="text" name="road_engkel" class="currency form-control"
+                  <input type="text" name="road_engkel" class="autoNumeric form-control"
                          placeholder="Input Uang Jalan Engkel"/>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Uang Jalan Tronton</label>
-                  <input type="text" name="road_tronton" class="currency form-control"
+                  <input type="text" name="road_tronton" class="autoNumeric form-control"
                          placeholder="Input Uang Jalan Tronton"/>
                 </div>
               </div>
@@ -189,29 +198,35 @@
             </div>
           </div>
         </form>
-        <!--end::Form-->
       </div>
     </div>
   </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
-
-  {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
-      new KTImageInput('kt_image_2');
-      $(".currency").inputmask('decimal', {
-        groupSeparator: '.',
-        digits: 0,
-        rightAlign: true,
-        removeMaskOnSubmit: true
+      document.querySelectorAll(".autoNumeric").forEach(function (el) {
+        if (AutoNumeric.getAutoNumericElement(el) === null) {
+          new AutoNumeric(el, {
+            caretPositionOnFocus: "start",
+            decimalPlaces: '0',
+            unformatOnSubmit: true,
+            modifyValueOnWheel: false,
+          });
+        }
+      });
+
+      $('select[name=type_salary]').on('change', function () {
+        if($(this).val() == 'fix'){
+          $('input[name=salary_amount]').closest('.col-md-6').removeClass('d-none');
+        }else{
+          $('input[name=salary_amount]').val(0);
+          $('input[name=salary_amount]').closest('.col-md-6').addClass('d-none');
+        }
       });
 
       $("#select2").select2({

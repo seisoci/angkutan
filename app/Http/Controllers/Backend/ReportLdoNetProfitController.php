@@ -213,7 +213,7 @@ class ReportLdoNetProfitController extends Controller
       $sheet->getStyle('A' . $startCell . ':O' . $startCell)->getAlignment()->setVertical('top');
       $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
       $sheet->setCellValue('A' . $startCell, $no++);
-      $sheet->setCellValue('B' . $startCell, $item->num_prefix);
+      $sheet->setCellValue('B' . $startCell, $item->num_bill);
       $sheet->setCellValue('C' . $startCell, $item->date_begin);
       $sheet->setCellValue('D' . $startCell, $item->date_end);
       $sheet->setCellValue('E' . $startCell, $item->anotherexpedition->name);

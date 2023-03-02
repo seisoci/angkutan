@@ -41,8 +41,13 @@ class ReportSalaryController extends Controller
       $driver_id = $request->driver_id;
       $customer_id = $request->customer_id;
       $status_salary = $request->status;
-      $data = JobOrder::with('costumer:id,name', 'driver:id,name', 'routefrom:id,name', 'routeto:id,name', 'cargo:id,name')
-        ->withSum('operationalexpense', 'amount')
+      $data = JobOrder::with(
+          'costumer:id,name',
+          'driver:id,name',
+          'routefrom:id,name',
+          'routeto:id,name',
+          'cargo:id,name'
+        )
         ->where('type', 'self')
         ->where('status_cargo', 'selesai')
         ->when($date, function ($query, $date) {
@@ -71,6 +76,58 @@ class ReportSalaryController extends Controller
     return view('backend.report.reportsalarydrivers.index', compact('config', 'page_breadcrumbs'));
   }
 
+  public function print(Request $request)
+  {
+    $date = $request->date;
+    $driver_id = $request->driver_id;
+    $driver = Driver::find($driver_id);
+    $status_salary = $request->status;
+    $data = JobOrder::with(
+      'costumer:id,name',
+      'driver:id,name',
+      'routefrom:id,name',
+      'routeto:id,name',
+      'cargo:id,name'
+    )
+      ->where('type', 'self')
+      ->where('status_cargo', 'selesai')
+      ->when($date, function ($query, $date) {
+        $date_begin = $date."-01";
+        $date_end = Carbon::createFromFormat('Y-m', $date)->endOfMonth()->toDateString();
+        return $query->whereBetween('date_begin', [$date_begin, $date_end]);
+      })
+      ->when($status_salary, function ($query, $status_salary) {
+        if ($status_salary == 'none') {
+          return $query->where('job_orders.status_salary', '=', '0');
+        } else {
+          return $query->where('job_orders.status_salary', $status_salary);
+        }
+      })
+      ->when($driver_id, function ($query, $driver_id) {
+        return $query->where('driver_id', $driver_id);
+      })
+      ->get();
+
+    if ($status_salary == 'none') {
+      $status_salary = 'Unpaid';
+    } elseif ($status_salary == "1") {
+      $status_salary = 'Paid';
+    } else {
+      $status_salary = "All";
+    }
+
+    $config['page_title'] = "Laporan Gaji Supir";
+    $config['page_description'] = "Laporan Gaji Supir";
+    $config['current_time'] = $this->dateTimeNow();
+    $page_breadcrumbs = [
+      ['page' => '#', 'title' => "Laporan Gaji Supir"],
+    ];
+
+    $cooperationDefault = Cooperation::where('default', '1')->first();
+
+    return view('backend.report.reportsalarydrivers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'driver', 'status_salary'));
+  }
+
   public function document(Request $request)
   {
     $type = $request->type;
@@ -78,8 +135,13 @@ class ReportSalaryController extends Controller
     $driver_id = $request->driver_id;
     $driver = Driver::find($driver_id);
     $status_salary = $request->status;
-    $data = JobOrder::with('costumer:id,name', 'driver:id,name')
-      ->withSum('operationalexpense', 'amount')
+    $data = JobOrder::with(
+        'costumer:id,name',
+        'driver:id,name',
+        'routefrom:id,name',
+        'routeto:id,name',
+        'cargo:id,name'
+      )
       ->where('type', 'self')
       ->where('status_cargo', 'selesai')
       ->when($date, function ($query, $date) {
@@ -243,52 +305,5 @@ class ReportSalaryController extends Controller
     }
     $writer->save('php://output');
     exit();
-  }
-
-  public function print(Request $request)
-  {
-    $date = $request->date;
-    $driver_id = $request->driver_id;
-    $driver = Driver::find($driver_id);
-    $status_salary = $request->status;
-    $data = JobOrder::with('costumer:id,name', 'driver:id,name', 'routefrom:id,name', 'routeto:id,name')
-      ->withSum('operationalexpense', 'amount')
-      ->where('type', 'self')
-      ->where('status_cargo', 'selesai')
-      ->when($date, function ($query, $date) {
-        $date_begin = $date."-01";
-        $date_end = Carbon::createFromFormat('Y-m', $date)->endOfMonth()->toDateString();
-        return $query->whereBetween('date_begin', [$date_begin, $date_end]);
-      })
-      ->when($status_salary, function ($query, $status_salary) {
-        if ($status_salary == 'none') {
-          return $query->where('job_orders.status_salary', '=', '0');
-        } else {
-          return $query->where('job_orders.status_salary', $status_salary);
-        }
-      })
-      ->when($driver_id, function ($query, $driver_id) {
-        return $query->where('driver_id', $driver_id);
-      })
-      ->get();
-
-    if ($status_salary == 'none') {
-      $status_salary = 'Unpaid';
-    } elseif ($status_salary == "1") {
-      $status_salary = 'Paid';
-    } else {
-      $status_salary = "All";
-    }
-
-    $config['page_title'] = "Laporan Gaji Supir";
-    $config['page_description'] = "Laporan Gaji Supir";
-    $config['current_time'] = $this->dateTimeNow();
-    $page_breadcrumbs = [
-      ['page' => '#', 'title' => "Laporan Gaji Supir"],
-    ];
-
-    $cooperationDefault = Cooperation::where('default', '1')->first();
-
-    return view('backend.report.reportsalarydrivers.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'driver', 'status_salary'));
   }
 }

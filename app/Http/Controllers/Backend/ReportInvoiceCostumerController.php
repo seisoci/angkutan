@@ -156,27 +156,6 @@ class ReportInvoiceCostumerController extends Controller
         ],
       ],
     ];
-    $borderOutline = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderAll = [
-      'borders' => [
-        'allBorders' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderHorizontal = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
 
     $namaPelanggan = Costumer::find($customer_id);
 
@@ -295,7 +274,7 @@ class ReportInvoiceCostumerController extends Controller
         $sheet->getStyle('K' . $startCell)->applyFromArray($borderRight);
         $sheet->getStyle('I' . $startCell . ':' . 'K' . $startCell)->getNumberFormat()->setFormatCode('#,##0.00');
         $sheet->setCellValue('A' . $startCell, $no++);
-        $sheet->setCellValue('B' . $startCell, $child->num_prefix);
+        $sheet->setCellValue('B' . $startCell, $child->num_bill);
         $sheet->setCellValue('C' . $startCell, $child->date_begin);
         $sheet->setCellValue('D' . $startCell, $child->transport->num_pol);
         $sheet->setCellValue('E' . $startCell, $child->driver->name);

@@ -114,7 +114,7 @@
           <td>{{ $loop->iteration }}</td>
           <td>{{ $item->date_begin }}</td>
           <td style="width: 100px">{{ $item->transport->num_pol }}</td>
-          <td style="width: 100px">{{ $item->num_prefix }}</td>
+          <td style="width: 100px">{{ $item->num_bill }}</td>
           <td>{{ $item->no_sj }}</td>
           <td>{{ $item->no_shipment }}</td>
           <td>{{ $item->costumer->name }}</td>

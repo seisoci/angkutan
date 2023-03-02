@@ -24,7 +24,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-lg-4 col-form-label">Tanggal Invoice:</label>
-                  <div class="col-md-6">
+                  <div class="col-md-8">
                     <input type="text" class="form-control rounded-0 datepicker w-100" name="invoice_date" placeholder="Tanggal Invoice" readonly>
                   </div>
                 </div>
@@ -38,15 +38,6 @@
                   </div>
                 </div>
               </div>
-{{--              <div class="col-md-6">
-                <div class="form-group row">
-                  <label class="col-lg-4 col-form-label">Prefix:</label>
-                  <div class="col-lg-6">
-                    <select name="prefix" class="form-control" id="select2Prefix">
-                    </select>
-                  </div>
-                </div>
-              </div>--}}
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-lg-4 col-form-label">Master Akun:</label>
@@ -62,7 +53,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-lg-4 col-form-label">No. Slip Gaji:</label>
-                  <div class="col-lg-6">
+                  <div class="col-lg-8">
                     <input name="num_bill" type="hidden" value="{{ Carbon\Carbon::now()->timestamp }}">
                     <input class="form-control rounded-0" value="{{ Carbon\Carbon::now()->timestamp }}" disabled>
                     </select>
@@ -97,7 +88,6 @@
   </form>
 </div>
 
-{{-- DataTables --}}
 <div class="card card-custom mt-10">
   <div class="card-header flex-wrap py-3">
     <div class="card-title">
@@ -110,13 +100,11 @@
     </div>
   </div>
   <div class="card-body">
-    <!--begin: Datatable-->
     <table class="table table-bordered table-hover" id="Datatable">
       <thead>
         <tr>
           <th></th>
           <th>Tanggal Muat</th>
-          <th>Prefix</th>
           <th>No. Job Order</th>
           <th>Supir</th>
           <th>No. Pol</th>
@@ -131,7 +119,6 @@
 </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
 <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('css/backend/datatables/dataTables.checkboxes.css') }}" rel="stylesheet" type="text/css" />
@@ -142,12 +129,9 @@
 </style>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-{{-- vendors --}}
 <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
 <script src="{{ asset('js/backend/datatables/dataTables.checkboxes.js') }}" type="text/javascript"></script>
-{{-- page scripts --}}
 <script type="text/javascript">
   $(document).ready(function(){
     let dataTable = $('#Datatable').DataTable({
@@ -155,11 +139,11 @@
         scrollX: true,
         processing: true,
         serverSide: true,
-        order: [[9, 'desc']],
+        order: [[8, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         ajax: {
-          url: "{{ route('backend.invoicesalaries.create') }}",
+          url: "{{ url()->current() }}",
           data: function(d){
             d.driver_id = $('#select2Driver').find(':selected').val();
           }
@@ -167,13 +151,17 @@
         columns: [
             {data: 'id', name: 'id'},
             {data: 'date_begin', name: 'date_begin'},
-            {data: 'prefix', name: 'prefix'},
             {data: 'num_bill', name: 'num_bill'},
             {data: 'driver.name', name: 'driver.name'},
             {data: 'transport.num_pol', name: 'transport.num_pol'},
             {data: 'routefrom.name', name: 'routefrom.name'},
             {data: 'routeto.name', name: 'routeto.name'},
-            {data: 'total_salary', name: 'total_salary', render: $.fn.dataTable.render.number( '.', '.', 2), orderable:false, searchable: false},
+            {
+              data: 'total_salary',
+              name: 'total_salary',
+              render: $.fn.dataTable.render.number( '.', '.', 2),
+              orderable:false,
+              searchable: false},
             {data: 'created_at', name: 'created_at'},
         ],
         columnDefs: [
@@ -216,7 +204,7 @@
               $('#table_invoice tbody').append('<tr>'+
               ' <td class="text-center">'+(index+1)+'</td>'+
               ' <td>'+data.date_begin+'</td>'+
-              ' <td>'+data.prefix+'-'+data.num_bill+'</td>'+
+              ' <td>'+data.num_bill+'</td>'+
               ' <td>'+data.transport.num_pol+'</td>'+
               ' <td>'+data.cargo.name+'</td>'+
               ' <td>'+data.routefrom.name+' - '+data.routeto.name+'</td>'+
@@ -250,24 +238,6 @@
         $("#dateEndModal").parent().css("display", "none");
         $("#dateEndModal").parent().find('label').css("display", "none");
       }
-    });
-
-    $("#select2Prefix").select2({
-      placeholder: "Choose Prefix",
-      allowClear: true,
-      ajax: {
-        url: "{{ route('backend.prefixes.select2') }}",
-        dataType: "json",
-        delay: 250,
-        cache: true,
-        data: function(e) {
-          return {
-            type: 'operational',
-            q: e.term || '',
-            page: e.page || 1
-          }
-        },
-      },
     });
 
     $("#select2Driver").select2({

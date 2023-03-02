@@ -1,10 +1,6 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-
-  <!--begin::Card-->
   <div class="card card-custom">
     <div class="card-header flex-wrap py-3">
       <div class="card-title">
@@ -12,10 +8,8 @@
           <span class="d-block text-muted pt-2 font-size-sm">{{ $config['page_description'] }}</span></h3>
       </div>
       <div class="card-toolbar">
-        <!--begin::Button-->
         <a href="{{ route('backend.joborders.create') }}" class="btn btn-primary font-weight-bolder">
         <span class="svg-icon svg-icon-md">
-          <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
                viewBox="0 0 24 24" version="1.1">
             <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -26,9 +20,7 @@
                 fill="#000000" opacity="0.3"></path>
             </g>
           </svg>
-          <!--end::Svg Icon-->
         </span>New Record</a>
-        <!--end::Button-->
       </div>
     </div>
     <div class="card-body">
@@ -141,7 +133,6 @@
           </div>
         </div>
       </div>
-      <!--begin: Datatable-->
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
@@ -167,7 +158,7 @@
       </table>
     </div>
   </div>
-  {{-- Modal --}}
+
   <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -264,7 +255,7 @@
             </div>
             <div class="form-group" style="display: none">
               <label>Ongkosan Dasar Ldo:</label>
-              <input type="text" class="form-control currency" name="basic_price_ldo">
+              <input type="text" class="form-control autoNumeric text-right" name="basic_price_ldo">
             </div>
             <div class="form-group">
               <label>No Shipment:</label>
@@ -272,7 +263,7 @@
             </div>
             <div class="form-group">
               <label>Ongkosan Dasar:</label>
-              <input type="text" class="form-control currency" name="basic_price" disabled>
+              <input type="text" class="form-control autoNumeric text-right" name="basic_price" disabled>
             </div>
             <div class="form-group">
               <label>Kubiknasi / Tonase:</label>
@@ -286,7 +277,7 @@
             </div>
             <div class="form-group">
               <label>Total Ongkosan:</label>
-              <input id="totalOngkosan" type="text" class="form-control currency" disabled>
+              <input id="totalOngkosan" type="text" class="form-control autoNumeric text-right" disabled>
             </div>
           </div>
           <div class="modal-footer">
@@ -338,23 +329,23 @@
             <input type="hidden" name="job_order_id">
             <div class="form-group">
               <label>Uang Jalan Sistem:</label>
-              <input type="text" class="form-control currency" id="roadMoneySystem" disabled>
+              <input type="text" class="form-control autoNumeric text-right" id="roadMoneySystem" disabled>
             </div>
             <div class="form-group">
               <label>Uang Jalan JO Sebelumnya:</label>
-              <input type="text" class="form-control currency" id="roadMoneyPrev" disabled>
+              <input type="text" class="form-control autoNumeric text-right" id="roadMoneyPrev" disabled>
             </div>
             <div class="form-group">
               <label>Uang Jalan Telah Diambil:</label>
-              <input type="text" class="form-control currency" id="roadMoney" disabled>
+              <input type="text" class="form-control autoNumeric text-right" id="roadMoney" disabled>
             </div>
             <div class="form-group">
               <label>Sisa Uang Jalan Sistem:</label>
-              <input type="text" class="form-control currency" id="restRoadMoney" disabled>
+              <input type="text" class="form-control autoNumeric text-right" id="restRoadMoney" disabled>
             </div>
             <div class="form-group">
               <label>Input Uang Jalan:</label>
-              <input type="text" class="form-control currencyInput" name="amount">
+              <input type="text" class="form-control autoNumeric text-right" name="amount">
             </div>
             <div class="form-group">
               <label>Keterangan:</label>
@@ -371,7 +362,6 @@
   </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
   <link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
@@ -382,9 +372,7 @@
   </style>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
   <script id="details-template" type="text/x-handlebars-template">
     @verbatim
@@ -401,10 +389,8 @@
     </table>
     @endverbatim
   </script>
-  {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
-      initCurrency();
       let template = Handlebars.compile($("#details-template").html());
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
@@ -451,21 +437,11 @@
           {data: 'routefrom.name', name: 'routefrom.name'},
           {data: 'routeto.name', name: 'routeto.name'},
           {data: 'cargo.name', name: 'cargo.name'},
-          {data: 'status_cargo', name: 'status_cargo'},
-          {data: 'status_document', name: 'status_document'},
-          {data: 'prefix', name: 'prefix'},
-          {data: 'num_bill', name: 'num_bill'},
-          {data: 'no_sj', name: 'no_sj'},
-          {data: 'anotherexpedition.name', name: 'anotherexpedition.name', defaultContent: '', orderable: false},
-          {data: 'created_at', name: 'created_at'},
-          {data: 'date_end', name: 'date_end', defaultContent: ''},
-          {data: 'action', name: 'action', orderable: false, searchable: false},
-        ],
-        columnDefs: [
           {
-            className: 'dt-center',
-            targets: 8,
+            data: 'status_cargo',
+            name: 'status_cargo',
             width: '75px',
+            className: 'text-center',
             render: function (data, type, full, meta) {
               let status = {
                 'mulai': {'title': 'Mulai', 'class': ' label-light-info'},
@@ -481,8 +457,9 @@
             },
           },
           {
-            className: 'dt-center',
-            targets: 9,
+            data: 'status_document',
+            name: 'status_document',
+            className: 'text-center',
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -496,35 +473,18 @@
                 '</span>';
             },
           },
+          {data: 'prefix', name: 'prefix'},
+          {data: 'num_bill', name: 'num_bill'},
+          {data: 'no_sj', name: 'no_sj'},
+          {data: 'anotherexpedition.name', name: 'anotherexpedition.name', defaultContent: '', orderable: false},
+          {data: 'created_at', name: 'created_at'},
+          {data: 'date_end', name: 'date_end', defaultContent: ''},
+          {data: 'action', name: 'action', orderable: false, searchable: false},
         ],
+        initComplete: function (settings, json) {
+          dataTable.buttons().container().appendTo('#DataTable_wrapper .col-md-6:eq(0)')
+        }
       });
-
-      function initCurrency() {
-        $(".currency").inputmask('decimal', {
-          groupSeparator: '.',
-          digits: 0,
-          rightAlign: true,
-          autoUnmask: true,
-          removeMaskOnSubmit: true
-        });
-
-        $(".currencyKG").inputmask('decimal', {
-          groupSeparator: '.',
-          digits: 3,
-          rightAlign: true,
-          autoUnmask: true,
-          removeMaskOnSubmit: true
-        });
-
-        $(".currencyInput").inputmask('decimal', {
-          groupSeparator: '.',
-          digits: 0,
-          rightAlign: true,
-          autoUnmask: true,
-          allowMinus: false,
-          removeMaskOnSubmit: true
-        });
-      }
 
       $('#Datatable tbody').on('click', 'td.details-control', function () {
         let tr = $(this).closest('tr');
@@ -542,18 +502,40 @@
         }
       });
 
+
+      document.querySelectorAll(".currencyKG").forEach(function (el) {
+        if (AutoNumeric.getAutoNumericElement(el) === null) {
+          new AutoNumeric(el, {
+            caretPositionOnFocus: "start",
+            decimalPlaces: '3',
+            unformatOnSubmit: true,
+            modifyValueOnWheel: false,
+          });
+        }
+      });
+
+      document.querySelectorAll(".autoNumeric").forEach(function (el) {
+        if (AutoNumeric.getAutoNumericElement(el) === null) {
+          new AutoNumeric(el, {
+            caretPositionOnFocus: "start",
+            decimalPlaces: '0',
+            unformatOnSubmit: true,
+            modifyValueOnWheel: false,
+          });
+        }
+      });
+
       $('#tonaseModal, input[name=basic_price_ldo]').on('keyup', function () {
-        let tonase = $('#tonaseModal').val();
+        let tonase = parseFloat(AutoNumeric.getAutoNumericElement(`#tonaseModal`).getNumber()) || 0;
         let type = $('input[name=type]').val();
         if (type == 'ldo') {
-          let basic_price = $('input[name=basic_price_ldo]').val();
+          let basic_price = parseFloat(AutoNumeric.getAutoNumericElement(`input[name=basic_price_ldo]`).getNumber()) || 0;
           let totalOngkosan = tonase * basic_price;
-          $('#totalOngkosan').val(totalOngkosan);
-
+          AutoNumeric.getAutoNumericElement(`#totalOngkosan`).set(totalOngkosan);
         } else {
-          let basic_price = $('input[name=basic_price]').val();
+          let basic_price = parseFloat(AutoNumeric.getAutoNumericElement(`input[name=basic_price]`).getNumber()) || 0;
           let totalOngkosan = tonase * basic_price;
-          $('#totalOngkosan').val(totalOngkosan);
+          AutoNumeric.getAutoNumericElement(`#totalOngkosan`).set(totalOngkosan);
         }
       });
 
@@ -691,6 +673,7 @@
       }).on('change', function (e) {
         dataTable.draw();
       });
+
       $("#select2Transport").select2({
         placeholder: "Search Kendaraan",
         allowClear: true,
@@ -709,6 +692,7 @@
       }).on('change', function (e) {
         dataTable.draw();
       });
+
       $("#select2Costumer").select2({
         placeholder: "Search Pelanggan",
         allowClear: true,
@@ -727,6 +711,7 @@
       }).on('change', function (e) {
         dataTable.draw();
       });
+
       $("#select2Cargo").select2({
         placeholder: "Search Muatan",
         allowClear: true,
@@ -745,6 +730,7 @@
       }).on('change', function (e) {
         dataTable.draw();
       });
+
       $("#select2RouteFrom").select2({
         placeholder: "Search Rute Dari",
         allowClear: true,
@@ -828,23 +814,24 @@
         }
         if (type === 'ldo') {
           $(this).find('.modal-body').find('input[name="type"]').val(type);
-          $(this).find('.modal-body').find('input[name="basic_price_ldo"]').val(basic_price_ldo);
+          AutoNumeric.getAutoNumericElement(`input[name="basic_price_ldo"]`).set(basic_price_ldo);
+          AutoNumeric.getAutoNumericElement(`#totalOngkosan`).set(basic_price_ldo * payload);
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', '');
           $(this).find('.modal-body').find('input[name="basic_price"]').parent().css('display', 'none');
-          $('#totalOngkosan').val(basic_price_ldo * payload);
         } else {
           $(this).find('.modal-body').find('input[name="type"]').val(type);
-          $(this).find('.modal-body').find('input[name="basic_price"]').val(basic_price);
-          $('#totalOngkosan').val(basic_price * payload);
+          AutoNumeric.getAutoNumericElement(`input[name="basic_price"]`).set(basic_price);
+          AutoNumeric.getAutoNumericElement(`#totalOngkosan`).set(basic_price * payload);
           $(this).find('.modal-body').find('input[name="basic_price"]').parent().css('display', '');
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', 'none');
         }
         $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/' + id);
-        $(this).find('.modal-body').find('input[name="payload"]').val(payload);
+        AutoNumeric.getAutoNumericElement(`input[name="payload"]`).set(payload);
         $(this).find('.modal-body').find('input[name="type_payload"]').val(type_payload);
         $(this).find('.modal-body').find('input[name="no_sj"]').val(no_sj);
         $(this).find('.modal-body').find('input[name="no_shipment"]').val(no_shipment);
       });
+
       $('#modalEditTonase').on('hidden.bs.modal', function (event) {
         $(this).find('.modal-body').find('input[name="type"]').val('');
         $(this).find('.modal-body').find('input[name="payload"]').val('');
@@ -880,11 +867,10 @@
             let roadMoneySystem = parseFloat(response.data.road_money) || 0;
             let roadMoney = parseFloat(response.roadMoney) || 0;
             let restRoadMoney = (roadMoneySystem + roadMoneyPrev) - roadMoney;
-
-            $('#roadMoneyPrev').val(roadMoneyPrev);
-            $('#roadMoneySystem').val(roadMoneySystem);
-            $('#roadMoney').val(roadMoney);
-            $('#restRoadMoney').val(restRoadMoney);
+            AutoNumeric.getAutoNumericElement(`#roadMoneyPrev`).set(roadMoneyPrev);
+            AutoNumeric.getAutoNumericElement(`#roadMoneySystem`).set(roadMoneySystem);
+            AutoNumeric.getAutoNumericElement(`#roadMoney`).set(roadMoney);
+            AutoNumeric.getAutoNumericElement(`#restRoadMoney`).set(restRoadMoney);
           },
           error: function (response) {
           }
@@ -918,7 +904,6 @@
           url: url,
           data: data,
           success: function (response) {
-            initCurrency();
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             if (response.status === "success") {
               toastr.success(response.message, 'Success !');
@@ -937,7 +922,6 @@
               toastr.error("Please complete your form", 'Failed !');
             }
           }, error: function (response) {
-            initCurrency();
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             toastr.error(response.responseJSON.message, 'Failed !');
             $('#modalEdit').modal('hide');
@@ -951,6 +935,7 @@
           }
         });
       });
+
       $("#formDelete").click(function (e) {
         e.preventDefault();
         let form = $(this);

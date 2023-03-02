@@ -111,6 +111,7 @@
       <tr>
         <th style="width:5%">#</th>
         <th style="width:65%">Produk</th>
+        <th class="text-right" style="width:10%">Keterangan</th>
         <th class="text-center" style="width:10%">Unit</th>
         <th class="text-right" style="width:10%">Harga</th>
         <th class="text-center" style="width:10%">Total</th>
@@ -121,17 +122,18 @@
         <tr>
           <td>{{ $loop->iteration }}</td>
           <td>{{ $item->sparepart->name }}</td>
+          <td>{{ $item->description }}</td>
           <td class="text-center">{{ $item->qty }}</td>
           <td class="text-right">{{ number_format($item->price,0, ',', '.') }}</td>
           <td class="text-right">{{ number_format($item->qty * $item->price,0, ',', '.') }}</td>
         </tr>
       @endforeach
       <tr>
-        <td colspan="4" class="text-right font-weight-bold">Diskon</td>
+        <td colspan="5" class="text-right font-weight-bold">Diskon</td>
         <td class="text-right">{{ number_format($data->discount ?? 0,2, ',', '.') }}</td>
       </tr>
       <tr>
-        <td colspan="4" class="text-right font-weight-bold">Total Tagihan</td>
+        <td colspan="5" class="text-right font-weight-bold">Total Tagihan</td>
         <td class="text-right">{{ number_format($data->total_bill ?? 0,2, ',', '.') }}</td>
       </tr>
       </tbody>

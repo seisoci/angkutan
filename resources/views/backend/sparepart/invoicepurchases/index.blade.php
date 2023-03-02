@@ -91,6 +91,7 @@
           <th>Metode</th>
           <th>Tgl Invoice Dibuat</th>
           <th>Tgl Jth Tempo</th>
+          <th>Memo</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -206,6 +207,7 @@
           {data: 'method_payment', name: 'method_payment'},
           {data: 'invoice_date', name: 'invoice_date'},
           {data: 'due_date', name: 'due_date'},
+          {data: 'memo', name: 'memo'},
           {data: 'created_at', name: 'created_at'},
           {data: 'action', name: 'action', orderable: false, searchable: false},
         ],

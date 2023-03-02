@@ -1,11 +1,7 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-  <!-- begin::Card-->
   <div class="card card-custom overflow-hidden">
-    {{-- Header --}}
     <div class="card-header d-flex justify-content-end align-items-center">
       <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
         <button onclick="window.history.back();" type="button" class="btn btn-outline-secondary"><i
@@ -23,9 +19,7 @@
         </div>
       </div>
     </div>
-    {{-- Body --}}
     <div class="card-body p-0">
-      <!-- begin: Invoice header-->
       <div class="row justify-content-center py-8 px-8 px-md-0">
         <div class="col-md-11">
           <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Pembelian Barang Diluar</u></h2>
@@ -61,6 +55,13 @@
               <td class="text-left" style="width:2%">: &ensp;</td>
               <td class="text-left" style="width:23%"> {{ $data->transport->num_pol }}</td>
             </tr>
+            <tr>
+              <td></td>
+              <td class="text-left" style="width:10%"></td>
+              <td colspan="2" class="text-left" style="width:15%">Memo</td>
+              <td class="text-left" style="width:2%">: &ensp;</td>
+              <td class="text-left" style="width:23%"> {{ $data->memo }}</td>
+            </tr>
             </tbody>
           </table>
           <div class="separator separator-solid separator-border-1"></div>
@@ -72,6 +73,7 @@
               <th style="width:5%">Jumlah</th>
               <th style="width:25%" class="text-right">Harga</th>
               <th style="width:25%" class="text-right">Total</th>
+              <th style="width:25%">Keterangan</th>
             </tr>
             </thead>
             <tbody>
@@ -82,6 +84,7 @@
                 <td>{{ $item->qty }}</td>
                 <td class="text-right">{{ number_format($item->price ?? 0, 2, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($item->total_price ?? 0, 2, ',', '.') }}</td>
+                <td>{{ $item->description }}</td>
               </tr>
             @endforeach
             <tr class="font-weight-normal">
@@ -91,6 +94,7 @@
               <td class="text-right font-weight-bolder text-uppercase">Total Tagihan</td>
               <td class="text-right font-weight-bolder">
                 {{ number_format($data->total_payment ?? 0,2, ',', '.') }}</td>
+              <td></td>
             </tr>
             </tbody>
           </table>

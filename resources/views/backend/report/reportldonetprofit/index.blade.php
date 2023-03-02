@@ -184,7 +184,7 @@
           }
         },
         columns: [
-          {data: 'num_prefix', name: 'num_bill', orderable: false},
+          {data: 'num_bill', name: 'num_bill', orderable: false},
           {data: 'date_begin', name: 'date_begin'},
           {data: 'date_end', name: 'date_end'},
           {data: 'anotherexpedition.name', name: 'anotherexpedition.name'},

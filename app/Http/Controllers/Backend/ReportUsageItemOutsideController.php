@@ -46,6 +46,7 @@ class ReportUsageItemOutsideController extends Controller
         ->select(DB::raw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
         `usage_items`.`name` AS `sparepart_name`,
+        `usage_items`.`description`,
         `usage_items`.`qty`,
         `usage_items`.`price`,
         (`usage_items`.`qty` * `usage_items`.`price`) AS `total_price`,
@@ -94,6 +95,7 @@ class ReportUsageItemOutsideController extends Controller
       ->select(DB::raw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
         `usage_items`.`name` AS `sparepart_name`,
+        `usage_items`.`description`,
         `usage_items`.`qty`,
         `usage_items`.`price`,
         (`usage_items`.`qty` * `usage_items`.`price`) AS `total_price`,
@@ -165,27 +167,6 @@ class ReportUsageItemOutsideController extends Controller
         ],
       ],
     ];
-    $borderOutline = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderAll = [
-      'borders' => [
-        'allBorders' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderHorizontal = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
 
     $sheet->mergeCells('A1:C1');
     $sheet->setCellValue('A1', 'Laporan Pembelian Barang Diluar');
@@ -215,7 +196,7 @@ class ReportUsageItemOutsideController extends Controller
     $sheet->getColumnDimension('G')->setWidth(15);
     $sheet->getColumnDimension('H')->setWidth(15);
     $sheet->getColumnDimension('I')->setWidth(15);
-//    $sheet->getRowDimension('2')->setRowHeight(30);
+    $sheet->getColumnDimension('J')->setWidth(15);
     $sheet->getStyle('F2')->getAlignment()->setVertical(Alignment::VERTICAL_DISTRIBUTED);
 
     $sheet->getStyle('A7')->getAlignment()->setHorizontal('center');
@@ -225,46 +206,48 @@ class ReportUsageItemOutsideController extends Controller
     $sheet->setCellValue('D7', 'Nama Sparepart');
     $sheet->setCellValue('E7', 'Nama Supir');
     $sheet->setCellValue('F7', 'No. Polisi');
-    $sheet->setCellValue('G7', 'Jumlah');
-    $sheet->setCellValue('H7', 'Harga');
-    $sheet->setCellValue('I7', 'Total');
+    $sheet->setCellValue('G7', 'Keterangan');
+    $sheet->setCellValue('H7', 'Jumlah');
+    $sheet->setCellValue('I7', 'Harga');
+    $sheet->setCellValue('J7', 'Total');
 
     $startCell = 7;
     $startCellFilter = 7;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')
       ->applyFromArray($borderTopBottom);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderTopBottom);
+      $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderTopBottom);
       $sheet->getStyle('A' . $startCell . ':' . 'F' . $startCell)->getAlignment()->setVertical('top');
       $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
-      $sheet->getStyle('H' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('H' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->num_invoice);
       $sheet->setCellValue('C' . $startCell, $item->invoice_date);
       $sheet->setCellValue('D' . $startCell, $item->sparepart_name);
       $sheet->setCellValue('E' . $startCell, $item->driver_name);
       $sheet->setCellValue('F' . $startCell, $item->num_pol);
-      $sheet->setCellValue('G' . $startCell, $item->qty);
-      $sheet->setCellValue('H' . $startCell, $item->price);
-      $sheet->setCellValue('I' . $startCell, $item->total_price);
+      $sheet->setCellValue('G' . $startCell, $item->description);
+      $sheet->setCellValue('H' . $startCell, $item->qty);
+      $sheet->setCellValue('I' . $startCell, $item->price);
+      $sheet->setCellValue('J' . $startCell, $item->total_price);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':I' . $startCell);
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderBottom);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':J' . $startCell);
+    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderBottom);
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
+    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
     $sheet->setCellValue('A' . $startCell, 'Total');
     $sheet->mergeCells('A' . $startCell . ':F' . $startCell . '');
-    $sheet->getStyle('H' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell)->getFont()->setBold(true);
-    $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startCellFilter . ':G' . $endForSum . ')');
-    $sheet->setCellValue('H' . $startCell, '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
+    $sheet->getStyle('H' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':J' . $startCell)->getFont()->setBold(true);
+    $sheet->setCellValue('J' . $startCell, '=SUM(J' . $startCellFilter . ':J' . $endForSum . ')');
     $sheet->setCellValue('I' . $startCell, '=SUM(I' . $startCellFilter . ':I' . $endForSum . ')');
+    $sheet->setCellValue('J' . $startCell, '=SUM(J' . $startCellFilter . ':J' . $endForSum . ')');
 
     $filename = 'Laporan Pembelian Barang Diluar ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
@@ -305,6 +288,7 @@ class ReportUsageItemOutsideController extends Controller
       ->select(DB::raw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
         `usage_items`.`name` AS `sparepart_name`,
+        `usage_items`.`description`,
         `usage_items`.`qty`,
         `usage_items`.`price`,
         (`usage_items`.`qty` * `usage_items`.`price`) AS `total_price`,

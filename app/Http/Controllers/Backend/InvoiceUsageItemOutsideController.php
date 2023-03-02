@@ -113,7 +113,6 @@ class InvoiceUsageItemOutsideController extends Controller
       try {
         $items = $request->items;
         DB::beginTransaction();
-//        $prefix = Prefix::findOrFail($request->prefix);
         $coa = Coa::findOrFail($request->coa_id);
         $checksaldo = DB::table('journals')
           ->select(DB::raw('
@@ -134,12 +133,13 @@ class InvoiceUsageItemOutsideController extends Controller
 
         if (($checksaldo->saldo ?? FALSE) && $totalPayment <= $checksaldo->saldo) {
           $invoiceUsageItem = InvoiceUsageItem::create([
-            'invoice_date' => $request->input('invoice_date'),
-            'num_bill' => $request->input('num_bill'),
+            'invoice_date' => $request['invoice_date'],
+            'num_bill' => $request['num_bill'],
             'prefix' => 'PBL',
-            'driver_id' => $request->input('driver_id'),
-            'transport_id' => $request->input('transport_id'),
-            'type' => $request->input('type'),
+            'driver_id' => $request['driver_id'],
+            'transport_id' => $request['transport_id'],
+            'type' => $request['type'],
+            'memo' => $request['memo'],
             'total_payment' => $totalPayment,
           ]);
           foreach ($items['name'] as $key => $item):
@@ -149,6 +149,7 @@ class InvoiceUsageItemOutsideController extends Controller
               'name' => $items['name'][$key],
               'qty' => $items['qty'][$key],
               'price' => $items['price'][$key],
+              'description' => $items['description'][$key],
             ]);
           endforeach;
           Journal::create([
@@ -204,7 +205,13 @@ class InvoiceUsageItemOutsideController extends Controller
     ];
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = InvoiceUsageItem::where('type', 'outside')->with(['driver', 'transport', 'usageitem.sparepart:id,name'])->findOrFail($id);
+    $data = InvoiceUsageItem::with([
+      'driver',
+      'transport',
+      'usageitem.sparepart:id,name'
+    ])->where('type', 'outside')
+      ->findOrFail($id);
+
     return view('backend.invoice.invoiceusageitemsoutside.show', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 

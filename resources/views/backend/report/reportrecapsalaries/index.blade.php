@@ -188,7 +188,7 @@
           {data: 'driver_name', name: 'driver_name'},
           {data: 'report_qty', name: 'report_qty'},
           {
-            data: 'report_salary', name: 'report_salary',
+            data: 'total_salary', name: 'total_salary',
             render: $.fn.dataTable.render.number(',', '.', 2),
             className: 'dt-right'
           },

@@ -1,10 +1,6 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-{{-- Dashboard 1 --}}
-<!--begin::Card-->
 <div class="card card-custom mt-6">
   <div class="card-header flex-wrap py-3">
     <div class="card-title">
@@ -29,13 +25,17 @@
                          placeholder="Tanggal Invoice" readonly>
                 </div>
               </div>
-{{--              <div class="form-group row">
-                <label class="col-lg-4 col-form-label">Prefix:</label>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group row">
+                <label class="col-lg-4 col-form-label">Supir:</label>
                 <div class="col-lg-8">
-                  <select name="prefix" class="form-control" id="select2Prefix">
+                  <select name="driver_id" class="form-control" id="select2Driver">
                   </select>
                 </div>
-              </div>--}}
+              </div>
+            </div>
+            <div class="col-md-6">
               <div class="form-group row">
                 <label class="col-lg-4 col-form-label">No. Invoice Pemakaian:</label>
                 <div class="col-lg-8">
@@ -47,22 +47,25 @@
             </div>
             <div class="col-md-6">
               <div class="form-group row">
-                <label class="col-lg-3 col-form-label">Supir:</label>
-                <div class="col-lg-9">
-                  <select name="driver_id" class="form-control" id="select2Driver">
-                  </select>
-                </div>
-              </div>
-              <div class="form-group row">
-                <label class="col-lg-3 col-form-label">No. Pol:</label>
-                <div class="col-lg-9">
+                <label class="col-lg-4 col-form-label">No. Pol:</label>
+                <div class="col-lg-8">
                   <select name="transport_id" class="form-control" id="select2Transport">
                   </select>
                 </div>
               </div>
+            </div>
+            <div class="col-md-6">
               <div class="form-group row">
-                <label class="col-lg-3 col-form-label">Master Akun:</label>
-                <div class="col-lg-9">
+                <label class="col-lg-4 col-form-label">Memo:</label>
+                <div class="col-lg-8">
+                  <textarea name="memo" class="form-control rounded-0"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group row">
+                <label class="col-lg-4 col-form-label">Master Akun:</label>
+                <div class="col-lg-8">
                   <select name="coa_id" class="form-control rounded-0" style="min-width: 250px">
                     @foreach($selectCoa->coa as $item)
                       <option value="{{ $item->id }}">{{ $item->code .' - '. $item->name }}</option>
@@ -83,6 +86,7 @@
                 <th class="text-center" scope="col" style="width: 75px">Unit</th>
                 <th class="text-right" scope="col" style="min-width: 150px">Harga</th>
                 <th class="text-right" scope="col" style="min-width: 150px">Total</th>
+                <th class="text-right" scope="col">Deskripsi</th>
               </tr>
               </thead>
               <tbody>
@@ -92,12 +96,14 @@
                   <input type="hidden" name="items[stock_id][]">
                   <input type="text" class="form-control rounded-0" name="items[name][]" style="min-width: 300px">
                 </td>
-                <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" style="max-width: 50px"/>
+                <td><input type="text" name="items[qty][]" class="form-control rounded-0 unit" style="min-width: 75px"/>
                 </td>
                 <td><input type="text" name="items[price][]" class="rounded-0 form-control currency" style="min-width: 150px"/>
                 </td>
                 <td><input type="text" name="items[total][]" class="currency rounded-0 form-control text-right" style="min-width: 150px"
                            disabled></td>
+                <td><input type="text" name="items[description][]" class="rounded-0 form-control"
+                           style="min-width: 250px"/></td>
               </tr>
               </tbody>
             </table>
@@ -127,7 +133,6 @@
 </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
 <style>
   .select2-container--default .select2-selection--single {
@@ -137,12 +142,9 @@
 <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-{{-- vendors --}}
 <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
 
-{{-- page scripts --}}
 <script src="{{ asset('js/pages/crud/datatables/basic/basic.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
@@ -188,6 +190,7 @@
     $("#select2Transport").select2({
       placeholder: "Search Kendaraan",
       allowClear: true,
+      width: '100%',
       ajax: {
           url: "{{ route('backend.transports.select2self') }}",
           dataType: "json",
@@ -284,7 +287,8 @@
       return "<td><button type='button' id='items_" + nextindex + "' class='btn btn-block btn-danger rmItems rounded-0'>-</button></td>"+'<td><input type="hidden" name="items[stock_id][]"><input type="text" class="form-control rounded-0" name="items[name][]"></td>'+
       '<td><input type="text" name="items[qty][]" class="form-control unit rounded-0"/></td>'+
       '<td><input type="text" name="items[price][]" class="form-control rounded-0 currency" /></td>'+
-      '<td><input type="text" name="items[total][]" class="currency rounded-0 form-control text-right" disabled></td>'
+      '<td><input type="text" name="items[total][]" class="currency rounded-0 form-control text-right" disabled></td>'+
+      '<td><input type="text" name="items[description][]" class="rounded-0 form-control" style="min-width: 250px"/></td>'
       ;
     }
 

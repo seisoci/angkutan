@@ -1,10 +1,6 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-
-  <!--begin::Card-->
   <div class="card card-custom">
     <div class="card-header flex-wrap py-3">
       <div class="card-title">
@@ -16,7 +12,6 @@
           <button type="button" class="btn btn-light-primary font-weight-bolder dropdown-toggle" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
             <span class="svg-icon svg-icon-md">
-              <!--begin::Svg Icon | path:/metronic/theme/html/demo1/dist/assets/media/svg/icons/Design/PenAndRuller.svg-->
               <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                    width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -29,12 +24,9 @@
                     fill="#000000"></path>
                 </g>
               </svg>
-              <!--end::Svg Icon-->
             </span>Export
           </button>
-          <!--begin::Dropdown Menu-->
           <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-            <!--begin::Navigation-->
             <ul class="navi flex-column navi-hover py-2">
               <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">Choose an
                 option:
@@ -64,9 +56,7 @@
                 </a>
               </li>
             </ul>
-            <!--end::Navigation-->
           </div>
-          <!--end::Dropdown Menu-->
         </div>
       </div>
     </div>
@@ -99,7 +89,6 @@
         </div>
       </div>
 
-      <!--begin: Datatable-->
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
@@ -107,6 +96,7 @@
           <th>Tgl Invoice</th>
           <th>Nama Sparepart</th>
           <th>Nama Supplier</th>
+          <th>Keterangan</th>
           <th>Jumlah</th>
           <th>Harga</th>
           <th>Total</th>
@@ -120,22 +110,18 @@
         <th></th>
         <th></th>
         <th></th>
+        <th></th>
         </tfoot>
       </table>
     </div>
   </div>
-  {{-- Modal --}}
 @endsection
-{{-- Styles Section --}}
 @section('styles')
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
-  {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
       $('#btn_excel').on('click', function (e) {
@@ -186,6 +172,7 @@
           {data: 'invoice_date', name: 'invoice_date'},
           {data: 'sparepart_name', name: 'sparepart_name'},
           {data: 'supplier_name', name: 'supplier_name'},
+          {data: 'description', name: 'description'},
           {data: 'qty', name: 'qty', className: 'text-right'},
           {
             data: 'price', name: 'price',
@@ -210,54 +197,34 @@
           };
 
           let totalQty = api
-            .column(4)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let price = api
             .column(5)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
-          let totalPrice = api
+          let price = api
             .column(6)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
+          let totalPrice = api
+            .column(7)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
 
-          $(api.column(3).footer()).html('Total');
-          $(api.column(4).footer()).html(totalQty);
-          $(api.column(5).footer()).html(format(price));
-          $(api.column(6).footer()).html(format(totalPrice));
+
+          $(api.column(4).footer()).html('Total');
+          $(api.column(5).footer()).html(totalQty);
+          $(api.column(6).footer()).html($.fn.dataTable.render.number(',', '.', 0).display(price));
+          $(api.column(7).footer()).html($.fn.dataTable.render.number(',', '.', 0).display(totalPrice));
 
         },
       });
-
-      let format = function (num) {
-        let str = num.toString().replace("", ""), parts = false, output = [], i = 1, formatted = null;
-        if (str.indexOf(".") > 0) {
-          parts = str.split(".");
-          str = parts[0];
-        }
-        str = str.split("").reverse();
-        for (let j = 0, len = str.length; j < len; j++) {
-          if (str[j] !== ",") {
-            output.push(str[j]);
-            if (i % 3 === 0 && j < (len - 1)) {
-              output.push(",");
-            }
-            i++;
-          }
-        }
-        formatted = output.reverse().join("");
-        return ("" + formatted + ((parts) ? "." + parts[1].substr(0, 2) : ".00"));
-      };
 
       $("#select2Supplier").select2({
         placeholder: "Search Supplier",

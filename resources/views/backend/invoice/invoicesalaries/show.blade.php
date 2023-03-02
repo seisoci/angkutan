@@ -1,11 +1,7 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-  <!-- begin::Card-->
   <div class="card card-custom overflow-hidden">
-    {{-- Header --}}
     <div class="card-header d-flex justify-content-end align-items-center">
       <div class="">
         <div class="btn-group btn-group-md" role="group" aria-label="Large button group">
@@ -29,7 +25,6 @@
         </div>
       </div>
     </div>
-    {{-- Body --}}
     <div class="card-body p-0">
       <div class="row justify-content-center py-8 px-8 px-md-0">
         <div class="col-md-11">
@@ -79,11 +74,11 @@
             </tr>
             </thead>
             <tbody>
-            @foreach ($data->joborders as $item)
+            @foreach ($data['joborders'] ?? [] as $item)
               <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $item->date_begin }}</td>
-                <td>{{ $item->num_prefix }}</td>
+                <td>{{ $item->num_bill }}</td>
                 <td>{{ $item->transport->num_pol }}</td>
                 <td>{{ $item->costumer->name }}</td>
                 <td>{{ $item->routefrom->name }} -> {{ $item->routeto->name }}</td>
@@ -105,7 +100,6 @@
   </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
   <style>
     .table-title td,
@@ -115,9 +109,7 @@
   </style>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
   <script>
     $(document).ready(function () {
       $('#btn_print').on('click', function (e) {
@@ -138,5 +130,4 @@
       });
     });
   </script>
-  {{-- page scripts --}}
 @endsection

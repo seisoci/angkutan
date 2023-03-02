@@ -28,10 +28,6 @@ class ReportRecapKasbonDriverController extends Controller
     $config['excel_url'] = 'reportrecapkasbondrivers/document?type=EXCEL';
     $config['pdf_url'] = 'reportrecapkasbondrivers/document?type=PDF';
     $config['print_url'] = 'reportrecapkasbondrivers/print';
-    $driver_id = $request->driver_id;
-    $status = $request->status;
-    $date = $request->date;
-
 
     if ($request->ajax()) {
       $data = Kasbon::selectRaw("

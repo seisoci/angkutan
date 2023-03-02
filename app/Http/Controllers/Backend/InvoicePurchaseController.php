@@ -16,10 +16,10 @@ use App\Models\Stock;
 use App\Models\SupplierSparepart;
 use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
-use DataTables;
-use DB;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
 
 class InvoicePurchaseController extends Controller
 {
@@ -84,24 +84,22 @@ class InvoicePurchaseController extends Controller
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
-//          $restPayment = $row->rest_payment != 0 ? '<a href="invoicepurchases/' . $row->id . '/edit" class="dropdown-item">Bayar Sisa</a>' : NULL;
           $restPayment = NULL;
           $usageItem = UsageItem::where('invoice_purchase_id', $row->id)->exists();
           $completePO = InvoicePurchase::where('id', $row->id)->whereNotNull('complete_purchase_order_id')->first();
           $invoiceReturItem = InvoiceReturPurchase::where('invoice_purchase_id', $row->id)->exists();
           $deleteBtn = $usageItem || $invoiceReturItem || isset($completePO) ? NULL : '<a href="#" data-toggle="modal" data-target="#modalDelete" data-id="' . $row->id . '" class="delete dropdown-item">Delete</a>';
-          $actionBtn = '
+          return '
               <div class="dropdown">
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-eye"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    ' . $restPayment . $deleteBtn . '
                     <a href="invoicepurchases/' . $row->id . '" class="dropdown-item">Invoice Detail</a>
+                    ' . $restPayment . $deleteBtn . '
                   </div>
               </div>
             ';
-          return $actionBtn;
         })->make(true);
     }
     return view('backend.sparepart.invoicepurchases.index', compact('config', 'page_breadcrumbs', 'saldoGroup'));
@@ -137,35 +135,21 @@ class InvoicePurchaseController extends Controller
       try {
         DB::beginTransaction();
         $totalBill = 0;
-        $totalPayment = 0;
-        $items = $request->items;
-        $discount = $request->discount ?? 0;
-        $payments = $request->payment;
-//        $prefix = Prefix::find($request->prefix);
+        $items = $request['items'];
         $supplier = SupplierSparepart::findOrFail($request->supplier_sparepart_id);
         foreach ($items['sparepart_id'] as $key => $item):
           $totalBill += $items['qty'][$key] * $items['price'][$key];
         endforeach;
+        $restPayment = $totalBill - $request['discount'];
 
-        /*     foreach ($payments['date'] as $key => $item):
-               $totalPayment += $payments['payment'][$key];
-             endforeach;*/
-
-        $restPayment = ($totalBill - $discount) - $totalPayment;
-
-        $invoice = InvoicePurchase::create([
-          'supplier_sparepart_id' => $request->input('supplier_sparepart_id'),
+        $request->request->add([
           'prefix' => 'PB',
-          'num_bill' => $request->input('num_bill'),
-          'invoice_date' => $request->invoice_date,
-          'due_date' => $request->due_date,
-          'total_bill' => $totalBill,
-          'total_payment' => $totalPayment,
           'rest_payment' => $restPayment,
-          'discount' => $discount,
-          'method_payment' => $request->method_payment,
-          'memo' => $request->input('memo'),
+          'total_bill' => $totalBill,
+          'discount' => $request['discount'] ?? 0,
         ]);
+
+        $invoice = InvoicePurchase::create($request->all());
 
         foreach ($items['sparepart_id'] as $key => $item):
           Purchase::create([
@@ -174,94 +158,54 @@ class InvoicePurchaseController extends Controller
             'sparepart_id' => $items['sparepart_id'][$key],
             'qty' => $items['qty'][$key],
             'price' => $items['price'][$key],
+            'description' => $items['description'][$key],
           ]);
           Stock::create([
             'sparepart_id' => $items['sparepart_id'][$key],
-            'invoice_purchase_id' => $invoice->id,
+            'invoice_purchase_id' => $invoice['id'],
             'qty' => $items['qty'][$key]
           ]);
 
         endforeach;
 
-        /*     foreach ($payments['date'] as $key => $item):
-               $coa = Coa::findOrFail($payments['coa'][$key]);
-               if ($item) {
-                 $checksaldo = DB::table('journals')
-                   ->select(DB::raw('
-               IF(`coas`.`normal_balance` = "Db", (SUM(`journals`.`debit`) - SUM(`journals`.`kredit`)),
-               (SUM(`journals`.`kredit`) - SUM(`journals`.`debit`))) AS `saldo`
-               '))
-                   ->leftJoin('coas', 'coas.id', '=', 'journals.coa_id')
-                   ->where('journals.coa_id', $payments['coa'][$key])
-                   ->groupBy('journals.coa_id')
-                   ->first();
-
-                 if (($checksaldo->saldo ?? FALSE) && $payments['payment'][$key] <= $checksaldo->saldo && $payments['payment'][$key] != NULL) {
-                   PurchasePayment::create([
-                     'invoice_purchase_id' => $invoice->id,
-                     'date_payment' => $payments['date'][$key],
-                     'coa_id' => $payments['coa'][$key],
-                     'payment' => $payments['payment'][$key],
-                   ]);
-
-                   Journal::create([
-                     'coa_id' => $payments['coa'][$key],
-                     'date_journal' => $payments['date'][$key],
-                     'debit' => 0,
-                     'kredit' => $payments['payment'][$key],
-                     'table_ref' => 'invoicepurchases',
-                     'code_ref' => $invoice->id,
-                     'description' => "Pembayaran barang supplier $supplier->name dengan No. Invoice: " .  'PB-' . $request->input('num_bill')
-                   ]);
-
-                 } else {
-                   DB::rollBack();
-                   return response()->json([
-                     'status' => 'errors',
-                     'message' => "Saldo $coa->name tidak ada/kurang",
-                   ]);
-                 }
-               }
-             endforeach;*/
-
         if ($restPayment <= -1) {
+          DB::rollBack();
           return response()->json([
             'status' => 'error',
             'message' => 'Pastikan sisa tagihan tidak negative',
             'redirect' => '/backend/invoicepurchases',
           ]);
-          DB::rollBack();
         } elseif ($restPayment > 0) {
           Journal::create([
             'coa_id' => 15,
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request['invoice_date'],
             'debit' => 0,
             'kredit' => $restPayment,
             'table_ref' => 'invoicepurchases',
-            'code_ref' => $invoice->id,
+            'code_ref' => $invoice['id'],
             'description' => "Utang pembelian barang $supplier->name dengan No. Invoice: " . 'PB-' . $request->input('num_bill')
           ]);
         }
 
-        if (!($discount <= 0)) {
+        if (!($request['discount'] <= 0)) {
           Journal::create([
             'coa_id' => 42,
-            'date_journal' => $request->input('invoice_date'),
+            'date_journal' => $request['invoice_date'],
             'debit' => 0,
-            'kredit' => $discount,
+            'kredit' => $request['discount'],
             'table_ref' => 'invoicepurchases',
-            'code_ref' => $invoice->id,
+            'code_ref' => $invoice['id'],
             'description' => "Diskon Pembelian barang barang $supplier->name dengan No. Invoice: " . 'PB-' . $request->input('num_bill')
           ]);
         }
 
         Journal::create([
           'coa_id' => 17,
-          'date_journal' => $request->input('invoice_date'),
+          'date_journal' => $request['invoice_date'],
           'debit' => $totalBill,
           'kredit' => 0,
           'table_ref' => 'invoicepurchases',
-          'code_ref' => $invoice->id,
+          'code_ref' => $invoice['id'],
           'description' => "Penambahan persediaan barang $supplier->name dengan No. Invoice: " . 'PB-' . $request->input('num_bill')
         ]);
 
@@ -293,7 +237,11 @@ class InvoicePurchaseController extends Controller
     ];
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = InvoicePurchase::where('id', $id)->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))->with(['purchases', 'supplier'])->firstOrFail();
+    $data = InvoicePurchase::where('id', $id)
+      ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
+      ->with(['purchases', 'supplier'])
+      ->firstOrFail();
+
     return view('backend.sparepart.invoicepurchases.show', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 
@@ -310,7 +258,7 @@ class InvoicePurchaseController extends Controller
       ->with(['purchases', 'supplier'])
       ->select(DB::raw('*, CONCAT(prefix, "-", num_bill) AS prefix_invoice'))
       ->firstOrFail();
-    
+
     return view('backend.sparepart.invoicepurchases.print', compact('config', 'page_breadcrumbs', 'data', 'cooperationDefault'));
   }
 

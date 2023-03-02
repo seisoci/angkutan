@@ -118,7 +118,7 @@
               <tr>
                 <td class="text-center">{{ $loop->iteration }}</td>
                 <td>{{ $item->date_begin }}</td>
-                <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+                <td>{{ $item->num_bill }}</td>
                 <td>{{ $item->costumer->name }}</td>
                 <td>{{ $item->routefrom->name }}</td>
                 <td>{{ $item->routeto->name }}</td>
@@ -172,7 +172,7 @@
               <td>UANG JALAN</td>
               <td></td>
               <td class="text-right">{{ number_format($item->road_money, 2, '.', ',') }}</td>
-              <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+              <td>{{ $item->num_bill }}</td>
             </tr>
             @foreach ($item->operationalexpense as $itemExpense)
               <tr>
@@ -181,7 +181,7 @@
                 <td>{{ $itemExpense->expense->name }}</td>
                 <td>{{ $itemExpense->description }}</td>
                 <td class="text-right">{{ number_format($itemExpense->amount, 2, '.', ',') }}</td>
-                <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+                <td>{{ $item->num_bill }}</td>
               </tr>
             @endforeach
             </tbody>
@@ -235,7 +235,7 @@
             <tr>
               <td class="text-center">{{ $loop->iteration }}</td>
               <td>{{ $item->date_begin }}</td>
-              <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+              <td>{{ $item->num_bill }}</td>
               <td>{{ $item->driver->name }}</td>
               <td>{{ $item->transport->num_pol }}</td>
               <td class="text-right">{{ number_format($item->total_sparepart, 2, '.', ',') }}</td>
@@ -274,6 +274,7 @@
             <th>S. Jalan</th>
             <th>Nama Supir</th>
             <th>No. Polisi</th>
+            <th>Jenis</th>
             <th class="text-right">Gaji</th>
           </tr>
           </thead>
@@ -282,20 +283,21 @@
             <tr>
               <td class="text-center">{{ $loop->iteration }}</td>
               <td>{{ $item->date_begin }}</td>
-              <td>{{ $item->prefix.'-'.$item->num_bill }}</td>
+              <td>{{ $item->num_bill }}</td>
               <td>{{ $item->driver->name }}</td>
               <td>{{ $item->transport->num_pol }}</td>
+              <td>{{ ucwords($item->type_salary) }}</td>
               <td class="text-right">{{ number_format($item->total_salary, 2, '.', ',') }}</td>
             </tr>
           @endforeach
           </tbody>
           <tfoot>
           <tr>
-            <td colspan="5" class="text-right">Total Rp.</td>
+            <td colspan="6" class="text-right">Total Rp.</td>
             <td class="text-right">{{ number_format($data->sum('total_salary'), 2, '.', ',') }}</td>
           </tr>
           <tr>
-            <td colspan="6"></td>
+            <td colspan="7"></td>
           </tr>
           </tfoot>
         </table>

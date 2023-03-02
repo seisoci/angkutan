@@ -104,13 +104,13 @@
           <td>{{ $loop->iteration }}</td>
           <td>{{ $item->driver_name }}</td>
           <td class="text-center">{{ $item->report_qty }}</td>
-          <td class="text-right">{{ number_format($item->report_salary, 2, ',', '.') }}</td>
+          <td class="text-right">{{ number_format($item->total_salary, 2, ',', '.') }}</td>
         </tr>
       @endforeach
       </tbody>
       <tfoot>
       <td colspan="3" class="text-right">Total:</td>
-      <td class="text-right">{{ number_format($data->sum('report_salary'), 2, ',', '.') }}</td>
+      <td class="text-right">{{ number_format($data->sum('total_salary'), 2, ',', '.') }}</td>
       </tfoot>
     </table>
   </div>

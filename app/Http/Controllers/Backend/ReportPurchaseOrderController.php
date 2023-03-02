@@ -42,13 +42,14 @@ class ReportPurchaseOrderController extends Controller
 
       $data = DB::table('purchases')
         ->select(DB::raw('
-        CONCAT(`invoice_purchases`.`prefix`,"-",`invoice_purchases`.`num_bill`) AS num_invoice,
-        `spareparts`.`name` AS `sparepart_name`,
-        `supplier_spareparts`.`name` AS `supplier_name`,
-        `purchases`.`qty`,
-        `purchases`.`price`,
-        (`purchases`.`price` * `purchases`.`qty`) AS `total`,
-        `invoice_purchases`.`invoice_date` AS `invoice_date`
+          CONCAT(`invoice_purchases`.`prefix`,"-",`invoice_purchases`.`num_bill`) AS num_invoice,
+          `spareparts`.`name` AS `sparepart_name`,
+          `supplier_spareparts`.`name` AS `supplier_name`,
+          `purchases`.`qty`,
+          `purchases`.`price`,
+          `purchases`.`description`,
+          (`purchases`.`price` * `purchases`.`qty`) AS `total`,
+          `invoice_purchases`.`invoice_date` AS `invoice_date`
         '))
         ->leftJoin('invoice_purchases', 'invoice_purchases.id', '=', 'purchases.invoice_purchase_id')
         ->leftJoin('spareparts', 'spareparts.id', '=', 'purchases.sparepart_id')
@@ -63,6 +64,7 @@ class ReportPurchaseOrderController extends Controller
           return $query->where('invoice_purchases.supplier_sparepart_id', $supplier_id);
         })
         ->orderBy('invoice_purchases.invoice_date');
+
       return DataTables::of($data)
         ->addIndexColumn()
         ->make(true);
@@ -86,6 +88,7 @@ class ReportPurchaseOrderController extends Controller
         `supplier_spareparts`.`name` AS `supplier_name`,
         `purchases`.`qty`,
         `purchases`.`price`,
+        `purchases`.`description`,
         (`purchases`.`price` * `purchases`.`qty`) AS `total`,
         `invoice_purchases`.`invoice_date` AS `invoice_date`
         '))
@@ -110,20 +113,6 @@ class ReportPurchaseOrderController extends Controller
       ->setPaperSize(PageSetup::PAPERSIZE_A4)
       ->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
 
-    $borderLeftRight = [
-      'borders' => [
-        'left' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-        'right' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-        'vertical' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-
-      ],
-    ];
     $borderBottom = [
       'borders' => [
         'bottom' => [
@@ -148,27 +137,6 @@ class ReportPurchaseOrderController extends Controller
         ],
       ],
     ];
-    $borderOutline = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderAll = [
-      'borders' => [
-        'allBorders' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderHorizontal = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
 
     $sheet->mergeCells('A1:C1');
     $sheet->setCellValue('A1', 'Laporan Purchase Order');
@@ -178,13 +146,13 @@ class ReportPurchaseOrderController extends Controller
     $sheet->setCellValue('A3', 'Priode: ' . (!empty($date) ? $date : 'All Date'));
     $sheet->mergeCells('A4:C4');
     $sheet->setCellValue('A4', 'Nama Supplier: ' . $supplier);
-    $sheet->mergeCells('F1:H1');
+    $sheet->mergeCells('F1:I1');
     $sheet->setCellValue('F1', $cooperationDefault['nickname']);
-    $sheet->mergeCells('F2:H2');
+    $sheet->mergeCells('F2:I2');
     $sheet->setCellValue('F2', $cooperationDefault['address']);
-    $sheet->mergeCells('F3:H3');
+    $sheet->mergeCells('F3:I3');
     $sheet->setCellValue('F3', 'Telp: ' . $cooperationDefault['phone']);
-    $sheet->mergeCells('F4:H4');
+    $sheet->mergeCells('F4:I4');
     $sheet->setCellValue('F4', 'Fax: ' . $cooperationDefault['fax']);
 
     $sheet->getColumnDimension('A')->setWidth(3.55);
@@ -192,9 +160,10 @@ class ReportPurchaseOrderController extends Controller
     $sheet->getColumnDimension('C')->setWidth(14);
     $sheet->getColumnDimension('D')->setWidth(26);
     $sheet->getColumnDimension('E')->setWidth(26);
-    $sheet->getColumnDimension('F')->setWidth(8);
-    $sheet->getColumnDimension('G')->setWidth(15);
+    $sheet->getColumnDimension('F')->setWidth(20);
+    $sheet->getColumnDimension('G')->setWidth(8);
     $sheet->getColumnDimension('H')->setWidth(15);
+    $sheet->getColumnDimension('I')->setWidth(15);
     $sheet->getRowDimension('2')->setRowHeight(30);
     $sheet->getStyle('F2')->getAlignment()->setVertical(Alignment::VERTICAL_DISTRIBUTED);
 
@@ -204,43 +173,45 @@ class ReportPurchaseOrderController extends Controller
     $sheet->setCellValue('C7', 'Tgl Invoice');
     $sheet->setCellValue('D7', 'Nama Sparepart');
     $sheet->setCellValue('E7', 'Nama Supplier');
-    $sheet->setCellValue('F7', 'Jumlah');
-    $sheet->setCellValue('G7', 'Harga');
-    $sheet->setCellValue('H7', 'Total');
+    $sheet->setCellValue('F7', 'Keterangan');
+    $sheet->setCellValue('G7', 'Jumlah');
+    $sheet->setCellValue('H7', 'Harga');
+    $sheet->setCellValue('I7', 'Total');
 
     $startCell = 7;
     $startCellFilter = 7;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')
       ->applyFromArray($borderTopBottom);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderTopBottom);
+      $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderTopBottom);
       $sheet->getStyle('A' . $startCell . ':' . 'F' . $startCell)->getAlignment()->setVertical('top');
-      $sheet->getStyle('G' . $startCell . ':H' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle('G' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->num_invoice);
       $sheet->setCellValue('C' . $startCell, $item->invoice_date);
       $sheet->setCellValue('D' . $startCell, $item->sparepart_name);
       $sheet->setCellValue('E' . $startCell, $item->supplier_name);
-      $sheet->setCellValue('F' . $startCell, $item->qty);
-      $sheet->setCellValue('G' . $startCell, $item->price);
-      $sheet->setCellValue('H' . $startCell, $item->total);
+      $sheet->setCellValue('F' . $startCell, $item->description);
+      $sheet->setCellValue('G' . $startCell, $item->qty);
+      $sheet->setCellValue('H' . $startCell, $item->price);
+      $sheet->setCellValue('I' . $startCell, $item->total);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':H' . $startCell);
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderBottom);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':I' . $startCell);
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderBottom);
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
-    $sheet->getStyle('G' . $startCell . ':H' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
+    $sheet->getStyle('G' . $startCell . ':I' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
     $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
-    $sheet->setCellValue('E' . $startCell, 'Total Rp.');
-    $sheet->mergeCells('A' . $startCell . ':E' . $startCell . '');
-    $sheet->getStyle('A' . $startCell . ':H' . $startCell)->getFont()->setBold(true);
-    $sheet->setCellValue('F' . $startCell, '=SUM(F' . $startCellFilter . ':F' . $endForSum . ')');
+    $sheet->setCellValue('A' . $startCell, 'Total Rp.');
+    $sheet->mergeCells('A' . $startCell . ':F' . $startCell . '');
+    $sheet->getStyle('A' . $startCell . ':I' . $startCell)->getFont()->setBold(true);
     $sheet->setCellValue('G' . $startCell, '=SUM(G' . $startCellFilter . ':G' . $endForSum . ')');
     $sheet->setCellValue('H' . $startCell, '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
+    $sheet->setCellValue('I' . $startCell, '=SUM(I' . $startCellFilter . ':I' . $endForSum . ')');
 
     $filename = 'Laporan Purchase Order ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
@@ -282,6 +253,7 @@ class ReportPurchaseOrderController extends Controller
         `supplier_spareparts`.`name` AS `supplier_name`,
         `purchases`.`qty`,
         `purchases`.`price`,
+        `purchases`.`description`,
         (`purchases`.`price` * `purchases`.`qty`) AS `total`,
         `invoice_purchases`.`invoice_date` AS `invoice_date`
         '))
@@ -299,6 +271,7 @@ class ReportPurchaseOrderController extends Controller
       })
       ->orderBy('invoice_purchases.invoice_date')
       ->get();
+
     return view('backend.report.reportpurchaseorders.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'supplier',));
   }
 }

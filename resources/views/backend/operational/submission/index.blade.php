@@ -1,10 +1,6 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-
-  <!--begin::Card-->
   <div class="card card-custom">
     <div class="card-header flex-wrap py-3">
       <div class="card-title">
@@ -91,7 +87,6 @@
           </div>
         </div>
       </div>
-      <!--begin: Datatable-->
       <table class="table table-bordered table-hover" id="Datatable">
         <thead>
         <tr>
@@ -259,7 +254,7 @@
           }
         },
         columns: [
-          {data: 'joborder.num_prefix', name: 'joborder.num_bill', width: '140px'},
+          {data: 'joborder.num_bill', name: 'joborder.num_bill', width: '140px'},
           {data: 'created_at', name: 'created_at'},
           {data: 'joborder.costumer.name', name: 'joborder.costumer.name'},
           {data: 'joborder.driver.name', name: 'joborder.driver.name'},

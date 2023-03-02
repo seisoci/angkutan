@@ -109,7 +109,7 @@
           <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $item->date_begin }}</td>
-            <td>{{ $item->num_prefix }}</td>
+            <td>{{ $item->num_bill }}</td>
             <td>{{ $item->transport->num_pol }}</td>
             <td>{{ $item->costumer->name }}</td>
             <td>{{ $item->routefrom->name }} -> {{ $item->routeto->name }}</td>

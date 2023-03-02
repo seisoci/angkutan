@@ -8,6 +8,7 @@ use App\Models\ConfigCoa;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\OperationalExpense;
+use App\Services\JobOrderService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -112,15 +113,14 @@ class SubmissionController extends Controller
             data-description="' . $row->description . '"
             class="delete btn btn-primary">Aksi</a>';
           }
-          $actionBtn = "$btnEdit";
-          return $actionBtn;
+          return "$btnEdit";
         })
         ->make(true);
     }
     return view('backend.operational.submission.index', compact('config', 'page_breadcrumbs', 'selectCoa', 'saldoGroup', 'restRoadMoney'));
   }
 
-  public function update(Request $request, $id)
+  public function update($id, Request $request, JobOrderService $jobOrderService)
   {
     $validator = Validator::make($request->all(), [
       'approved' => 'required|integer',
@@ -135,6 +135,7 @@ class SubmissionController extends Controller
           'approved' => $request['approved'],
           'approved_by' => $request['approved_by'],
           'description' => $request['description'],
+          'approved_date' => Carbon::now()->toDateString()
         ]);
         $coa = Coa::findOrFail($request['coa_id']);
 
@@ -154,22 +155,22 @@ class SubmissionController extends Controller
           if (($checksaldo->saldo ?? FALSE) && $operationalExpense->amount <= $checksaldo->saldo) {
             Journal::create([
               'coa_id' => $request['coa_id'],
-              'date_journal' => $data->date_begin,
+              'date_journal' => Carbon::now()->toDateString(),
               'debit' => 0,
               'kredit' => $operationalExpense->amount,
               'table_ref' => 'operationalexpense',
               'code_ref' => $id,
-              'description' => "Pengurangan saldo untuk uang jalan " . $data['num_prefix'] . " " . $data->costumer->name . " dari " . $data->routefrom->name . " ke " . $data->routeto->name . " dengan No. Pol: " . $data->transport->num_pol
+              'description' => "Pengurangan saldo untuk uang jalan " . $data['num_bill'] . " " . $data->costumer->name . " dari " . $data->routefrom->name . " ke " . $data->routeto->name . " dengan No. Pol: " . $data->transport->num_pol
             ]);
 
             Journal::create([
               'coa_id' => 50,
-              'date_journal' => $data->date_begin,
+              'date_journal' => Carbon::now()->toDateString(),
               'debit' => $operationalExpense->amount,
               'kredit' => 0,
               'table_ref' => 'operationalexpense',
               'code_ref' => $id,
-              'description' => "Beban operasional uang jalan " . $data['num_prefix'] . " " . $data->costumer->name . " dari " . $data->routefrom->name . " ke " . $data->routeto->name . " dengan No. Pol: " . $data->transport->num_pol
+              'description' => "Beban operasional uang jalan " . $data['num_bill'] . " " . $data->costumer->name . " dari " . $data->routefrom->name . " ke " . $data->routeto->name . " dengan No. Pol: " . $data->transport->num_pol
             ]);
 
             $roadMoneySystem = $data->road_money;
@@ -194,7 +195,11 @@ class SubmissionController extends Controller
               ]);
 
               //UPDATE SELUEUH JO SETELAHNYA
-              $updateJONext = JobOrder::where('id', '>', $data->id)->where('driver_id', $data['driver_id'])->where('transport_id', $data['transport_id'])->orderBy('created_at', 'asc')->get();
+              $updateJONext = JobOrder::where('id', '>', $data->id)->where('driver_id', $data['driver_id'])
+                ->where('transport_id', $data['transport_id'])
+                ->orderBy('created_at', 'asc')
+                ->get();
+
               foreach ($updateJONext as $item):
                 $roadMoneySystemNext = JobOrder::with('roadmoneydetail')->find($item->id);
 
@@ -217,27 +222,33 @@ class SubmissionController extends Controller
                   'road_money_prev' => $roadMoneyPrevNext,
                   'road_money_extra' => $roadMOneyExtraNext
                 ]);
+
+                $jobOrderCalculate = $jobOrderService->calculate($item['id']);
+                $roadMoneySystemNext->update($jobOrderCalculate);
+
                 foreach ($roadMoneySystemNext->roadmoneydetail as $itemChild):
-                  Journal::where('table_ref', 'operationalexpense')->where('code_ref', $itemChild->id)->delete();
+                  Journal::where('table_ref', 'operationalexpense')
+                    ->where('code_ref', $itemChild->id)
+                    ->delete();
 
                   Journal::create([
                     'coa_id' => $request['coa_id'],
-                    'date_journal' => $item->date_begin,
+                    'date_journal' => $itemChild['approved_date'] ?? Carbon::now()->toDateString(),
                     'debit' => 0,
                     'kredit' => $itemChild->amount,
                     'table_ref' => 'operationalexpense',
                     'code_ref' => $itemChild->id,
-                    'description' => "Pengurangan saldo untuk uang jalan " . $item->num_prefix . " " . $item->costumer->name . " dari " . $item->routefrom->name . " ke " . $item->routeto->name . " dengan No. Pol: " . $item->transport->num_pol
+                    'description' => "Pengurangan saldo untuk uang jalan " . $item->num_bill . " " . $item->costumer->name . " dari " . $item->routefrom->name . " ke " . $item->routeto->name . " dengan No. Pol: " . $item->transport->num_pol
                   ]);
 
                   Journal::create([
                     'coa_id' => 50,
-                    'date_journal' => $item->date_begin,
+                    'date_journal' => $itemChild['approved_date'] ?? Carbon::now()->toDateString(),
                     'debit' => $itemChild->amount,
                     'kredit' => 0,
                     'table_ref' => 'operationalexpense',
                     'code_ref' => $itemChild->id,
-                    'description' => "Beban operasional uang jalan " . $item->num_prefix . " " . $item->costumer->name . " dari " . $item->routefrom->name . " ke " . $item->routeto->name . " dengan No. Pol: " . $item->transport->num_pol
+                    'description' => "Beban operasional uang jalan " . $item->num_bill . " " . $item->costumer->name . " dari " . $item->routefrom->name . " ke " . $item->routeto->name . " dengan No. Pol: " . $item->transport->num_pol
                   ]);
                 endforeach;
 
@@ -246,8 +257,10 @@ class SubmissionController extends Controller
               $data->update([
                 'road_money' => $roadMoney,
               ]);
-
             }
+
+            $jobOrderCalculate = $jobOrderService->calculate($data);
+            $data->update($jobOrderCalculate);
           } else {
             DB::rollBack();
             return response()->json([
@@ -314,7 +327,7 @@ class SubmissionController extends Controller
         ->leftJoin('operational_expenses', 'operational_expenses.job_order_id', '=', 'job_orders.id')
         ->leftJoin('costumers', 'costumers.id', '=', 'job_orders.costumer_id')
         ->leftJoin('routes AS rf', 'rf.id', '=', 'job_orders.route_from')
-        ->leftJoin('routes AS rt', 'rf.id', '=', 'job_orders.route_to')
+        ->leftJoin('routes AS rt', 'rt.id', '=', 'job_orders.route_to')
         ->where([
           ['driver_id', $request['driver_id']],
           ['transport_id', $request['transport_id']],

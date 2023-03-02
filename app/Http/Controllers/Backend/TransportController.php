@@ -6,10 +6,10 @@ use App\Facades\Fileupload;
 use App\Http\Controllers\Controller;
 use App\Models\Transport;
 use Illuminate\Http\Request;
-use DataTables;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
 
 class TransportController extends Controller
 {
@@ -30,7 +30,12 @@ class TransportController extends Controller
     ];
 
     if ($request->ajax()) {
-      $data = Transport::where('another_expedition_id', NULL);
+      $data = Transport::whereNull('another_expedition_id');
+
+      if($request->filled('status')){
+        $data->where('status', $request['status']);
+      }
+
       return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
@@ -87,6 +92,7 @@ class TransportController extends Controller
         'expired_stnk' => $request->input('expired_stnk'),
         'expired_kir' => $request->input('expired_kir'),
         'description' => $request->input('description'),
+        'staus' => $request->input('staus'),
         'photo' => $image,
       ]);
 
@@ -145,6 +151,7 @@ class TransportController extends Controller
         'expired_stnk' => $request->input('expired_stnk'),
         'expired_kir' => $request->input('expired_kir'),
         'description' => $request->input('description'),
+        'status' => $request->input('status'),
         'photo' => $image,
       ]);
       $response = response()->json([
@@ -303,6 +310,9 @@ class TransportController extends Controller
     $offset = ($page - 1) * $resultCount;
     $data = Transport::where('num_pol', 'LIKE', '%' . $request->q . '%')
       ->where('another_expedition_id', $type)
+      ->when(request('status') == 'aktif', function ($q) {
+        return $q->where('status', 'aktif');
+      })
       ->whereNotIn('id', [DB::raw('SELECT transport_id FROM job_orders WHERE `status_cargo` IN ("mulai", "transfer")')])
       ->orderBy('num_pol')
       ->skip($offset)
@@ -311,6 +321,9 @@ class TransportController extends Controller
       ->get();
 
     $count = Transport::where('num_pol', 'LIKE', '%' . $request->q . '%')
+      ->when(request('status') == 'aktif', function ($q) {
+        return $q->where('status', 'aktif');
+      })
       ->where('another_expedition_id', $type)
       ->whereNotIn('id', [DB::raw('SELECT transport_id FROM job_orders WHERE `status_cargo` IN ("mulai", "transfer")')])
       ->get()

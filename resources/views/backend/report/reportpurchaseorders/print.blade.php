@@ -51,7 +51,7 @@
       }
 
       @page {
-        size: A4 potrait;
+        size: A4 portrait;
       }
     }
   </style>
@@ -97,6 +97,7 @@
         <th>Tgl Invoice</th>
         <th>Nama Sparepart</th>
         <th>Nama Supplier</th>
+        <th>Keterangan</th>
         <th class="text-center">Jumlah</th>
         <th class="text-right">Harga</th>
         <th class="text-right">Total</th>
@@ -110,6 +111,7 @@
           <td>{{ $item->invoice_date }}</td>
           <td>{{ $item->sparepart_name }}</td>
           <td>{{ $item->supplier_name }}</td>
+          <td>{{ $item->description }}</td>
           <td class="text-center">{{ $item->qty }}</td>
           <td class="text-right">{{ number_format($item->price, 2, ',', '.') }}</td>
           <td class="text-right">{{ number_format($item->total, 2, ',', '.') }}</td>
@@ -117,7 +119,7 @@
       @endforeach
       </tbody>
       <tfoot>
-      <td colspan="5" class="text-right">Total</td>
+      <td colspan="6" class="text-right">Total</td>
       <td class="text-center">{{$data->sum('qty')}}</td>
       <td class="text-right">{{ number_format($data->sum('price'), 2, ',', '.') }}</td>
       <td class="text-right">{{ number_format($data->sum('total'), 2, ',', '.') }}</td>

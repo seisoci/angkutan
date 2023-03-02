@@ -1,10 +1,6 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-
-  <!--begin::Card-->
   <div class="card card-custom">
     <div class="card-header flex-wrap py-3">
       <div class="card-title">
@@ -29,12 +25,9 @@
                     fill="#000000"></path>
                 </g>
               </svg>
-              <!--end::Svg Icon-->
             </span>Export
           </button>
-          <!--begin::Dropdown Menu-->
           <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-            <!--begin::Navigation-->
             <ul class="navi flex-column navi-hover py-2">
               <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">Choose an
                 option:
@@ -64,9 +57,7 @@
                 </a>
               </li>
             </ul>
-            <!--end::Navigation-->
           </div>
-          <!--end::Dropdown Menu-->
         </div>
       </div>
     </div>
@@ -105,8 +96,6 @@
           </div>
         </div>
       </div>
-
-      <!--begin: Datatable-->
       <table class="table table-hover" id="Datatable">
         <thead>
         <tr>
@@ -115,6 +104,7 @@
           <th>Nama Sparepart</th>
           <th>Nama Supir</th>
           <th>No. Polisi</th>
+          <th>Keterangan</th>
           <th>Jumlah</th>
           <th>Harga</th>
           <th>Total</th>
@@ -130,23 +120,19 @@
           <th></th>
           <th></th>
           <th></th>
+          <th></th>
         </tr>
         </tfoot>
       </table>
     </div>
   </div>
-  {{-- Modal --}}
 @endsection
-{{-- Styles Section --}}
 @section('styles')
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
-  {{-- page scripts --}}
   <script type="text/javascript">
     $(document).ready(function () {
       $('#btn_excel').on('click', function (e) {
@@ -201,6 +187,7 @@
           {data: 'sparepart_name', name: 'sparepart_name'},
           {data: 'driver_name', name: 'driver_name'},
           {data: 'num_pol', name: 'num_pol'},
+          {data: 'description', name: 'description'},
           {data: 'qty', name: 'qty', className: 'text-right'},
           {
             data: 'price', name: 'price',
@@ -222,30 +209,30 @@
                 i : 0;
           };
           let qty = api
-            .column(5)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let price = api
             .column(6)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
-          let totalPrice = api
+          let price = api
             .column(7)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
-          $(api.column(4).footer()).html('Total');
-          $(api.column(5).footer()).html(qty);
-          $(api.column(6).footer()).html(format(price));
-          $(api.column(7).footer()).html(format(totalPrice));
+          let totalPrice = api
+            .column(8)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+
+          $(api.column(5).footer()).html('Total');
+          $(api.column(6).footer()).html(qty);
+          $(api.column(7).footer()).html(format(price));
+          $(api.column(8).footer()).html(format(totalPrice));
         },
       });
 

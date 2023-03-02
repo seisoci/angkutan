@@ -5,59 +5,49 @@
 <head>
   <meta charset="utf-8" />
 
-  {{-- Title Section --}}
   <title>{{ config('app.name') }} | @yield('title', $config['page_title'] ?? '')</title>
-
-  {{-- Meta Data --}}
   <meta name="description" content="@yield('page_description', $page_description ?? '')" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  {{-- Favicon --}}
   <link rel="shortcut icon" href="{{ asset('media/logos/favicon.ico') }}" />
-
-  {{-- Fonts --}}
   {{ Metronic::getGoogleFontsInclude() }}
-
-  {{-- Global Theme Styles (used by all pages) --}}
   @foreach(config('layout.resources.css') as $style)
   <link href="{{ config('layout.self.rtl') ? asset(Metronic::rtlCssPath($style)) : asset($style) }}" rel="stylesheet"
     type="text/css" />
   @endforeach
 
-  {{-- Layout Themes (used by all pages) --}}
   @foreach (Metronic::initThemes() as $theme)
   <link href="{{ config('layout.self.rtl') ? asset(Metronic::rtlCssPath($theme)) : asset($theme) }}" rel="stylesheet"
     type="text/css" />
   @endforeach
-
-  {{-- Includable CSS --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" integrity="sha512-MQXduO8IQnJVq1qmySpN87QQkiR1bZHtorbJBD0tzy7/0U9+YIC93QWHeGTEoojMVHWWNkoCp8V6OzVSYrX0oQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   @yield('styles')
 </head>
 
 <body {{ Metronic::printAttrs('body') }} {{ Metronic::printClasses('body') }}>
 
   @if (config('layout.page-loader.type') != '')
+
   @include('layout.partials._page-loader')
   @endif
 
   @include('layout.base._layout')
 
   <script>
-    var HOST_URL = "{{ route('quick-search') }}";
+    let HOST_URL = "{{ route('quick-search') }}";
   </script>
 
-  {{-- Global Config (global config for global JS scripts) --}}
   <script>
-    var KTAppSettings = {!! json_encode(config('layout.js'), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES) !!};
+    let KTAppSettings = {!! json_encode(config('layout.js'), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES) !!};
   </script>
 
-  {{-- Global Theme JS Bundle (used by all pages)  --}}
   @foreach(config('layout.resources.js') as $script)
   <script src="{{ asset($script) }}" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/autonumeric/4.6.0/autoNumeric.min.js" integrity="sha512-6j+LxzZ7EO1Kr7H5yfJ8VYCVZufCBMNFhSMMzb2JRhlwQ/Ri7Zv8VfJ7YI//cg9H5uXT2lQpb14YMvqUAdGlcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js" integrity="sha512-K/oyQtMXpxI4+K0W7H25UopjM8pzq0yrVdFdG21Fh5dBe91I40pDd9A4lzNlHPHBIP2cwZuoxaUSX0GJSObvGA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   @endforeach
 
-  {{-- Includable JS --}}
   @yield('scripts')
+
   @include('layout.base._changepassword')
 </body>
 </html>
