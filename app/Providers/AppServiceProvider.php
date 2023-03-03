@@ -32,6 +32,5 @@ class AppServiceProvider extends ServiceProvider
     ]);
     View::composer('layout.base._aside', 'App\Http\View\Composers\PermissionComposer');
     View::composer('layout.base._aside', 'App\Http\View\Composers\RoleComposer');
-    URL::forceScheme('https');
   }
 }

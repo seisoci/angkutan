@@ -90,6 +90,7 @@
       <table class="table table-bordered table-hover" id="Datatable">
         <thead>
         <tr>
+          <th></th>
           <th>No Job Order</th>
           <th>Tanggal Pengajuan</th>
           <th>Pelanggan</th>
@@ -108,7 +109,6 @@
       </table>
     </div>
   </div>
-  {{-- Modal --}}
   <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -205,8 +205,8 @@
   </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
+  <link href="{{ asset('css/backend/datatables/dataTables.control.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
   <style>
     .dataTables_wrapper .dataTable td, .dataTables_wrapper .dataTable th {
@@ -216,11 +216,23 @@
 @endsection
 
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
-  {{-- page scripts --}}
+  <script id="details-template" type="text/x-handlebars-template">
+    @verbatim
+      <table class="table table-bordered dataTableChild" id="posts-{{id}}" style="width: 800px !important;">
+        <thead>
+        <tr>
+          <th>Tanggal Pengajuan</th>
+          <th>Nominal</th>
+          <th>Deskripsi</th>
+          <th>Tipe</th>
+          <th>Status</th>
+        </tr>
+        </thead>
+      </table>
+    @endverbatim
+  </script>
   <script type="text/javascript">
     $(document).ready(function () {
       $(".currency").inputmask('decimal', {
@@ -229,13 +241,15 @@
         rightAlign: true,
         removeMaskOnSubmit: true
       });
+
+      let template = Handlebars.compile($("#details-template").html());
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
         scrollY: "300px",
         processing: true,
         serverSide: true,
-        order: [[1, 'desc']],
+        order: [[2, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 10,
         dom: 'Blfrtip',
@@ -254,6 +268,13 @@
           }
         },
         columns: [
+          {
+            "className": 'details-control',
+            "orderable": false,
+            "searchable": false,
+            "data": null,
+            "defaultContent": ''
+          },
           {data: 'joborder.num_bill', name: 'joborder.num_bill', width: '140px'},
           {data: 'created_at', name: 'created_at'},
           {data: 'joborder.costumer.name', name: 'joborder.costumer.name'},
@@ -329,7 +350,86 @@
         ]
       });
 
-      var dataTableHistory = $('#DatatableHistory').DataTable({
+      $('#Datatable tbody').on('click', 'td.details-control', function () {
+        let tr = $(this).closest('tr');
+        let row = dataTable.row(tr);
+        let tableId = 'posts-' + row.data().id;
+
+        if (row.child.isShown()) {
+          row.child.hide();
+          tr.removeClass('shown');
+        } else {
+          row.child(template(row.data())).show();
+          initTable(tableId, row.data());
+          tr.addClass('shown');
+          tr.next().find('td').addClass('no-padding bg-gray');
+        }
+      });
+
+      function initTable(tableId, data) {
+        $('#' + tableId).DataTable({
+          processing: true,
+          serverSide: true,
+          autoWidth: false,
+          ajax: data.details_url,
+          order: [0, 'desc'],
+          lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+          pageLength: 10,
+          columns: [
+            {data: 'created_at', name: 'created_at', width: '140px'},
+            {
+              data: 'amount',
+              name: 'amount',
+              render: $.fn.dataTable.render.number(',', '.', 2),
+              orderable: false,
+              searchable: false,
+              className: 'dt-right',
+              width: '200px'
+            },
+            {data: 'description', name: 'description', width: '400px'},
+            {data: 'type', name: 'type'},
+            {data: 'approved', name: 'approved', width: '100px'},
+          ],
+          columnDefs: [
+            {
+              className: 'dt-center',
+              targets: 4,
+              width: '75px',
+              render: function (data, type, full, meta) {
+                let status = {
+                  null: {'title': 'Pending', 'class': 'badge badge-secondary'},
+                  0: {'title': 'Di Tolak', 'class': 'badge badge-danger'},
+                  1: {'title': 'Di Setujui', 'class': 'badge badge-success'},
+                };
+                if (typeof status[data] === 'undefined') {
+                  return data;
+                }
+                return '<span class="' + status[data].class + '">' + status[data].title +
+                  '</span>';
+              },
+            },
+            {
+              className: 'dt-center',
+              targets: 3,
+              width: '75px',
+              render: function (data, type, full, meta) {
+                let status = {
+                  'roadmoney': {'title': 'Uang Jalan', 'class': 'badge badge-primary'},
+                  'operational': {'title': 'Uang Jalan Operasional', 'class': 'badge badge-warning'},
+                };
+                if (typeof status[data] === 'undefined') {
+                  return data;
+                }
+                return '<span class="' + status[data].class + '">' + status[data].title +
+                  '</span>';
+              },
+            },
+          ]
+        })
+      }
+
+
+      let dataTableHistory = $('#DatatableHistory').DataTable({
         responsive: true,
         processing: true,
         serverSide: true,

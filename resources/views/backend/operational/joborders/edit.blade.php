@@ -90,7 +90,7 @@
               </select>
             </div>
             <input type="hidden" name="km">
-            @hasanyrole('super-admin|admin|akunting')
+            @hasanyrole('super-admin|admin')
             <div class="form-group" style="display: none">
               <label>Total Ongkosan Dasar LDO</label>
               <input id="totalpayloadldo" type="text" class="form-control currency" disabled/>

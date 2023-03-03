@@ -184,7 +184,7 @@
           }
         },
         columns: [
-          {data: 'nama_supir', name: 'nama_supir'},
+          {data: 'nama_supir', name: 'drivers.name'},
           {data: 'date_payment', name: 'date_payment'},
 
           {
