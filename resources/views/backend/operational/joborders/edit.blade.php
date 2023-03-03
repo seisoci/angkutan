@@ -112,7 +112,7 @@
                 <option value="fix" {{ $data->type_payload == 'fix' ? 'selected' : '' }}>FIX</option>
               </select>
             </div>
-            @hasanyrole('super-admin|admin|akunting')
+            @hasanyrole('super-admin|admin')
             <div class="form-group">
               <label>Harga Dasar</label>
               <input type="hidden" name="basic_price" class="form-control currency basicprice" value="{{ $data->basic_price ?? '' }}"/>
@@ -138,7 +138,7 @@
                   </div>
                 </div>
               </div>
-              @hasanyrole('super-admin|admin|akunting')
+              @hasanyrole('super-admin|admin')
               <div class="form-group">
                 <label>Total Ongkosan Dasar</label>
                 <input id="totalPayload" type="text" class="form-control currency" value="{{ $data->total_basic_price ?? '' }}" disabled/>
@@ -221,7 +221,7 @@
                   <label style="display: none">Uang Jalan</label>
                   <input type="text" name="road_money" class="form-control currency" value="{{ $data->road_money ?? '' }}" style="display: none" readonly/>
                 </div>
-                @hasanyrole('super-admin|admin|akunting')
+                @hasanyrole('super-admin|admin')
                 <div class="form-group">
                   <label>Grand Total Kotor</label>
                   <input type="text" name="grandtotalgross" class="form-control currency"  disabled/>
@@ -274,7 +274,7 @@
             </div>
           </div>
           @endhasanyrole
-          @hasanyrole('super-admin|admin|akunting')
+          @hasanyrole('super-admin|admin')
           <div class="col-md-4">
             <div class="form-group" style="display: none">
               <label>Grand Total Bersih LDO</label>

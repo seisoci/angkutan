@@ -34,13 +34,13 @@
               </div>
               <div class="col-md-4 my-md-0">
                 <div class="form-group">
-                  <label>Tanggal Mulai JO:</label>
+                  <label>Tanggal Selesai JO:</label>
                   <div class="input-group">
-                    <input type="text" class="form-control datePicker" name="date_begin_start" placeholder="Choose Date" readonly>
+                    <input type="text" class="form-control datePicker" name="date_end_start" placeholder="Choose Date" readonly>
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="la la-calendar-check-o"></i></span>
                     </div>
-                    <input type="text" class="form-control datePicker" name="date_begin_end" placeholder="Choose Date" readonly>
+                    <input type="text" class="form-control datePicker" name="date_end_end" placeholder="Choose Date" readonly>
                   </div>
                 </div>
               </div>
