@@ -914,4 +914,27 @@ class JobOrderController extends Controller
     return Datatables::of($data)->make(true);
   }
 
+
+  public function jo_calculate(){
+    try {
+      $jobOrderService = new JobOrderService();
+
+      $data = JobOrder::all();
+      $typeCapacity = TypeCapacity::all()->keyBy('name');
+
+      foreach ($data ?? [] as $item):
+        $calculate = $jobOrderService->calculate($item);
+        $jo = JobOrder::find($item['id']);
+        $typeCapacityJO = !is_numeric($item['type_capacity']) ? $typeCapacity[$item['type_capacity']]['id'] : $item['type_capacity'];
+        $prefix = $item['prefix']."-".$item['num_bill'];
+        $jo->update(array_merge([
+          'type_capacity' =>  $typeCapacityJO,
+          'num_bill' =>  $prefix
+        ],$calculate));
+      endforeach;
+      dd("success");
+    }catch(\Throwable $throw){
+      Log::error($throw);
+    }
+  }
 }
