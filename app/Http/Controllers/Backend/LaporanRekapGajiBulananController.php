@@ -20,8 +20,8 @@ class LaporanRekapGajiBulananController extends Controller
 
   public function index(Request $request)
   {
-    $config['page_title'] = "Laporan Rekap Gaji Bulanan (Dokumen Sudah Kembali)";
-    $config['page_description'] = "Daftar List Laporan Rekap Gaji Bulanan (Dokumen Sudah Kembali)";
+    $config['page_title'] = "Laporan Rekap Gaji Supir Bulanan (Dokumen Sudah Kembali)";
+    $config['page_description'] = "Daftar List Laporan Rekap Gaji Supir Bulanan (Dokumen Sudah Kembali)";
     $page_breadcrumbs = [
       ['page' => '#', 'title' => "List Laporan Rekap Gaji Bulanan (Dokumen Sudah Kembali)"],
     ];

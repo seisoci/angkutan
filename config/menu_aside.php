@@ -342,7 +342,10 @@ return [
           'bullet' => 'dot',
           'arrow' => true,
           'list' => ['recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
-            'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitemoutside', 'reportcustomerroadmoney', 'reportldonetprofit'],
+            'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems',
+            'reportrecapusageitemoutside', 'reportcustomerroadmoney', 'reportldonetprofit', 'l-rekap-gaji-bulanan',
+            'l-rekap-pengeluaran-sparepart', 'l-rekap-pendapatan-kotor'
+          ],
           'submenu' => [
             [
               'title' => 'Laporan Rekapitulasi',
@@ -375,6 +378,18 @@ return [
             [
               'title' => 'Laporan Rekap Laba LDO',
               'page' => 'backend/reportldonetprofit'
+            ],
+            [
+              'title' => 'Laporan Rekap Gaji Supir Bulanan',
+              'page' => 'backend/l-rekap-gaji-bulanan'
+            ],
+            [
+              'title' => 'Laporan Rekap Pengeluaran Mobil',
+              'page' => 'backend/l-rekap-pengeluaran-sparepart'
+            ],
+            [
+              'title' => 'Laporan Pendapatan Kotor Mobil',
+              'page' => 'backend/l-rekap-pendapatan-kotor'
             ],
           ]
         ],
