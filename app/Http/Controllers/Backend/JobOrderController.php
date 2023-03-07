@@ -914,7 +914,6 @@ class JobOrderController extends Controller
     return Datatables::of($data)->make(true);
   }
 
-
   public function jo_calculate(){
     try {
       $jobOrderService = new JobOrderService();

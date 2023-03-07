@@ -1,11 +1,8 @@
 {{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-<!-- begin::Card-->
 <div class="card card-custom overflow-hidden">
-  {{-- Header --}}
   <div class="card-header d-flex justify-content-end align-items-center">
     <div class="">
       <div class="btn-group btn-group-md" role="group" aria-label="Large button group">
@@ -16,9 +13,7 @@
       </div>
     </div>
   </div>
-  {{-- Body --}}
   <div class="card-body p-0">
-    <!-- begin: Invoice header-->
     <div class="row justify-content-center py-8 px-8 px-md-0">
       <div class="col-md-11">
         <h2 class="font-weight-boldest text-center mb-10 text-uppercase text-dark"><u>Detail Opname</u></h2>
@@ -75,7 +70,6 @@
 </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
 <style>
   .table-title td,
@@ -85,9 +79,6 @@
 </style>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-{{-- vendors --}}
 
-{{-- page scripts --}}
 @endsection

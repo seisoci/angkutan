@@ -314,7 +314,6 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     Route::resource('reportusageinsideoutside', Backend\ReportUsageItemInsideOutsideController::class);
     Route::resource('reportrecapkasbondrivers', Backend\ReportRecapKasbonDriverController::class);
 
-
     /* Laporan Rekap Gaji Supir Bulanan */
     Route::resource('l-rekap-gaji-bulanan', Backend\LaporanRekapGajiBulananController::class);
 

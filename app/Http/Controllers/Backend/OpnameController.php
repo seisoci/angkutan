@@ -10,10 +10,10 @@ use App\Models\OpnameDetail;
 use App\Models\Sparepart;
 use App\Models\Stock;
 use App\Traits\CarbonTrait;
-use DataTables;
-use DB;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
 
 class OpnameController extends Controller
 {
@@ -181,7 +181,7 @@ class OpnameController extends Controller
     $offset = ($page - 1) * $resultCount;
     $data = Stock::selectRaw('
         invoice_purchases.id AS id,
-        CONCAT(invoice_purchases.prefix, " - " , invoice_purchases.num_bill) AS text,
+        CONCAT(invoice_purchases.prefix, " - " , invoice_purchases.num_bill, " - ", stocks.qty) AS text,
         stocks.qty AS qty,
         purchases.price AS price
       ')

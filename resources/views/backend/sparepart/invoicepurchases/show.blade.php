@@ -64,9 +64,9 @@
             <tr>
               <td></td>
               <td class="text-left" style="width:10%"></td>
-              <td colspan="2" class="text-left" style="width:15%">Memo</td>
-              <td class="text-left" style="width:2%">: &ensp;</td>
-              <td class="text-left" style="width:23%"> {{ $data->memo }}</td>
+              <td class="text-left" style="padding-left:4rem;width:20%">Memo</td>
+              <td class="text-left" style="width:2%">&ensp;: &ensp;</td>
+              <td class="text-left" style="width:18%"> {{ $data->memo }}</td>
             </tr>
           </tbody>
         </table>

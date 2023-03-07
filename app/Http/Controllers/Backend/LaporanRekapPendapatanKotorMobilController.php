@@ -42,6 +42,12 @@ class LaporanRekapPendapatanKotorMobilController extends Controller
       if($request->filled('date_end')){
         $data->where('invoice_date', '<=', $request['date_end']);
       }
+      if($request->filled('status_cargo')){
+        $data->where('status_cargo', $request['status_cargo']);
+      }
+      if($request->filled('status_document')){
+        $data->where('status_document', $request['status_document']);
+      }
 
       return DataTables::of($data)
         ->addIndexColumn()

@@ -107,10 +107,10 @@
           <tr>
             <th style="width:5%">#</th>
             <th style="width:45%">Produk</th>
+            <th style="width:25%">Keterangan</th>
             <th style="width:5%">Jumlah</th>
             <th style="width:25%" class="text-right">Harga</th>
             <th style="width:25%" class="text-right">Total</th>
-            <th style="width:25%">Keterangan</th>
           </tr>
         </thead>
         <tbody>
@@ -118,10 +118,10 @@
           <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $item->name }}</td>
+            <td>{{ $item->description }}</td>
             <td>{{ $item->qty }}</td>
             <td class="text-right">{{ number_format($item->price ?? 0, 2, ',', '.') }}</td>
             <td class="text-right">{{ number_format($item->total_price ?? 0, 2, ',', '.') }}</td>
-            <td>{{ $item->description }}</td>
           </tr>
           @endforeach
           <tr class="font-weight-normal">

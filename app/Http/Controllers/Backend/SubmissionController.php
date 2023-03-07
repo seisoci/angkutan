@@ -65,14 +65,19 @@ class SubmissionController extends Controller
       $driver_id = $request->driver_id;
       $transport_id = $request->transport_id;
       $another_expedition_id = $request->another_expedition_id;
-      $data = OperationalExpense::with([
+      $data = OperationalExpense::selectRaw('
+          `operational_expenses`.*,
+          `expenses`.`name` AS `expense_name`
+        ')
+        ->with([
           'joborder',
           'joborder.costumer:id,name',
           'joborder.routefrom:id,name',
           'joborder.routeto:id,name',
           'joborder.transport:id,num_pol',
-          'joborder.driver:id,name'
+          'joborder.driver:id,name',
         ])
+        ->leftJoin('expenses', 'expenses.id', '=', 'operational_expenses.expense_id')
         ->when($request['status'], function ($query) use ($request) {
           if ($request['status'] == 'all') {
           } else if ($request['status'] == 'pending') {
@@ -105,6 +110,12 @@ class SubmissionController extends Controller
         ->when($typeData, function ($query, $typeData) {
           return $query->where('type', $typeData);
         });
+
+      if($request->filled('expense_id')){
+        $data->where('expense_id', $request['expense_id']);
+      }
+
+
 
       return DataTables::of($data)
         ->addIndexColumn()
@@ -315,6 +326,7 @@ class SubmissionController extends Controller
     }
     return response()->json([
       'roadMoneyFormat' => number_format($roadMoney, 0, '.', ','),
+      'roadMoneyFormatReal' => number_format($jobOrder['road_money'], 0, '.', ','),
       'roadMoney' => $roadMoney,
       'type' => $jobOrder->type,
       'history' => $history,
@@ -330,6 +342,7 @@ class SubmissionController extends Controller
         `operational_expenses`.`created_at` AS `tgl_dibuat`,
         `operational_expenses`.`amount`,
         `operational_expenses`.`description`,
+        `operational_expenses`.`type`,
         `costumers`.`name` AS `customer_name`,
         `rf`.`name` AS `route_from`,
         `rt`.`name` AS `route_to`

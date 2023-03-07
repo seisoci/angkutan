@@ -1,10 +1,6 @@
-{{-- Extends layout --}}
 @extends('layout.default')
 
-{{-- Content --}}
 @section('content')
-  {{-- Dashboard 1 --}}
-  <!--begin::Card-->
   <div class="card card-custom mt-6">
     <div class="card-header flex-wrap py-3">
       <div class="card-title">
@@ -77,7 +73,6 @@
   </div>
 @endsection
 
-{{-- Styles Section --}}
 @section('styles')
   <link href="{{ asset('plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
   <style>
@@ -87,12 +82,8 @@
   </style>
 @endsection
 
-{{-- Scripts Section --}}
 @section('scripts')
-  {{-- vendors --}}
   <script src="{{ asset('plugins/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
-
-  {{-- page scripts --}}
   <script src="{{ asset('js/pages/crud/datatables/basic/basic.js') }}" type="text/javascript"></script>
   <script type="text/javascript">
     $(document).ready(function () {
@@ -252,7 +243,6 @@
           }
         });
       });
-
     });
   </script>
 @endsection

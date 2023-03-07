@@ -86,6 +86,13 @@
             </select>
           </div>
         </div>
+        <div class="col-md-3 my-md-0">
+          <div class="form-group">
+            <label>Master Biaya:</label>
+            <select class="form-control" id="select2Expense">
+            </select>
+          </div>
+        </div>
       </div>
       <table class="table table-bordered table-hover" id="Datatable">
         <thead>
@@ -101,6 +108,7 @@
           <th>Nominal</th>
           <th>Deskripsi</th>
           <th>Status</th>
+          <th>Master Biaya</th>
           <th>Tipe</th>
           <th>Status JO</th>
           <th>Actions</th>
@@ -138,6 +146,9 @@
             <div class="form-group">
               <span id="roadMoney"></span>
             </div>
+            <div class="form-group">
+              <span id="roadMoneyReal"></span>
+            </div>
             <h6>History Pengajuan Uang Jalan</h6>
             <div class="table-responsive mb-4">
               <table class="table table-bordered w-100" id="DatatableHistory">
@@ -147,6 +158,7 @@
                   <th>Pelanggan</th>
                   <th>Dari</th>
                   <th>Tujuan</th>
+                  <th>Tipe</th>
                   <th>Nominal</th>
                   <th>Deskripsi</th>
                 </tr>
@@ -243,6 +255,7 @@
       });
 
       let template = Handlebars.compile($("#details-template").html());
+
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
@@ -265,6 +278,7 @@
             d.driver_id = $('#select2Driver').find(':selected').val();
             d.transport_id = $('#select2Transport').find(':selected').val();
             d.statusLDO = $('#select2TypeExpedition').find(':selected').val();
+            d.expense_id = $('#select2Expense').find(':selected').val();
           }
         },
         columns: [
@@ -290,15 +304,11 @@
             className: 'dt-right',
           },
           {data: 'description', name: 'description'},
-          {data: 'approved', name: 'approved'},
-          {data: 'type', name: 'type'},
-          {data: 'joborder.status_cargo', name: 'joborder.status_cargo'},
-          {data: 'action', name: 'action', orderable: false, searchable: false},
-        ],
-        columnDefs: [
+          {data: 'expense_name', name: 'expenses.name'},
           {
-            className: 'dt-center',
-            targets: 9,
+            data: 'approved',
+            name: 'approved',
+            className: 'text-center',
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -314,10 +324,11 @@
             },
           },
           {
-            className: 'dt-center',
-            targets: 10,
-            width: '75px',
-            render: function (data, type, full, meta) {
+            data: 'type',
+            name: 'type',
+            className: 'text-center',
+            render: function (data, type, row, meta) {
+
               let status = {
                 'roadmoney': {'title': 'Uang Jalan', 'class': 'badge badge-primary'},
                 'operational': {'title': 'Uang Jalan Operasional', 'class': 'badge badge-warning'},
@@ -327,11 +338,12 @@
               }
               return '<span class="' + status[data].class + '">' + status[data].title +
                 '</span>';
-            },
+            }
           },
           {
-            className: 'dt-center',
-            targets: 11,
+            data: 'joborder.status_cargo',
+            name: 'joborder.status_cargo',
+            className: 'text-center',
             width: '75px',
             render: function (data, type, full, meta) {
               let status = {
@@ -347,7 +359,8 @@
                 '</span>';
             },
           },
-        ]
+          {data: 'action', name: 'action', orderable: false, searchable: false},
+        ],
       });
 
       $('#Datatable tbody').on('click', 'td.details-control', function () {
@@ -387,15 +400,28 @@
               width: '200px'
             },
             {data: 'description', name: 'description', width: '400px'},
-            {data: 'type', name: 'type'},
-            {data: 'approved', name: 'approved', width: '100px'},
-          ],
-          columnDefs: [
             {
-              className: 'dt-center',
-              targets: 4,
-              width: '75px',
-              render: function (data, type, full, meta) {
+              data: 'type',
+              name: 'type',
+              className: 'text-center',
+              render: function (data, type, row, meta) {
+                let status = {
+                  'roadmoney': {'title': 'Uang Jalan', 'class': 'badge badge-primary'},
+                  'operational': {'title': 'Uang Jalan Operasional', 'class': 'badge badge-warning'},
+                };
+                if (typeof status[data] === 'undefined') {
+                  return data;
+                }
+                return '<span class="' + status[data].class + '">' + status[data].title +
+                  '</span>';
+              }
+            },
+            {
+              data: 'approved',
+              name: 'approved',
+              className: 'text-center',
+              width: '100px',
+              render: function (data, type, row, meta) {
                 let status = {
                   null: {'title': 'Pending', 'class': 'badge badge-secondary'},
                   0: {'title': 'Di Tolak', 'class': 'badge badge-danger'},
@@ -406,28 +432,11 @@
                 }
                 return '<span class="' + status[data].class + '">' + status[data].title +
                   '</span>';
-              },
+              }
             },
-            {
-              className: 'dt-center',
-              targets: 3,
-              width: '75px',
-              render: function (data, type, full, meta) {
-                let status = {
-                  'roadmoney': {'title': 'Uang Jalan', 'class': 'badge badge-primary'},
-                  'operational': {'title': 'Uang Jalan Operasional', 'class': 'badge badge-warning'},
-                };
-                if (typeof status[data] === 'undefined') {
-                  return data;
-                }
-                return '<span class="' + status[data].class + '">' + status[data].title +
-                  '</span>';
-              },
-            },
-          ]
+          ],
         })
       }
-
 
       let dataTableHistory = $('#DatatableHistory').DataTable({
         responsive: true,
@@ -451,6 +460,22 @@
           {data: 'customer_name', name: 'costumer.name'},
           {data: 'route_from', name: 'rf.name'},
           {data: 'route_to', name: 'rt.name'},
+          {
+            data: 'type',
+            name: 'type',
+            className: 'text-center',
+            render: function (data, type, row, meta) {
+              let status = {
+                'roadmoney': {'title': 'Uang Jalan', 'class': 'badge badge-primary'},
+                'operational': {'title': 'Uang Jalan Operasional', 'class': 'badge badge-warning'},
+              };
+              if (typeof status[data] === 'undefined') {
+                return data;
+              }
+              return '<span class="' + status[data].class + '">' + status[data].title +
+                '</span>';
+            }
+          },
           {
             data: 'amount',
             name: 'operational_expenses.amount',
@@ -483,6 +508,7 @@
             $('input[name=route_from]').val(response.jobOrder.route_from);
             $('input[name=route_to]').val(response.jobOrder.route_to);
             dataTableHistory.draw();
+            $('#roadMoneyReal').text('Master Uang Jalan: ' + response.roadMoneyFormatReal)
             if (response.type == "self") {
               if (response.roadMoney > 0) {
                 $('#roadMoney').text('Sisa uang jalan: ' + response.roadMoneyFormat)
@@ -557,6 +583,25 @@
         allowClear: true,
         ajax: {
           url: "{{ route('backend.transports.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
+      $("#select2Expense").select2({
+        placeholder: "Search Master Biaya",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.expenses.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,

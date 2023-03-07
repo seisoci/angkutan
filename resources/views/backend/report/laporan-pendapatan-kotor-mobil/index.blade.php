@@ -20,6 +20,28 @@
                   </select>
                 </div>
               </div>
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Status Job Order:</label>
+                  <select class="form-control" id="selectStatus">
+                    <option value="">Pilih Status</option>
+                    <option value="mulai">Mulai</option>
+                    <option value="transfer">Transfer</option>
+                    <option value="selesai">Selesai</option>
+                    <option value="batal">Batal</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Status Dokumen:</label>
+                  <select class="form-control" id="selectDocument">
+                    <option value="">Pilih Status</option>
+                    <option value="0">Belum</option>
+                    <option value="1">Selesai</option>
+                  </select>
+                </div>
+              </div>
               <div class="col-md-4 my-md-0">
                 <div class="form-group">
                   <label>Tanggal:</label>
@@ -91,6 +113,8 @@
         ajax: {
           url: "{{ url()->current() }}",
           data: function (d) {
+            d.status_cargo = $('#selectStatus').find(':selected').val();
+            d.status_document = $('#selectDocument').find(':selected').val();
             d.transport_id = $('#select2Transport').find(':selected').val();
             d.date_begin = $("input[name=date_begin]").val();
             d.date_end = $("input[name=date_end]").val();
@@ -162,6 +186,13 @@
           },
         },
       }).on('change', function (e) {
+        dataTable.draw();
+      });
+
+      $('#selectStatus').on('change', function () {
+        dataTable.draw();
+      });
+      $('#selectDocument').on('change', function () {
         dataTable.draw();
       });
 
