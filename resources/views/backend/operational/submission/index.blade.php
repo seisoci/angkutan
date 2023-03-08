@@ -304,7 +304,6 @@
             className: 'dt-right',
           },
           {data: 'description', name: 'description'},
-          {data: 'expense_name', name: 'expenses.name'},
           {
             data: 'approved',
             name: 'approved',
@@ -323,6 +322,7 @@
                 '</span>';
             },
           },
+          {data: 'expense_name', name: 'expenses.name'},
           {
             data: 'type',
             name: 'type',
