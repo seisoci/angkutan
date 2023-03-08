@@ -44,13 +44,25 @@
               </div>
               <div class="col-md-4 my-md-0">
                 <div class="form-group">
-                  <label>Tanggal:</label>
+                  <label>Tanggal Mulai JO:</label>
                   <div class="input-group">
-                    <input type="text" class="form-control datePicker" name="date_begin" placeholder="Choose Date" readonly>
+                    <input type="text" class="form-control datePicker" name="date_begin_start" placeholder="Choose Date" readonly>
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="la la-calendar-check-o"></i></span>
                     </div>
-                    <input type="text" class="form-control datePicker" name="date_end" placeholder="Choose Date" readonly>
+                    <input type="text" class="form-control datePicker" name="date_begin_end" placeholder="Choose Date" readonly>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 my-md-0">
+                <div class="form-group">
+                  <label>Tanggal Selesai JO:</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control datePicker" name="date_end_start" placeholder="Choose Date" readonly>
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="la la-calendar-check-o"></i></span>
+                    </div>
+                    <input type="text" class="form-control datePicker" name="date_end_end" placeholder="Choose Date" readonly>
                   </div>
                 </div>
               </div>
@@ -116,8 +128,10 @@
             d.status_cargo = $('#selectStatus').find(':selected').val();
             d.status_document = $('#selectDocument').find(':selected').val();
             d.transport_id = $('#select2Transport').find(':selected').val();
-            d.date_begin = $("input[name=date_begin]").val();
-            d.date_end = $("input[name=date_end]").val();
+            d.date_begin_start = $("input[name=date_begin_start]").val();
+            d.date_begin_end = $("input[name=date_begin_end]").val();
+            d.date_end_start = $("input[name=date_end_start]").val();
+            d.date_end_end = $("input[name=date_end_end]").val();
           }
         },
         columns: [

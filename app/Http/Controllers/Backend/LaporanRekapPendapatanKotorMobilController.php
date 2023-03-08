@@ -36,11 +36,17 @@ class LaporanRekapPendapatanKotorMobilController extends Controller
       if($request->filled('transport_id')){
         $data->where('transport_id', $request['transport_id']);
       }
-      if($request->filled('date_begin')){
-        $data->where('invoice_date', '>=', $request['date_begin']);
+      if($request->filled('date_begin_start')){
+        $data->where('date_begin', '>=', $request['date_begin_start']);
       }
-      if($request->filled('date_end')){
-        $data->where('invoice_date', '<=', $request['date_end']);
+      if($request->filled('date_begin_end')){
+        $data->where('date_begin', '<=', $request['date_begin_end']);
+      }
+      if($request->filled('date_end_start')){
+        $data->where('date_end', '>=', $request['date_end_start']);
+      }
+      if($request->filled('date_end_end')){
+        $data->where('date_end', '<=', $request['date_end_end']);
       }
       if($request->filled('status_cargo')){
         $data->where('status_cargo', $request['status_cargo']);
