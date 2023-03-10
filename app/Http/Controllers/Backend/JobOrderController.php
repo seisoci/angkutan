@@ -918,7 +918,7 @@ class JobOrderController extends Controller
     try {
       $jobOrderService = new JobOrderService();
 
-      $data = JobOrder::all();
+      $data = JobOrder::where('total_salary', 0)->get();
       $typeCapacity = TypeCapacity::all()->keyBy('name');
 
       foreach ($data ?? [] as $item):
@@ -932,6 +932,7 @@ class JobOrderController extends Controller
         ],$calculate));
       endforeach;
       dd("success");
+
     }catch(\Throwable $throw){
       Log::error($throw);
     }
