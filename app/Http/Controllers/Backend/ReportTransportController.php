@@ -36,7 +36,23 @@ class ReportTransportController extends Controller
     $config['print_url'] = 'reporttransports/print';
 
     if ($request->ajax()) {
-      $data = Transport::where('another_expedition_id', NULL);
+      $data = Transport::selectRaw('
+            transports.*,
+            COALESCE(
+              (
+              SELECT
+                CASE
+                    WHEN `status_cargo` = "mulai" THEN "Tidak Tersedia"
+                    WHEN `status_cargo` = "transfer" THEN "Tidak Tersedia"
+                    ELSE "Tersedia"
+                END
+              FROM `job_orders`
+              WHERE `job_orders`.`transport_id` = `transports`.`id`
+              ORDER BY `job_orders`.`date_begin` DESC
+              LIMIT 1
+              ), "Tersedia") AS `status_jo`
+        ')->whereNull('another_expedition_id');
+
       return DataTables::of($data)
         ->addIndexColumn()
         ->editColumn('type_car', function (Transport $transport) {
@@ -51,7 +67,24 @@ class ReportTransportController extends Controller
   {
     $type = $request->type;
     $cooperationDefault = Cooperation::where('default', '1')->first();
-    $data = Transport::all();
+    $data = Transport::selectRaw('
+            transports.*,
+            COALESCE(
+              (
+              SELECT
+                CASE
+                    WHEN `status_cargo` = "mulai" THEN "Tidak Tersedia"
+                    WHEN `status_cargo` = "transfer" THEN "Tidak Tersedia"
+                    ELSE "Tersedia"
+                END
+              FROM `job_orders`
+              WHERE `job_orders`.`transport_id` = `transports`.`id`
+              ORDER BY `job_orders`.`date_begin` DESC
+              LIMIT 1
+              ), "Tersedia") AS `status_jo`
+        ')->whereNull('another_expedition_id')
+      ->get();
+
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->getPageSetup()
@@ -99,6 +132,8 @@ class ReportTransportController extends Controller
     $sheet->getColumnDimension('D')->setWidth(15);
     $sheet->getColumnDimension('E')->setWidth(15);
     $sheet->getColumnDimension('F')->setWidth(35);
+    $sheet->getColumnDimension('G')->setWidth(35);
+    $sheet->getColumnDimension('H')->setWidth(35);
 
     $sheet->getStyle('A6')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A6', 'No.');
@@ -107,16 +142,18 @@ class ReportTransportController extends Controller
     $sheet->setCellValue('D6', 'STNK');
     $sheet->setCellValue('E6', 'KIR');
     $sheet->setCellValue('F6', 'Jenis Kendaraan');
+    $sheet->setCellValue('G6', 'Status Kendaraan');
+    $sheet->setCellValue('H6', 'Status Kendaraan JO');
 
     $startCell = 6;
     $startCellFilter = 6;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')
+    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')
       ->applyFromArray($borderTopBottom)
       ->applyFromArray($borderLeftRight);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderLeftRight);
+      $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderLeftRight);
       $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('center');
       $sheet->setCellValue('A' . $startCell, $no++);
       $sheet->setCellValue('B' . $startCell, $item->num_pol);
@@ -124,21 +161,23 @@ class ReportTransportController extends Controller
       $sheet->setCellValue('D' . $startCell, $item->expired_stnk);
       $sheet->setCellValue('E' . $startCell, $item->expired_kir);
       $sheet->setCellValue('F' . $startCell, $item->type);
+      $sheet->setCellValue('G' . $startCell, $item->status);
+      $sheet->setCellValue('H' . $startCell, $item->status_jo);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':F' . $startCell);
-    $sheet->getStyle('A' . $startCell . ':F' . $startCell . '')->applyFromArray($borderBottom);
+    $sheet->setAutoFilter('B' . $startCellFilter . ':H' . $startCell);
+    $sheet->getStyle('A' . $startCell . ':H' . $startCell . '')->applyFromArray($borderBottom);
 
     $sheet->mergeCells('A1:C1');
     $sheet->setCellValue('A1', 'Laporan Data Pelanggan');
     $sheet->mergeCells('A2:C2');
     $sheet->setCellValue('A2', 'Printed: ' . $this->dateTimeNow());
-    $sheet->mergeCells('E1:G1');
-    $sheet->setCellValue('E1', $cooperationDefault['nickname']);
-    $sheet->mergeCells('E2:G2');
-    $sheet->setCellValue('E2', $cooperationDefault['address']);
-    $sheet->mergeCells('E3:G3');
-    $sheet->setCellValue('E3', 'Telp: ' . $cooperationDefault['phone']);
-    $sheet->mergeCells('E4:G4');
+    $sheet->mergeCells('G1:H1');
+    $sheet->setCellValue('G1', $cooperationDefault['nickname']);
+    $sheet->mergeCells('G2:H2');
+    $sheet->setCellValue('G2', $cooperationDefault['address']);
+    $sheet->mergeCells('G3:H3');
+    $sheet->setCellValue('G3', 'Telp: ' . $cooperationDefault['phone']);
+    $sheet->mergeCells('G4:H4');
     $sheet->setCellValue('E4', 'Fax: ' . $cooperationDefault['fax']);
 
     $filename = 'Laporan Data Kendaraan ' . $this->dateTimeNow();
@@ -168,9 +207,24 @@ class ReportTransportController extends Controller
 
     $cooperationDefault = Cooperation::where('default', '1')->first();
 
-    $data = Transport::where('another_expedition_id', NULL)
-      ->orderBy('num_pol', 'asc')
+    $data = Transport::selectRaw('
+            transports.*,
+            COALESCE(
+              (
+              SELECT
+                CASE
+                    WHEN `status_cargo` = "mulai" THEN "Tidak Tersedia"
+                    WHEN `status_cargo` = "transfer" THEN "Tidak Tersedia"
+                    ELSE "Tersedia"
+                END
+              FROM `job_orders`
+              WHERE `job_orders`.`transport_id` = `transports`.`id`
+              ORDER BY `job_orders`.`date_begin` DESC
+              LIMIT 1
+              ), "Tersedia") AS `status_jo`
+        ')->whereNull('another_expedition_id')
       ->get();
+
     return view('backend.report.reporttransports.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data'));
   }
 

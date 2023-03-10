@@ -96,6 +96,8 @@
         <th>STNK</th>
         <th>KIR</th>
         <th>Jenis Kendaraan</th>
+        <th>Status Kendaraan</th>
+        <th>Status Kendaraan JO</th>
       </tr>
       </thead>
       <tbody>
@@ -107,6 +109,8 @@
           <td>{{ $item->expired_stnk }}</td>
           <td>{{ $item->expired_kir }}</td>
           <td>{{ ucwords($item->type_car) }}</td>
+          <td>{{ $item->status }}</td>
+          <td>{{ $item->status_jo }}</td>
         </tr>
       @endforeach
       </tbody>
