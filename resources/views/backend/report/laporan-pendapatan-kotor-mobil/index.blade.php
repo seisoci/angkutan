@@ -140,7 +140,8 @@
             data: 'total_kotor',
             name: 'job_orders.total_kotor',
             render: $.fn.dataTable.render.number(',', '.', 2),
-            className: 'dt-right'
+            className: 'dt-right',
+            searchable: false
           },
         ],
         initComplete: function (settings, json) {
