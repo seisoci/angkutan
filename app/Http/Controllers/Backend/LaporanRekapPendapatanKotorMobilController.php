@@ -27,7 +27,7 @@ class LaporanRekapPendapatanKotorMobilController extends Controller
     if($request->ajax()){
       $data = JobOrder::selectRaw('
           `transports`.`num_pol` AS `transport_name`,
-           COALESCE((SUM(`job_orders`.`total_basic_price`) - SUM(`total_operational`)), 0) AS `total_kotor`
+           COALESCE((SUM(`job_orders`.`total_basic_price_after_tax`) - SUM(`total_operational`)), 0) AS `total_kotor`
         ')
         ->leftJoin('transports', 'transports.id', '=', 'job_orders.transport_id')
         ->groupBy('transport_id');
