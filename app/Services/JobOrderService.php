@@ -21,6 +21,7 @@ class JobOrderService
       ])
       ->first();
 
+
     $operationalLdo = OperationalExpense::selectRaw('
       COALESCE(SUM(`amount`),0) AS total
     ')

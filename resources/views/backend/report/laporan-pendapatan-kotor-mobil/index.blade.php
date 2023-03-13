@@ -135,7 +135,7 @@
           }
         },
         columns: [
-          {data: 'transport_name', name: 'transports.name'},
+          {data: 'transport_name', name: 'transports.num_pol'},
           {
             data: 'total_kotor',
             name: 'job_orders.total_kotor',

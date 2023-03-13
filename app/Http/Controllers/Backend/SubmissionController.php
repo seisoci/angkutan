@@ -12,6 +12,7 @@ use App\Services\JobOrderService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -244,9 +245,6 @@ class SubmissionController extends Controller
                   'road_money_extra' => $roadMOneyExtraNext
                 ]);
 
-                $jobOrderCalculate = $jobOrderService->calculate($item['id']);
-                $roadMoneySystemNext->update($jobOrderCalculate);
-
                 foreach ($roadMoneySystemNext->roadmoneydetail as $itemChild):
                   Journal::where('table_ref', 'operationalexpense')
                     ->where('code_ref', $itemChild->id)
@@ -297,6 +295,7 @@ class SubmissionController extends Controller
         ]);
       } catch
       (\Throwable $throw) {
+        Log::error($throw);
         DB::rollBack();
         $response = $throw;
       }
