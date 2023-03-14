@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 
@@ -165,8 +166,17 @@ class InvoiceCostumerController extends Controller
         $request->request->add([
           'prefix' => 'TAG',
           'num_bill' => $noUrutNext,
+          'costumer_id' => $request->input('costumer_id'),
+          'invoice_date' => $request->input('invoice_date'),
+          'due_date' => $request->input('due_date'),
+          'total_tax' => $request->input('total_tax'),
+          'total_bill' => $request->input('total_bill'),
+          'total_fee_thanks' => $request->input('total_fee'),
           'total_cut' => $totalCut,
           'total_piutang' => $totalPiutang,
+          'total_payment' => $request->input('payment.payment') ?? 0,
+          'rest_payment' => $request->input('rest_payment'),
+          'memo' => $request->input('memo'),
           'discount' => $request['discount'] ?? 0,
         ]);
 
@@ -266,6 +276,7 @@ class InvoiceCostumerController extends Controller
           'redirect' => '/backend/invoicecostumers',
         ]);
       } catch (\Throwable $throw) {
+        Log::error($throw);
         DB::rollBack();
         $response = $throw;
       }
@@ -422,6 +433,7 @@ class InvoiceCostumerController extends Controller
           'redirect' => '/backend/invoicecostumers',
         ]);
       } catch (\Throwable $throw) {
+        Log::error($throw);
         DB::rollBack();
         $response = $throw;
       }
@@ -509,7 +521,8 @@ class InvoiceCostumerController extends Controller
         'status' => 'success',
         'message' => 'Data has been deleted',
       ]);
-    } catch (\Throwable $e) {
+    } catch (\Throwable $throw) {
+      Log::error($throw);
     }
 
     return $response;
@@ -601,6 +614,7 @@ class InvoiceCostumerController extends Controller
           ]);
         }
       } catch (\Throwable $throw) {
+        Log::error($throw);
         DB::rollBack();
         $response = $throw;
       }

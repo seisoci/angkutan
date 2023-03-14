@@ -18,6 +18,7 @@ use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 
@@ -217,6 +218,7 @@ class InvoicePurchaseController extends Controller
           'redirect' => '/backend/invoicepurchases',
         ]);
       } catch (\Throwable $throw) {
+        Log::error($throw);
         DB::rollBack();
         $response = $throw;
       }
