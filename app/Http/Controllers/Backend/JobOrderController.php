@@ -356,9 +356,6 @@ class JobOrderController extends Controller
       if ($request['no_sj'] || $request['shipement']) {
         $data->update($request->all());
 
-        $jobOrderCalculate = $jobOrderService->calculate($data);
-        $data->update($jobOrderCalculate);
-
         if ($data['status_cargo'] == 'selesai') {
           Journal::where([
             ['table_ref', 'joborders'],
@@ -452,6 +449,8 @@ class JobOrderController extends Controller
         ]);
       }
 
+      $jobOrderCalculate = $jobOrderService->calculate($data);
+      $data->update($jobOrderCalculate);
     } else {
       $response = response()->json(['error' => $validator->errors()->all()]);
     }
@@ -565,9 +564,6 @@ class JobOrderController extends Controller
           ]);
         }
 
-        $jobOrderCalculate = $jobOrderService->calculate($jobOrder);
-        $jobOrder->update($jobOrderCalculate);
-
         if ($jobOrder['status_cargo'] == 'selesai') {
           Journal::where([
             ['table_ref', 'joborders'],
@@ -600,6 +596,9 @@ class JobOrderController extends Controller
             'grandtotal' => $jobOrder['total_salary']
           ]);
         }
+
+        $jobOrderCalculate = $jobOrderService->calculate($jobOrder);
+        $jobOrder->update($jobOrderCalculate);
 
         DB::commit();
         $response = response()->json([

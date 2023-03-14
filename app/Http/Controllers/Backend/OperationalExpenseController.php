@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JobOrder;
 use App\Models\Journal;
 use App\Models\OperationalExpense;
+use App\Services\JobOrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +60,7 @@ class OperationalExpenseController extends Controller
     return $response;
   }
 
-  public function update(Request $request, $id)
+  public function update(Request $request, $id, JobOrderService $jobOrderService)
   {
     $validator = Validator::make($request->all(), [
       'job_order_id' => 'required|integer',
@@ -77,6 +78,10 @@ class OperationalExpenseController extends Controller
           'created_by' => $request['created_by'],
           'type' => 'roadmoney',
         ]);
+
+        $jobOrder = JobOrder::find($id);
+        $jobOrderCalculate = $jobOrderService->calculate($jobOrder);
+        $jobOrder->update($jobOrderCalculate);
 
         DB::commit();
         return response()->json([
