@@ -507,7 +507,7 @@
         if (AutoNumeric.getAutoNumericElement(el) === null) {
           new AutoNumeric(el, {
             caretPositionOnFocus: "start",
-            decimalPlaces: '3',
+            decimalPlaces: '0',
             unformatOnSubmit: true,
             modifyValueOnWheel: false,
           });
