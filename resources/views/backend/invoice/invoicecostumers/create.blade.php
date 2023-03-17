@@ -300,18 +300,18 @@
             render: $.fn.dataTable.render.number(',', '.', 2)
           },
           {
-            data: 'fee_thanks',
-            name: 'fee_thanks',
-            className: 'dt-right',
-            render: $.fn.dataTable.render.number(',', '.', 2)
-          },
-          {
             data: 'tax_amount',
             name: 'tax_amount',
             className: 'dt-right',
             render: $.fn.dataTable.render.number(',', '.', 2),
             orderable: false,
             searchable: false
+          },
+          {
+            data: 'fee_thanks',
+            name: 'fee_thanks',
+            className: 'dt-right',
+            render: $.fn.dataTable.render.number(',', '.', 2)
           },
           {
             data: 'total_basic_price_after_tax',
