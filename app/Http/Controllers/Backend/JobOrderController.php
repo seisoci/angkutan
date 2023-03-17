@@ -917,18 +917,10 @@ class JobOrderController extends Controller
     try {
       $jobOrderService = new JobOrderService();
 
-      $data = JobOrder::where('total_salary', 0)->get();
-      $typeCapacity = TypeCapacity::all()->keyBy('name');
+      $data = JobOrder::whereDate('date_begin', '>', '2023-01-01')->get();
 
       foreach ($data ?? [] as $item):
         $calculate = $jobOrderService->calculate($item);
-        $jo = JobOrder::find($item['id']);
-        $typeCapacityJO = !is_numeric($item['type_capacity']) ? $typeCapacity[$item['type_capacity']]['id'] : $item['type_capacity'];
-        $prefix = $item['prefix']."-".$item['num_bill'];
-        $jo->update(array_merge([
-          'type_capacity' =>  $typeCapacityJO,
-          'num_bill' =>  $prefix
-        ],$calculate));
       endforeach;
       dd("success");
 
