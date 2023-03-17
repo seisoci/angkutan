@@ -122,7 +122,7 @@
               <div class="form-group">
                 <label>Muatan</label>
                 <div class="input-group">
-                  <input type="text" name="payload" class="form-control text-right currency">
+                  <input type="text" name="payload" class="form-control text-right ton">
                   <div class="input-group-append">
                     <span class="input-group-text">KG</span>
                   </div>
