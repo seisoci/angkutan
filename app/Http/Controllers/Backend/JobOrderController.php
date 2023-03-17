@@ -921,6 +921,7 @@ class JobOrderController extends Controller
 
       foreach ($data ?? [] as $item):
         $calculate = $jobOrderService->calculate($item);
+        $item->update($calculate);
       endforeach;
       dd("success");
 
