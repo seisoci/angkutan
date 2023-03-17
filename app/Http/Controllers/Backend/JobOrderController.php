@@ -333,7 +333,6 @@ class JobOrderController extends Controller
       'routeto:id,name'
     ])
       ->find($id);
-    dd($data->toArray());
     $typeCapacity = TypeCapacity::find($data['type_capacity']);
     return view('backend.operational.joborders.edit', compact('config', 'page_breadcrumbs', 'data', 'sparepart', 'gaji', 'selectCoa', 'typeCapacity'));
   }
