@@ -27,7 +27,7 @@
               <label>Tanggal Muat</label>
               <div class="input-group date">
                 <input type="text" class="form-control datepicker" name="date_begin" readonly="readonly"
-                       placeholder="Tanggal Muat" value="{{ $data->date_begin ?? '' }}" disabled>
+                       placeholder="Tanggal Muat" value="{{ $data->date_begin ?? '' }}">
                 <div class="input-group-append">
                 <span class="input-group-text">
                   <i class="la la-calendar-check-o"></i>
