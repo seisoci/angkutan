@@ -503,39 +503,35 @@
       });
 
 
-      document.querySelectorAll(".currencyKG").forEach(function (el) {
-        if (AutoNumeric.getAutoNumericElement(el) === null) {
-          new AutoNumeric(el, {
-            caretPositionOnFocus: "start",
-            decimalPlaces: '0',
-            unformatOnSubmit: true,
-            modifyValueOnWheel: false,
-          });
-        }
+      $(".currencyKG").inputmask('decimal', {
+        groupSeparator: '.',
+        digits: 3,
+        rightAlign: true,
+        autoUnmask: true,
+        removeMaskOnSubmit: true
       });
 
-      document.querySelectorAll(".autoNumeric").forEach(function (el) {
-        if (AutoNumeric.getAutoNumericElement(el) === null) {
-          new AutoNumeric(el, {
-            caretPositionOnFocus: "start",
-            decimalPlaces: '0',
-            unformatOnSubmit: true,
-            modifyValueOnWheel: false,
-          });
-        }
+
+      $(".autoNumeric").inputmask('decimal', {
+        groupSeparator: '.',
+        digits: 0,
+        rightAlign: true,
+        autoUnmask: true,
+        removeMaskOnSubmit: true
       });
+
 
       $('#tonaseModal, input[name=basic_price_ldo]').on('keyup', function () {
-        let tonase = parseFloat(AutoNumeric.getAutoNumericElement(`#tonaseModal`).getNumber()) || 0;
+        let tonase = parseFloat($(`#tonaseModal`).val()) || 0;
         let type = $('input[name=type]').val();
         if (type == 'ldo') {
-          let basic_price = parseFloat(AutoNumeric.getAutoNumericElement(`input[name=basic_price_ldo]`).getNumber()) || 0;
+          let basic_price = parseFloat($(`input[name=basic_price_ldo]`).val()) || 0;
           let totalOngkosan = tonase * basic_price;
-          AutoNumeric.getAutoNumericElement(`#totalOngkosan`).set(totalOngkosan);
+          $(`#totalOngkosan`).val(totalOngkosan);
         } else {
-          let basic_price = parseFloat(AutoNumeric.getAutoNumericElement(`input[name=basic_price]`).getNumber()) || 0;
+          let basic_price = parseFloat($(`input[name=basic_price]`).val()) || 0;
           let totalOngkosan = tonase * basic_price;
-          AutoNumeric.getAutoNumericElement(`#totalOngkosan`).set(totalOngkosan);
+          $(`#totalOngkosan`).val(totalOngkosan);
         }
       });
 
@@ -814,19 +810,19 @@
         }
         if (type === 'ldo') {
           $(this).find('.modal-body').find('input[name="type"]').val(type);
-          AutoNumeric.getAutoNumericElement(`input[name="basic_price_ldo"]`).set(basic_price_ldo);
-          AutoNumeric.getAutoNumericElement(`#totalOngkosan`).set(basic_price_ldo * payload);
+          $(`input[name="basic_price_ldo"]`).val(basic_price_ldo);
+          $(`#totalOngkosan`).val(basic_price_ldo * payload);
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', '');
           $(this).find('.modal-body').find('input[name="basic_price"]').parent().css('display', 'none');
         } else {
           $(this).find('.modal-body').find('input[name="type"]').val(type);
-          AutoNumeric.getAutoNumericElement(`input[name="basic_price"]`).set(basic_price);
-          AutoNumeric.getAutoNumericElement(`#totalOngkosan`).set(basic_price * payload);
+          $(`input[name="basic_price"]`).val(basic_price);
+          $(`#totalOngkosan`).val(basic_price * payload);
           $(this).find('.modal-body').find('input[name="basic_price"]').parent().css('display', '');
           $(this).find('.modal-body').find('input[name="basic_price_ldo"]').parent().css('display', 'none');
         }
         $(this).find('.formUpdate').attr('action', '{{ route("backend.joborders.index") }}/' + id);
-        AutoNumeric.getAutoNumericElement(`input[name="payload"]`).set(payload);
+        $(`input[name="payload"]`).val(payload);
         $(this).find('.modal-body').find('input[name="type_payload"]').val(type_payload);
         $(this).find('.modal-body').find('input[name="no_sj"]').val(no_sj);
         $(this).find('.modal-body').find('input[name="no_shipment"]').val(no_shipment);
@@ -867,10 +863,10 @@
             let roadMoneySystem = parseFloat(response.data.road_money) || 0;
             let roadMoney = parseFloat(response.roadMoney) || 0;
             let restRoadMoney = (roadMoneySystem + roadMoneyPrev) - roadMoney;
-            AutoNumeric.getAutoNumericElement(`#roadMoneyPrev`).set(roadMoneyPrev);
-            AutoNumeric.getAutoNumericElement(`#roadMoneySystem`).set(roadMoneySystem);
-            AutoNumeric.getAutoNumericElement(`#roadMoney`).set(roadMoney);
-            AutoNumeric.getAutoNumericElement(`#restRoadMoney`).set(restRoadMoney);
+            $(`#roadMoneyPrev`).val(roadMoneyPrev);
+            $(`#roadMoneySystem`).val(roadMoneySystem);
+            $(`#roadMoney`).val(roadMoney);
+            $(`#restRoadMoney`).val(restRoadMoney);
           },
           error: function (response) {
           }
