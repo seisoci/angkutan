@@ -192,7 +192,7 @@
             "data": null,
             "defaultContent": ''
           },
-          {data: 'num_invoice', name: 'num_invoice', orderable: false},
+          {data: 'num_invoice', name: 'num_bill', orderable: false},
           {data: 'invoice_date', name: 'invoice_date'},
           {data: 'due_date', name: 'due_date'},
           {data: 'costumer.name', name: 'costumer.name'},
