@@ -916,8 +916,8 @@ class JobOrderController extends Controller
     try {
       $jobOrderService = new JobOrderService();
 
-      $data = JobOrder::whereDate('date_begin', '>', '2023-01-01')
-        ->whereDate('date_begin', '<', '2023-01-31')->get();
+      $data = JobOrder::whereDate('date_begin', '>', '2023-02-01')
+        ->whereDate('date_begin', '<', '2023-02-28')->get();
 
       foreach ($data ?? [] as $item):
         $calculate = $jobOrderService->calculate($item);
