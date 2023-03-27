@@ -348,7 +348,6 @@ class JobOrderController extends Controller
         'status' => 'error',
         'message' => 'Failed updated',
       ]);
-
       $data = JobOrder::with('transport', 'routeto', 'routeto', 'operationalexpense')
         ->withSum('operationalexpense', 'amount')
         ->find($id);
@@ -382,6 +381,9 @@ class JobOrderController extends Controller
             'description' => "Penambahan Pendapatan joborder" . $data->num_bill . " dengan No. Pol: " . $data->transport->num_pol . " dari rute " . $data->routefrom->name . " tujuan " . $data->routeto->name,
           ]);
         }
+
+        $jobOrderCalculate = $jobOrderService->calculate($data);
+        $data->update($jobOrderCalculate);
 
         return response()->json([
           'status' => 'success',
@@ -448,9 +450,6 @@ class JobOrderController extends Controller
           'message' => 'Data has been updated',
         ]);
       }
-
-      $jobOrderCalculate = $jobOrderService->calculate($data);
-      $data->update($jobOrderCalculate);
     } else {
       $response = response()->json(['error' => $validator->errors()->all()]);
     }
