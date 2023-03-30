@@ -130,7 +130,6 @@
                 <input type="text" name="basic_price_ldo" class="form-control currencyldo" value="{{ $data->basic_price_ldo }}"/>
               </div>
               <div class="form-group">
-                {{ $data->payload ?? '' }}
                 <label>Muatan</label>
                 <div class="input-group">
                   <input type="text" name="payload" class="form-control text-right ton" value="{{ $data->payload ?? '' }}">
@@ -337,7 +336,7 @@
       $(".ton").inputmask({
         alias: 'decimal',
         autoGroup: true,
-        digits: 3,
+        digits: 0,
         digitsOptional: false,
         allowMinus: false,
         placeholder: '0.00'
