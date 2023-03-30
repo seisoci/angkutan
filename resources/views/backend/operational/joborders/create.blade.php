@@ -324,7 +324,7 @@
       $(".ton").inputmask({
         alias: 'decimal',
         autoGroup: true,
-        digits: 0,
+        digits: 3,
         digitsOptional: false,
         allowMinus: false,
         placeholder: '0.00'
