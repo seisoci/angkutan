@@ -486,7 +486,7 @@ return [
               'page' => 'backend/reportreturpurchases'
             ],
             [
-              'title' => 'Laporan Pemakaian Seluruh Barang',
+              'title' => 'Laporan Pemakaian Barang',
               'page' => 'backend/reportusageitems'
             ],
             [
@@ -494,7 +494,7 @@ return [
               'page' => 'backend/reportusageitemoutside'
             ],
             [
-              'title' => 'Laporan Pemakaian Barang',
+              'title' => 'Laporan Pemakaian Seluruh Barang',
               'page' => 'backend/reportusageinsideoutside'
             ],
             [

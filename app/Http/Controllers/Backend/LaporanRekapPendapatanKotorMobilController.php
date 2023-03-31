@@ -29,6 +29,7 @@ class LaporanRekapPendapatanKotorMobilController extends Controller
           `transports`.`num_pol` AS `transport_name`,
            COALESCE((SUM(`job_orders`.`total_basic_price_after_tax`) - SUM(`total_operational`)), 0) AS `total_kotor`
         ')
+        ->where('type', 'self')
         ->leftJoin('transports', 'transports.id', '=', 'job_orders.transport_id')
         ->groupBy('transport_id');
 
