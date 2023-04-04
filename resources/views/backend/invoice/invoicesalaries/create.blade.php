@@ -211,7 +211,7 @@
               ' <td class="text-right money">'+data.total_salary+'</td>'+
               '</tr>');
             });
-            $('#TampungId').append('<input type="hidden" name="grand_total" value="'+total+'">');
+            $('#TampungId').append('<input type="hidden" name="grandtotal" value="'+total+'">');
 
             $('#table_invoice tfoot').append('<tr>'+
               '<td colspan="6" class="text-right">Total</td>'+

@@ -99,8 +99,8 @@ class InvoiceSalaryController extends Controller
           ->where('journals.coa_id', $request->coa_id)
           ->groupBy('journals.coa_id')
           ->first();
-        if (($checksaldo->saldo ?? FALSE) && $request->grand_total <= $checksaldo->saldo) {
 
+        if (($checksaldo->saldo ?? FALSE) && $request->grand_total <= $checksaldo->saldo) {
           $request->request->add([
             'prefix' => 'GAJI'
           ]);
@@ -118,7 +118,7 @@ class InvoiceSalaryController extends Controller
             'coa_id' => $request['coa_id'],
             'date_journal' => $request['invoice_date'],
             'debit' => 0,
-            'kredit' => $request['grand_total'],
+            'kredit' => $request['grandtotal'],
             'table_ref' => 'invoicesalaries',
             'code_ref' => $data['id'],
             'description' => "Pembayaran gaji supir {$driver['name']}"
@@ -127,7 +127,7 @@ class InvoiceSalaryController extends Controller
           Journal::create([
             'coa_id' => 37,
             'date_journal' => $request['invoice_date'],
-            'debit' => $request['grand_total'],
+            'debit' => $request['grandtotal'],
             'kredit' => 0,
             'table_ref' => 'invoicesalaries',
             'code_ref' => $data['id'],
