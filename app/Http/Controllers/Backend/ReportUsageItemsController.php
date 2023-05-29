@@ -8,6 +8,7 @@ use App\Models\Driver;
 use App\Models\Setting;
 use App\Models\Sparepart;
 use App\Models\Transport;
+use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,23 +45,25 @@ class ReportUsageItemsController extends Controller
       $driver_id = $request->driver_id;
       $transport_id = $request->transport_id;
       $sparepart_id = $request->sparepart_id;
+      $category_id = $request->category_id;
+      $brand_id = $request->brand_id;
 
-      $data = DB::table('usage_items')
-        ->select(DB::raw('
-        CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
-        `spareparts`.`name` AS `sparepart_name`,
-        `invoice_usage_items`.`invoice_date` AS `invoice_date`,
-        `transports`.`num_pol` AS `num_pol`,
-        `drivers`.`name` AS `driver_name`,
-        `usage_items`.`description`,
-        `usage_items`.`qty`,
-        `usage_items`.`price` AS `price`,
-        (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
-        '))
-        ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
-        ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
-        ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
-        ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
+      $data = UsageItem::selectRaw('
+          CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
+          `spareparts`.`name` AS `sparepart_name`,
+          `invoice_usage_items`.`invoice_date` AS `invoice_date`,
+          `transports`.`num_pol` AS `num_pol`,
+          `drivers`.`name` AS `driver_name`,
+          `usage_items`.`description`,
+          `usage_items`.`qty`,
+          `usage_items`.`price` AS `price`,
+          (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
+        ')
+        ->join('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
+        ->join('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
+        ->join('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
+        ->join('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
+        ->leftJoin('category_sparepart AS cs', 'cs.sparepart_id', '=', 'spareparts.id')
         ->where('invoice_usage_items.type', 'self')
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
@@ -77,7 +80,17 @@ class ReportUsageItemsController extends Controller
         ->when($sparepart_id, function ($query, $sparepart_id) {
           return $query->where('usage_items.sparepart_id', $sparepart_id);
         })
-        ->orderBy('invoice_usage_items.invoice_date', 'desc');
+        ->when($sparepart_id, function ($query, $sparepart_id) {
+          return $query->where('usage_items.sparepart_id', $sparepart_id);
+        })
+        ->when($category_id, function ($query, $category_id) {
+          return $query->where('cs.category_id', $category_id);
+        })
+        ->when($brand_id, function ($query, $brand_id) {
+          return $query->where('spareparts.brand_id', $brand_id);
+        })
+        ->orderBy('invoice_usage_items.invoice_date', 'desc')
+        ->groupBy('usage_items.id');
 
       return DataTables::of($data)
         ->addIndexColumn()
@@ -94,26 +107,30 @@ class ReportUsageItemsController extends Controller
     $driver_id = $request->driver_id;
     $transport_id = $request->transport_id;
     $sparepart_id = $request->sparepart_id;
+    $category_id = $request->category_id;
+    $brand_id = $request->brand_id;
     $date = $request->date;
+
+
     $transport = Transport::find($transport_id)->num_pol ?? "All";
     $driver = Driver::find($driver_id)->name ?? "All";
     $sparepart = Sparepart::find($sparepart_id)->name ?? "All";
-    $data = DB::table('usage_items')
-      ->select(DB::raw('
-        CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
-        `spareparts`.`name` AS `sparepart_name`,
-        `usage_items`.`qty`,
-        `invoice_usage_items`.`invoice_date` AS `invoice_date`,
-        `transports`.`num_pol` AS `num_pol`,
-        `drivers`.`name` AS `driver_name`,
-        `usage_items`.`price` AS `price`,
-        `usage_items`.`description`,
-        (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
-        '))
-      ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
-      ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
-      ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
-      ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
+    $data = UsageItem::selectRaw('
+          CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
+          `spareparts`.`name` AS `sparepart_name`,
+          `invoice_usage_items`.`invoice_date` AS `invoice_date`,
+          `transports`.`num_pol` AS `num_pol`,
+          `drivers`.`name` AS `driver_name`,
+          `usage_items`.`description`,
+          `usage_items`.`qty`,
+          `usage_items`.`price` AS `price`,
+          (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
+      ')
+      ->join('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
+      ->join('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
+      ->join('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
+      ->join('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
+      ->leftJoin('category_sparepart AS cs', 'cs.sparepart_id', '=', 'spareparts.id')
       ->where('invoice_usage_items.type', 'self')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
@@ -130,7 +147,14 @@ class ReportUsageItemsController extends Controller
       ->when($sparepart_id, function ($query, $sparepart_id) {
         return $query->where('usage_items.sparepart_id', $sparepart_id);
       })
+      ->when($category_id, function ($query, $category_id) {
+        return $query->where('cs.category_id', $category_id);
+      })
+      ->when($brand_id, function ($query, $brand_id) {
+        return $query->where('spareparts.brand_id', $brand_id);
+      })
       ->orderBy('invoice_usage_items.invoice_date', 'desc')
+      ->groupBy('usage_items.id')
       ->get();
 
     $spreadsheet = new Spreadsheet();
@@ -139,20 +163,6 @@ class ReportUsageItemsController extends Controller
       ->setPaperSize(PageSetup::PAPERSIZE_A4)
       ->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
 
-    $borderLeftRight = [
-      'borders' => [
-        'left' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-        'right' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-        'vertical' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-
-      ],
-    ];
     $borderBottom = [
       'borders' => [
         'bottom' => [
@@ -173,27 +183,6 @@ class ReportUsageItemsController extends Controller
     $borderTop = [
       'borders' => [
         'top' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderOutline = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderAll = [
-      'borders' => [
-        'allBorders' => [
-          'borderStyle' => Border::BORDER_THIN,
-        ],
-      ],
-    ];
-    $borderHorizontal = [
-      'borders' => [
-        'outline' => [
           'borderStyle' => Border::BORDER_THIN,
         ],
       ],
@@ -230,7 +219,6 @@ class ReportUsageItemsController extends Controller
     $sheet->getColumnDimension('H')->setWidth(15);
     $sheet->getColumnDimension('I')->setWidth(15);
     $sheet->getColumnDimension('J')->setWidth(15);
-//    $sheet->getRowDimension('2')->setRowHeight(30);
     $sheet->getStyle('F2')->getAlignment()->setVertical(Alignment::VERTICAL_DISTRIBUTED);
 
     $sheet->getStyle('A8')->getAlignment()->setHorizontal('center');
@@ -315,26 +303,29 @@ class ReportUsageItemsController extends Controller
     $driver_id = $request->driver_id;
     $transport_id = $request->transport_id;
     $sparepart_id = $request->sparepart_id;
+    $category_id = $request->category_id;
+    $brand_id = $request->brand_id;
     $date = $request->date;
+
     $transport = Transport::find($transport_id)->num_pol ?? "All";
     $driver = Driver::find($driver_id)->name ?? "All";
     $sparepart = Sparepart::find($sparepart_id)->name ?? "All";
-    $data = DB::table('usage_items')
-      ->select(DB::raw('
-        CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
-        `spareparts`.`name` AS `sparepart_name`,
-        `usage_items`.`qty`,
-        `invoice_usage_items`.`invoice_date` AS `invoice_date`,
-        `transports`.`num_pol` AS `num_pol`,
-        `drivers`.`name` AS `driver_name`,
-        `usage_items`.`price` AS `price`,
-        `usage_items`.`description`,
-        (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
-        '))
-      ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
-      ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
-      ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
-      ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
+    $data = UsageItem::selectRaw('
+          CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
+          `spareparts`.`name` AS `sparepart_name`,
+          `invoice_usage_items`.`invoice_date` AS `invoice_date`,
+          `transports`.`num_pol` AS `num_pol`,
+          `drivers`.`name` AS `driver_name`,
+          `usage_items`.`description`,
+          `usage_items`.`qty`,
+          `usage_items`.`price` AS `price`,
+          (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
+        ')
+      ->join('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
+      ->join('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
+      ->join('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
+      ->join('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
+      ->leftJoin('category_sparepart AS cs', 'cs.sparepart_id', '=', 'spareparts.id')
       ->where('invoice_usage_items.type', 'self')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
@@ -351,7 +342,14 @@ class ReportUsageItemsController extends Controller
       ->when($sparepart_id, function ($query, $sparepart_id) {
         return $query->where('usage_items.sparepart_id', $sparepart_id);
       })
+      ->when($category_id, function ($query, $category_id) {
+        return $query->where('cs.category_id', $category_id);
+      })
+      ->when($brand_id, function ($query, $brand_id) {
+        return $query->where('spareparts.brand_id', $brand_id);
+      })
       ->orderBy('invoice_usage_items.invoice_date', 'desc')
+      ->groupBy('usage_items.id')
       ->get();
 
     return view('backend.report.reportusageitems.print', compact('config', 'page_breadcrumbs', 'cooperationDefault', 'data', 'date', 'transport', 'driver', 'sparepart'));
