@@ -137,7 +137,7 @@ class JobOrderController extends Controller
             $btnEditDocument = '
             <a href="#" data-toggle="modal" data-target="#modalEditDocument" data-id="' . $row['id'] . '" class="edit dropdown-item">Edit Dokumen</a>';
           }
-          if ($row['status_cargo'] == 'selesai' && $row['status_document'] == 1 && !$row['invoice_costumer_id'] && in_array(Auth::user()->roles[0]->name, ['super-admin', 'admin', 'akunting', 'operasional'])) {
+          if ($row['status_cargo'] == 'selesai' && $row['status_document'] == 1 && !$row['invoice_costumer_id'] && in_array(Auth::user()->roles[0]->name, ['super-admin', 'admin', 'akunting'])) {
             $btnShowTonase = '
             <a href="#" data-toggle="modal" data-target="#modalEditTonase"
               data-id="' . $row['id'] . '"
