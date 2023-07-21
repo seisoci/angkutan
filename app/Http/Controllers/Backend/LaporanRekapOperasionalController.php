@@ -343,7 +343,7 @@ class LaporanRekapOperasionalController extends Controller
     endforeach;
 
 
-    $filename = 'Laporan_Rekapitulasi';
+    $filename = 'Laporan Rekap Operasional';
     $writer = new Xlsx($spreadsheet);
     header('Content-Type: application/vnd.ms-excel');
     header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
