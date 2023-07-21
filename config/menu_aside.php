@@ -302,7 +302,8 @@ return [
         'reportcostumers', 'reportdrivers', 'reporttransports', 'reportpiutangbelumlunas', 'reportpiutanglunas',
         'reportjoborders', 'reportinvoicecostumers', 'reportinvoiceldo',
         'reportkasbondrivers', 'reportsalarydrivers', 'reportkasbonemployees', 'reportsalaryemployees',
-        'reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks'
+        'reportpurchaseorders', 'reportreturpurchases', 'reportusageitems', 'reportusageitemoutside', 'reportstocks',
+        'laporan-rekap-operasional'
       ],
       'submenu' => [
         [
@@ -344,7 +345,7 @@ return [
           'list' => ['recapitulation', 'reportrecapsalaries', 'reportrecapjoborders', 'reportrecappurchaseorders',
             'reportrecapreturpurchases', 'reportrecapusageitems', 'reportrecapusageitems', 'reportrecapusageitems',
             'reportrecapusageitemoutside', 'reportcustomerroadmoney', 'reportldonetprofit', 'l-rekap-gaji-bulanan',
-            'l-rekap-pengeluaran-sparepart', 'l-rekap-pendapatan-kotor'
+            'l-rekap-pengeluaran-sparepart', 'l-rekap-pendapatan-kotor', 'laporan-rekap-operasional'
           ],
           'submenu' => [
             [
