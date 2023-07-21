@@ -352,6 +352,10 @@ return [
               'page' => 'backend/recapitulation'
             ],
             [
+              'title' => 'Laporan Rekap Operasional',
+              'page' => 'backend/laporan-rekap-operasional'
+            ],
+            [
               'title' => 'Laporan Rekap Gaji Supir',
               'page' => 'backend/reportrecapsalaries'
             ],

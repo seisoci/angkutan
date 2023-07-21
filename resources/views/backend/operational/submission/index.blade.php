@@ -175,7 +175,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="">Nominal Pengajuan</label>
-                  <input class="form-control currency" name="amount" type="text" disabled>
+                  <input class="form-control currency" name="amount" type="text">
                 </div>
               </div>
               <div class="col-md-6">
@@ -247,13 +247,17 @@
   </script>
   <script type="text/javascript">
     $(document).ready(function () {
-      $(".currency").inputmask('decimal', {
-        groupSeparator: '.',
-        digits: 0,
-        rightAlign: true,
-        removeMaskOnSubmit: true
-      });
-
+      const initCurrency = () => {
+        $(".currency").inputmask('decimal', {
+          groupSeparator: '.',
+          digits: 0,
+          rightAlign: true,
+          autoUnmask: true,
+          allowMinus: false,
+          removeMaskOnSubmit: true
+        });
+      };
+      initCurrency();
       let template = Handlebars.compile($("#details-template").html());
 
       let dataTable = $('#Datatable').DataTable({
@@ -521,12 +525,7 @@
               $('#roadMoney').text('Total Uang jalan LDO telah diambil: ' + response.roadMoneyFormat)
             }
 
-            $(".currency").inputmask('decimal', {
-              groupSeparator: '.',
-              digits: 0,
-              rightAlign: true,
-              removeMaskOnSubmit: true
-            });
+            initCurrency();
           },
           error: function (response) {
           }
@@ -659,6 +658,7 @@
       });
 
       $("#formUpdate").submit(function (e) {
+        $('.currency').inputmask('remove');
         e.preventDefault();
         let form = $(this);
         let btnSubmit = form.find("[type='submit']");
@@ -680,6 +680,7 @@
           url: url,
           data: data,
           success: function (response) {
+            initCurrency();
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             if (response.status == "success") {
               toastr.success(response.message, 'Success !');
@@ -689,6 +690,7 @@
               toastr.error("Data Cannot Update", 'Failed !');
             }
           }, error: function (response) {
+            initCurrency();
             btnSubmit.removeClass("disabled").html(btnSubmitHtml).removeAttr("disabled");
             toastr.error(response.responseJSON.message, 'Failed !');
             $('#modalEdit').modal('hide');

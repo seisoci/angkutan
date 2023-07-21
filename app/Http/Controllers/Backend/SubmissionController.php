@@ -154,6 +154,7 @@ class SubmissionController extends Controller
         DB::beginTransaction();
         $operationalExpense = OperationalExpense::findOrFail($id);
         $operationalExpense->update([
+          'amount' => $request['amount'],
           'approved' => $request['approved'],
           'approved_by' => $request['approved_by'],
           'description' => $request['description'],
@@ -161,7 +162,17 @@ class SubmissionController extends Controller
         ]);
         $coa = Coa::findOrFail($request['coa_id']);
 
-        $data = JobOrder::with(['anotherexpedition:id,name', 'driver:id,name', 'costumer:id,cooperation_id,name', 'costumer.cooperation:id,nickname', 'cargo:id,name', 'transport:id,num_pol', 'routefrom:id,name', 'routeto:id,name', 'operationalexpense.expense'])->find($operationalExpense->job_order_id);
+        $data = JobOrder::with([
+          'anotherexpedition:id,name',
+          'driver:id,name',
+          'costumer:id,cooperation_id,name',
+          'costumer.cooperation:id,nickname',
+          'cargo:id,name',
+          'transport:id,num_pol',
+          'routefrom:id,name',
+          'routeto:id,name',
+          'operationalexpense.expense'
+        ])->find($operationalExpense->job_order_id);
 
         if ($request['approved'] == '1') {
           $checksaldo = DB::table('journals')

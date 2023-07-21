@@ -97,6 +97,7 @@
       <tr>
         <th scope="col">#</th>
         <th>No. Pemakaian</th>
+        <th>No. Pembelian</th>
         <th>Tgl Pemakaian</th>
         <th>Nama Sparepart</th>
         <th>Nama Supir</th>
@@ -112,6 +113,7 @@
         <tr>
           <td>{{ $loop->iteration }}</td>
           <td>{{ $item->num_invoice }}</td>
+          <td>{{ $item->invoice_purchase_num ?? '' }}</td>
           <td>{{ $item->invoice_date }}</td>
           <td>{{ $item->sparepart_name }}</td>
           <td>{{ $item->driver_name }}</td>
@@ -124,7 +126,7 @@
       @endforeach
       </tbody>
       <tfoot>
-      <td colspan="7" class="text-right">Total</td>
+      <td colspan="8" class="text-right">Total</td>
       <td class="text-center">{{ $data->sum('qty') }}</td>
       <td class="text-right">{{ number_format($data->sum('price'), 2, '.', ',') }}</td>
       <td class="text-right">{{ number_format($data->sum('total_price'), 2, '.', ',') }}</td>

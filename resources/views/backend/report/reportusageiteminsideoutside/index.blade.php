@@ -107,6 +107,7 @@
         <thead>
         <tr>
           <th>No. Pemakaian</th>
+          <th>No. Pembelian</th>
           <th>Tgl Pemakaian</th>
           <th>Nama Sparepart</th>
           <th>Nama Supir</th>
@@ -119,6 +120,7 @@
         </thead>
         <tfoot>
         <tr>
+          <th></th>
           <th></th>
           <th></th>
           <th></th>
@@ -174,6 +176,7 @@
         });
         window.open('{{ $config['print_url'] }}?' + params.toString());
       });
+
       let dataTable = $('#Datatable').DataTable({
         responsive: false,
         scrollX: true,
@@ -194,6 +197,7 @@
         },
         columns: [
           {data: 'num_invoice', name: 'num_invoice'},
+          {data: 'invoice_purchase_num', name: 'invoice_purchases.num_bill', defaultContent: ''},
           {data: 'invoice_date', name: 'invoice_usage_items.invoice_date'},
           {data: 'sparepart_name', name: 'sparepart_name'},
           {data: 'driver_name', name: 'driver_name'},
@@ -217,29 +221,29 @@
                 i : 0;
           };
           let qty = api
-            .column(6)
-            .data()
-            .reduce(function (a, b) {
-              return intVal(a) + intVal(b);
-            }, 0);
-
-          let price = api
             .column(7)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
 
-          let totalPrice = api
+          let price = api
             .column(8)
             .data()
             .reduce(function (a, b) {
               return intVal(a) + intVal(b);
             }, 0);
-          $(api.column(5).footer()).html('Total');
-          $(api.column(6).footer()).html(qty);
-          $(api.column(7).footer()).html(format(price));
-          $(api.column(8).footer()).html(format(totalPrice));
+
+          let totalPrice = api
+            .column(9)
+            .data()
+            .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+            }, 0);
+          $(api.column(6).footer()).html('Total');
+          $(api.column(7).footer()).html(qty);
+          $(api.column(8).footer()).html(format(price));
+          $(api.column(9).footer()).html(format(totalPrice));
         },
       });
 

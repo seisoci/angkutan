@@ -323,5 +323,10 @@ Route::prefix('backend')->name('backend.')->middleware(['auth:web'])->group(func
     /* Laporan Rekap Pendapatan Kotor Mobill */
     Route::resource('l-rekap-pendapatan-kotor', Backend\LaporanRekapPendapatanKotorMobilController::class);
     Route::get('jo_calculate', [Backend\JobOrderController::class, 'jo_calculate']);
+
+    /* Laporan Rekap Operasional */
+    Route::get('laporan-rekap-operasional/export', [Backend\LaporanRekapOperasionalController::class, 'export']);
+    Route::resource('laporan-rekap-operasional', Backend\LaporanRekapOperasionalController::class)->except('shot');
+
   });
 });

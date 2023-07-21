@@ -219,7 +219,7 @@
                 @endhasanyrole
                 <div class="form-group">
                   <label style="display: none">Uang Jalan</label>
-                  <input type="text" name="road_money" class="form-control currency" value="{{ $data->road_money ?? '' }}" style="display: none" readonly/>
+                  <input type="text" name="road_money" class="form-control currency" value="{{ $data->road_money ?? '' }}" readonly/>
                 </div>
                 @hasanyrole('super-admin|admin')
                 <div class="form-group">

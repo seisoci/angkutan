@@ -7,6 +7,7 @@ use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\Sparepart;
 use App\Models\Transport;
+use App\Models\UsageItem;
 use App\Traits\CarbonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,9 +45,9 @@ class ReportUsageItemInsideOutsideController extends Controller
       $transport_id = $request->transport_id;
       $sparepart_id = $request->sparepart_id;
 
-      $data = DB::table('usage_items')
-        ->select(DB::raw('
+      $data = UsageItem::selectRaw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
+        CONCAT(`invoice_purchases`.`prefix`,"-",`invoice_purchases`.`num_bill`) AS invoice_purchase_num,
         IF(`usage_items`.`sparepart_id`,`spareparts`.`name`, `usage_items`.`name`) AS `sparepart_name`,
         `usage_items`.`qty`,
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
@@ -55,8 +56,9 @@ class ReportUsageItemInsideOutsideController extends Controller
         `usage_items`.`description`,
         `usage_items`.`price` AS `price`,
         (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
-        '))
+        ')
         ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
+        ->leftJoin('invoice_purchases', 'usage_items.invoice_purchase_id', '=', 'invoice_purchases.id')
         ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
         ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
         ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
@@ -95,9 +97,9 @@ class ReportUsageItemInsideOutsideController extends Controller
     $transport = Transport::find($transport_id)->num_pol ?? "All";
     $driver = Driver::find($driver_id)->name ?? "All";
     $sparepart = Sparepart::find($sparepart_id)->name ?? "All";
-    $data = DB::table('usage_items')
-      ->select(DB::raw('
+    $data = UsageItem::selectRaw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
+        CONCAT(`invoice_purchases`.`prefix`,"-",`invoice_purchases`.`num_bill`) AS invoice_purchase_num,
         IF(`usage_items`.`sparepart_id`,`spareparts`.`name`, `usage_items`.`name`) AS `sparepart_name`,
         `usage_items`.`qty`,
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
@@ -106,8 +108,9 @@ class ReportUsageItemInsideOutsideController extends Controller
         `usage_items`.`description`,
         `usage_items`.`price` AS `price`,
         (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
-        '))
+        ')
       ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
+      ->leftJoin('invoice_purchases', 'usage_items.invoice_purchase_id', '=', 'invoice_purchases.id')
       ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
       ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
@@ -196,52 +199,54 @@ class ReportUsageItemInsideOutsideController extends Controller
     $sheet->getStyle('A8')->getAlignment()->setHorizontal('center');
     $sheet->setCellValue('A8', 'No.');
     $sheet->setCellValue('B8', 'No. Pemakaian');
-    $sheet->setCellValue('C8', 'Tgl Pemakaian');
-    $sheet->setCellValue('D8', 'Nama Sparepart');
-    $sheet->setCellValue('E8', 'Nama Supir');
-    $sheet->setCellValue('F8', 'No. Polisi');
-    $sheet->setCellValue('G8', 'Keterangan');
-    $sheet->setCellValue('H8', 'Jumlah');
-    $sheet->setCellValue('I8', 'Harga');
-    $sheet->setCellValue('J8', 'Total');
+    $sheet->setCellValue('C8', 'No. Pembelian');
+    $sheet->setCellValue('D8', 'Tgl Pemakaian');
+    $sheet->setCellValue('E8', 'Nama Sparepart');
+    $sheet->setCellValue('F8', 'Nama Supir');
+    $sheet->setCellValue('G8', 'No. Polisi');
+    $sheet->setCellValue('H8', 'Keterangan');
+    $sheet->setCellValue('I8', 'Jumlah');
+    $sheet->setCellValue('J8', 'Harga');
+    $sheet->setCellValue('K8', 'Total');
+    $sheet->setAutoFilter("A8:K8");
 
     $startCell = 8;
     $startCellFilter = 8;
     $no = 1;
-    $sheet->getStyle('A' . $startCell . ':I' . $startCell . '')
+    $sheet->getStyle("A{$startCell}:K{$startCell}")
       ->applyFromArray($borderTopBottom);
     foreach ($data as $item):
       $startCell++;
-      $sheet->getStyle('H' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
-      $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderTopBottom);
-      $sheet->getStyle('A' . $startCell . ':' . 'F' . $startCell)->getAlignment()->setVertical('top');
-      $sheet->getStyle('G' . $startCell)->getAlignment()->setHorizontal('right');
-      $sheet->setCellValue('A' . $startCell, $no++);
-      $sheet->setCellValue('B' . $startCell, $item->num_invoice);
-      $sheet->setCellValue('C' . $startCell, $item->invoice_date);
-      $sheet->setCellValue('D' . $startCell, $item->sparepart_name);
-      $sheet->setCellValue('E' . $startCell, $item->driver_name);
-      $sheet->setCellValue('F' . $startCell, $item->num_pol);
-      $sheet->setCellValue('G' . $startCell, $item->description);
-      $sheet->setCellValue('H' . $startCell, $item->qty);
-      $sheet->setCellValue('I' . $startCell, $item->price);
-      $sheet->setCellValue('J' . $startCell, $item->total_price);
+      $sheet->getStyle("H{$startCell}:K{$startCell}")->getNumberFormat()->setFormatCode('#,##0.00');
+      $sheet->getStyle("A{$startCell}:K{$startCell}")->applyFromArray($borderTopBottom);
+      $sheet->getStyle("A{$startCell}:F{$startCell}")->getAlignment()->setVertical('top');
+      $sheet->getStyle("G{$startCell}")->getAlignment()->setHorizontal('right');
+      $sheet->setCellValue("A{$startCell}", $no++);
+      $sheet->setCellValue("B{$startCell}", $item->num_invoice);
+      $sheet->setCellValue("C{$startCell}", $item->invoice_purchase_num ?? '');
+      $sheet->setCellValue("D{$startCell}", $item->invoice_date);
+      $sheet->setCellValue("E{$startCell}", $item->sparepart_name);
+      $sheet->setCellValue("F{$startCell}", $item->driver_name);
+      $sheet->setCellValue("G{$startCell}", $item->num_pol);
+      $sheet->setCellValue("H{$startCell}", $item->description);
+      $sheet->setCellValue("I{$startCell}", $item->qty);
+      $sheet->setCellValue("J{$startCell}", $item->price);
+      $sheet->setCellValue("K{$startCell}", $item->total_price);
     endforeach;
-    $sheet->setAutoFilter('B' . $startCellFilter . ':J' . $startCell);
-    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderBottom);
+    $sheet->getStyle("A{$startCell}:K{$startCell}")->applyFromArray($borderBottom);
     $endForSum = $startCell;
     $startCell++;
     $startCellFilter++;
-    $sheet->getStyle('A' . $startCell . ':J' . $startCell . '')->applyFromArray($borderTop)->applyFromArray($borderBottom);
-    $sheet->getStyle('H' . $startCell . ':J' . $startCell . '')->getNumberFormat()->setFormatCode('#,##0.00');
-    $sheet->getStyle('A' . $startCell . '')->getAlignment()->setHorizontal('right');
-    $sheet->getStyle('G' . $startCell . '')->getAlignment()->setHorizontal('right');
-    $sheet->setCellValue('A' . $startCell, 'Total');
-    $sheet->mergeCells('A' . $startCell . ':F' . $startCell . '');
-    $sheet->getStyle('A' . $startCell . ':G' . $startCell)->getFont()->setBold(true);
-    $sheet->setCellValue('H' . $startCell, '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
-    $sheet->setCellValue('I' . $startCell, '=SUM(I' . $startCellFilter . ':I' . $endForSum . ')');
-    $sheet->setCellValue('J' . $startCell, '=SUM(J' . $startCellFilter . ':J' . $endForSum . ')');
+    $sheet->getStyle("A{$startCell}:K{$startCell}")->applyFromArray($borderTop)->applyFromArray($borderBottom);
+    $sheet->getStyle("H{$startCell}:K{$startCell}")->getNumberFormat()->setFormatCode('#,##0.00');
+    $sheet->getStyle("A{$startCell}")->getAlignment()->setHorizontal('right');
+    $sheet->getStyle("G{$startCell}")->getAlignment()->setHorizontal('right');
+    $sheet->setCellValue("A{$startCell}", 'Total');
+    $sheet->mergeCells("A{$startCell}:F{$startCell}");
+    $sheet->getStyle("A{$startCell}:G{$startCell}")->getFont()->setBold(true);
+    $sheet->setCellValue("I{$startCell}", '=SUM(H' . $startCellFilter . ':H' . $endForSum . ')');
+    $sheet->setCellValue("J{$startCell}", '=SUM(I' . $startCellFilter . ':I' . $endForSum . ')');
+    $sheet->setCellValue("K{$startCell}", '=SUM(J' . $startCellFilter . ':J' . $endForSum . ')');
 
     $filename = 'Laporan Pemakaian Barang ' . $this->dateTimeNow();
     if ($type == 'EXCEL') {
@@ -279,9 +284,9 @@ class ReportUsageItemInsideOutsideController extends Controller
     $transport = Transport::find($transport_id)->num_pol ?? "All";
     $driver = Driver::find($driver_id)->name ?? "All";
     $sparepart = Sparepart::find($sparepart_id)->name ?? "All";
-    $data = DB::table('usage_items')
-      ->select(DB::raw('
+    $data = UsageItem::selectRaw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
+        CONCAT(`invoice_purchases`.`prefix`,"-",`invoice_purchases`.`num_bill`) AS invoice_purchase_num,
         IF(`usage_items`.`sparepart_id`,`spareparts`.`name`, `usage_items`.`name`) AS `sparepart_name`,
         `usage_items`.`qty`,
         `invoice_usage_items`.`invoice_date` AS `invoice_date`,
@@ -290,8 +295,9 @@ class ReportUsageItemInsideOutsideController extends Controller
         `usage_items`.`description`,
         `usage_items`.`price` AS `price`,
         (`usage_items`.`price` * `usage_items`.`qty`) AS total_price
-        '))
+        ')
       ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
+      ->leftJoin('invoice_purchases', 'usage_items.invoice_purchase_id', '=', 'invoice_purchases.id')
       ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
       ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
