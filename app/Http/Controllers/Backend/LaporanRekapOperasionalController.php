@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cooperation;
 use App\Models\Driver;
 use App\Models\JobOrder;
+use App\Models\Transport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -53,7 +54,8 @@ class LaporanRekapOperasionalController extends Controller
           <tr>
             <th>Ongkos</th>
             <th style='min-width: 100px'>Tgl</th>
-            <th>Supir</th>
+            <th style='min-width: 100px'>Supir</th>
+            <th>No Pol</th>
             <th>Kubikasi</th>
             <th style='min-width: 100px'>Tgl Transaksi</th>
             <th class='text-right' style='min-width: 100px'>Uang Jalan</th>
@@ -72,6 +74,7 @@ class LaporanRekapOperasionalController extends Controller
           <tr>
             <td><div class='autoNumeric text-right'>{$item['basic_price']}</div></td>
             <td>{$item['date_begin']}</td>
+            <td>{$item['transport']['num_pol']}</td>
             <td>{$item['driver']['name']}</td>
             <td>{$item['payload']}</td>
             <td></td>
@@ -94,6 +97,7 @@ class LaporanRekapOperasionalController extends Controller
       foreach ($item['roadmoneydetail'] ?? [] as $itemOperional):
         $html .= "
           <tr>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -123,6 +127,7 @@ class LaporanRekapOperasionalController extends Controller
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
             <td>".Carbon::parse($itemOperional['created_at'])->format('Y-m-d')."</td>
             <td></td>
             <td><div class='autoNumeric text-right'>{$itemOperional['amount']}</div></td>
@@ -143,6 +148,7 @@ class LaporanRekapOperasionalController extends Controller
       /* Total Operasional */
       $html .= "
           <tr>
+            <th></th>
             <th></th>
             <th></th>
             <th></th>
@@ -180,46 +186,51 @@ class LaporanRekapOperasionalController extends Controller
 
 
     $cooperationDefault = Cooperation::where('default', '1')->first();
-    $driver =  Driver::find($request['driver_id']);
+    $driver = Driver::find($request['driver_id']);
+    $transport = Transport::find($request['transport_id']);
 
     $sheet->mergeCells('A1:C1');
     $sheet->setCellValue('A1', 'Laporan Rekap Operasional');
-    $sheet->setCellValue('A2', 'Supir:');
-    $sheet->setCellValue('B2', $driver['name'] ?? '');
+    $sheet->setCellValue('A2', 'No Polisi:');
+    $sheet->setCellValue('B2', $transport['num_pol'] ?? '');
     $sheet->mergeCells('A3:B3');
-    $sheet->setCellValue('A3', 'Tgl Mulai(Dari):');
-    $sheet->setCellValue('C3', $request['date_begin']);
+    $sheet->setCellValue('A3', 'Supir:');
+    $sheet->setCellValue('C3', $driver['name'] ?? '');
     $sheet->mergeCells('A4:B4');
-    $sheet->setCellValue('A4', 'Tgl Mulai(Sampai):');
-    $sheet->setCellValue('C4', $request['date_end']);
+    $sheet->setCellValue('A4', 'Tgl Mulai(Dari):');
+    $sheet->setCellValue('C4', $request['date_begin']);
+    $sheet->mergeCells('A5:B5');
+    $sheet->setCellValue('A5', 'Tgl Mulai(Sampai):');
+    $sheet->setCellValue('C5', $request['date_end']);
 
-    $sheet->mergeCells('L1:Q1');
+    $sheet->mergeCells('L1:R1');
     $sheet->setCellValue('L1', $cooperationDefault['nickname']);
-    $sheet->mergeCells('L2:Q2');
+    $sheet->mergeCells('L2:R2');
     $sheet->setCellValue('L2', $cooperationDefault['address']);
-    $sheet->mergeCells('L3:Q3');
-    $sheet->setCellValue('L3', 'Telp: ' . $cooperationDefault['phone']);
-    $sheet->mergeCells('L4:Q4');
-    $sheet->setCellValue('L4', 'Fax: ' . $cooperationDefault['fax']);
+    $sheet->mergeCells('L3:R3');
+    $sheet->setCellValue('L3', 'Telp: '.$cooperationDefault['phone']);
+    $sheet->mergeCells('L4:R4');
+    $sheet->setCellValue('L4', 'Fax: '.$cooperationDefault['fax']);
 
     $data = $this->dataJobOrder($request);
     $sheet->getColumnDimension('A')->setWidth(9.5);
     $sheet->getColumnDimension('B')->setWidth(13);
-    $sheet->getColumnDimension('C')->setWidth(12);
-    $sheet->getColumnDimension('D')->setWidth(9);
-    $sheet->getColumnDimension('E')->setWidth(12);
+    $sheet->getColumnDimension('C')->setWidth(10.5);
+    $sheet->getColumnDimension('D')->setWidth(12);
+    $sheet->getColumnDimension('E')->setWidth(9);
     $sheet->getColumnDimension('F')->setWidth(12);
     $sheet->getColumnDimension('G')->setWidth(12);
-    $sheet->getColumnDimension('H')->setWidth(25);
-    $sheet->getColumnDimension('I')->setWidth(20);
-    $sheet->getColumnDimension('J')->setWidth(8);
-    $sheet->getColumnDimension('K')->setWidth(12);
-    $sheet->getColumnDimension('L')->setWidth(19);
-    $sheet->getColumnDimension('M')->setWidth(12);
+    $sheet->getColumnDimension('H')->setWidth(12);
+    $sheet->getColumnDimension('I')->setWidth(25);
+    $sheet->getColumnDimension('J')->setWidth(20);
+    $sheet->getColumnDimension('K')->setWidth(0);
+    $sheet->getColumnDimension('L')->setWidth(12);
+    $sheet->getColumnDimension('M')->setWidth(19);
     $sheet->getColumnDimension('N')->setWidth(12);
     $sheet->getColumnDimension('O')->setWidth(12);
     $sheet->getColumnDimension('P')->setWidth(12);
     $sheet->getColumnDimension('Q')->setWidth(12);
+    $sheet->getColumnDimension('R')->setWidth(12);
 
     $borderLeftRight = [
       'borders' => [
@@ -253,78 +264,84 @@ class LaporanRekapOperasionalController extends Controller
     foreach ($data ?? [] as $item):
       $startCell++;
       /* Header */
-      $sheet->getStyle("A{$startCell}:Q{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('88bef5');
-      $sheet->getStyle("A{$startCell}:Q{$startCell}")->applyFromArray($borderTopBottom)->applyFromArray($borderLeftRight);
+      $sheet->getStyle("A{$startCell}:R{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('88bef5');
+      $sheet->getStyle("A{$startCell}:R{$startCell}")->applyFromArray($borderTopBottom)->applyFromArray($borderLeftRight);
       $sheet->getStyle("B{$startCell}")->getAlignment()->setHorizontal('right');
-      $sheet->getStyle("K{$startCell}:Q{$startCell}")->getAlignment()->setHorizontal('right');
+      $sheet->getStyle("K{$startCell}:R{$startCell}")->getAlignment()->setHorizontal('right');
       $sheet->setCellValue("A{$startCell}", 'Ongkos');
       $sheet->setCellValue("B{$startCell}", 'Tanggal');
-      $sheet->setCellValue("C{$startCell}", 'Supir');
-      $sheet->setCellValue("D{$startCell}", 'Kubikasi');
-      $sheet->setCellValue("E{$startCell}", 'Tgl Transaksi');
-      $sheet->setCellValue("F{$startCell}", 'Uang Jalan');
-      $sheet->setCellValue("G{$startCell}", 'Nominal');
-      $sheet->setCellValue("H{$startCell}", 'Keterangan');
-      $sheet->setCellValue("I{$startCell}", 'Pelanggan');
-      $sheet->setCellValue("J{$startCell}", '');
-      $sheet->setCellValue("K{$startCell}", 'Total');
-      $sheet->setCellValue("L{$startCell}", 'Total Stlh Pot. Pajak');
-      $sheet->setCellValue("M{$startCell}", 'Hasil Kotor');
-      $sheet->setCellValue("N{$startCell}", 'Fee');
-      $sheet->setCellValue("O{$startCell}", 'Sparepart');
-      $sheet->setCellValue("P{$startCell}", 'Gaji Supir');
-      $sheet->setCellValue("Q{$startCell}", 'Sisa Hasil');
+      $sheet->setCellValue("C{$startCell}", 'No. Polisi');
+      $sheet->setCellValue("D{$startCell}", 'Supir');
+      $sheet->setCellValue("E{$startCell}", 'Kubikasi');
+      $sheet->setCellValue("F{$startCell}", 'Tgl Transaksi');
+      $sheet->setCellValue("G{$startCell}", 'Uang Jalan');
+      $sheet->setCellValue("H{$startCell}", 'Nominal');
+      $sheet->setCellValue("I{$startCell}", 'Keterangan');
+      $sheet->setCellValue("J{$startCell}", 'Pelanggan');
+      $sheet->setCellValue("K{$startCell}", '');
+      $sheet->setCellValue("L{$startCell}", 'Total');
+      $sheet->setCellValue("M{$startCell}", 'Total Stlh Pot. Pajak');
+      $sheet->setCellValue("N{$startCell}", 'Hasil Kotor');
+      $sheet->setCellValue("O{$startCell}", 'Fee');
+      $sheet->setCellValue("P{$startCell}", 'Sparepart');
+      $sheet->setCellValue("Q{$startCell}", 'Gaji Supir');
+      $sheet->setCellValue("R{$startCell}", 'Sisa Hasil');
 
       /* Job Order */
       $startCell++;
       $startMerge = $startCell;
-      $sheet->getStyle("A{$startCell}:Q{$startCell}")->applyFromArray($borderLeftRight);
-      $sheet->getStyle("A{$startCell}:Q{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffffff');
+      $sheet->getStyle("A{$startCell}:R{$startCell}")->applyFromArray($borderLeftRight);
+      $sheet->getStyle("A{$startCell}:R{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffffff');
       $sheet->getStyle("A{$startCell}")->getNumberFormat()->setFormatCode('#,##');
       $sheet->getStyle("B{$startCell}")->getAlignment()->setHorizontal('right');
       $sheet->getStyle("B{$startCell}")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
-      $sheet->getStyle("G{$startCell}")->getNumberFormat()->setFormatCode('#,##');
-      $sheet->getStyle("K{$startCell}:Q{$startCell}")->getNumberFormat()->setFormatCode('#,##');
-      $sheet->getStyle("C{$startCell}")->getAlignment()->setWrapText(true)->setHorizontal('left')->setVertical('top');
-      $sheet->getStyle("I{$startCell}")->getAlignment()->setWrapText(true)->setHorizontal('left')->setVertical('top');
+      $sheet->getStyle("H{$startCell}")->getNumberFormat()->setFormatCode('#,##');
+      $sheet->getStyle("L{$startCell}:R{$startCell}")->getNumberFormat()->setFormatCode('#,##');
+      $sheet->getStyle("B{$startCell}:F{$startCell}")->getAlignment()->setWrapText(true)->setHorizontal('left')->setVertical('top');
+      $sheet->getStyle("I{$startCell}:J{$startCell}")->getAlignment()->setWrapText(true)->setHorizontal('left')->setVertical('top');
+      $sheet->getStyle("A{$startCell}")->getAlignment()->setWrapText(true)->setHorizontal('right')->setVertical('top');
+      $sheet->getStyle("E{$startCell}")->getAlignment()->setWrapText(true)->setHorizontal('right')->setVertical('top');
+      $sheet->getStyle("G{$startCell}:H{$startCell}")->getAlignment()->setWrapText(true)->setHorizontal('right')->setVertical('top');
+      $sheet->getStyle("L{$startCell}:R{$startCell}")->getAlignment()->setWrapText(true)->setHorizontal('right')->setVertical('top');
 
       $sheet->setCellValue("A{$startCell}", $item['basic_price']);
       $sheet->setCellValue("B{$startCell}", $item['date_begin']);
-      $sheet->setCellValue("C{$startCell}", $item['driver']['name']);
-      $sheet->setCellValue("D{$startCell}", $item['payload']);
-      $sheet->setCellValue("G{$startCell}", $item['road_money']);
-      $sheet->setCellValue("H{$startCell}", "{$item['routefrom']['name']} - {$item['routeto']['name']}");
-      $sheet->setCellValue("I{$startCell}", $item['costumer']['name']);
-      $sheet->setCellValue("K{$startCell}", $item['total_basic_price']);
-      $sheet->setCellValue("L{$startCell}", $item['total_basic_price_after_tax']);
-      $sheet->setCellValue("M{$startCell}", ($item['total_basic_price_after_tax'] - $item['total_operational']));
-      $sheet->setCellValue("N{$startCell}", $item['fee_thanks']);
-      $sheet->setCellValue("O{$startCell}", $item['total_sparepart']);
-      $sheet->setCellValue("P{$startCell}", $item['total_salary']);
-      $sheet->setCellValue("Q{$startCell}", $item['total_clean_summary']);
+      $sheet->setCellValue("C{$startCell}", $item['transport']['num_pol']);
+      $sheet->setCellValue("D{$startCell}", $item['driver']['name']);
+      $sheet->setCellValue("E{$startCell}", $item['payload']);
+      $sheet->setCellValue("H{$startCell}", $item['road_money']);
+      $sheet->setCellValue("I{$startCell}", "{$item['routefrom']['name']} - {$item['routeto']['name']}");
+      $sheet->setCellValue("J{$startCell}", $item['costumer']['name']);
+      $sheet->setCellValue("L{$startCell}", $item['total_basic_price']);
+      $sheet->setCellValue("M{$startCell}", $item['total_basic_price_after_tax']);
+      $sheet->setCellValue("N{$startCell}", ($item['total_basic_price_after_tax'] - $item['total_operational']));
+      $sheet->setCellValue("O{$startCell}", $item['fee_thanks']);
+      $sheet->setCellValue("P{$startCell}", $item['total_sparepart']);
+      $sheet->setCellValue("Q{$startCell}", $item['total_salary']);
+      $sheet->setCellValue("R{$startCell}", $item['total_clean_summary']);
 
       /* Rincian Uang Jalan*/
       foreach ($item['roadmoneydetail'] ?? [] as $itemOperional):
         $startCell++;
-        $sheet->getStyle("A{$startCell}:Q{$startCell}")->applyFromArray($borderLeftRight);
-        $sheet->getStyle("A{$startCell}:Q{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffffff');
-        $sheet->getStyle("E{$startCell}")->getAlignment()->setHorizontal('right');
-        $sheet->getStyle("F{$startCell}")->getNumberFormat()->setFormatCode('#,##');
-        $sheet->setCellValue("E{$startCell}", Carbon::parse($itemOperional['created_at'])->format('Y-m-d'));
-        $sheet->setCellValue("F{$startCell}", $itemOperional['amount']);
-        $sheet->setCellValue("H{$startCell}", $itemOperional['description']);
+        $sheet->getStyle("A{$startCell}:R{$startCell}")->applyFromArray($borderLeftRight);
+        $sheet->getStyle("A{$startCell}:R{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffffff');
+        $sheet->getStyle("F{$startCell}")->getAlignment()->setHorizontal('right');
+        $sheet->getStyle("G{$startCell}")->getNumberFormat()->setFormatCode('#,##');
+        $sheet->setCellValue("F{$startCell}", Carbon::parse($itemOperional['created_at'])->format('Y-m-d'));
+        $sheet->setCellValue("G{$startCell}", $itemOperional['amount']);
+        $sheet->setCellValue("I{$startCell}", $itemOperional['description']);
       endforeach;
 
       /* Rincian Operasional*/
       foreach ($item['operationalexpense'] ?? [] as $itemOperional):
         $startCell++;
-        $sheet->getStyle("A{$startCell}:Q{$startCell}")->applyFromArray($borderLeftRight);
-        $sheet->getStyle("A{$startCell}:Q{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffffff');
-        $sheet->getStyle("E{$startCell}")->getAlignment()->setHorizontal('right');
-        $sheet->getStyle("G{$startCell}")->getNumberFormat()->setFormatCode('#,##');
-        $sheet->setCellValue("E{$startCell}", Carbon::parse($itemOperional['created_at'])->format('Y-m-d'));
-        $sheet->setCellValue("G{$startCell}", $itemOperional['amount']);
-        $sheet->setCellValue("H{$startCell}", $itemOperional['description']);
+        $sheet->getStyle("A{$startCell}:R{$startCell}")->applyFromArray($borderLeftRight);
+        $sheet->getStyle("A{$startCell}:R{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffffff');
+        $sheet->getStyle("F{$startCell}")->getAlignment()->setHorizontal('right');
+        $sheet->getStyle("H{$startCell}")->getNumberFormat()->setFormatCode('#,##');
+        $sheet->setCellValue("F{$startCell}", Carbon::parse($itemOperional['created_at'])->format('Y-m-d'));
+        $sheet->setCellValue("H{$startCell}", $itemOperional['amount']);
+        $sheet->setCellValue("I{$startCell}", $itemOperional['description']);
       endforeach;
 
       /* Merge Cell */
@@ -333,13 +350,13 @@ class LaporanRekapOperasionalController extends Controller
 
       /* Total */
       $startCell++;
-      $sheet->getStyle("A{$startCell}:Q{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('66d37e');
-      $sheet->getStyle("A{$startCell}:Q{$startCell}")->getFont()->setBold(true);
-      $sheet->getStyle("A{$startCell}:Q{$startCell}")->applyFromArray($borderLeftRight);
-      $sheet->getStyle("F{$startCell}:G{$startCell}")->getNumberFormat()->setFormatCode('#,##');
-      $sheet->setCellValue("E{$startCell}", "Total");
-      $sheet->setCellValue("F{$startCell}", $item['roadmoneydetail_sum_amount']);
-      $sheet->setCellValue("G{$startCell}", ($item['road_money'] + $item['operationalexpense_sum_amount']));
+      $sheet->getStyle("A{$startCell}:R{$startCell}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('66d37e');
+      $sheet->getStyle("A{$startCell}:R{$startCell}")->getFont()->setBold(true);
+      $sheet->getStyle("A{$startCell}:R{$startCell}")->applyFromArray($borderLeftRight);
+      $sheet->getStyle("G{$startCell}:H{$startCell}")->getNumberFormat()->setFormatCode('#,##');
+      $sheet->setCellValue("F{$startCell}", "Total");
+      $sheet->setCellValue("G{$startCell}", $item['roadmoneydetail_sum_amount']);
+      $sheet->setCellValue("H{$startCell}", ($item['road_money'] + $item['operationalexpense_sum_amount']));
     endforeach;
 
 
@@ -363,8 +380,11 @@ class LaporanRekapOperasionalController extends Controller
       'routeto',
       'driver',
       'operationalexpense',
-      'roadmoneydetail',
+      'roadmoneydetail'
     ])
+      ->when($request->filled('transport_id'), function ($query) use ($request) {
+        return $query->where('transport_id', $request['transport_id']);
+      })
       ->when($request->filled('driver_id'), function ($query) use ($request) {
         return $query->where('driver_id', $request['driver_id']);
       })

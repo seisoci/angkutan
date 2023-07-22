@@ -10,6 +10,13 @@
     </div>
       <div class="card-body">
         <div class="form-group row">
+          <label class="col-form-label text-left col-lg-3 col-sm-12">No Pol</label>
+          <div class=" col-lg-4 col-md-9 col-sm-12">
+            <select id="select2Transport" class="form-control" name="transport_id">
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
           <label class="col-form-label text-left col-lg-3 col-sm-12">Supir</label>
           <div class=" col-lg-4 col-md-9 col-sm-12">
             <select id="select2Driver" class="form-control" name="driver_id">
@@ -100,7 +107,7 @@
       });
 
       $("#select2Driver").select2({
-        placeholder: "Search Driver",
+        placeholder: "Search No Polisi",
         allowClear: true,
         ajax: {
           url: "{{ route('backend.drivers.select2self') }}",
@@ -116,7 +123,25 @@
         },
       });
 
+      $("#select2Transport").select2({
+        placeholder: "Search Driver",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.transports.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      });
+
       document.getElementById('findData').addEventListener('click', () => {
+        const transportId = $('select[name="transport_id"]').find(':selected').val();
         const driverId = $('select[name="driver_id"]').find(':selected').val();
         const dateBegin = $('input[name="date_begin"]').val();
         const dateEnd = $('input[name="date_end"]').val();
@@ -125,6 +150,7 @@
           url: '{{ url()->current() }}', // Replace with your API endpoint
           method: 'GET',
           data: {
+            transport_id: transportId,
             driver_id: driverId,
             date_begin: dateBegin,
             date_end: dateEnd
@@ -143,6 +169,7 @@
       document.getElementById('exportExcel').addEventListener('click', (e) => {
         e.preventDefault();
         const params = new URLSearchParams({
+          transport_id: $('#select2Transport').find(':selected').val() || '',
           driver_id: $('#select2Driver').find(':selected').val() || '',
           date_begin: $('input[name="date_begin"]').val(),
           date_end: $('input[name="date_end"]').val()
