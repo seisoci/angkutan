@@ -398,6 +398,7 @@ class LaporanRekapOperasionalController extends Controller
       ->where('status_cargo', 'selesai')
       ->withSum('operationalexpense', 'amount')
       ->withSum('roadmoneydetail', 'amount')
+      ->orderBy('transport_id', 'asc')
       ->orderBy('date_begin', 'asc')
       ->get();
   }
