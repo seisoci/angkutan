@@ -148,8 +148,7 @@
                   <div class="form-group">
                     <label>Tax PPH %</label>
                     <div class="input-group">
-                      <input type="text" class="form-control" id="taxPercent" value="{{ $data->tax_percent ?? '' }}" disabled/>
-                      <input type="hidden" class="form-control" name="tax_percent" value="{{ $data->tax_percent ?? '' }}"/>
+                      <input type="text" class="form-control" id="taxPercent" name="tax_percent" value="{{ $data->tax_percent ?? '' }}" />
                       <div class="input-group-append"><span class="input-group-text">%</span></div>
                     </div>
                   </div>
@@ -817,7 +816,7 @@
         callLdo();
       }
 
-      $('input[name=payload],input[name=basic_price_ldo],input[name=road_money]').on('keyup', function () {
+      $('input[name=payload],input[name=basic_price_ldo],input[name=road_money],input[name=tax_percent]').on('keyup', function () {
         let select = $('#selectExpedition').find(":selected").val();
         if (select === 'self') {
           callSelf();

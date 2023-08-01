@@ -47,7 +47,7 @@
                 <td style="width: 125px">
                   <input
                     type="text" name="items[qty_now][]"
-                    class="unit rounded-0 form-control"/>
+                    class="rounded-0 form-control"/>
                 </td>
                 <td style="width: 125px"><input type="hidden" name="items[qty_difference][]" class="qtyDifference">
                   <input type="text" class="unit rounded-0 form-control qtyDifference" disabled/>
