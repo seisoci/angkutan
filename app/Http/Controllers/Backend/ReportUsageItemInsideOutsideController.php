@@ -44,6 +44,8 @@ class ReportUsageItemInsideOutsideController extends Controller
       $driver_id = $request->driver_id;
       $transport_id = $request->transport_id;
       $sparepart_id = $request->sparepart_id;
+      $category_id = $request->category_id;
+      $brand_id = $request->brand_id;
 
       $data = UsageItem::selectRaw('
         CONCAT(`invoice_usage_items`.`prefix`,"-",`invoice_usage_items`.`num_bill`) AS num_invoice,
@@ -59,6 +61,7 @@ class ReportUsageItemInsideOutsideController extends Controller
         ')
         ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
         ->leftJoin('invoice_purchases', 'usage_items.invoice_purchase_id', '=', 'invoice_purchases.id')
+        ->leftJoin('category_sparepart AS cs', 'cs.sparepart_id', '=', 'spareparts.id')
         ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
         ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
         ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
@@ -76,6 +79,12 @@ class ReportUsageItemInsideOutsideController extends Controller
         })
         ->when($sparepart_id, function ($query, $sparepart_id) {
           return $query->where('usage_items.sparepart_id', $sparepart_id);
+        })
+        ->when($category_id, function ($query, $category_id) {
+          return $query->where('spareparts.category_id', $category_id);
+        })
+        ->when($brand_id, function ($query, $brand_id) {
+          return $query->where('spareparts.brand_id', $brand_id);
         });
 
       return DataTables::of($data)
@@ -93,6 +102,8 @@ class ReportUsageItemInsideOutsideController extends Controller
     $driver_id = $request->driver_id;
     $transport_id = $request->transport_id;
     $sparepart_id = $request->sparepart_id;
+    $category_id = $request->category_id;
+    $brand_id = $request->brand_id;
     $date = $request->date;
     $transport = Transport::find($transport_id)->num_pol ?? "All";
     $driver = Driver::find($driver_id)->name ?? "All";
@@ -114,6 +125,7 @@ class ReportUsageItemInsideOutsideController extends Controller
       ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
       ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
+      ->leftJoin('category_sparepart AS cs', 'cs.sparepart_id', '=', 'spareparts.id')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];
@@ -128,6 +140,12 @@ class ReportUsageItemInsideOutsideController extends Controller
       })
       ->when($sparepart_id, function ($query, $sparepart_id) {
         return $query->where('usage_items.sparepart_id', $sparepart_id);
+      })
+      ->when($category_id, function ($query, $category_id) {
+        return $query->where('spareparts.category_id', $category_id);
+      })
+      ->when($brand_id, function ($query, $brand_id) {
+        return $query->where('spareparts.brand_id', $brand_id);
       })
       ->orderBy('invoice_usage_items.invoice_date', 'desc')
       ->get();
@@ -280,6 +298,8 @@ class ReportUsageItemInsideOutsideController extends Controller
     $driver_id = $request->driver_id;
     $transport_id = $request->transport_id;
     $sparepart_id = $request->sparepart_id;
+    $category_id = $request->category_id;
+    $brand_id = $request->brand_id;
     $date = $request->date;
     $transport = Transport::find($transport_id)->num_pol ?? "All";
     $driver = Driver::find($driver_id)->name ?? "All";
@@ -301,6 +321,7 @@ class ReportUsageItemInsideOutsideController extends Controller
       ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
       ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
       ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
+      ->leftJoin('category_sparepart AS cs', 'cs.sparepart_id', '=', 'spareparts.id')
       ->when($date, function ($query, $date) {
         $date_format = explode(" / ", $date);
         $date_begin = $date_format[0];
@@ -315,6 +336,12 @@ class ReportUsageItemInsideOutsideController extends Controller
       })
       ->when($sparepart_id, function ($query, $sparepart_id) {
         return $query->where('usage_items.sparepart_id', $sparepart_id);
+      })
+      ->when($category_id, function ($query, $category_id) {
+        return $query->where('spareparts.category_id', $category_id);
+      })
+      ->when($brand_id, function ($query, $brand_id) {
+        return $query->where('spareparts.brand_id', $brand_id);
       })
       ->orderBy('invoice_usage_items.invoice_date', 'desc')
       ->get();

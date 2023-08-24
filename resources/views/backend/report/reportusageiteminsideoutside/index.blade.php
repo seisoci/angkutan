@@ -89,6 +89,20 @@
               </div>
               <div class="col-md-3 my-md-0">
                 <div class="form-group">
+                  <label>Kategori :</label>
+                  <select class="form-control" id="select2Categories">
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
+                  <label>Brand :</label>
+                  <select class="form-control" id="select2Brands">
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3 my-md-0">
+                <div class="form-group">
                   <label>Priode:</label>
                   <div class="input-group" id="dateRangePicker">
                     <div class="input-group-prepend">
@@ -151,6 +165,8 @@
           driver_id: $('#select2Driver').find(':selected').val() || '',
           transport_id: $('#select2Transport').find(':selected').val() || '',
           sparepart_id: $('#select2SparePart').find(':selected').val() || '',
+          brand_id: $('#select2Brands').find(':selected').val() || '',
+          category_id: $('#select2Categories').find(':selected').val() || '',
         });
         window.location.href = '{{ $config['excel_url'] }}&' + params.toString();
       });
@@ -162,6 +178,8 @@
           driver_id: $('#select2Driver').find(':selected').val() || '',
           transport_id: $('#select2Transport').find(':selected').val() || '',
           sparepart_id: $('#select2SparePart').find(':selected').val() || '',
+          brand_id: $('#select2Brands').find(':selected').val() || '',
+          category_id: $('#select2Categories').find(':selected').val() || '',
         });
         location.href = '{{ $config['pdf_url'] }}&' + params.toString();
       });
@@ -173,6 +191,8 @@
           driver_id: $('#select2Driver').find(':selected').val() || '',
           transport_id: $('#select2Transport').find(':selected').val() || '',
           sparepart_id: $('#select2SparePart').find(':selected').val() || '',
+          brand_id: $('#select2Brands').find(':selected').val() || '',
+          category_id: $('#select2Categories').find(':selected').val() || '',
         });
         window.open('{{ $config['print_url'] }}?' + params.toString());
       });
@@ -183,7 +203,7 @@
         processing: true,
         serverSide: true,
         searching: false,
-        order: [[1, 'desc']],
+        order: [[2, 'desc']],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         pageLength: 25,
         ajax: {
@@ -193,6 +213,8 @@
             d.driver_id = $('#select2Driver').find(':selected').val();
             d.transport_id = $('#select2Transport').find(':selected').val();
             d.sparepart_id = $('#select2SparePart').find(':selected').val();
+            d.brand_id = $('#select2Brands').find(':selected').val();
+            d.category_id = $('#select2Categories').find(':selected').val();
           }
         },
         columns: [
@@ -272,6 +294,44 @@
         allowClear: true,
         ajax: {
           url: "{{ route('backend.drivers.select2self') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
+      $("#select2Brands").select2({
+        placeholder: "Search Brand",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.brands.select2') }}",
+          dataType: "json",
+          delay: 250,
+          cache: true,
+          data: function (e) {
+            return {
+              q: e.term || '',
+              page: e.page || 1
+            }
+          },
+        },
+      }).on('change', function (e) {
+        dataTable.draw();
+      });
+
+      $("#select2Categories").select2({
+        placeholder: "Search Kategori",
+        allowClear: true,
+        ajax: {
+          url: "{{ route('backend.categories.select2') }}",
           dataType: "json",
           delay: 250,
           cache: true,
