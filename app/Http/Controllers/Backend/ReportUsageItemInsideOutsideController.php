@@ -61,10 +61,10 @@ class ReportUsageItemInsideOutsideController extends Controller
         ')
         ->leftJoin('invoice_usage_items', 'invoice_usage_items.id', '=', 'usage_items.invoice_usage_item_id')
         ->leftJoin('invoice_purchases', 'usage_items.invoice_purchase_id', '=', 'invoice_purchases.id')
-        ->leftJoin('category_sparepart AS cs', 'cs.sparepart_id', '=', 'spareparts.id')
         ->leftJoin('spareparts', 'spareparts.id', '=', 'usage_items.sparepart_id')
         ->leftJoin('transports', 'transports.id', '=', 'invoice_usage_items.transport_id')
         ->leftJoin('drivers', 'drivers.id', '=', 'invoice_usage_items.driver_id')
+        ->leftJoin('category_sparepart AS cs', 'cs.sparepart_id', '=', 'spareparts.id')
         ->when($date, function ($query, $date) {
           $date_format = explode(" / ", $date);
           $date_begin = $date_format[0];
