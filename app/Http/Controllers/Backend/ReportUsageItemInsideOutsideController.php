@@ -81,7 +81,7 @@ class ReportUsageItemInsideOutsideController extends Controller
           return $query->where('usage_items.sparepart_id', $sparepart_id);
         })
         ->when($category_id, function ($query, $category_id) {
-          return $query->where('spareparts.category_id', $category_id);
+          return $query->where('cs.category_id', $category_id);
         })
         ->when($brand_id, function ($query, $brand_id) {
           return $query->where('spareparts.brand_id', $brand_id);
@@ -142,7 +142,7 @@ class ReportUsageItemInsideOutsideController extends Controller
         return $query->where('usage_items.sparepart_id', $sparepart_id);
       })
       ->when($category_id, function ($query, $category_id) {
-        return $query->where('spareparts.category_id', $category_id);
+        return $query->where('cs.category_id', $category_id);
       })
       ->when($brand_id, function ($query, $brand_id) {
         return $query->where('spareparts.brand_id', $brand_id);
@@ -338,7 +338,7 @@ class ReportUsageItemInsideOutsideController extends Controller
         return $query->where('usage_items.sparepart_id', $sparepart_id);
       })
       ->when($category_id, function ($query, $category_id) {
-        return $query->where('spareparts.category_id', $category_id);
+        return $query->where('cs.category_id', $category_id);
       })
       ->when($brand_id, function ($query, $brand_id) {
         return $query->where('spareparts.brand_id', $brand_id);
