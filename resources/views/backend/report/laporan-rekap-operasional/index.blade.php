@@ -24,6 +24,16 @@
           </div>
         </div>
         <div class="form-group row">
+          <label class="col-form-label text-left col-lg-3 col-sm-12">Status Gaji Supir</label>
+          <div class=" col-lg-4 col-md-9 col-sm-12">
+            <select id="selectSalary" class="form-control">
+              <option value="">Semua</option>
+              <option value="dibayar">Dibayar</option>
+              <option value="belum_dibayar">Belum Dibayar</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
           <label class="col-form-label text-left col-lg-3 col-sm-12">Tanggal Mulai (Dari)</label>
           <div class="col-lg-4 col-md-9 col-sm-12">
             <div class="input-group date">
@@ -145,6 +155,7 @@
         const driverId = $('select[name="driver_id"]').find(':selected').val();
         const dateBegin = $('input[name="date_begin"]').val();
         const dateEnd = $('input[name="date_end"]').val();
+        const salary = $('#selectSalary').val();
 
         $.ajax({
           url: '{{ url()->current() }}', // Replace with your API endpoint
@@ -153,7 +164,8 @@
             transport_id: transportId,
             driver_id: driverId,
             date_begin: dateBegin,
-            date_end: dateEnd
+            date_end: dateEnd,
+            salary: salary
           },
           success: (response) => {
             toastr.success('Data berhasil diambil','Success !');
@@ -172,7 +184,9 @@
           transport_id: $('#select2Transport').find(':selected').val() || '',
           driver_id: $('#select2Driver').find(':selected').val() || '',
           date_begin: $('input[name="date_begin"]').val(),
-          date_end: $('input[name="date_end"]').val()
+          date_end: $('input[name="date_end"]').val(),
+          salary: $('#selectSalary').val()
+
         });
         location.href = `{{ route('backend.laporan-rekap-operasional.index') }}/export?${params.toString()}`;
       });

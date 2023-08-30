@@ -388,6 +388,12 @@ class LaporanRekapOperasionalController extends Controller
       ->when($request->filled('driver_id'), function ($query) use ($request) {
         return $query->where('driver_id', $request['driver_id']);
       })
+      ->when($request->filled('salary'), function ($query) use ($request) {
+        if($request->salary == 'dibayar'){
+          return $query->whereNotNull('invoice_salary_id');
+        }
+        return $query->whereNull('invoice_salary_id');
+      })
       ->when($request->filled('date_begin'), function ($query) use ($request) {
         return $query->whereDate('date_begin', '>=', $request['date_begin']);
       })
