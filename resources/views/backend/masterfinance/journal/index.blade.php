@@ -3,7 +3,6 @@
 
 {{-- Content --}}
 @section('content')
-
   <div class="alert alert-custom alert-white alert-shadow gutter-b" role="alert">
     <div class="alert-icon">
   	  <span class="svg-icon svg-icon-primary svg-icon-xl">
@@ -59,6 +58,7 @@
       </div>
     </div>
 
+    @hasanyrole('super-admin|admin')
     <div class="card-body">
       <div class="mb-10">
         <div class="row align-items-center">
@@ -106,6 +106,7 @@
         </tfoot>
       </table>
     </div>
+    @endhasanyrole
   </div>
   <div class="modal fade text-left" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLabel"
        aria-hidden="true">
