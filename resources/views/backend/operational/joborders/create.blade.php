@@ -339,7 +339,7 @@
         if (this.value === 'self') {
           initTransportDriverSelf();
           $('input[name=road_money]').parent().find('label').css("display", "block");
-          $('input[name=road_money]').attr('display', 'block');
+          $('input[name=road_money]').css('display', 'block');
           $("#select2AnotherExpedition").parent().css("display", "none");
           $('input[name="basic_price_ldo"]').parent().css("display", "none");
           $("#percentSparepart").parent().parent().css("display", "block");
