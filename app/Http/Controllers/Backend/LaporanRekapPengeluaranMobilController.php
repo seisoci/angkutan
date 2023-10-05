@@ -12,9 +12,9 @@ class LaporanRekapPengeluaranMobilController extends Controller
 {
   function __construct()
   {
-    $this->middleware('permission:laporan-pengeluaran-mobil-list|laporan-pengeluaran-mobil-create|laporan-pengeluaran-mobil-edit|laporan-pengeluaran-mobil-delete', ['only' => ['index']]);
-    $this->middleware('permission:laporan-pengeluaran-mobil-create', ['only' => ['create', 'store']]);
-    $this->middleware('permission:laporan-pengeluaran-mobil-edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:laporan-rekap-pengeluaran-mobil-list|laporan-rekap-pengeluaran-mobil-create|laporan-rekap-pengeluaran-mobil-edit|laporan-rekap-pengeluaran-mobil-delete', ['only' => ['index']]);
+    $this->middleware('permission:laporan-rekap-pengeluaran-mobil-create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:laporan-rekap-pengeluaran-mobil-edit', ['only' => ['edit', 'update']]);
   }
 
   public function index(Request $request)

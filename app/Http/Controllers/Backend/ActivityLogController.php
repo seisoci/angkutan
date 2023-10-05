@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use Carbon\Carbon;
 use DataTables;
 use Illuminate\Http\Request;
-use Spatie\Activitylog\Models\Activity;
 
 class ActivityLogController extends Controller
 {
